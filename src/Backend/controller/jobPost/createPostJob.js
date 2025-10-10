@@ -7,21 +7,32 @@ export const createPostJob = async (req, res) => {
         jobType, major, degree, expiredDay, experience, description } = req.body;
     try {
         const newJobPost = new JobPost({
-            title,
-            company,
-            position,
-            location,
-            salary,
-            jobType,
-            major,
-            degree,
-            experience,
+            title: title,
+            company: company,
+            position: position,
+            location: location,
+            salary: salary,
+            jobType: jobType,
+            major: major,
+            degree: degree,
+            experience: experience,
             state: "closed",
             applicants: [],
             description,
         });
         const savedJobPost = await newJobPost.save();
-        res.status(201).json(savedJobPost);
+        if (savedJobPost.success) {
+            res.status(201).json({ 
+                success: true,
+                message: "Create job post successfully",
+                id: savedJobPost.data._id
+            });
+        } else {
+            res.status(400).json({ 
+                success: false,
+                message: "Error creating job post"
+            });
+        }
     } catch (error) {
         res.status(500).json({ message: "Error creating job post" });
     }

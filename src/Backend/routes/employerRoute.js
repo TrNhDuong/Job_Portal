@@ -13,7 +13,7 @@ router.post("/employer", createEmployer);
 router.patch("/employer/:id", updateEmployer);
 
 router.get("/employer/:id/posted-jobs", getListPostJob);
-router.get("/employer/:id/applied-cvs", getListAppliedCVinJob);
+
 
 
 export default router;

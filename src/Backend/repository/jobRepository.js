@@ -61,6 +61,19 @@ export const getEmployerPostJob = async (emailEmployer) => {
     }
 };
 
+export const getAllApplications = async (jobId) => {
+    try {
+        const jobPost = await JobPost.findById(jobId);
+        if (!jobPost) {
+            return { success: false, message: "Job post not found" };
+        }
+        return { success: true, data: jobPost.applicants, message: "Applicants fetched successfully" };
+    } catch (error) {
+        console.error(`Error fetching applicants:`, error);
+        return { success: false, message: "Error fetching applicants" };
+    }
+};
+
 export const addApplicant = async (jobId, email) => {
     try {
         const jobPost = await JobPost.findById(jobId);

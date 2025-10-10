@@ -5,20 +5,36 @@ export const updatePostJob = async (req, res) => {
   const { title, description, salary, degree, experience, jobType } = req.body;
 
   try {
-    const updatedJobPost = await JobPost.findByIdAndUpdate(
-      jobId,
-      { title, description, salary, degree, experience, jobType },
-      { new: true }
+    const updatedJobPost = await JobPost.findByIdAndUpdate( jobId,
+        { 
+            title: title, 
+            description: description, 
+            salary: salary, 
+            degree: degree, 
+            experience: experience, 
+            jobType: jobType 
+        },
+        { new: true }
     );
 
     if (!updatedJobPost) {
-      return res.status(404).json({ message: "Job post not found" });
+        return res.status(404).json({ 
+            success: false,
+            message: "Job post not found" 
+        });
     }
 
-    res.status(200).json(updatedJobPost);
+    res.status(200).json({ 
+        success: true,
+        data: updatedJobPost,
+        message: "Job post updated successfully"
+    });
   } catch (error) {
-    console.error("Error updating job post:", error);
-    res.status(500).json({ message: "Internal server error" });
+      console.error("Error updating job post:", error);
+      res.status(500).json({ 
+          success: false,
+          message: "Internal server error"
+      });
   }
 };
 

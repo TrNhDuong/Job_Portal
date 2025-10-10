@@ -1,36 +1,53 @@
 import express from "express";
-import { getCandidate } from "../controller/candidate/getCandidate.js";
-import { createCandidate } from "../controller/candidate/createCandidate.js";
-import { getEmployer} from "../controller/employer/getEmployer.js";
-import { createEmployer} from "../controller/employer/createEmployer.js";
+import bcrypt from "bcryptjs";
+import { getCandidateByEmail, candidateCreate } from "../repository/candidateRepository.js";
+import { getEmployerByEmail, employerCreate } from "../repository/employerRepository.js";
 
 
 const router = express.Router();
 
 router.post("/candidateRegister", async (req, res) => {
-    const { email, password } = req.body;
-    // Handle registration logic here
-    const existingCandidate = await getCandidate(email);
-    const existingEmployer = await getEmployer(email);
-    if (existingCandidate || existingEmployer) {
+    const { email, password, name } = req.body;
+    
+    const existingCandidate = await getCandidateByEmail(email);
+    const existingEmployer = await getEmployerByEmail(email);
+    if (existingCandidate.success || existingEmployer.success) {
         return res.status(409).json({ message: "Email already exists" });
     }
-    // Create new candidate
-    const newCandidate = await createCandidate({ email, password });
-    res.status(201).json({ message: "Candidate registered successfully", candidate: newCandidate });
+    
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    const newCandidate = await candidateCreate({
+        email: email,
+        password: hashedPassword,
+        name: name,
+        appliedJobs: [],
+        listSaveJobs: [],
+        CV: ""
+    });
+    res.status(201).json({ message: "Candidate registered successfully" });
 });
 
 router.post("/employerRegister", async (req, res) => {
-    const { email, password } = req.body;
-    // Handle registration logic here
-    const existingEmployer = await getEmployer(email);
-    const existingCandidate = await getCandidate(email);
-    if (existingEmployer || existingCandidate) {
+    const { email, password, company, address, phone } = req.body;
+
+    const existingEmployer = await getEmployerByEmail(email);
+    const existingCandidate = await getCandidateByEmail(email);
+    if (existingEmployer.success || existingCandidate.success) {
         return res.status(409).json({ message: "Email already exists" });
     }
-    // Create new employer
-    const newEmployer = await createEmployer({ email, password });
-    res.status(201).json({ message: "Employer registered successfully", employer: newEmployer });
+    
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    const newEmployer = await employerCreate({ 
+        email: mail, 
+        password: hashedPassword, 
+        company: companyName, 
+        address: address, 
+        phone: phoneNumber,
+        jobPosted: []
+    });
+    res.status(201).json({ message: "Employer registered successfully" });
 });
 
 export default router;
