@@ -8,11 +8,11 @@ import { updateEmployer } from "../controller/employer/updateEmployer.js";
 import { getListPostJob } from "../controller/employer/getListPostJob.js";
 import { getListAppliedCVinJob } from "../controller/employer/getListAppliedCVinJob.js";
 
-router.get("/employer/:id", getEmployer);
+router.get("/employer/:email", getEmployer);
 router.post("/employer", createEmployer);
-router.patch("/employer/:id", updateEmployer);
+router.patch("/employer/:email", updateEmployer);
 
-router.get("/employer/:id/posted-jobs", getListPostJob);
+router.get("/employer/:email/posted-jobs", getListPostJob);
 
 
 

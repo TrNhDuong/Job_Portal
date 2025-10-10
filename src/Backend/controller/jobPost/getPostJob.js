@@ -1,11 +1,11 @@
 import JobPost from "../../model/jobPost.js";
-import { getAllApplications } from "../../repository/jobRepository.js";
+import { getEmployerPostJob } from "../../repository/jobRepository.js";
 
-export const getEmployerPostJob = async (req, res) => {
+export const getEmployerListPostJob = async (req, res) => {
     const { emailEmployer } = req.params;
 
     try {
-        const jobPost = await JobPost.findOne({ emailEmployer });
+        const jobPost = await getEmployerPostJob(emailEmployer);
 
         if (!jobPost) {
           return res.status(404).json({ 

@@ -39,14 +39,14 @@ export const updatePostJob = async (req, res) => {
 };
 
 export const addApplicant = async (req, res) => {
-    const { id } = req.params;
-    const { email } = req.body;
+    const { jobId } = req.params;
+    const { applicantEmail } = req.body;
     try {
-      const jobPost = await JobPost.findById(id);
+      const jobPost = await JobPost.findById(jobId);
       if (!jobPost) {
         return res.status(404).json({ message: "Job post not found" });
       }
-      jobPost.applicants.push(email);
+      jobPost.applicants.push(applicantEmail);
       await jobPost.save();
       res.status(200).json({ message: "Applicant added successfully" });
     } catch (error) {
