@@ -1,23 +1,24 @@
 # Server of Job Portal
 
 ## Architecture Overview
-Backend/
-│
-├── src/
-│   ├── config/          # Database connection, environment setup
-│   ├── controllers/     # Business logic for each route
-│   ├── models/          # MongoDB schemas (Candidate, Employer, Job, Application)
-│   ├── routes/          # API endpoints definitions
-│   ├── middlewares/     # Auth, validation, error handling
-│   ├── repository/      # Database interaction functions
-│   ├── app.js           # Main Express setup
-│   └── index.js         # Entry point
-│
-├── .env                 # Environment variables (PORT, MONGO_URI, JWT_SECRET)
-├── .gitignore
-├── package.json
-├── package-lock.json
-└── README.md
+    Backend/
+    │
+    ├── src/
+    │   ├── config/          # Database connection, environment setup
+    │   ├── controllers/     # Business logic for each route
+    │   ├── models/          # MongoDB schemas (Candidate, Employer, Job, Application)
+    │   ├── routes/          # API endpoints definitions
+    │   ├── middlewares/     # Auth, validation, error handling
+    │   ├── repository/      # Database interaction functions
+    │   ├── app.js           # Main Express setup
+    │   └── index.js         # Entry point
+    │
+    ├── .env                 # Environment variables (PORT, MONGO_URI, JWT_SECRET)
+    ├── .gitignore
+    ├── package.json
+    ├── package-lock.json
+    └── README.md
+
 ---
 
 ## Technologies used
