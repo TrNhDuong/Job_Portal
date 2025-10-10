@@ -9,8 +9,8 @@ Backend/
 │   ├── models/          # MongoDB schemas (Candidate, Employer, Job, Application)
 │   ├── routes/          # API endpoints definitions
 │   ├── middlewares/     # Auth, validation, error handling
+│   ├── repository/      # Database interaction functions
 │   ├── app.js           # Main Express setup
-│   ├── repository/      # Database function
 │   └── index.js         # Entry point
 │
 ├── .env                 # Environment variables (PORT, MONGO_URI, JWT_SECRET)
@@ -18,6 +18,7 @@ Backend/
 ├── package.json
 ├── package-lock.json
 └── README.md
+---
 
 ## Technologies used
 - **Programming Language:** Node.js
@@ -28,28 +29,33 @@ Backend/
 - **Version control:** Git + Github
 
 ## API endpoints
-Login/Register endpoints
-Method      Endpoint                                        Description
-POST        http://localhost:8080/api/login                 
-POST        http://localhost:8080/api/candidateRegister
-POST        http://localhost:8080/api/employerRegister
+| **Method** | **Endpoint**                                  | **Description**                                             |
+| ---------- | --------------------------------------------- | ----------------------------------------------------------- |
+| **POST**   | `http://localhost:8080/api/login`             | Login for candidate or employer (returns token on success). |
+| **POST**   | `http://localhost:8080/api/candidateRegister` | Register a new candidate account.                           |
+| **POST**   | `http://localhost:8080/api/employerRegister`  | Register a new employer account.                            |
+
 
 PostJob endpoints
-Method      Endpoint                                        Description
-GET	        post-job/:email	                                Get all id job posts of specific employer identified by unique email
-GET	        post-job/apply/:jobId"	                        Get the list of all job applications in a postjob identified by jobId
-POST	    post-job	                                    Create a new job post (employer only).
-PATCH	    post-job/:id	                                Update details of a specific job post
-PATCH	    post-job/extend/:id	                            Extend the expiry date of a job post.
-PATCH	    post-job/apply/:id	                            Add a candidate to the applicant list for a job (candidate applies).
-DELETE	    api/post-job/:id	                            Delete a specific job post (employer only).
+| **Method** | **Endpoint**                 | **Description**                                                       |
+| ---------- | ---------------------------- | --------------------------------------------------------------------- |
+| **GET**    | `/api/post-job/:email`       | Get all job posts created by a specific employer identified by email. |
+| **GET**    | `/api/post-job/apply/:jobId` | Get the list of all job applications in a specific job post.          |
+| **POST**   | `/api/post-job`              | Create a new job post *(employer only)*.                              |
+| **PATCH**  | `/api/post-job/:id`          | Update details of a specific job post.                                |
+| **PATCH**  | `/api/post-job/extend/:id`   | Extend the expiry date of a job post.                                 |
+| **PATCH**  | `/api/post-job/apply/:id`    | Add a candidate to the applicant list for a job *(apply to job)*.     |
+| **DELETE** | `/api/post-job/:id`          | Delete a specific job post *(employer only)*.                         |
+
 
 Employer endpoints
-Method	Endpoint	                                        Description
-GET	    employer/:email	                                    Get employer identified by email.
-POST	employer	                                        Create a new employer.
-PATCH	employer/:email	                                    Update employer profile identified by email
-GET	    employer/:email/posted-jobs	                        Get all postjob of employer identified by email
+| **Method** | **Endpoint**                       | **Description**                              |
+| ---------- | ---------------------------------- | -------------------------------------------- |
+| **GET**    | `/api/employer/:email`             | Get employer information by email.           |
+| **POST**   | `/api/employer`                    | Create a new employer profile.               |
+| **PATCH**  | `/api/employer/:email`             | Update employer profile identified by email. |
+| **GET**    | `/api/employer/:email/posted-jobs` | Get all job posts created by the employer.   |
+
 
 Candidate endpoint
 
