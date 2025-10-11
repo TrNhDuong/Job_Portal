@@ -93,12 +93,12 @@
 
 .social-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
 .social-btn {
-  height: 42px; border-radius: 8px; border: 1px solid var(--border); background: #fff; cursor: pointer;
+  height: 42px; border-radius: 8px; border: none; color: #fff; cursor: pointer; transition: opacity 0.2s;
   font-weight: 600;
 }
-.social-google { color: #ea4335; }
-.social-facebook { color: #1877f2; }
-.social-linkedin { color: #0a66c2; }
+.social-google { background-color: #ea4335; }
+.social-facebook { background-color: #1877f2; }
+.social-linkedin { background-color: #0a66c2; }
 
 .helper {
   text-align: center; margin-top: 10px; font-size: 14px;
