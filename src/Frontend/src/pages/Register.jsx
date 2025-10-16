@@ -33,12 +33,7 @@ export default function Register() {
           {role === "candidate" ? <RegisterCandidateForm /> : <RegisterEmployerForm />}
 
           <div className="divider">Hoặc đăng nhập bằng</div>
-          <div className="social-row">
-            <button className="social-btn social-google">Google</button>
-            <button className="social-btn social-facebook">Facebook</button>
-            <button className="social-btn social-linkedin">LinkedIn</button>
-          </div>
-
+          
           <p className="helper">
             Bạn đã có tài khoản? <a href="/login">Đăng nhập ngay</a>
           </p>

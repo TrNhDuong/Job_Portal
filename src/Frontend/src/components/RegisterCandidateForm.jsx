@@ -1,5 +1,6 @@
 import { useState } from "react";
 import client from "../api/client";
+import { useNavigate } from "react-router-dom";
 
 const Eye = ({ onClick }) => (
   <svg className="icon-right" onClick={onClick} viewBox="0 0 24 24" fill="none">
@@ -32,6 +33,8 @@ export default function RegisterCandidateForm() {
   const [msg, setMsg] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  const navigate = useNavigate();
+
   const onChange = (e) => {
     const { name, value, type, checked } = e.target;
     setForm({ ...form, [name]: type === "checkbox" ? checked : value });
@@ -51,13 +54,14 @@ export default function RegisterCandidateForm() {
     }
     try {
       setLoading(true);
-      const res = await client.post("/candidateRegister", {
+      const res = await client.post("/api/candidateRegister", {
         email: form.email,
         password: form.password,
         name: form.name
       });
       setMsg({ type: "success", text: res?.data?.message || "Đăng ký thành công" });
       setForm({ name:"", email:"", password:"", confirm:"", agree:false });
+      navigate("/blank"); 
     } catch (err) {
       setMsg({ type: "error", text: err?.response?.data?.message || "Đăng ký thất bại" });
     } finally {
