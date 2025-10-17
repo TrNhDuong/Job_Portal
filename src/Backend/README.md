@@ -30,12 +30,25 @@
 - **Version control:** Git + Github
 
 ## API endpoints
+    All the response from the server side comply with format: 
+    {
+        success, 
+        message, 
+        data 
+    }
+| **Variable** | **Data type**                 | **Description**                                                       |
+| ---------- | ---------------------------- | --------------------------------------------------------------------- |
+| success    | boolean       | True if the request is successful, else false. |
+|message   | string | The message describe the result          |
+| data   | any              | Output data                             |
+---
+Login endpoint
 | **Method** | **Endpoint**                                  | **Description**                                             |
 | ---------- | --------------------------------------------- | ----------------------------------------------------------- |
 | **POST**   | `http://localhost:8080/api/login`             | Login for candidate or employer (returns token on success). |
 | **POST**   | `http://localhost:8080/api/candidateRegister` | Register a new candidate account.                           |
 | **POST**   | `http://localhost:8080/api/employerRegister`  | Register a new employer account.                            |
-
+---
 
 PostJob endpoints
 | **Method** | **Endpoint**                 | **Description**                                                       |
@@ -48,14 +61,13 @@ PostJob endpoints
 | **PATCH**  | `/api/post-job/apply/:id`    | Add a candidate to the applicant list for a job *(apply to job)*.     |
 | **DELETE** | `/api/post-job/:id`          | Delete a specific job post *(employer only)*.                         |
 
-
+---
 Employer endpoints
 | **Method** | **Endpoint**                       | **Description**                              |
 | ---------- | ---------------------------------- | -------------------------------------------- |
 | **GET**    | `/api/employer/:email`             | Get employer information by email.           |
-| **POST**   | `/api/employer`                    | Create a new employer profile.               |
 | **PATCH**  | `/api/employer/:email`             | Update employer profile identified by email. |
-| **GET**    | `/api/employer/:email/posted-jobs` | Get all job posts created by the employer.   |
+
 
 
 Candidate endpoint

@@ -16,14 +16,29 @@ const employerSchema = new mongoose.Schema({
     },
     phone: {
         type: String,
-        required: true,
     },
     address: {
         type: String,
         required: true,
     },
-    jobPosted: [String],
+    description: {
+        type: String,
+    },
+    website: {
+        type: String,
+    },
+    jobPosted: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'JobPost',
+        }
+    ],
+    point: {
+        type: Number,
+        default: 0
+    }
 });
+
 
 const Employer = mongoose.model("Employer", employerSchema);
 

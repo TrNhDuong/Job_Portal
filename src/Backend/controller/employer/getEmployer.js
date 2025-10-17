@@ -1,9 +1,9 @@
-import {getEmployerByEmail} from "../../repository/employerRepository.js";
+import { EmployerRepository } from "../../repository/employerRepository.js";
 
 export const getEmployer = async (req, res) => {
     const { email } = req.params;
     try {
-        const result = await getEmployerByEmail(email);
+        const result = await EmployerRepository.getEmployer(email);
         if (result.success) {
             return res.status(200).json(result.data);
         }

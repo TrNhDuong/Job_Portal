@@ -1,24 +1,22 @@
-import JobPost from "../../model/jobPost.js";
-import { getEmployerPostJob } from "../../repository/jobRepository.js";
+import { JobRepository } from "../../repository/jobRepository.js";
 
-export const getEmployerListPostJob = async (req, res) => {
+export const getJobPost = async (req, res) => {
     const { emailEmployer } = req.params;
 
     try {
-        const jobPost = await getEmployerPostJob(emailEmployer);
-
-        if (!jobPost) {
-          return res.status(404).json({ 
-            success: false,
-            message: "Job post not found"
-          });
+        const jobPost = await JobRepository.getJobPost(emailEmployer);
+        if (jobPost.success) {
+            res.status(200).json({
+                success: true,
+                data: jobPost.data,
+                message: "Employer's job posts fetched successfully"
+            });
+        } else {
+            res.status(404).json({
+                success: false,
+                message: jobPost.message
+            });
         }
-
-        res.status(200).json({
-          success: true,
-          data: jobPost,
-          message: "Job post fetched successfully"
-        });
     } catch (error) {
         console.error("Error fetching job post:", error);
         res.status(500).json({ 
@@ -28,51 +26,32 @@ export const getEmployerListPostJob = async (req, res) => {
     }
 };
 
-export const getPostJobById = async (req, res) => {
-    const { jobId } = req.params;
+export const getAllPostJob = async (req, res) => {
+    const { page, location, jobType, salaryRange, major, experience, degree } = req.query;
     try {
-        const jobPost = await JobPost.findById(jobId);
-        if (!jobPost) {
-            return res.status(404).json({ 
-              success: false,
-              message: "Job post not found"
+        const result = await JobRepository.getAllJobPosts({
+            page: parseInt(page) || 1,
+            location,
+            jobType,
+            salaryRange,
+            major,
+            experience,
+            degree
+        });
+        if (result.success) {
+            return res.status(200).json({
+                success: true,
+                data: result.data,
+                message: "Job posts fetched successfully"
             });
-        }
-        res.status(200).json({
-            success: true,
-            data: jobPost,
-            message: "Job post fetched successfully"
-        });
-    } catch (error) {
-        console.error("Error fetching job post by ID:", error);
-        res.status(500).json({
-            success: false,
-            message: "Internal server error"
-        });
-    }
-};
-
-export const getListApplications = async (req, res) => {
-    const { jobId } = req.params;
-    try {
-        const result = await getAllApplications(jobId);
-        if (!result.success) {
+        } else {
             return res.status(404).json({
                 success: false,
                 message: result.message
             });
         }
-        return res.status(200).json({
-            success: true,
-            data: result.data,
-            message: result.message
-        });
     } catch (error) {
-        console.error("Error fetching job posts:", error);
-        res.status(500).json({
-            success: false,
-            message: "Internal server error"
-        });
+
     }
-};
+}
 

@@ -2,18 +2,16 @@ import express from "express";
 
 const router = express.Router();
 
-import { getEmployerListPostJob } from "../controller/jobPost/getPostJob.js";
 import { createPostJob } from "../controller/jobPost/createPostJob.js";
-import { updatePostJob, extendJobExpiry, addApplicant } from "../controller/jobPost/updatePostJob.js";
+import { updatePostJob, extendJobExpiry, applyJob, removeApplyJob } from "../controller/jobPost/updatePostJob.js";
 import { deletePostJob } from "../controller/jobPost/deletePostJob.js";
-import { getListApplications } from "../controller/jobPost/getPostJob.js";
 
-router.get("/post-job/:email", getEmployerListPostJob); //get list jobpost id by email
-router.get("/post-job/apply/:jobId", getListApplications);
+
 router.post("/post-job", createPostJob); //
 router.patch("/post-job/:id", updatePostJob);
 router.patch("/post-job/extend/:id", extendJobExpiry);
-router.patch("/post-job/apply/:id", addApplicant);
+router.patch("/post-job/applyJob/:id", applyJob);
+router.patch("/post-job/removeApplyJob/:id", removeApplyJob);
 router.delete("/post-job/:id", deletePostJob);
 
 export default router;
