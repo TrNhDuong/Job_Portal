@@ -35,7 +35,7 @@
   display: block;
   width: 6.25vw;   /* 100 / 16 = 6.25 */
   height: 6.25vw;
-  background: #181818;
+  background: #807b7b;
   transition: background 0.1s ease-in, box-shadow 0.1s ease-in;
   z-index: 2;
 }
