@@ -73,6 +73,5 @@ const jobPost = new mongoose.Schema({
     },
 });
 
-const JobPost = mongoose.model("JobPost", jobPost);
+export const JobPost = mongoose.model("JobPost", jobPost);
 
-export default JobPost;

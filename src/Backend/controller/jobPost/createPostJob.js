@@ -1,4 +1,3 @@
-import JobPost from "../../model/jobPost.js";
 import { JobRepository } from "../../repository/jobRepository.js";
 // employer post a job with the initial state is "closed", if employer want to open
 // they have to pay to open the job post in time period

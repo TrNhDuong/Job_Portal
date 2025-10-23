@@ -1,12 +1,11 @@
-import JobPost from "../../model/jobPost.js";
+import { JobRepository } from "../../repository/jobRepository.js";
 
 export const deletePostJob = async (req, res) => {
     const { idJob } = req.params;
 
     try {
-        const deletedJobPost = await JobPost.findByIdAndDelete(idJob);
-
-        if (!deletedJobPost) {
+        const result = await JobRepository.deleteJobPost(idJob);
+        if (!result.success) {
           return res.status(404).json({
             success: false, 
             message: "Job post not found"

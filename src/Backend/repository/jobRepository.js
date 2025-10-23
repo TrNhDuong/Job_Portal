@@ -1,4 +1,4 @@
-import JobPost from "../model/jobPost.js";
+import { JobPost }from "../model/jobPost.js";
 
 export class JobRepository {
     static async getJobPost(jobId) {

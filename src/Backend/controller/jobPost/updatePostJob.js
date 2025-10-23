@@ -1,4 +1,4 @@
-import JobPost from "../../model/jobPost.js";
+import { JobPost } from "../../model/jobPost.js";
 import { JobRepository } from "../../repository/jobRepository.js";
 import { CandidateRepository } from "../../repository/candidateRepository.js";
 import { ApplicationRepository } from "../../repository/applicationRepository.js";
