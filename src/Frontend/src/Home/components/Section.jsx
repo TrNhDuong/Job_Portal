@@ -1,9 +1,12 @@
-export default function Section({ title, right, children }) {
+export default function Section({ title, icon=null, actions=null, children }) {
   return (
-    <section className="mt-8">
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="text-lg md:text-xl font-semibold text-gray-900">{title}</h2>
-        {right}
+    <section>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          {icon}
+          <h2 className="text-[28px] font-bold text-gray-900">{title}</h2>
+        </div>
+        {actions && <div className="flex items-center gap-2">{actions}</div>}
       </div>
       {children}
     </section>

@@ -1,8 +1,7 @@
 import Section from "./Section";
 import BrandCard from "./BrandCard";
 import useFeatured from "../hooks/useFeatured";
-import { fetchFeaturedBrands } from "../services/homeApi";
-
+import { fetchFeaturedBrands } from "../services/home-api";
 export default function FeaturedBrands({ enableFetch = false }) {
   const { data: brands, loading, error } = useFeatured(fetchFeaturedBrands, enableFetch);
 

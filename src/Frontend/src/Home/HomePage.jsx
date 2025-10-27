@@ -2,15 +2,20 @@ import Hero from "./components/Hero";
 import Metrics from "./components/Metrics";
 import FeaturedJobs from "./components/FeaturedJobs";
 import FeaturedBrands from "./components/FeaturedBrands";
+import TopSectors from "./components/TopSectors";
+import CareerTips from "./components/CareerTips";
 
 export default function HomePage() {
   return (
-    <div className="px-4 md:px-6 lg:px-10 py-6 max-w-7xl mx-auto">
-      <Hero />
-      <Metrics />
-
-      <FeaturedJobs enableFetch={false} />
-      <FeaturedBrands enableFetch={false} />
+    <div className="py-6 bg-[#EAF1FF]">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-10">
+        <Hero />
+        <Metrics />
+        <div className="mt-8"><FeaturedJobs enableFetch={false} /></div>
+        <div className="mt-8"><FeaturedBrands enableFetch={false} /></div>
+        <div className="mt-8"><TopSectors /></div>
+        <div className="mt-8 pb-8"><CareerTips /></div>
+      </div>
     </div>
   );
 }

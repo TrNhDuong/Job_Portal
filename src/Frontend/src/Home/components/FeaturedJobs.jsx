@@ -1,7 +1,7 @@
 import Section from "./Section";
 import JobCard from "./JobCard";
 import useFeatured from "../hooks/useFeatured";
-import { fetchFeaturedJobs } from "../../src/Home/services/homeApi";
+import { fetchFeaturedJobs } from "../services/home-api";
 
 export default function FeaturedJobs({ enableFetch = false }) {
   const { data: jobs, loading, error } = useFeatured(fetchFeaturedJobs, enableFetch);
