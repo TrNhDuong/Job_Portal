@@ -4,7 +4,7 @@ import { CSSTransition, TransitionGroup } from "react-transition-group";
 import LoginForm from "./components/LoginForm";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
-import HomePage from "./home/HomePage"; 
+import HomePage from "./home/Homepage.jsx"; 
 import Navbar from "./components/Navbar.jsx";
 
 function App() {
