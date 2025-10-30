@@ -80,7 +80,7 @@ export default function RegisterEmployerForm() {
       const res = await client.post("/api/employerRegister", payload); // gọi API đăng ký
       setMsg({type:"success", text: res?.data?.message || "Đăng ký thành công"});
       setForm({company:"", email:"", password:"", confirm:"", phone:"", address:"", agree:false});
-      navigate("/blank"); 
+      navigate("/Login"); 
     } catch (err) {
       setMsg({type:"error", text: err?.response?.data?.message || "Đăng ký thất bại"});
     } finally {

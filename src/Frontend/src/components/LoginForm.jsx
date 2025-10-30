@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import client from "../api/client";
+import { useAuth } from "../context/AuthContext.jsx";
 
 export default function LoginForm() {
   const [identifier, setIdentifier] = useState("");
@@ -11,8 +12,10 @@ export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState(null);          
+
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {            
     e.preventDefault();
@@ -25,6 +28,17 @@ export default function LoginForm() {
       });
       setMsg({ type: "success", text: res?.data?.message || "Đăng nhập thành công" });
       if (res?.data?.token) localStorage.setItem("token", res.data.token);
+      const userData = res.data.user;
+
+      // Lấy dữ liệu user từ API và cập nhật vào Context
+      if (userData) {
+        // Tốt! API trả về user, Navbar sẽ có tên, email, avatar
+        login(userData);
+      } else {
+        // Giải pháp tạm: Nếu API chỉ trả về token
+        console.warn("API không trả về 'user' data. Tạm dùng email.");
+        login({ email: identifier, name: identifier.split('@')[0] });
+      }
       navigate("/");
     } catch (err) {
       const text = err?.response?.data?.message || err.message || "Đăng nhập thất bại";
@@ -41,7 +55,6 @@ export default function LoginForm() {
   return (
     <section className="background">
       {gridSpans}
-
       <div className="login-box">
         <h2>Đăng nhập</h2>
         <p>Cùng xây dựng một hồ sơ nổi bật và nhận được các cơ hội sự nghiệp lý tưởng.</p>

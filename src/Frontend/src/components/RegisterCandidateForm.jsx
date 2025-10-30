@@ -61,7 +61,7 @@ export default function RegisterCandidateForm() {
       });
       setMsg({ type: "success", text: res?.data?.message || "Đăng ký thành công" });
       setForm({ name:"", email:"", password:"", confirm:"", agree:false });
-      navigate("/blank"); 
+      navigate("/Login"); 
     } catch (err) {
       setMsg({ type: "error", text: err?.response?.data?.message || "Đăng ký thất bại" });
     } finally {

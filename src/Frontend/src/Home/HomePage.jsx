@@ -16,7 +16,7 @@ export default function HomePage() {
       <div className=" mx-auto px-4 md:px-6 lg:px-10">
         <Hero />
         <Metrics />
-        <div className="mt-8"><FeaturedJobs enableFetch={false} /></div>
+        <div className="mt-8"><FeaturedJobs enableFetch={true} /></div>
         <div className="mt-8"><FeaturedBrands enableFetch={false} /></div>
         <div className="mt-8"><TopSectors /></div>
         <div className="mt-8 pb-8"><CareerTips /></div>

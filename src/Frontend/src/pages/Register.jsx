@@ -1,7 +1,7 @@
 import { useState } from "react";
 import RegisterCandidateForm from "../components/RegisterCandidateForm";
 import RegisterEmployerForm from "../components/RegisterEmployerForm";
-
+import { Link } from "react-router-dom";
 export default function Register() {
   const [role, setRole] = useState("candidate");
 
@@ -35,7 +35,10 @@ export default function Register() {
           <div className="divider">Hoặc đăng nhập bằng</div>
           
           <p className="helper">
-            Bạn đã có tài khoản? <a href="/login">Đăng nhập ngay</a>
+            Bạn đã có tài khoản? 
+            <Link to="/login" className="text-blue-600 hover:underline">
+              Đăng nhập ngay
+            </Link>
           </p>
         </div>
       </div>
