@@ -1,4 +1,3 @@
-// src/home/components/FeaturedBrands.jsx
 import { useState } from "react"; 
 import Section from "./Section";
 import BrandCard from "./BrandCard";
@@ -15,7 +14,7 @@ const featuredBrandsTitle = (
 );
 
 export default function FeaturedBrands({ enableFetch = true }) {
-  // Gọi hook để lấy data thật
+  // GỌI HOOK ĐỂ LẤY DATA THẬT
   const { data: brands, loading, error } = useFeatured(
     fetchFeaturedBrands, 
     enableFetch 
@@ -28,14 +27,17 @@ export default function FeaturedBrands({ enableFetch = true }) {
       <Section title={featuredBrandsTitle} right={error && <span className="text-sm text-red-600">{error}</span>}>
       
       {loading ? (
+        // Hiển thị loading...
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[...Array(8)].map((_, i) => (
             <div key={i} className="h-20 bg-gray-100 rounded-xl animate-pulse" />
           ))}
         </div>
-        ) : (
+      ) : (
+        // Hiển thị data thật
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {brands.map(b => ( // Dùng "brands.map" (data thật)
+          {/* DÙNG "brands.map" (DATA THẬT) */}
+          {brands.map(b => ( 
             <BrandCard
               key={b._id}
               brand={b} 

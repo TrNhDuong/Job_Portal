@@ -1,5 +1,3 @@
-// src/hooks/useFeatured.js
-
 import { useEffect, useState } from "react";
 
 export default function useFeatured(fetcher, enabled = false) {
@@ -15,8 +13,7 @@ export default function useFeatured(fetcher, enabled = false) {
         setLoading(true);
         const res = await fetcher();
         
-        // *** SỬA LỖI Ở DÒNG DƯỚI ĐÂY ***
-        // Thay "res.data" thành "res.data.data"
+        // SỬA LỖI Ở ĐÂY: "res.data" -> "res.data.data"
         if (mounted) setData(res.data.data || []); 
 
       } catch (e) {

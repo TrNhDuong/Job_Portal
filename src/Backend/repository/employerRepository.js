@@ -55,5 +55,32 @@ export const getEmployerPassword = async (email) => {
     }
 };
 
+export const getFeaturedBrands = async () => {
+  try {
+    // Lấy 8 nhà tuyển dụng (thương hiệu) mới nhất
+    const employers = await Employer.find()
+      .sort({ createdAt: -1 }) // Sắp xếp theo ngày tạo mới nhất
+      .limit(8)
+      .select("company address logoUrl jobPosted description"); 
 
+    if (!employers || employers.length === 0) {
+      return { success: false, message: "Không tìm thấy nhà tuyển dụng nào" };
+    }
+
+    // Chuyển đổi dữ liệu Backend để khớp với Frontend
+    const brands = employers.map(emp => ({
+      _id: emp._id,
+      name: emp.company, 
+      location: emp.address, 
+      logoUrl: emp.logoUrl,
+      description: emp.description,
+      jobs: Array.isArray(emp.jobPosted) ? emp.jobPosted.length : 0 
+    }));
+    
+    return { success: true, data: brands, message: "Lấy thương hiệu nổi bật thành công" };
+  } catch (error) {
+    console.error(`Error fetching featured brands:`, error);
+    return { success: false, message: "Lỗi khi lấy thương hiệu nổi bật" };
+  }
+};
 
