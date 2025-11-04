@@ -1,13 +1,9 @@
 import { useState } from "react";
 import client from "../api/client";
 import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
-const Eye = ({ onClick }) => (
-  <svg className="icon-right" onClick={onClick} viewBox="0 0 24 24" fill="none">
-    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" stroke="currentColor"/>
-    <circle cx="12" cy="12" r="3" stroke="currentColor"/>
-  </svg>
-);
 const UserIcon = () => (
   <svg className="icon-left" viewBox="0 0 24 24" fill="none">
     <circle cx="12" cy="8" r="4" stroke="currentColor"/>
@@ -83,15 +79,27 @@ export default function RegisterCandidateForm() {
       </div>
       <div className="input-wrap">
         <LockIcon/>
-        <input className="input" name="password" placeholder="Nhập mật khẩu"
+        <input className="input password-input" name="password" placeholder="Nhập mật khẩu"
                type={show1 ? "text" : "password"} value={form.password} onChange={onChange}/>
-        <Eye onClick={()=>setShow1(s=>!s)}/>
+        
+        {/* BƯỚC 3: Thay thế <Eye> bằng <FontAwesomeIcon> */}
+        <FontAwesomeIcon
+          icon={show1 ? faEyeSlash : faEye}
+          className="icon-right"
+          onClick={() => setShow1(s => !s)}
+        />
       </div>
       <div className="input-wrap">
         <LockIcon/>
-        <input className="input" name="confirm" placeholder="Nhập lại mật khẩu"
+        <input className="input password-input" name="confirm" placeholder="Nhập lại mật khẩu"
                type={show2 ? "text" : "password"} value={form.confirm} onChange={onChange}/>
-        <Eye onClick={()=>setShow2(s=>!s)}/>
+          
+        {/* BƯỚC 3 (Lặp lại): Thay thế <Eye> bằng <FontAwesomeIcon> */}
+        <FontAwesomeIcon
+          icon={show2 ? faEyeSlash : faEye}
+          className="icon-right"
+          onClick={() => setShow2(s => !s)}
+        />
       </div>
 
       <label className="checkbox-row">

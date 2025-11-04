@@ -17,7 +17,7 @@ export default function HomePage() {
         <Hero />
         <Metrics />
         <div className="mt-8"><FeaturedJobs enableFetch={true} /></div>
-        <div className="mt-8"><FeaturedBrands enableFetch={false} /></div>
+        <div className="mt-8"><FeaturedBrands enableFetch={true} /></div>
         <div className="mt-8"><TopSectors /></div>
         <div className="mt-8 pb-8"><CareerTips /></div>
       </div>

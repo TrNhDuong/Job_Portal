@@ -76,3 +76,33 @@ export const getListApplications = async (req, res) => {
     }
 };
 
+
+export const getFeaturedJobs = async (req, res) => {
+    try {
+        // Logic: Lấy 6 việc làm có state là "open" (việc làm đang tuyển)
+        // Sắp xếp theo ngày tạo (createdAt) mới nhất
+        const featuredJobs = await JobPost.find({ state: "open" })
+            .sort({ createdAt: -1 }) // Giả sử model của bạn có "createdAt"
+            .limit(6);
+
+        if (!featuredJobs || featuredJobs.length === 0) {
+            return res.status(404).json({ 
+                success: false,
+                message: "Không tìm thấy việc làm nổi bật nào"
+            });
+        }
+
+        // Trả về mảng dữ liệu giống như mock data của bạn
+        res.status(200).json({
+            success: true,
+            data: featuredJobs, 
+            message: "Lấy việc làm nổi bật thành công"
+        });
+    } catch (error) {
+        console.error("Error fetching featured jobs:", error);
+        res.status(500).json({
+            success: false,
+            message: "Lỗi server nội bộ"
+        });
+    }
+};

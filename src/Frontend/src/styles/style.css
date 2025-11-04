@@ -116,6 +116,18 @@
 }
 
 /* ===== PASSWORD EYE ===== */
+.password-input::-ms-reveal,
+.password-input::-ms-clear { display: none; }
+
+/* Ẩn các nút auto-fill/reveal của Chromium-based & WebKit */
+.password-input::-webkit-credentials-auto-fill-button,
+.password-input::-webkit-contacts-auto-fill-button,
+.password-input::-webkit-textfield-decoration-container {
+  visibility: hidden;
+  display: none !important;
+  pointer-events: none;
+}
+
 .password-wrapper {
   position: relative;
   display: flex;

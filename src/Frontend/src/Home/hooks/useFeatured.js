@@ -1,9 +1,7 @@
+// src/hooks/useFeatured.js
+
 import { useEffect, useState } from "react";
 
-/**
- * Hook fetch chung cho Jobs / Brands.
- * - Nếu enabled=false => không fetch (đang chừa phần dữ liệu).
- */
 export default function useFeatured(fetcher, enabled = false) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(enabled);
@@ -16,7 +14,11 @@ export default function useFeatured(fetcher, enabled = false) {
       try {
         setLoading(true);
         const res = await fetcher();
-        if (mounted) setData(res.data || []);
+        
+        // *** SỬA LỖI Ở DÒNG DƯỚI ĐÂY ***
+        // Thay "res.data" thành "res.data.data"
+        if (mounted) setData(res.data.data || []); 
+
       } catch (e) {
         if (mounted) setError(e?.response?.data?.message || "Fetch error");
       } finally {
