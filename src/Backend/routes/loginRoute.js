@@ -1,6 +1,7 @@
 import express from "express";
 import bcrypt from "bcryptjs";
 import dotenv from "dotenv";
+import jwt from "jsonwebtoken";
 import {CandidateRepository } from "../repository/candidateRepository.js";
 import {EmployerRepository } from "../repository/employerRepository.js";
 
@@ -32,6 +33,11 @@ router.post("/login", async (req, res) => {
             message: "Invalid credentials"
         });
     }
+    // const token = jwt.sign(
+    //     {role: type},
+    //     process.env.JWT_SECRET,
+    //     {expiresIn: `30m`}
+    // )
 
     res.json({ 
         success: true,

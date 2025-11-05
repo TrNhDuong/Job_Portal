@@ -1,10 +1,10 @@
 import { JobRepository } from "../../repository/jobRepository.js";
 
 export const getJobPost = async (req, res) => {
-    const { emailEmployer } = req.params;
+    const { email } = req.params;
 
     try {
-        const jobPost = await JobRepository.getJobPost(emailEmployer);
+        const jobPost = await JobRepository.getJobPost(email);
         if (jobPost.success) {
             res.status(200).json({
                 success: true,
@@ -26,7 +26,7 @@ export const getJobPost = async (req, res) => {
     }
 };
 
-export const getAllPostJob = async (req, res) => {
+export const getPostJobPerPage = async (req, res) => {
     const { page, location, jobType, salaryRange, major, experience, degree } = req.query;
     try {
         const result = await JobRepository.getAllJobPosts({

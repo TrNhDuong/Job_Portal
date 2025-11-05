@@ -70,7 +70,34 @@ Employer endpoints
 
 
 
-Candidate endpoint
+Candidate endpoints
+| **Method** | **Endpoint**              | **Description**                                                |
+| ----------- | ------------------------- | -------------------------------------------------------------- |
+| **GET**     | `/api/candidate/:email`   | Get candidate information by email.                            |
+| **POST**    | `/api/candidate`          | Register a new candidate account (create a candidate profile). |
+| **PATCH**   | `/api/candidate/:email`   | Update candidate profile identified by email.                  |
+
+
+OTP endpoints
+| **Method** | **Endpoint**              | **Description**                                                |
+| ----------- | ------------------------- | -------------------------------------------------------------- |
+| **POST**     | `/api/send-otp`   | Send an OTP mail to email                          |
+| **POST**    | `/api/verify-otp`          | Verify an OTP of email|
+
+
+Password endpoints
+| **Method** | **Endpoint**              | **Description**                                                |
+| ----------- | ------------------------- | -------------------------------------------------------------- |
+| **POST**     | `/api/password/candidate`   | Update password of candidate                         |
+| **POST**    | `/api/password/employer`          | Update password of employer|
+
+Client must send request in the body include {email, oldpassword, newpassword}
+Process logic for retype the newpassword in frontend side
+
+
+
+
+
 
 
 
