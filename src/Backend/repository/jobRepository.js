@@ -8,16 +8,19 @@ export class JobRepository {
         }
         return { success: true, data: jobPost, message: "Job post fetched successfully" };
     }
-    static async getFilterJob({page, location, jobType, salaryRange, major, experience, degree}) {
+    static async getFilterJob({page, location, jobType, salaryMin, salaryMax, major, experience, degree}) {
         const query = {};
         if (location) query.location = location;
         if (jobType) query.jobType = jobType;
         if (major) query.major = major;
         if (experience) query.experience = experience;
         if (degree) query.degree = degree;
-        if (salaryRange) {
-            const [minSalary, maxSalary] = salaryRange.split("-").map(Number);
-            query.salary = { $gte: minSalary, $lte: maxSalary };
+        // if (salaryRange) {
+        //     const [minSalary, maxSalary] = salaryRange.split("-").map(Number);
+        //     query.salary = { $gte: minSalary, $lte: maxSalary };
+        // }
+        if (salaryMin && salaryMax){
+            query.salary = { $gte: salaryMin, $lte: salaryMax}
         }
         const jobsPerPage = 12;
         const currentPage = page || 1;

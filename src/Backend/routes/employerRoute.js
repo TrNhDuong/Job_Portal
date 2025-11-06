@@ -1,17 +1,15 @@
 import express from "express";
 
-
 const router = express.Router();
-import { getEmployer } from "../controller/employer/getEmployer.js";
-//import { createEmployer } from "../controller/employer/createEmployer.js";
+import { getEmployer, getFeatureBranchs } from "../controller/employer/getEmployer.js";
 import { updateEmployer } from "../controller/employer/updateEmployer.js";
-// import { getListPostJob } from "../controller/employer/getListPostJob.js";
-// import { getListAppliedCVinJob } from "../controller/employer/getListAppliedCVinJob.js";
+
+
+router.get("/employer/feature", getFeatureBranchs);
 
 router.get("/employer/:email", getEmployer);
-//router.post("/employer", createEmployer);
 router.patch("/employer/:email", updateEmployer);
-// router.get("/employer/:email/posted-jobs", getListPostJob);
-//router.get("/employer/:email/applied-cvs", getListAppliedCVinJob);
+
+
 
 export default router;

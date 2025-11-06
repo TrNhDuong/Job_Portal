@@ -13,3 +13,28 @@ export const getEmployer = async (req, res) => {
     }
 };
 
+export const getFeatureBranchs = async (req, res) => {
+    try {
+        console.log("HAHA")
+        const topBranchEmail = await EmployerRepository.getTopFeature()
+        if (topBranchEmail.success){
+            console.log("HAHA")
+            return res.status(200).json(
+                {
+                    success: true,
+                    data: topBranchEmail.data
+                }
+            )
+        } else {
+            return res.status(200).json(
+                {
+                    success: false,
+                    message: "Failed to fetch data"
+                }
+            )
+        }
+    } catch (error){
+        res.status(500).json({ message: "Error fetching employers" });
+    }
+}
+

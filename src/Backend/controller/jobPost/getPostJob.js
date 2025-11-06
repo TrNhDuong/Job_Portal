@@ -27,13 +27,15 @@ export const getJobPost = async (req, res) => {
 };
 
 export const getPostJobPerPage = async (req, res) => {
-    const { page, location, jobType, salaryRange, major, experience, degree } = req.query;
+    const { page, location, jobType, salaryMin, salaryMax, major, experience, degree } = req.query;
+    console.log(page)
     try {
-        const result = await JobRepository.getAllJobPosts({
+        const result = await JobRepository.getFilterJob({
             page: parseInt(page) || 1,
             location,
             jobType,
-            salaryRange,
+            salaryMin,
+            salaryMax,
             major,
             experience,
             degree

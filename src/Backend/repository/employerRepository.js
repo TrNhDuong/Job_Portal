@@ -68,6 +68,45 @@ export class EmployerRepository {
             data: employer.data.password
         };
     }
+    // Return top 10 branch hot
+    static async getTopFeature() {
+        try {
+            const topEmployerEmails = await Employer.aggregate([
+                {
+                    $addFields: {
+                        jobCount: { $size: "$jobPosted" } 
+                    }
+                },
+                {
+                    $sort: {
+                        jobCount: -1
+                    }
+                },
+                {
+                    $limit: 10
+                },
+                {
+                    $project: {
+                        _id: 0,         // Loại bỏ trường _id
+                        email: 1        // CHỈ giữ lại trường email
+                    }
+                }
+            ]);
+            const emailList = topEmployerEmails.map(employer => employer.email);
+
+            return {
+                success: true,
+                data: emailList // Trả về mảng chỉ chứa các chuỗi email
+            };
+        } catch (error) {
+            console.error(`Error fetching top feature employer emails:`, error);
+            return {
+                success: false,
+                message: "Error fetching top feature employer emails",
+                data: null
+            };
+        }
+    }
 };
 
 export default EmployerRepository;

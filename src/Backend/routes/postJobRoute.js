@@ -5,9 +5,10 @@ const router = express.Router();
 import { createPostJob } from "../controller/jobPost/createPostJob.js";
 import { updatePostJob, extendJobExpiry, applyJob, removeApplyJob } from "../controller/jobPost/updatePostJob.js";
 import { deletePostJob } from "../controller/jobPost/deletePostJob.js";
-import { getJobPost } from "../controller/jobPost/getPostJob.js";
+import { getJobPost, getPostJobPerPage } from "../controller/jobPost/getPostJob.js";
 
-router.get("post-job/:email", getJobPost);
+router.get("/post-job/:email", getJobPost);
+router.get("/post-job", getPostJobPerPage);
 router.post("/post-job", createPostJob); //
 router.patch("/post-job/:id", updatePostJob);
 router.patch("/post-job/extend/:id", extendJobExpiry);

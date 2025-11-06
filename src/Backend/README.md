@@ -54,18 +54,23 @@ PostJob endpoints
 | **Method** | **Endpoint**                 | **Description**                                                       |
 | ---------- | ---------------------------- | --------------------------------------------------------------------- |
 | **GET**    | `/api/post-job/:email`       | Get all job posts created by a specific employer identified by email. |
-| **GET**    | `/api/post-job/apply/:jobId` | Get the list of all job applications in a specific job post.          |
+| **GET**    | `/api/post-job/`             | Get job post of page, with filter ,                                   |
 | **POST**   | `/api/post-job`              | Create a new job post *(employer only)*.                              |
 | **PATCH**  | `/api/post-job/:id`          | Update details of a specific job post.                                |
 | **PATCH**  | `/api/post-job/extend/:id`   | Extend the expiry date of a job post.                                 |
 | **PATCH**  | `/api/post-job/apply/:id`    | Add a candidate to the applicant list for a job *(apply to job)*.     |
 | **DELETE** | `/api/post-job/:id`          | Delete a specific job post *(employer only)*.                         |
 
+ví dụ truy vấn cho get api/post-job 
+GET /post-job?page=2&location=Hanoi&jobType=FullTime&major=IT
+với các filter là page, location, jobType, major, salaryMin, salaryMax, experience, degree
+
 ---
 Employer endpoints
 | **Method** | **Endpoint**                       | **Description**                              |
 | ---------- | ---------------------------------- | -------------------------------------------- |
 | **GET**    | `/api/employer/:email`             | Get employer information by email.           |
+| **GET**    | `/api/employer/feature`             | Get top10 branch with most job          |
 | **PATCH**  | `/api/employer/:email`             | Update employer profile identified by email. |
 
 
