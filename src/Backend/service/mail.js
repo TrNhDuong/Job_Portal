@@ -1,32 +1,31 @@
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
+import axios from 'axios'
 
 dotenv.config();
 
-const MAIL_HOST = "smtp-relay.brevo.com";
-const MAIL_PORT = 587;
-
-const Transporter = nodemailer.createTransport({
-    host: MAIL_HOST,
-    port: MAIL_PORT,
-    secure: 'false',
-    auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.SMTP_KEY,
-    },
-});
-
 export async function sendMail(to, subject, htmlContent) {
-    const mailOptions = {
-        from: '"Job Portal" <nhatduong01012005@gmail.com>',
-        to,
+    const emailData = {
+        sender: {
+        name: "Online recruitment platform - Job Portal",
+        email: "nhatduong01012005@gmail.com", // 🔹 Phải được xác thực trong Brevo
+        },
+        to: to.map(email => ({ email })), // chuyển danh sách string → object
         subject,
-        html: htmlContent,
+        htmlContent,
     };
+
     try {
-        const info = await Transporter.sendMail(mailOptions);
-        console.log('Email sent:', info.response);
+        const response = await axios.post(process.env.BREVO_URL, emailData, {
+        headers: {
+            "Content-Type": "application/json",
+            "api-key": process.env.BREVO_API_KEY,
+        },
+        });
+        console.log("✅ Email sent successfully:", response.data);
+        return response.data;
     } catch (error) {
-        console.error('Error sending email:', error);
+        console.error("❌ Error sending email:", error.response?.data || error.message);
+        throw error.response?.data || error;
     }
 }

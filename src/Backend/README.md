@@ -70,7 +70,7 @@ Employer endpoints
 | **Method** | **Endpoint**                       | **Description**                              |
 | ---------- | ---------------------------------- | -------------------------------------------- |
 | **GET**    | `/api/employer/:email`             | Get employer information by email.           |
-| **GET**    | `/api/employer/feature`             | Get top10 branch with most job          |
+| **GET**    | `/api/employer/feature`            | Get top10 branch with most job               |
 | **PATCH**  | `/api/employer/:email`             | Update employer profile identified by email. |
 
 
