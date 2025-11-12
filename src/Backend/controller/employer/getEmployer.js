@@ -1,7 +1,8 @@
 import { EmployerRepository } from "../../repository/employerRepository.js";
 
 export const getEmployer = async (req, res) => {
-    const { email } = req.params;
+    const email = req.query.email;
+    console.log(email)
     try {
         const result = await EmployerRepository.getEmployer(email);
         if (result.success) {
@@ -15,14 +16,19 @@ export const getEmployer = async (req, res) => {
 
 export const getFeatureBranchs = async (req, res) => {
     try {
-        console.log("HAHA")
         const topBranchEmail = await EmployerRepository.getTopFeature()
         if (topBranchEmail.success){
-            console.log("HAHA")
+            let topBranchData = []
+            for (const branchEmail of topBranchEmail.data){
+                const result = await EmployerRepository.getEmployer(branchEmail)
+                if (result.success){
+                    topBranchData.push(result.data)
+                }
+            }
             return res.status(200).json(
                 {
                     success: true,
-                    data: topBranchEmail.data
+                    data: topBranchData
                 }
             )
         } else {

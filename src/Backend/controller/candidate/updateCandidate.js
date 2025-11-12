@@ -1,7 +1,7 @@
 import { CandidateRepository } from "../../repository/candidateRepository.js";
 
 export const updateCandidate = async (req, res) => {
-    const { email} = req.params;
+    const email = req.query.email;
     const updates = req.body;
     try {
         console.log(email, updates);

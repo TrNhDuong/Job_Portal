@@ -5,16 +5,18 @@ const router = express.Router();
 import { createPostJob } from "../controller/jobPost/createPostJob.js";
 import { updatePostJob, extendJobExpiry, applyJob, removeApplyJob } from "../controller/jobPost/updatePostJob.js";
 import { deletePostJob } from "../controller/jobPost/deletePostJob.js";
-import { getJobPost, getPostJobPerPage } from "../controller/jobPost/getPostJob.js";
+import { getJobPostByID, getPostJobPerPage } from "../controller/jobPost/getPostJob.js";
 
-router.get("/post-job/:email", getJobPost);
+//router.get("/post-job/employer", getJobPostEmployer);
+// Không cần endpoint này nữa vì chỉ cần lấy data của employer là xong
+router.get("/post-job/id", getJobPostByID);
 router.get("/post-job", getPostJobPerPage);
 router.post("/post-job", createPostJob); //
-router.patch("/post-job/:id", updatePostJob);
+router.patch("/post-job", updatePostJob);
 router.patch("/post-job/extend/:id", extendJobExpiry);
-router.patch("/post-job/applyJob/:id", applyJob);
-router.patch("/post-job/removeApplyJob/:id", removeApplyJob);
-router.delete("/post-job/:id", deletePostJob);
+router.patch("/post-job/applyJob", applyJob);
+router.patch("/post-job/removeApplyJob", removeApplyJob);
+router.delete("/post-job", deletePostJob);
 
 
 export default router;

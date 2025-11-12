@@ -14,6 +14,10 @@ const candidateSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    logo: {
+        url: String,
+        public_id: String
+    },
     description: {
         type: String,
     },

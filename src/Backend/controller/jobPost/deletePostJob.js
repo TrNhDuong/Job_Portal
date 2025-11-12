@@ -1,7 +1,7 @@
 import { JobRepository } from "../../repository/jobRepository.js";
 
 export const deletePostJob = async (req, res) => {
-    const { idJob } = req.params;
+    const idJob = req.query.jobId
 
     try {
         const result = await JobRepository.deleteJobPost(idJob);

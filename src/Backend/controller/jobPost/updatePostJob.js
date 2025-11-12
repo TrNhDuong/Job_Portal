@@ -4,7 +4,7 @@ import { CandidateRepository } from "../../repository/candidateRepository.js";
 import { ApplicationRepository } from "../../repository/applicationRepository.js";
 
 export const updatePostJob = async (req, res) => {
-  const { id } = req.params;
+  const id = req.query.jobId;
   const {title, company, position, location, salary, 
         jobType, major, degree, experience, state, description, expiredDay } = req.body;
 
@@ -46,7 +46,7 @@ export const updatePostJob = async (req, res) => {
 };
 
 export const applyJob = async (req, res) => {
-    const { jobId } = req.params;
+    const jobId = req.query.jobId;
     const { applicantEmail } = req.body;
     try {
         const candidate = await CandidateRepository.getCandidate(applicantEmail);
@@ -75,7 +75,7 @@ export const applyJob = async (req, res) => {
 };
 
 export const removeApplyJob = async (req, res) => {
-    const { jobId } = req.params;
+    const jobId  = req.query.jobId;
     const { applicantEmail } = req.body;
     try {
         const candidate = await CandidateRepository.getCandidate(applicantEmail);

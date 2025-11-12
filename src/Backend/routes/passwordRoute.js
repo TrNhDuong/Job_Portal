@@ -5,7 +5,7 @@ import { EmployerRepository } from "../repository/employerRepository.js";
 
 const Router = express.Router();
 
-Router.post("password/candidate", async (req, res) => {
+Router.post("/password/candidate", async (req, res) => {
     const {email, password, newpassword} = req.body;
     const account = await CandidateRepository.getCandidate(email);
     if (!account){
@@ -38,7 +38,7 @@ Router.post("password/candidate", async (req, res) => {
     }
 })
 
-Router.post("password/employer", async (req, res) => {
+Router.post("/password/employer", async (req, res) => {
     const {email, password, newpassword} = req.body;
     const account = await EmployerRepository.getEmployer(email);
     if (!account){

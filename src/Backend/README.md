@@ -53,13 +53,13 @@ Login endpoint
 PostJob endpoints
 | **Method** | **Endpoint**                 | **Description**                                                       |
 | ---------- | ---------------------------- | --------------------------------------------------------------------- |
-| **GET**    | `/api/post-job/:email`       | Get all job posts created by a specific employer identified by email. |
+| **GET**    | `/api/post-job/id?jobId=`       | Get all job posts created by a specific employer identified by email. |
 | **GET**    | `/api/post-job/`             | Get job post of page, with filter ,                                   |
 | **POST**   | `/api/post-job`              | Create a new job post *(employer only)*.                              |
-| **PATCH**  | `/api/post-job/:id`          | Update details of a specific job post.                                |
-| **PATCH**  | `/api/post-job/extend/:id`   | Extend the expiry date of a job post.                                 |
-| **PATCH**  | `/api/post-job/apply/:id`    | Add a candidate to the applicant list for a job *(apply to job)*.     |
-| **DELETE** | `/api/post-job/:id`          | Delete a specific job post *(employer only)*.                         |
+| **PATCH**  | `/api/post-job?jobId=`          | Update details of a specific job post.                                |
+| **PATCH**  | `/api/post-job/extend?jobId=`   | Extend the expiry date of a job post.                                 |
+| **PATCH**  | `/api/post-job/apply?jobId=`    | Add a candidate to the applicant list for a job *(apply to job)*.     |
+| **DELETE** | `/api/post-job?jobId=`          | Delete a specific job post *(employer only)*.                         |
 
 ví dụ truy vấn cho get api/post-job 
 GET /post-job?page=2&location=Hanoi&jobType=FullTime&major=IT
@@ -69,19 +69,27 @@ với các filter là page, location, jobType, major, salaryMin, salaryMax, expe
 Employer endpoints
 | **Method** | **Endpoint**                       | **Description**                              |
 | ---------- | ---------------------------------- | -------------------------------------------- |
-| **GET**    | `/api/employer/:email`             | Get employer information by email.           |
-| **GET**    | `/api/employer/feature`            | Get top10 branch with most job               |
-| **PATCH**  | `/api/employer/:email`             | Update employer profile identified by email. |
+| **GET**    | `/api/employer?email=`                    | Get employer information by email.           |
+| **GET**    | `/api/employer/feature`            | Get top10 branch with most job return full of data             |
+| **PATCH**  | `/api/employer?email=`             | Update employer profile identified by email. |
 
-
+GET /api/employer?email=test@gmail.com
+GET /api/employer/feature will return full of data aof top10 branch
+PATCH /api/employer?email=test@gmail.com
+in body will include data update such as {"location":"asdas", "company":"asdads"}
 
 Candidate endpoints
 | **Method** | **Endpoint**              | **Description**                                                |
 | ----------- | ------------------------- | -------------------------------------------------------------- |
-| **GET**     | `/api/candidate/:email`   | Get candidate information by email.                            |
+| **GET**     | `/api/candidate?email=`   | Get candidate information by email.                            |
 | **POST**    | `/api/candidate`          | Register a new candidate account (create a candidate profile). |
-| **PATCH**   | `/api/candidate/:email`   | Update candidate profile identified by email.                  |
+| **PATCH**   | `/api/candidate?email=`   | Update candidate profile identified by email.                  |
 
+GET /api/candidate?email=test@gmail.com
+POST /api/candidate
+in req.body include data of candidate for create
+PATCH /api/candidate?email=test@gmail.com
+in body will include data update such as {"name": .. , "email":"assd"}
 
 OTP endpoints
 | **Method** | **Endpoint**              | **Description**                                                |

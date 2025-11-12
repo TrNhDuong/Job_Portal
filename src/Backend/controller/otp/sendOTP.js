@@ -7,11 +7,9 @@ export const sendOTP = async (req, res) => {
     const otp = generateOTP();
 
     try {
-        // Lưu OTP vào MongoDB
         const otpEntry = new OTP({ email, otp });
         await otpEntry.save();
 
-        // Gọi hàm gửi mail có HTML
         const htmlContent = `
             <div style="font-family: Arial, sans-serif; padding: 20px;">
                 <h2 style="color: #4CAF50;">Your OTP Code</h2>

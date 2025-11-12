@@ -14,6 +14,14 @@ const employerSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    logo: {
+        url: String,
+        public_id: String
+    },
+    wallpaper: {
+        url: String,
+        public_id: String
+    },
     phone: {
         type: String,
     },

@@ -1,7 +1,7 @@
 import { CandidateRepository } from "../../repository/candidateRepository.js";
 
 export const getCandidate = async (req, res) => {
-    const { email } = req.params;
+    const email = req.query.email;
     try {
         console.log(email);
         const result = await CandidateRepository.getCandidate(email);

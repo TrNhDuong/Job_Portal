@@ -1,10 +1,10 @@
 import { JobRepository } from "../../repository/jobRepository.js";
 
-export const getJobPost = async (req, res) => {
-    const { email } = req.params;
-
+export const getJobPostByID = async (req, res) => {
+    const id = req.query.jobId;  // lấy từ query param
+    console.log(id)
     try {
-        const jobPost = await JobRepository.getJobPost(email);
+        const jobPost = await JobRepository.getJobPost(id);
         if (jobPost.success) {
             res.status(200).json({
                 success: true,
