@@ -107,6 +107,28 @@ Password endpoints
 Client must send request in the body include {email, oldpassword, newpassword}
 Process logic for retype the newpassword in frontend side
 
+Application endpoints
+| **Method** | **Endpoint**              | **Description**                                                |
+| ----------- | ------------------------- | -------------------------------------------------------------- |
+| **POST**     | `/api/application?id=`   | Update the status of application                         |
+
+status contain in body
+POST /api/application?id=
+
+Logo, wallpaper endpoint
+| **Method** | **Endpoint**              | **Description**                                                |
+| ----------- | ------------------------- | -------------------------------------------------------------- |
+| **POST**     | `/api/upload/logo/employer?email=`   | Update the logo of employer                       |
+| **POST**     | `/api/upload/logo/candidate?email=`   | Update the logo of candidate                         |
+| **POST**     | `/api/upload/wallpaer?email=`   | Update the wallpaper of employer                    |
+
+Body (form-data) when upload image
+
+|**Key**   | **Type**  | **Description**|
+|----------|-----------|----------------|
+|Image     | File      | The image      |
+
+
 
 
 

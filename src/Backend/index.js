@@ -17,6 +17,8 @@ import registerRoute from "./routes/registerRoute.js";
 import otpRoute from "./routes/otpRoute.js";
 import adminRoute from "./routes/adminRoute.js";
 import passwordRoute from "./routes/passwordRoute.js";
+import applicationRoute from "./routes/applicationRoute.js";
+import imageRoute from "./routes/imageRoute.js";
 
 app.use("/api", candidateRoute);
 app.use("/api", employerRoute);
@@ -26,7 +28,8 @@ app.use("/api", registerRoute);
 app.use("/api", otpRoute);
 app.use("/api", adminRoute);
 app.use("/api", passwordRoute);
-
+app.use("/api", applicationRoute);
+app.use("/api", imageRoute);
 connectDB();
 app.listen(PORT, () => {
     console.log(`Server is running on port http://localhost:${PORT}`);

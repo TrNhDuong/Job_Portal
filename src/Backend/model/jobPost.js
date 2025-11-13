@@ -17,6 +17,10 @@ const jobPost = new mongoose.Schema({
         type: String,
         required: true,
     },
+    logo: {
+        url: String,
+        public_id: String
+    },
     salary: {   // Range of salary
         type: String,
         required: true,

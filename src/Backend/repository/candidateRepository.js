@@ -1,5 +1,6 @@
 import Candidate from "../model/candidate.js";
 import bcrypt from "bcryptjs";
+import { destroyImage } from "../service/cloudinary.js";
 
 export class CandidateRepository {
     static async getCandidate(email) {
@@ -40,7 +41,7 @@ export class CandidateRepository {
         };
     }
     static async updateCandidate(email, updatesCandidate) {
-        const candidateAttributes = ["name", "password", "listSaveJob", "appliedJobs", "CV"];
+        const candidateAttributes = ["name", "password", "listSaveJob", "logo", "appliedJobs", "CV"];
         let candidate = await this.getCandidate(email);
         if (!candidate.success) {
             return {
@@ -50,12 +51,24 @@ export class CandidateRepository {
             };
         }
 
-        for (const attribute of candidateAttributes) {
-            candidate.data[attribute] = updatesCandidate[attribute] || candidate.data[attribute];
+
+        if (updatesCandidate["password"]) {
+            candidate.data["password"] = bcrypt.hashSync(updatesCandidate["password"], 10);
         }
 
-        if (candidate.data["password"]) {
-            candidate.data["password"] = bcrypt.hashSync(updatesCandidate["password"], 10);
+        if (updatesCandidate["logo"]){
+            if (candidate.data.logo.public_id){
+                const result = await destroyImage(candidate.data.logo.public_id);
+                if (result){
+                    console.log('Deleted image')
+                } else {
+                    console.log('Failed to deleted image')
+                }
+            }
+        }
+
+        for (const attribute of candidateAttributes) {
+            candidate.data[attribute] = updatesCandidate[attribute] || candidate.data[attribute];
         }
 
         const updatedCandidate = await Candidate.findOneAndUpdate({ email }, candidate.data, { new: true });
