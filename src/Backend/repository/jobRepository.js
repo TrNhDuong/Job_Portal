@@ -15,10 +15,7 @@ export class JobRepository {
         if (major) query.major = major;
         if (experience) query.experience = experience;
         if (degree) query.degree = degree;
-        // if (salaryRange) {
-        //     const [minSalary, maxSalary] = salaryRange.split("-").map(Number);
-        //     query.salary = { $gte: minSalary, $lte: maxSalary };
-        // }
+        
         if (salaryMin && salaryMax){
             query.salary = { $gte: salaryMin, $lte: salaryMax}
         }

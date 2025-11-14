@@ -21,11 +21,16 @@ const jobPost = new mongoose.Schema({
         url: String,
         public_id: String
     },
-    salary: {   // Range of salary
+    detailedAddress: { // Detailed address (street, number)
         type: String,
+        required: true, // Chúng ta đã đặt nó là bắt buộc ở form
+        default: "" 
+    },
+    salary: {  
+        type: Object, 
         required: true,
-        minSalary: Number,
-        maxSalary: Number,
+        minSalary: { type: Number, required: true }, 
+        maxSalary: { type: Number, required: true }, 
         currency: {
             type: String,
             enum: ['USD', 'VND', 'EUR', 'JPY', 'GBP', 'AUD', 'CAD'],
@@ -42,14 +47,24 @@ const jobPost = new mongoose.Schema({
         required: true,
         enum: ['IT', 'Business', 'Finance', 'Marketing', 'Sales', 'Human Resources', 'Education', 'Healthcare', 'Engineering', 'Other']
     },
+    customMajor: { // Dùng khi major là 'Other'
+        type: String,
+        default: ""
+    },
     degree: { // Degree required for the job: bachelor, master, doctorate
         type: String,
         required: true,
         enum: ['Bachelor', 'Master', 'Doctorate', 'Associate', 'Diploma', 'High School', 'No Degree']
     },
-    experience: {   // Experience required for the job: 1 year, 2 years, 3 years, or no experience
-        type: Number,
+    experience: {
+        type: Object,
         required: true,
+        default: { value: 0, unit: 'years' },
+        value: {
+            type: Number,
+            required: true,
+            default: 0
+        },
         unit: {
             type: String,
             enum: ['years', 'months'],
