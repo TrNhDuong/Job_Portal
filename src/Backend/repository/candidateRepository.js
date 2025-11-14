@@ -41,7 +41,7 @@ export class CandidateRepository {
         };
     }
     static async updateCandidate(email, updatesCandidate) {
-        const candidateAttributes = ["name", "password", "listSaveJob", "logo", "appliedJobs", "CV"];
+        const candidateAttributes = ["name", "password", "logo", "appliedJobs", "CV"];
         let candidate = await this.getCandidate(email);
         if (!candidate.success) {
             return {
@@ -100,11 +100,37 @@ export class CandidateRepository {
                 data: null
             };
         }
-        candidate.data.listSaveJobs.push(jobId);
-        await Candidate.findOneAndUpdate({ email }, candidate.data, { new: true });
+        await Candidate.updateOne(
+            { email },
+            { $addToSet: { listSaveJobs: jobId } }
+        );
         return {
             success: true,
             message: "Job saved successfully"
+        };
+    }
+    static async removeSaveJob(email, jobId) {
+        const candidate = await this.getCandidate(email);
+        if (!candidate.success){
+            return {
+                success: false,
+                message: "Candidate not found",
+                data: null
+            };
+        }
+        if (!candidate.data.listSaveJobs.includes(jobId)) {
+            return {
+                success: false,
+                message: "Job not found in saved list"
+            };
+        }
+        await Candidate.updateOne(
+            { email },
+            { $pull: { listSaveJobs: jobId } }
+        );
+        return {
+            success: true,
+            message: "Job removed successfully"
         };
     }
     static async uploadCV(email, cvData) {

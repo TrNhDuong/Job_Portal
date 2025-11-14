@@ -21,7 +21,12 @@ const candidateSchema = new mongoose.Schema({
     description: {
         type: String,
     },
-    listSaveJobs: [String],
+    listSaveJobs: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'JobPost',
+        }
+    ],
     appliedJobs: [
         {
             type: mongoose.Schema.Types.ObjectId,

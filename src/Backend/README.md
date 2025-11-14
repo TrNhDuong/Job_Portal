@@ -29,6 +29,31 @@
 - **Password security:** Bcypt
 - **Version control:** Git + Github
 
+## Model
+Candidate {
+    name: String
+    email: String
+    password: String
+    logo: {
+        url: String,
+        public_id: String
+    },
+    description: String
+    listSaveJobs: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'JobPost',
+        }
+    ],
+    appliedJobs: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'JobPost',
+        }
+    ],
+    CV: Buffer,
+}
+
 ## API endpoints
     All the response from the server side comply with format: 
     {
@@ -59,12 +84,15 @@ PostJob endpoints
 | **PATCH**  | `/api/post-job?jobId=`          | Update details of a specific job post.                                |
 | **PATCH**  | `/api/post-job/extend?jobId=`   | Extend the expiry date of a job post.                                 |
 | **PATCH**  | `/api/post-job/apply?jobId=`    | Add a candidate to the applicant list for a job *(apply to job)*.     |
-| **DELETE** | `/api/post-job?jobId=`          | Delete a specific job post *(employer only)*.                         |
+| **PATCH** | `/api/post-job?jobId=`          | Delete a specific job post *(employer only)*.                         |
+| **PATCH**  | `/api/post-job/saveJob?jobId=`    | Add a candidate to the applicant list for a job *(apply to job)*.     |
+| **PATCH** | `/api/post-job?removeSaveJob?jobId=`          | Delete a specific job post *(employer only)*.                         |
 
 ví dụ truy vấn cho get api/post-job 
 GET /post-job?page=2&location=Hanoi&jobType=FullTime&major=IT
 với các filter là page, location, jobType, major, salaryMin, salaryMax, experience, degree
 
+trong body ở saveJob, removeSaveJob, applyJob, removeApplyJob có trường email chứa email của ứng viên
 ---
 Employer endpoints
 | **Method** | **Endpoint**                       | **Description**                              |

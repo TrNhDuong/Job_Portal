@@ -47,9 +47,9 @@ export const updatePostJob = async (req, res) => {
 
 export const applyJob = async (req, res) => {
     const jobId = req.query.jobId;
-    const { applicantEmail } = req.body;
+    const { email } = req.body;
     try {
-        const candidate = await CandidateRepository.getCandidate(applicantEmail);
+        const candidate = await CandidateRepository.getCandidate(email);
         if (!candidate.success) {
           return res.status(404).json({ message: "Candidate not found" });
         }
@@ -76,13 +76,13 @@ export const applyJob = async (req, res) => {
 
 export const removeApplyJob = async (req, res) => {
     const jobId  = req.query.jobId;
-    const { applicantEmail } = req.body;
+    const { email } = req.body;
     try {
-        const candidate = await CandidateRepository.getCandidate(applicantEmail);
+        const candidate = await CandidateRepository.getCandidate(email);
         if (!candidate.success) {
           return res.status(404).json({ message: "Candidate not found" });
         }
-        const application = await ApplicationRepository.getApplication(jobId, candidate.data._id);
+        const application = await ApplicationRepository.deleteApplication(jobId, candidate.data._id);
         if (!application.success) {
           return res.status(404).json({ message: "Application not found" });
         }
