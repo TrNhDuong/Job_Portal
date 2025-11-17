@@ -1,13 +1,11 @@
+// src/components/RegisterEmployerForm.jsx
+
 import { useState } from "react";
 import client from "../api/client";
 import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
-const Eye = ({ onClick }) => (
-  <svg className="icon-right" onClick={onClick} viewBox="0 0 24 24" fill="none">
-    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" stroke="currentColor"/>
-    <circle cx="12" cy="12" r="3" stroke="currentColor"/>
-  </svg>
-);
 const Building = () => (
   <svg className="icon-left" viewBox="0 0 24 24" fill="none">
     <rect x="4" y="3" width="16" height="18" rx="2" stroke="currentColor"/>
@@ -39,8 +37,7 @@ const MapPin = () => (
 
 export default function RegisterEmployerForm() {
   const [form, setForm] = useState({
-    company:"", email:"", password:"", confirm:"", phone:"", address:"", agree:false
-  });
+    company:"", email:"", password:"", confirm:"", phone:"", address:"", agree:false });
   const [show1, setShow1] = useState(false);
   const [show2, setShow2] = useState(false);
   const [msg, setMsg] = useState(null);
@@ -52,38 +49,41 @@ export default function RegisterEmployerForm() {
     const { name, value, type, checked } = e.target;
     setForm({ ...form, [name]: type === "checkbox" ? checked : value });
   };
-
+  
   const onSubmit = async (e)=>{
     e.preventDefault();
     setMsg(null);
-    const {company, email, password, confirm, phone, address, agree} = form;
+    
+    const {company, email, password, confirm, phone, address, agree, otp} = form;
+
     if(!company || !email || !password || !confirm || !phone || !address)
       return setMsg({type:"error", text:"Vui lòng điền đầy đủ thông tin."});
     if(password !== confirm)
       return setMsg({type:"error", text:"Mật khẩu xác nhận không khớp."});
     if(!agree)
       return setMsg({type:"error", text:"Bạn cần đồng ý Điều khoản và Chính sách."});
-
+  
+    setLoading(true);
+    
     try {
       setLoading(true);
-      // Gửi đủ key để tương thích registerRoute.js của backend (tránh bug tên biến)
-      const payload = {
-        email,
-        mail: email,
-        password,
-        company,
-        companyName: company,
-        address,
-        phone,
-        phoneNumber: phone
-      };
-      const res = await client.post("/api/employerRegister", payload); // gọi API đăng ký
-      setMsg({type:"success", text: res?.data?.message || "Đăng ký thành công"});
-      setForm({company:"", email:"", password:"", confirm:"", phone:"", address:"", agree:false});
-      navigate("/Login"); 
+      // 2. GỌI API GỬI OTP
+      await client.post("/api/send-otp", { email: form.email });
+
+      // 3. LƯU TẠM DỮ LIỆU FORM
+      sessionStorage.setItem('registrationData', JSON.stringify({
+        email: form.email,
+        password: form.password,
+        company: form.company,
+        address: form.address,
+        phone: form.phone,
+        role: 'employer' 
+      }));
+      
+      navigate("/verify-otp"); 
+
     } catch (err) {
-      setMsg({type:"error", text: err?.response?.data?.message || "Đăng ký thất bại"});
-    } finally {
+      setMsg({type:"error", text: err.response?.data?.message || "Đăng ký thất bại"});
       setLoading(false);
     }
   };
@@ -104,13 +104,21 @@ export default function RegisterEmployerForm() {
         <LockIcon/>
         <input className="input" name="password" placeholder="Nhập mật khẩu"
                type={show1 ? "text" : "password"} value={form.password} onChange={onChange}/>
-        <Eye onClick={()=>setShow1(s=>!s)}/>
+        <FontAwesomeIcon
+          icon={show1 ? faEyeSlash : faEye}
+          className="icon-right"
+          onClick={() => setShow1(s => !s)}
+        />
       </div>
       <div className="input-wrap">
         <LockIcon/>
         <input className="input" name="confirm" placeholder="Nhập lại mật khẩu"
                type={show2 ? "text" : "password"} value={form.confirm} onChange={onChange}/>
-        <Eye onClick={()=>setShow2(s=>!s)}/>
+        <FontAwesomeIcon
+          icon={show1 ? faEyeSlash : faEye}
+          className="icon-right"
+          onClick={() => setShow1(s => !s)}
+        />
       </div>
       <div className="input-wrap">
         <PhoneIcon/>
@@ -122,7 +130,6 @@ export default function RegisterEmployerForm() {
         <input className="input" name="address" placeholder="Địa chỉ công ty"
                value={form.address} onChange={onChange}/>
       </div>
-
       <label className="checkbox-row">
         <input type="checkbox" name="agree" checked={form.agree} onChange={onChange}/>
         <span>

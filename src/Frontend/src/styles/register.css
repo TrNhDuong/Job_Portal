@@ -97,8 +97,6 @@
   font-weight: 600;
 }
 .social-google { background-color: #ea4335; }
-.social-facebook { background-color: #1877f2; }
-.social-linkedin { background-color: #0a66c2; }
 
 .helper {
   text-align: center; margin-top: 10px; font-size: 14px;
@@ -115,3 +113,38 @@
 .tagline { opacity: .9; line-height: 1.5; }
 .error { color: #b91c1c; font-size: 14px; }
 .success { color: #047857; font-size: 14px; }
+
+.btn-send-otp {
+  position: absolute;
+  top: 50%;
+  right: 15px; 
+  transform: translateY(-50%);
+  width: auto;
+  white-space: nowrap; 
+  background: none; 
+  border: none; 
+  color: #007bff; 
+  cursor: pointer; 
+  font-size: 14px; 
+  font-weight: 600;
+  padding: 0;
+  transition: all 0.2s;
+}
+
+.btn-send-otp:hover {
+  text-decoration: underline;
+  white-space: nowrap;
+}
+
+.btn-send-otp:disabled {
+  color: #6c757d; 
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
+.otp-message {
+  font-size: 14px;
+  margin-top: -8px;
+  margin-bottom: 12px;
+  text-align: left;
+}

@@ -1,24 +1,36 @@
-import { get } from "mongoose";
 import Candidate from "../model/candidate.js";
+import bcrypt from "bcryptjs";
 
-export const getCandidateByEmail = async (email) => {
-    try {
-        const candidate = await Candidate.findOne({ email });
-        if (candidate) {
-            return { 
-                success: true, 
-                data: candidate, 
-                message: "Candidate fetched successfully" 
+export class CandidateRepository {
+    static async getCandidate(email) {
+        if (!email) throw new Error("Email is required");
+        const candidate = await Candidate.findOne({ email }).lean();
+        if (!candidate) 
+            return {
+                success: false,
+                message: "Candidate not found",
+                data: null
             };
-        }
-        return { success: false, message: "Candidate not found", data: null };
-    } catch (error) {
-        throw new Error("Error fetching candidate");
+        return {
+            success: true,
+            data: candidate
+        };
     }
-};
-
-export const candidateCreate = async (candidateData) => {
-    try {
+    static async getCandidateByID(id) {
+        if (!id) throw new Error("ID is required");
+        const candidate = await Candidate.findById(id).lean();
+        if (!candidate) 
+            return {
+                success: false,
+                message: "Candidate not found",
+                data: null
+            };
+        return {
+            success: true,
+            data: candidate
+        };
+    }
+    static async createCandidate(candidateData) {
         const newCandidate = new Candidate(candidateData);
         await newCandidate.save();
         return {
@@ -26,68 +38,76 @@ export const candidateCreate = async (candidateData) => {
             data: newCandidate,
             message: "Candidate created successfully"
         };
-    } catch (error) {
-        throw new Error("Error creating candidate");
     }
-};
-
-export const updateCandidateDB = async (email, updatesCandidate) => {
-    try {
-        const candidateAtributes = ["name", "password", "listSaveJob", "appliedJobs", "CV" ];
-        let uCandidate = await getCandidateByEmail(email);
-        if (!uCandidate.success) {
-            throw new Error("Candidate not found");
+    static async updateCandidate(email, updatesCandidate) {
+        const candidateAttributes = ["name", "password", "listSaveJob", "appliedJobs", "CV"];
+        let candidate = await this.getCandidate(email);
+        if (!candidate.success) {
+            return {
+                success: false,
+                message: "Candidate not found",
+                data: null
+            };
         }
 
-        for (const attribute of candidateAtributes){
-            uCandidate.data[attribute] = updatesCandidate[attribute] || uCandidate.data[attribute];
+        for (const attribute of candidateAttributes) {
+            candidate.data[attribute] = updatesCandidate[attribute] || candidate.data[attribute];
         }
-        const updatedCandidate = await Candidate.findOneAndUpdate({ email }, uCandidate.data, { new: true });
-        return updatedCandidate;
-    } catch (error) {
-        throw new Error("Error updating candidate");
+
+        if (candidate.data["password"]) {
+            candidate.data["password"] = bcrypt.hashSync(updatesCandidate["password"], 10);
+        }
+
+        const updatedCandidate = await Candidate.findOneAndUpdate({ email }, candidate.data, { new: true });
+        return {
+            success: true,
+            message: "Candidate updated successfully"
+        };
     }
-};
-
-export const getCandidatePassword = async (email) => {
-    try {
-        const candidate = await Candidate.findOne({ email });
-        return candidate ? candidate.password : null;
-    } catch (error) {
-        throw new Error("Error fetching candidate password");
+    static async getHashedPassword(email) {
+        const candidate = await this.getCandidate(email);
+        if (!candidate.success) {
+            return {
+                success: false,
+                message: "Candidate not found",
+                data: null
+            };
+        }
+        return {
+            success: true,
+            data: candidate.data.password
+        };
     }
-};
-
-const modifyJobList = async (email, jobId, listType, action) => {
-    const candidate = await Candidate.findOne({ email });
-    if (!candidate) return { success: false, message: "Candidate not found" };
-
-    const list = candidate[listType];
-
-    if (action === "add") {
-        if (!list.includes(jobId)) list.push(jobId);
-    } else if (action === "remove") {
-        candidate[listType] = list.filter((id) => id !== jobId);
+    static async saveJob(email, jobId) {
+        const candidate = await this.getCandidate(email);
+        if (!candidate.success) {
+            return {
+                success: false,
+                message: "Candidate not found",
+                data: null
+            };
+        }
+        candidate.data.listSaveJobs.push(jobId);
+        await Candidate.findOneAndUpdate({ email }, candidate.data, { new: true });
+        return {
+            success: true,
+            message: "Job saved successfully"
+        };
     }
-
-    await candidate.save();
-    return {
-        success: true,
-        message: `Job ${action === "add" ? "added to" : "removed from"} ${listType}`,
-        data: candidate,
-    };
-};
-
-// Saved Jobs
-export const addJobToSavedListOfCandidate = (email, jobId) =>
-    modifyJobList(email, jobId, "savedJobs", "add");
-
-export const removeJobFromSavedListOfCandidate = (email, jobId) =>
-    modifyJobList(email, jobId, "savedJobs", "remove");
-
-// Aped Jobspli
-export const addJobToAppliedListOfCandidate = (email, jobId) =>
-    modifyJobList(email, jobId, "appliedJobs", "add");
-
-export const removeJobFromAppliedListOfCandidate = (email, jobId) =>
-    modifyJobList(email, jobId, "appliedJobs", "remove");
+    static async uploadCV(email, cvData) {
+        const candidate = await this.getCandidate(email);
+        if (!candidate.success) {
+            return {
+                success: false,
+                message: "Candidate not found",
+                data: null
+            };
+        }
+        candidate.data.CV = cvData;
+        await Candidate.findOneAndUpdate({ email }, candidate.data, { new: true });
+        return {
+            success: true,
+            message: "CV uploaded successfully"
+        };
+    }
+}

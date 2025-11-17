@@ -1,19 +1,23 @@
-import Employer from "../../model/employer.js";
+import EmployerRepository from "../../repository/employerRepository.js";
 
 export const updateEmployer = async (req, res) => {
-    const { email, company, phoneNumber, address } = req.params;
+    const email = req.query.email;
     const updates = req.body;
 
     try {
-        const employer = await Employer.findOneAndUpdate(
-            { email, company, phoneNumber, address },
-            updates,
-            { new: true }
-        );
-        if (!employer) {
-            return res.status(404).json({ message: "Employer not found" });
+        console.log(email, updates)
+
+        const result = await EmployerRepository.updateEmployer(email, updates);
+        if (result.success){
+            res.status(200).json({
+                success: true,
+                message: 'Update successfully'
+            })
+        } else {
+            res.status(400).json({
+                success: false
+            })
         }
-        res.status(200).json(employer);
     } catch (error) {
         res.status(500).json({ message: "Error updating employer" });
     }

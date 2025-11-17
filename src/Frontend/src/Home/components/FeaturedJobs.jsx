@@ -7,7 +7,6 @@ import { Bookmark } from "lucide-react";
 import useFeatured from "../hooks/useFeatured";
 import { fetchFeaturedJobs } from "../services/home-api";
 
-// Định nghĩa tiêu đề với icon
 const featuredJobsTitle = (
   <div className="flex items-center gap-2">
     <Bookmark className="w-6 h-6 text-red-600 fill-red-600" />
@@ -16,32 +15,30 @@ const featuredJobsTitle = (
 );
 
 export default function FeaturedJobs({ enableFetch = true }) {
-  // Gọi hook để lấy data thật
   const { data: jobs, loading, error } = useFeatured(
     fetchFeaturedJobs, 
     enableFetch
   );
 
+  // Sửa: Thêm lại state "selectedJob"
   const [selectedJob, setSelectedJob] = useState(null);
 
   return (
     <> 
       <Section title={featuredJobsTitle} right={error && <span className="text-sm text-red-600">{error}</span>}>
         {loading ? (
-          // Hiển thị loading...
           <div className="grid md:grid-cols-3 gap-4">
             {[...Array(6)].map((_, i) => (
               <div key={i} className="h-24 bg-gray-100 rounded-xl animate-pulse" />
             ))}
           </div>
         ) : (
-          // Hiển thị data thật
           <div className="grid md:grid-cols-3 gap-4">
-            {jobs.map(j => ( // Dùng "jobs.map" (data thật)
+            {jobs.map(j => (
               <JobCard
                 key={j._id}
                 job={j}
-                onViewDetails={setSelectedJob}
+                onViewDetails={setSelectedJob} 
               />
             ))}
           </div>

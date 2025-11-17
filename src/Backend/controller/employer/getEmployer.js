@@ -1,9 +1,10 @@
-import { getEmployerByEmail, getFeaturedBrands } from "../../repository/employerRepository.js";
+import { EmployerRepository } from "../../repository/employerRepository.js";
 
 export const getEmployer = async (req, res) => {
-    const { email } = req.params;
+    const email = req.query.email;
+    console.log(email)
     try {
-        const result = await getEmployerByEmail(email);
+        const result = await EmployerRepository.getEmployer(email);
         if (result.success) {
             return res.status(200).json(result.data);
         }
@@ -13,19 +14,33 @@ export const getEmployer = async (req, res) => {
     }
 };
 
-export const getFeaturedBrandsController = async (req, res) => {
-  try {
-    const result = await getFeaturedBrands();
-    if (result.success) {
-      return res.status(200).json({
-        success: true,
-        data: result.data, // Mảng các "brands"
-        message: result.message
-      });
+export const getFeatureBranchs = async (req, res) => {
+    try {
+        const topBranchEmail = await EmployerRepository.getTopFeature()
+        if (topBranchEmail.success){
+            let topBranchData = []
+            for (const branchEmail of topBranchEmail.data){
+                const result = await EmployerRepository.getEmployer(branchEmail)
+                if (result.success){
+                    topBranchData.push(result.data)
+                }
+            }
+            return res.status(200).json(
+                {
+                    success: true,
+                    data: topBranchData
+                }
+            )
+        } else {
+            return res.status(200).json(
+                {
+                    success: false,
+                    message: "Failed to fetch data"
+                }
+            )
+        }
+    } catch (error){
+        res.status(500).json({ message: "Error fetching employers" });
     }
-    return res.status(404).json({ success: false, message: result.message });
-  } catch (error) {
-    console.error("Error in getFeaturedBrandsController:", error);
-    res.status(500).json({ success: false, message: "Lỗi server" });
-  }
-};
+}
+

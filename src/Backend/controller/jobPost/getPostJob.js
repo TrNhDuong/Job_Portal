@@ -1,24 +1,22 @@
-import JobPost from "../../model/jobPost.js";
-import { getAllApplications } from "../../repository/jobRepository.js";
+import { JobRepository } from "../../repository/jobRepository.js";
 
-export const getEmployerPostJob = async (req, res) => {
-    const { emailEmployer } = req.params;
-
+export const getJobPostByID = async (req, res) => {
+    const id = req.query.jobId;  // lấy từ query param
+    console.log(id)
     try {
-        const jobPost = await JobPost.findOne({ emailEmployer });
-
-        if (!jobPost) {
-          return res.status(404).json({ 
-            success: false,
-            message: "Job post not found"
-          });
+        const jobPost = await JobRepository.getJobPost(id);
+        if (jobPost.success) {
+            res.status(200).json({
+                success: true,
+                data: jobPost.data,
+                message: "Employer's job posts fetched successfully"
+            });
+        } else {
+            res.status(404).json({
+                success: false,
+                message: jobPost.message
+            });
         }
-
-        res.status(200).json({
-          success: true,
-          data: jobPost,
-          message: "Job post fetched successfully"
-        });
     } catch (error) {
         console.error("Error fetching job post:", error);
         res.status(500).json({ 
@@ -28,81 +26,34 @@ export const getEmployerPostJob = async (req, res) => {
     }
 };
 
-export const getPostJobById = async (req, res) => {
-    const { jobId } = req.params;
+export const getPostJobPerPage = async (req, res) => {
+    const { page, location, jobType, salaryMin, salaryMax, major, experience, degree } = req.query;
+    console.log(page)
     try {
-        const jobPost = await JobPost.findById(jobId);
-        if (!jobPost) {
-            return res.status(404).json({ 
-              success: false,
-              message: "Job post not found"
+        const result = await JobRepository.getFilterJob({
+            page: parseInt(page) || 1,
+            location,
+            jobType,
+            salaryMin,
+            salaryMax,
+            major,
+            experience,
+            degree
+        });
+        if (result.success) {
+            return res.status(200).json({
+                success: true,
+                data: result.data,
+                message: "Job posts fetched successfully"
             });
-        }
-        res.status(200).json({
-            success: true,
-            data: jobPost,
-            message: "Job post fetched successfully"
-        });
-    } catch (error) {
-        console.error("Error fetching job post by ID:", error);
-        res.status(500).json({
-            success: false,
-            message: "Internal server error"
-        });
-    }
-};
-
-export const getListApplications = async (req, res) => {
-    const { jobId } = req.params;
-    try {
-        const result = await getAllApplications(jobId);
-        if (!result.success) {
+        } else {
             return res.status(404).json({
                 success: false,
                 message: result.message
             });
         }
-        return res.status(200).json({
-            success: true,
-            data: result.data,
-            message: result.message
-        });
     } catch (error) {
-        console.error("Error fetching job posts:", error);
-        res.status(500).json({
-            success: false,
-            message: "Internal server error"
-        });
+
     }
-};
+}
 
-
-export const getFeaturedJobs = async (req, res) => {
-    try {
-        // Logic: Lấy 6 việc làm có state là "open" (việc làm đang tuyển)
-        // Sắp xếp theo ngày tạo (createdAt) mới nhất
-        const featuredJobs = await JobPost.find({ state: "open" })
-            .sort({ createdAt: -1 }) // Giả sử model của bạn có "createdAt"
-            .limit(6);
-
-        if (!featuredJobs || featuredJobs.length === 0) {
-            return res.status(404).json({ 
-                success: false,
-                message: "Không tìm thấy việc làm nổi bật nào"
-            });
-        }
-
-        // Trả về mảng dữ liệu giống như mock data của bạn
-        res.status(200).json({
-            success: true,
-            data: featuredJobs, 
-            message: "Lấy việc làm nổi bật thành công"
-        });
-    } catch (error) {
-        console.error("Error fetching featured jobs:", error);
-        res.status(500).json({
-            success: false,
-            message: "Lỗi server nội bộ"
-        });
-    }
-};

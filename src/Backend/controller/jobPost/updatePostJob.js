@@ -1,23 +1,30 @@
-import JobPost from "../../model/jobPost.js";
+import { JobPost } from "../../model/jobPost.js";
+import { JobRepository } from "../../repository/jobRepository.js";
+import { CandidateRepository } from "../../repository/candidateRepository.js";
+import { ApplicationRepository } from "../../repository/applicationRepository.js";
 
 export const updatePostJob = async (req, res) => {
-  const { jobId } = req.params;
-  const { title, description, salary, degree, experience, jobType } = req.body;
+  const id = req.query.jobId;
+  const {title, company, position, location, salary, 
+        jobType, major, degree, experience, state, description, expiredDay } = req.body;
 
   try {
-    const updatedJobPost = await JobPost.findByIdAndUpdate( jobId,
-        { 
-            title: title, 
-            description: description, 
-            salary: salary, 
-            degree: degree, 
-            experience: experience, 
-            jobType: jobType 
-        },
-        { new: true }
-    );
+    const result = await JobRepository.updateJobPost(id, {
+        title,
+        company,
+        position,
+        location,
+        salary,
+        jobType,
+        major,
+        degree,
+        experience,
+        state,
+        description,
+        expiredDay
+    });
 
-    if (!updatedJobPost) {
+    if (!result.success) {
         return res.status(404).json({ 
             success: false,
             message: "Job post not found" 
@@ -38,39 +45,56 @@ export const updatePostJob = async (req, res) => {
   }
 };
 
-export const addApplicant = async (req, res) => {
-    const { id } = req.params;
-    const { email } = req.body;
+export const applyJob = async (req, res) => {
+    const jobId = req.query.jobId;
+    const { applicantEmail } = req.body;
     try {
-      const jobPost = await JobPost.findById(id);
-      if (!jobPost) {
-        return res.status(404).json({ message: "Job post not found" });
-      }
-      jobPost.applicants.push(email);
-      await jobPost.save();
-      res.status(200).json({ message: "Applicant added successfully" });
+        const candidate = await CandidateRepository.getCandidate(applicantEmail);
+        if (!candidate.success) {
+          return res.status(404).json({ message: "Candidate not found" });
+        }
+        const jobPost = await JobPost.findById(jobId);
+        if (!jobPost) {
+          return res.status(404).json({ message: "Job post not found" });
+        }
+        const result = await ApplicationRepository.createApplication(candidate.data._id, jobId);
+        if (!result.success) {
+          return res.status(500).json({ 
+            success: false,
+            message: "Error applying for job" 
+          });
+        }
+        res.status(200).json({ 
+          success: true,
+          message: "Applicant added successfully"
+        });
     } catch (error) {
-      console.error("Error adding applicant:", error);
-      res.status(500).json({ message: "Internal server error" });
+        console.error("Error adding applicant:", error);
+        res.status(500).json({ message: "Internal server error" });
     }
 };
 
-export const updateJobState = async (req, res) => {
-    const { id } = req.params;
-    const { state } = req.body;
+export const removeApplyJob = async (req, res) => {
+    const jobId  = req.query.jobId;
+    const { applicantEmail } = req.body;
     try {
-      const jobPost = await JobPost.findById(id);
-      if (!jobPost) {
-        return res.status(404).json({ message: "Job post not found" });
-      }
-      jobPost.state = state;
-      await jobPost.save();
-      res.status(200).json({ message: "Job post state updated successfully" });
+        const candidate = await CandidateRepository.getCandidate(applicantEmail);
+        if (!candidate.success) {
+          return res.status(404).json({ message: "Candidate not found" });
+        }
+        const application = await ApplicationRepository.getApplication(jobId, candidate.data._id);
+        if (!application.success) {
+          return res.status(404).json({ message: "Application not found" });
+        }
+        return res.status(200).json({ 
+          success: true,
+          message: "Applicant removed successfully"
+        });
     } catch (error) {
-      console.error("Error updating job post state:", error);
-      res.status(500).json({ message: "Internal server error" });
+        console.error("Error removing applicant:", error);
+        res.status(500).json({ message: "Internal server error" });
     }
-};
+}
 
 export const extendJobExpiry = async (req, res) => {
     const { id } = req.params;

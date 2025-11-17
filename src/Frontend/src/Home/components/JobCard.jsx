@@ -1,37 +1,39 @@
 // src/home/components/JobCard.jsx
 
 import { MapPin } from "lucide-react";
-// Bỏ import useState và Link
+import { Link } from "react-router-dom";
 
-// BƯỚC 1: Nhận thêm prop "onViewDetails"
 export default function JobCard({ job, onViewDetails }) {
   
-  // BƯỚC 2: Tạo hàm xử lý click, gọi prop "onViewDetails"
   const handleClick = () => {
-    onViewDetails(job); // Báo cho file cha biết job này đã được chọn
+    onViewDetails(job); 
   };
 
+  // 1. Kiểm tra xem 'job.company' có tồn tại không. 
+  // 2. Nếu có, lấy chữ cái đầu. Nếu không, dùng dấu "?".
+  const companyInitial = (job.company && job.company.charAt(0)) || '?';
+  const placeholderLogo = `https://ui-avatars.com/api/?name=${companyInitial}&background=random&color=fff`;
+
   return (
-    /* Thêm "onClick={handleClick}" và "cursor-pointer"
-       Bỏ "relative" và các logic state
-    */
     <div
-      className="rounded-xl border bg-white shadow-sm p-4 flex gap-3 
+      className="rounded-xl border bg-white shadow-sm p-4 
                  transition-all duration-200 hover:shadow-lg hover:scale-[1.02] cursor-pointer"
       onClick={handleClick}
     >
-      {/* Đây chỉ là MẶT TRƯỚC (Nội dung gốc) */}
-      <img
-        src={job.logoUrl}
-        alt={job.company}
-        className="w-10 h-10 rounded-md object-contain bg-gray-100"
-      />
-      <div className="flex-1 overflow-hidden">
-        <div className="font-semibold line-clamp-1">{job.title}</div>
-        <div className="text-sm text-gray-600 line-clamp-1">{job.company}</div>
-        <div className="text-sm text-gray-600">{job.salary}</div>
-        <div className="text-sm text-gray-500 flex items-center gap-1">
-          <MapPin className="w-3 h-3" /> {job.location}
+      <div className="flex gap-3">
+        <img
+          src={job.logoUrl || placeholderLogo}
+          alt={job.company || 'Logo công ty'} // Thêm '||' để phòng lỗi
+          className="w-10 h-10 rounded-md object-contain bg-gray-100"
+        />
+        <div className="flex-1 overflow-hidden">
+          <div className="font-semibold line-clamp-1">{job.title || 'Không có tiêu đề'}</div>
+          {/* Thêm kiểm tra 'job.company' ở đây */}
+          <div className="text-sm text-gray-600 line-clamp-1">{job.company || 'Không rõ công ty'}</div>
+          <div className="text-sm text-gray-600">{job.salary || 'N/A'}</div>
+          <div className="text-sm text-gray-500 flex items-center gap-1">
+            <MapPin className="w-3 h-3" /> {job.location || 'N/A'}
+          </div>
         </div>
       </div>
     </div>

@@ -1,12 +1,11 @@
-import JobPost from "../../model/jobPost.js";
-
+import { JobRepository } from "../../repository/jobRepository.js";
 // employer post a job with the initial state is "closed", if employer want to open
 // they have to pay to open the job post in time period
 export const createPostJob = async (req, res) => {
     const {title, company, position, location, salary, 
-        jobType, major, degree, expiredDay, experience, description } = req.body;
+        jobType, major, degree, experience, state, description, expiredDay } = req.body;
     try {
-        const newJobPost = new JobPost({
+        const result = await JobRepository.createJobPost({
             title: title,
             company: company,
             position: position,
@@ -16,19 +15,19 @@ export const createPostJob = async (req, res) => {
             major: major,
             degree: degree,
             experience: experience,
-            state: "closed",
+            state: state,
+            expiredDay: expiredDay,
             applicants: [],
-            description,
+            description: description,
         });
-        const savedJobPost = await newJobPost.save();
-        if (savedJobPost.success) {
-            res.status(201).json({ 
+        if (result.success) {
+            res.status(201).json({
                 success: true,
                 message: "Create job post successfully",
-                id: savedJobPost.data._id
+                id: result.data._id
             });
         } else {
-            res.status(400).json({ 
+            res.status(400).json({
                 success: false,
                 message: "Error creating job post"
             });

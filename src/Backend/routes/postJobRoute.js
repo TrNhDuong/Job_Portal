@@ -1,21 +1,22 @@
-// src/Backend/routes/jobPostRoute.js
-
 import express from "express";
+
 const router = express.Router();
 
-import { getEmployerPostJob, getListApplications, getFeaturedJobs } from "../controller/jobPost/getPostJob.js";
 import { createPostJob } from "../controller/jobPost/createPostJob.js";
-import { updatePostJob, extendJobExpiry, addApplicant } from "../controller/jobPost/updatePostJob.js";
+import { updatePostJob, extendJobExpiry, applyJob, removeApplyJob } from "../controller/jobPost/updatePostJob.js";
 import { deletePostJob } from "../controller/jobPost/deletePostJob.js";
+import { getJobPostByID, getPostJobPerPage } from "../controller/jobPost/getPostJob.js";
 
-router.get("/post-job/:email", getEmployerPostJob);
-router.get("/post-job", getListApplications);
-router.post("/post-job", createPostJob);
-router.patch("/post-job/:id", updatePostJob);
+//router.get("/post-job/employer", getJobPostEmployer);
+// Không cần endpoint này nữa vì chỉ cần lấy data của employer là xong
+router.get("/post-job/id", getJobPostByID);
+router.get("/post-job", getPostJobPerPage);
+router.post("/post-job", createPostJob); //
+router.patch("/post-job", updatePostJob);
 router.patch("/post-job/extend/:id", extendJobExpiry);
-router.patch("/post-job/apply/:id", addApplicant);
-router.delete("/post-job/:id", deletePostJob);
+router.patch("/post-job/applyJob", applyJob);
+router.patch("/post-job/removeApplyJob", removeApplyJob);
+router.delete("/post-job", deletePostJob);
 
-router.get("/jobs/featured", getFeaturedJobs);
 
 export default router;

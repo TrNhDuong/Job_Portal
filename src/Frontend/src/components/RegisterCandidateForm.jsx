@@ -35,7 +35,7 @@ export default function RegisterCandidateForm() {
     const { name, value, type, checked } = e.target;
     setForm({ ...form, [name]: type === "checkbox" ? checked : value });
   };
-
+  
   const onSubmit = async (e) => {
     e.preventDefault();
     setMsg(null);
@@ -45,22 +45,35 @@ export default function RegisterCandidateForm() {
     if (form.password !== form.confirm) {
       return setMsg({ type: "error", text: "Mật khẩu xác nhận không khớp." });
     }
+
+
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$/;
+    
+    if (!passwordRegex.test(form.password)) {
+      return setMsg({ 
+        type: "error", 
+        text: "Mật khẩu phải có ít nhất 8 kí tự, một chữ hoa, một chữ thường, một chữ số và một kí hiệu đặc biệt." 
+      });
+    }
+
     if (!form.agree) {
       return setMsg({ type: "error", text: "Bạn cần đồng ý Điều khoản và Chính sách." });
     }
     try {
       setLoading(true);
-      const res = await client.post("/api/candidateRegister", {
+      await client.post("/api/send-otp", { email: form.email });
+      
+      sessionStorage.setItem('registrationData', JSON.stringify({
+        name: form.name,
         email: form.email,
         password: form.password,
-        name: form.name
-      });
-      setMsg({ type: "success", text: res?.data?.message || "Đăng ký thành công" });
-      setForm({ name:"", email:"", password:"", confirm:"", agree:false });
-      navigate("/Login"); 
+        role: 'candidate' 
+      }));
+
+      navigate("/verify-otp"); 
+    
     } catch (err) {
-      setMsg({ type: "error", text: err?.response?.data?.message || "Đăng ký thất bại" });
-    } finally {
+      setMsg({ type: "error", text: err.response?.data?.message || "Đăng ký thất bại" });
       setLoading(false);
     }
   };
@@ -79,10 +92,8 @@ export default function RegisterCandidateForm() {
       </div>
       <div className="input-wrap">
         <LockIcon/>
-        <input className="input password-input" name="password" placeholder="Nhập mật khẩu"
+      	<input className="input password-input" name="password" placeholder="Nhập mật khẩu"
                type={show1 ? "text" : "password"} value={form.password} onChange={onChange}/>
-        
-        {/* BƯỚC 3: Thay thế <Eye> bằng <FontAwesomeIcon> */}
         <FontAwesomeIcon
           icon={show1 ? faEyeSlash : faEye}
           className="icon-right"
@@ -91,29 +102,27 @@ export default function RegisterCandidateForm() {
       </div>
       <div className="input-wrap">
         <LockIcon/>
-        <input className="input password-input" name="confirm" placeholder="Nhập lại mật khẩu"
-               type={show2 ? "text" : "password"} value={form.confirm} onChange={onChange}/>
-          
-        {/* BƯỚC 3 (Lặp lại): Thay thế <Eye> bằng <FontAwesomeIcon> */}
+      	<input className="input password-input" name="confirm" placeholder="Nhập lại mật khẩu"
+              	type={show2 ? "text" : "password"} value={form.confirm} onChange={onChange}/>
         <FontAwesomeIcon
           icon={show2 ? faEyeSlash : faEye}
           className="icon-right"
           onClick={() => setShow2(s => !s)}
-        />
+      	/>
       </div>
 
       <label className="checkbox-row">
-        <input type="checkbox" name="agree" checked={form.agree} onChange={onChange}/>
-        <span>
-          Tôi đã đọc và đồng ý với <a href="#">Điều khoản dịch vụ</a> và <a href="#">Chính sách bảo mật</a>.
-        </span>
+      	<input type="checkbox" name="agree" checked={form.agree} onChange={onChange}/>
+      	<span>
+      	  Tôi đã đọc và đồng ý với <a href="#">Điều khoản dịch vụ</a> và <a href="#">Chính sách bảo mật</a>.
+      	</span>
       </label>
 
-      <button className="primary-btn" type="submit" disabled={loading}>
-        {loading ? "Đang xử lý..." : "Đăng ký"}
-      </button>
+  	  <button className="primary-btn" type="submit" disabled={loading}>
+      	{loading ? "Đang xử lý..." : "Đăng ký"}
+  	  </button>
 
-      {msg && <div className={msg.type === "error" ? "error" : "success"}>{msg.text}</div>}
-    </form>
+  	  {msg && <div className={msg.type === "error" ? "error" : "success"}>{msg.text}</div>}
+  	</form>
   );
 }

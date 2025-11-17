@@ -1,0 +1,130 @@
+/* Toàn bộ thanh sidebar */
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  background-color: #fafafc;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px 15px;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+
+
+/* Logo và tên app */
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 20px;
+}
+
+.logo img {
+  width: 300px;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Khu vực menu */
+.menu-section {
+  margin-bottom: 20px;
+}
+
+.menu-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu-section li {
+  position: relative;
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  color: #333;
+  font-weight: 500;
+  border-radius: 25px 0 0 25px; /* Bo góc bên trái */
+  margin-bottom: 10px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+/* Icon */
+.menu-section li i {
+  font-size: 16px;
+  color: #555;
+  transition: color 0.3s ease;
+}
+
+/* Hiệu ứng hover (bo cong xanh lam giống hình bạn gửi) */
+.menu-section li:hover,
+.menu-section li.active {
+  background: linear-gradient(90deg, #4cc9f0, #3a86ff);
+  color: #fff;
+  transform: translateX(5px);
+  box-shadow: 0 2px 6px rgba(58, 134, 255, 0.3);
+}
+
+.menu-section li:hover i,
+.menu-section li.active i {
+  color: #fff;
+}
+
+/* Hiệu ứng bo cong đặc biệt (tạo cảm giác “nổi lên” bên phải) */
+.menu-section li::before {
+  content: "";
+  position: absolute;
+  right: -10px;
+  top: 0;
+  width: 20px;
+  height: 100%;
+  background: #4cc9f0;
+  border-top-left-radius: 25px;
+  border-bottom-left-radius: 25px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.menu-section li:hover::before,
+.menu-section li.active::before {
+  opacity: 1;
+}
+
+/* Heading trong phần cài đặt */
+.menu-heading {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #888;
+  margin: 10px 0 5px 10px;
+}
+
+/* Nút đăng xuất */
+.logout {
+  margin-top: auto;
+  padding: 12px 15px;
+  background-color: #e8f0fe;
+  border-radius: 25px;
+  text-align: center;
+  font-weight: 600;
+  color: #333;
+  transition: all 0.3s ease;
+}
+
+.logout:hover {
+  background: linear-gradient(90deg, #3a86ff, #4cc9f0);
+  color: #fff;
+  transform: translateX(5px);
+  box-shadow: 0 2px 6px rgba(58, 134, 255, 0.3);
+  cursor: pointer;
+}
+.logout:hover i {
+  color: #fff;
+}
