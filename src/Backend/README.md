@@ -31,20 +31,30 @@
 
 ## Model
 Candidate {
+    
     name: String
+
     email: String
+
     password: String
+
     logo: {
+
         url: String,
+
         public_id: String
+
     },
-    description: String
+
+    description: String,
+
     listSaveJobs: [
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'JobPost',
         }
     ],
+
     appliedJobs: [
         {
             type: mongoose.Schema.Types.ObjectId,
@@ -67,7 +77,7 @@ Candidate {
 |message   | string | The message describe the result          |
 | data   | any              | Output data                             |
 ---
-Login endpoint
+**Login endpoint**
 | **Method** | **Endpoint**                                  | **Description**                                             |
 | ---------- | --------------------------------------------- | ----------------------------------------------------------- |
 | **POST**   | `http://localhost:8080/api/login`             | Login for candidate or employer (returns token on success). |
@@ -75,7 +85,7 @@ Login endpoint
 | **POST**   | `http://localhost:8080/api/employerRegister`  | Register a new employer account.                            |
 ---
 
-PostJob endpoints
+**PostJob endpoints**
 | **Method** | **Endpoint**                 | **Description**                                                       |
 | ---------- | ---------------------------- | --------------------------------------------------------------------- |
 | **GET**    | `/api/post-job/id?jobId=`       | Get all job posts created by a specific employer identified by email. |
@@ -89,12 +99,14 @@ PostJob endpoints
 | **PATCH** | `/api/post-job?removeSaveJob?jobId=`          | Delete a specific job post *(employer only)*.                         |
 
 ví dụ truy vấn cho get api/post-job 
+
 GET /post-job?page=2&location=Hanoi&jobType=FullTime&major=IT
+
 với các filter là page, location, jobType, major, salaryMin, salaryMax, experience, degree
 
 trong body ở saveJob, removeSaveJob, applyJob, removeApplyJob có trường email chứa email của ứng viên
 ---
-Employer endpoints
+**Employer endpoints**
 | **Method** | **Endpoint**                       | **Description**                              |
 | ---------- | ---------------------------------- | -------------------------------------------- |
 | **GET**    | `/api/employer?email=`                    | Get employer information by email.           |
@@ -102,11 +114,13 @@ Employer endpoints
 | **PATCH**  | `/api/employer?email=`             | Update employer profile identified by email. |
 
 GET /api/employer?email=test@gmail.com
-GET /api/employer/feature will return full of data aof top10 branch
-PATCH /api/employer?email=test@gmail.com
-in body will include data update such as {"location":"asdas", "company":"asdads"}
 
-Candidate endpoints
+GET /api/employer/feature will return full of data of top10 branch
+
+PATCH /api/employer?email=test@gmail.com in body will include data update such as {"location":"asdas", "company":"asdads"}
+
+---
+**Candidate endpoints**
 | **Method** | **Endpoint**              | **Description**                                                |
 | ----------- | ------------------------- | -------------------------------------------------------------- |
 | **GET**     | `/api/candidate?email=`   | Get candidate information by email.                            |
@@ -114,28 +128,31 @@ Candidate endpoints
 | **PATCH**   | `/api/candidate?email=`   | Update candidate profile identified by email.                  |
 
 GET /api/candidate?email=test@gmail.com
-POST /api/candidate
-in req.body include data of candidate for create
-PATCH /api/candidate?email=test@gmail.com
-in body will include data update such as {"name": .. , "email":"assd"}
 
-OTP endpoints
+POST /api/candidate in req.body include data of candidate for create
+
+PATCH /api/candidate?email=test@gmail.com  in body will include data update such as {"name": .. , "email":"assd"}
+
+---
+**OTP endpoints**
 | **Method** | **Endpoint**              | **Description**                                                |
 | ----------- | ------------------------- | -------------------------------------------------------------- |
 | **POST**     | `/api/send-otp`   | Send an OTP mail to email                          |
 | **POST**    | `/api/verify-otp`          | Verify an OTP of email|
 
-
-Password endpoints
+---
+**Password endpoints**
 | **Method** | **Endpoint**              | **Description**                                                |
 | ----------- | ------------------------- | -------------------------------------------------------------- |
 | **POST**     | `/api/password/candidate`   | Update password of candidate                         |
 | **POST**    | `/api/password/employer`          | Update password of employer|
 
 Client must send request in the body include {email, oldpassword, newpassword}
+
 Process logic for retype the newpassword in frontend side
 
-Application endpoints
+---
+**Application endpoints**
 | **Method** | **Endpoint**              | **Description**                                                |
 | ----------- | ------------------------- | -------------------------------------------------------------- |
 | **POST**     | `/api/application?id=`   | Update the status of application                         |
@@ -143,7 +160,8 @@ Application endpoints
 status contain in body
 POST /api/application?id=
 
-Logo, wallpaper endpoint
+---
+**Logo, wallpaper endpoint**
 | **Method** | **Endpoint**              | **Description**                                                |
 | ----------- | ------------------------- | -------------------------------------------------------------- |
 | **POST**     | `/api/upload/logo/employer?email=`   | Update the logo of employer                       |
@@ -156,8 +174,8 @@ Body (form-data) when upload image
 |----------|-----------|----------------|
 |image     | File      | The image      |
 
-
-CV endpoint
+---
+**CV endpoint**
 | **Method** | **Endpoint**              | **Description**                                                |
 | ----------- | ------------------------- | -------------------------------------------------------------- |
 | **POST**     | `/api/upload/candidate/cv?email=`   | upload new CV                       |
