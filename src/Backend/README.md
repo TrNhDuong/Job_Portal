@@ -30,39 +30,41 @@
 - **Version control:** Git + Github
 
 ## Model
-Candidate {
-    
-    name: String
+Candidate 
 
-    email: String
+    {
 
-    password: String
+        name: String
 
-    logo: {
+        email: String
 
-        url: String,
+        password: String
 
-        public_id: String
+        logo: {
 
-    },
+            url: String,
 
-    description: String,
+            public_id: String
 
-    listSaveJobs: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'JobPost',
-        }
-    ],
+        },
 
-    appliedJobs: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'JobPost',
-        }
-    ],
-    CV: Buffer,
-}
+        description: String,
+
+        listSaveJobs: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'JobPost',
+            }
+        ],
+
+        appliedJobs: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'JobPost',
+            }
+        ],
+        CV: Buffer,
+    }
 
 ## API endpoints
     All the response from the server side comply with format: 
@@ -100,11 +102,12 @@ Candidate {
 
 ví dụ truy vấn cho get api/post-job 
 
-GET /post-job?page=2&location=Hanoi&jobType=FullTime&major=IT
+GET `/post-job?page=2&location=Hanoi&jobType=FullTime&major=IT`
 
 với các filter là page, location, jobType, major, salaryMin, salaryMax, experience, degree
 
 trong body ở saveJob, removeSaveJob, applyJob, removeApplyJob có trường email chứa email của ứng viên
+
 ---
 **Employer endpoints**
 | **Method** | **Endpoint**                       | **Description**                              |
@@ -113,11 +116,11 @@ trong body ở saveJob, removeSaveJob, applyJob, removeApplyJob có trường em
 | **GET**    | `/api/employer/feature`            | Get top10 branch with most job return full of data             |
 | **PATCH**  | `/api/employer?email=`             | Update employer profile identified by email. |
 
-GET /api/employer?email=test@gmail.com
+GET `/api/employer?email=test@gmail.com`
 
-GET /api/employer/feature will return full of data of top10 branch
+GET `/api/employer/feature` will return full of data of top10 branch
 
-PATCH /api/employer?email=test@gmail.com in body will include data update such as {"location":"asdas", "company":"asdads"}
+PATCH `/api/employer?email=test@gmail.com` in body will include data update such as {"location":"asdas", "company":"asdads"}
 
 ---
 **Candidate endpoints**
@@ -127,11 +130,11 @@ PATCH /api/employer?email=test@gmail.com in body will include data update such a
 | **POST**    | `/api/candidate`          | Register a new candidate account (create a candidate profile). |
 | **PATCH**   | `/api/candidate?email=`   | Update candidate profile identified by email.                  |
 
-GET /api/candidate?email=test@gmail.com
+GET `/api/candidate?email=test@gmail.com`
 
-POST /api/candidate in req.body include data of candidate for create
+POST `/api/candidate` in req.body include data of candidate for create
 
-PATCH /api/candidate?email=test@gmail.com  in body will include data update such as {"name": .. , "email":"assd"}
+PATCH `/api/candidate?email=test@gmail.com`  in body will include data update such as {"name": .. , "email":"assd"}
 
 ---
 **OTP endpoints**
@@ -158,7 +161,7 @@ Process logic for retype the newpassword in frontend side
 | **POST**     | `/api/application?id=`   | Update the status of application                         |
 
 status contain in body
-POST /api/application?id=
+POST `/api/application?id=`
 
 ---
 **Logo, wallpaper endpoint**
