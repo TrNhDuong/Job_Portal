@@ -1,6 +1,6 @@
 import cloudinary from "../config/cloudinary.js";
 
-export const destroyImage = async (publicId) => {
+export const destroyCloudData = async (publicId) => {
     const result = await cloudinary.uploader.destroy(publicId);
 
     if (result.result !== 'ok' && result.result !== 'not found') {

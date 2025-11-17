@@ -1,6 +1,6 @@
 import Candidate from "../model/candidate.js";
 import bcrypt from "bcryptjs";
-import { destroyImage } from "../service/cloudinary.js";
+import { destroyCloudData } from "../service/cloudinary.js";
 
 export class CandidateRepository {
     static async getCandidate(email) {
@@ -58,7 +58,7 @@ export class CandidateRepository {
 
         if (updatesCandidate["logo"]){
             if (candidate.data.logo.public_id){
-                const result = await destroyImage(candidate.data.logo.public_id);
+                const result = await destroyCloudData(candidate.data.logo.public_id);
                 if (result){
                     console.log('Deleted image')
                 } else {

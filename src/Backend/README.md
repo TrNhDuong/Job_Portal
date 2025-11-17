@@ -154,8 +154,20 @@ Body (form-data) when upload image
 
 |**Key**   | **Type**  | **Description**|
 |----------|-----------|----------------|
-|Image     | File      | The image      |
+|image     | File      | The image      |
 
+
+CV endpoint
+| **Method** | **Endpoint**              | **Description**                                                |
+| ----------- | ------------------------- | -------------------------------------------------------------- |
+| **POST**     | `/api/upload/candidate/cv?email=`   | upload new CV                       |
+| **PATCH**     | `/api/upload/candidate/cv?email=`   | Remove CV                       |
+
+Body (form-data) when upload CV
+
+|**Key**   | **Type**  | **Description**|
+|----------|-----------|----------------|
+|cv     | File      | The cv      |
 
 
 

@@ -1,6 +1,6 @@
 import Employer from "../model/employer.js";
 import bcrypt from "bcryptjs";
-import { destroyImage } from "../service/cloudinary.js";
+import { destroyCloudData } from "../service/cloudinary.js";
 
 export class EmployerRepository {
     static async getEmployer(email) {
@@ -49,7 +49,7 @@ export class EmployerRepository {
 
         if (updatesEmployer["logo"]){
             if (employer.data.logo.public_id){
-                const result = await destroyImage(employer.data.logo.public_id);
+                const result = await destroyCloudData(employer.data.logo.public_id);
                 if (result){
                     console.log('Deleted image')
                 } else {
@@ -60,7 +60,7 @@ export class EmployerRepository {
 
         if (updatesEmployer["wallpaper"]){
             if (employer.data.wallpaper.public_id){
-                const result = await destroyImage(employer.data.wallpaper.public_id);
+                const result = await destroyCloudData(employer.data.wallpaper.public_id);
                 if (result){
                     console.log('Deleted image wallpaper')
                 } else {
