@@ -71,6 +71,10 @@ const jobPost = new mongoose.Schema({
             default: 'years'
         }
     },
+    postedAt: {
+        type: Date,
+        default: Date.now
+    },
     state: {    // State of the job post: open, closed, pending
         type: String,
         required: true,

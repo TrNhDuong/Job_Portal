@@ -82,7 +82,8 @@ Candidate
 **Login endpoint**
 | **Method** | **Endpoint**                                  | **Description**                                             |
 | ---------- | --------------------------------------------- | ----------------------------------------------------------- |
-| **POST**   | `http://localhost:8080/api/login`             | Login for candidate or employer (returns token on success). |
+| **POST**   | `http://localhost:8080/api/loginCandidate`             | Login for candidate (returns token on success). |
+| **POST**   | `http://localhost:8080/api/loginEmployer`             | Login for employer (returns token on success). |
 | **POST**   | `http://localhost:8080/api/candidateRegister` | Register a new candidate account.                           |
 | **POST**   | `http://localhost:8080/api/employerRegister`  | Register a new employer account.                            |
 ---
