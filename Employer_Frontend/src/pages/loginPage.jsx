@@ -24,31 +24,25 @@ export default function LoginForm() {
     setMsg(null);
     try {
       // 1. Gọi API (endpoint phải khớp /api/login)
-      const res = await client.post("/api/login", {
+      const res = await client.post("/api/loginEmployer", {
         email: identifier,
         password,
       });
 
       // --- SỬA Ở ĐÂY ---
       // Chỉ lấy 'user' và 'message' (Không cần 'token')
-      const { user, message } = res.data;
+      const { success, message } = res.data;
 
-      // 2. Kiểm tra lỗi (Chỉ kiểm tra 'user')
-      if (!user) {
-        throw new Error(message || "Không nhận được đối tượng user");
+      
+
+      if (success){
+        setMsg({ type: "success", text: "Đăng nhập thành công" });
+        localStorage.setItem("email", email);
+        navigate("/"); // Chuyển về Homepage
+      } else {
+        setMsg({ type: "error", text: "Đăng nhập thất bại" });
       }
-      // --- (Kết thúc sửa) ---
 
-      if (user.role !== "employer") {
-        throw new Error("Bạn phải là Nhà tuyển dụng để đăng nhập.");
-      }
-
-      // 3. BÁO CHO AuthContext BIẾT
-      // (AuthContext của bạn đã được sửa ở tin nhắn trước để chỉ nhận 'user')
-      login(user); 
-
-      setMsg({ type: "success", text: message || "Đăng nhập thành công" });
-      navigate("/"); // Chuyển về Homepage
 
     } catch (err) {
       const text = err?.response?.data?.message || err.message || "Đăng nhập thất bại";

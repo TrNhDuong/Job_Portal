@@ -17,23 +17,6 @@ import AboutPage from "./AboutPage.jsx";
 // (Giả sử bạn có logo.png trong src/assets)
 import logoImage from "../assets/logo.png"; 
 
-// --- DỮ LIỆU MẪU ĐỂ TEST ---
-// const SAMPLE_POSTS_FOR_TESTING = [
-//   { 
-//     id: 1001, title: "Frontend Developer (ReactJS)", position: "Software Engineer", location: "TP. Hồ Chí Minh", detailedAddress: "123 Quận 1",
-//     minSalary: "15000000", maxSalary: "30000000", currency: "VND", jobType: "Full-time",
-//     major: "IT", customMajor: "", degree: "Bachelor", experience: "2",
-//     description: "Mô tả công việc cho Frontend Developer (Sample)."
-//   },
-//   { 
-//     id: 1002, title: "Chuyên viên Thiết kế Giao diện", position: "UI/UX Designer", location: "TP. Đà Nẵng", detailedAddress: "456 Hải Châu",
-//     minSalary: "12000000", maxSalary: "25000000", currency: "VND", jobType: "Part-time",
-//     major: "Other", customMajor: "Thiết kế đồ họa", degree: "Diploma", experience: "1",
-//     description: "Mô tả công việc cho UI/UX Designer (Sample)."
-//   }
-// ];
-// ------------------------------
-
 export default function Homepage() {
   const [activeSetting, setActiveSetting] = useState("ManagePosts");
 
@@ -61,13 +44,17 @@ export default function Homepage() {
         setIsLoading(true);
         try {
             // 1. Tải các bài đăng (Logic cũ)
-            const jobsRes = await client.get(`/api/post-job/${auth.user.email}`);
+            const userData = await client.get(
+              `/api/employer/${auth.user.email}`
+            )
+            const email = localStorage.getItem("email");
+            const res = await client.get(`/api/post-job?email=${email}`);
+            const {employerData} = res.data;
+
             setJobPosts(jobsRes.data.data); 
 
-            // 2. Tải thông tin Employer (Logic mới)
-            const profileRes = await client.get(`/api/employer/${auth.user.email}`);
             // Chúng ta lấy 'company' hoặc 'name', ưu tiên 'company'
-            const name = profileRes.data.company || profileRes.data.name || auth.user.email;
+            const name = employerData.company || profileRes.data.name || auth.user.email;
             setEmployerName(name);
 
         } catch (error) {
