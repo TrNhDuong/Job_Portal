@@ -36,11 +36,7 @@ export default function Homepage() {
   const [employerName, setEmployerName] = useState("");
 
   const loadDashboardData = async () => {
-        if (!auth.user || !auth.user.email) {
-          console.error("User email không tồn tại trong AuthContext");
-          setIsLoading(false);
-          return;
-        }
+        email = localStorage.getItem("email");
         setIsLoading(true);
         try {
             // 1. Tải các bài đăng (Logic cũ)
@@ -48,15 +44,12 @@ export default function Homepage() {
               `/api/employer/${auth.user.email}`
             )
             const email = localStorage.getItem("email");
-            const res = await client.get(`/api/post-job?email=${email}`);
-            const {employerData} = res.data;
+            const employerData = await client.get(`/api/employer?email=${email}`);
+            
 
-            setJobPosts(jobsRes.data.data); 
-
-            // Chúng ta lấy 'company' hoặc 'name', ưu tiên 'company'
-            const name = employerData.company || profileRes.data.name || auth.user.email;
             setEmployerName(name);
 
+          
         } catch (error) {
             console.error("Lỗi khi tải dữ liệu dashboard:", error);
         } finally {
