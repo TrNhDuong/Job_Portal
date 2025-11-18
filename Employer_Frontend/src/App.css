@@ -1,0 +1,207 @@
+html, body {
+  color-scheme: light;
+  /* --- THAY ĐỔI: Nền xám nhạt (TopCV) --- */
+  background: var(--bg-light); 
+  color: var(--text-dark); 
+  font-family: "Montserrat", sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* --- THAY ĐỔI: Toàn bộ bảng màu --- */
+:root {
+  /* Màu chính (TopCV) */
+  --primary-color: #1a73e8; 
+  --primary-hover: #1e40af; 
+  
+  /* Màu nền (TopCV) */
+  --hotbar-bg: #2d3748;    /* Xanh than chì (Hotbar) */
+  --sidebar-bg: #ffffff;   /* Trắng (Sidebar) */
+  --bg-light: #f7fafc;     /* Xám siêu nhạt (Nền chính) */
+  --bg-white: #ffffff;     /* Trắng (Card, Tab-bar) */
+  --border: #e5e7eb;       /* Viền xám */
+  
+  /* Màu chữ (TopCV) */
+  --text-dark: #1a202c;     /* Đen (Tiêu đề) */
+  --text-medium: #4a5568;   /* Xám (Chữ phụ, Sidebar text) */
+  --text-light: #a0aec0;    /* Xám nhạt (Hotbar text) */
+  --text-white: #ffffff;    /* Trắng (Hotbar button text) */
+  
+  /* Màu nút Hotbar (TopCV) */
+  --hotbar-button-bg: #4a5568; /* Nền nút */
+  --hotbar-button-hover: #6b7280; /* Nền nút hover */
+}
+/* --- KẾT THÚC BẢNG MÀU --- */
+
+
+* {
+  box-sizing: border-box;
+  font-family: inherit;
+  background-color: unset;
+  color: inherit;
+}
+
+.page-wrap {
+  display: grid;
+  width: 100vw;
+  gap: 0;
+  margin-top: 60px;
+  height: calc(100vh - 60px);
+}
+
+/* --- THAY ĐỔI: .hotbar (Nền than chì) --- */
+.hotbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background: var(--hotbar-bg); /* Nền than chì */
+  color: var(--text-light); /* Chữ xám nhạt (cho logo) */
+  display: flex;
+  align-items: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* Bóng mờ */
+  z-index: 1000;
+  padding: 0 12px;
+  border-bottom: 1px solid #000; /* Viền đen */
+}
+/* --- KẾT THÚC THAY ĐỔI .hotbar --- */
+
+/* --- THAY ĐỔI: .left-col (Nền trắng) --- */
+.left-col {
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: calc(100vh - 60px);
+  transition: width 0.3s ease;
+  background: var(--sidebar-bg); /* Nền trắng */
+  color: var(--text-medium); /* Chữ xám */
+  border-right: 1px solid var(--border); /* Thêm viền phải */
+}
+/* --- KẾT THÚC THAY ĐỔI .left-col --- */
+
+/* --- THAY ĐỔI: style cho nền sáng (Sidebar) --- */
+.collapse-button {
+  text-align: center;
+  padding: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  color: var(--text-medium); /* Chữ xám */
+  border-bottom: 1px solid var(--border); /* Viền xám */
+}
+
+.nav-item {
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--text-medium); /* Chữ xám */
+  transition: background 0.2s, color 0.2s;
+}
+
+/* Hover: Chữ xanh, nền xám nhạt */
+.nav-item:hover {
+  color: var(--primary-color); 
+  background: var(--bg-light); 
+}
+
+/* Active: Chữ xanh, nền xanh nhạt, đậm hơn */
+.nav-item.active {
+  color: var(--primary-hover);
+  background: #e0e7ff; /* Màu xanh nhạt (light primary) */
+  font-weight: 600;
+}
+
+.nav-separator {
+  border: none;
+  border-top: 1px solid var(--border); /* Viền xám */
+  margin: 12px 0;
+}
+/* --- KẾT THÚC THAY ĐỔI style nền sáng --- */
+
+
+/* --- THAY ĐỔI: Nền nội dung --- */
+.right-panel {
+  overflow-y: auto;
+  height: calc(100vh - 60px);
+  padding: 24px;
+  background: var(--bg-light); /* Nền xám siêu nhạt */
+}
+
+/* --- THAY ĐỔI: "Thanh phụ" nền trắng --- */
+.tab-name-bar {
+  position: fixed;
+  top: 60px;
+  left: 17.5%;
+  width: calc(100% - 200px);
+  height: 44px;
+  background: var(--bg-white); /* Nền trắng */
+  color: var(--text-dark);
+  display: flex;
+  align-items: center;
+  font-size: 20px;
+  font-weight: 500;
+  padding: 0 32px;
+  border-bottom: 1px solid var(--border); /* Viền xám */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03); /* Thêm bóng mờ nhẹ */
+  z-index: 999;
+}
+/* --- KẾT THÚC THAY ĐỔI .tab-name-bar --- */
+
+/* (Các class .title, .card... đã tương thích, giữ nguyên) */
+.title {
+  font-size: 28px;
+  margin: 0 0 6px;
+  color: var(--primary-color);
+  font-weight: 700;
+}
+.card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  background: var(--bg-white); 
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+/* ... (Các class .sub-card-container, .button... giữ nguyên) ... */
+
+
+/* --- THAY ĐỔI (Yêu cầu 2): Nút trên Hotbar (Style TopCV) --- */
+.top-nav-bubble {
+  /* Style "viên thuốc" (pill) giống TopCV */
+  border: none;
+  background: var(--hotbar-button-bg); /* Nền xám xanh */
+  color: var(--text-white); /* Chữ trắng */
+  font-weight: 500;
+  padding: 8px 14px; 
+  cursor: pointer;
+  transition: background 0.2s;
+  border-radius: 20px; /* Bo tròn */
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: none;
+}
+
+.top-nav-bubble:hover {
+  background: var(--hotbar-button-hover); /* Nền sáng hơn khi hover */
+  color: var(--text-white); 
+  transform: none; 
+}
+
+/* --- THAY ĐỔI: Bỏ class .cta --- */
+/* Chúng ta không cần .cta nữa vì tất cả các nút đều giống nhau */
+.top-nav-bubble.cta {
+  /* Giữ style giống các nút khác */
+  background: var(--hotbar-button-bg); 
+  color: var(--text-white);
+  font-weight: 500;
+}
+
+.top-nav-bubble.cta:hover {
+  background: var(--hotbar-button-hover);
+  color: var(--text-white); 
+}
+/* --- KẾT THÚC THAY ĐỔI .top-nav-bubble --- */

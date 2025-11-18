@@ -1,0 +1,170 @@
+/* employerProfile.css */
+.employer-profile-container {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background-color: #f9fafb;
+  min-height: 100%;
+  font-family: "Montserrat", sans-serif;
+}
+
+/* Tabs Header */
+.profile-tabs {
+  display: flex;
+  border-bottom: 2px solid #e5e7eb;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.profile-tab {
+  padding: 10px 16px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s ease;
+  color: #374151;
+}
+
+.profile-tab.active {
+  border-bottom-color: #1a73e8;
+  color: #1a73e8;
+}
+
+/* Tab Content Area */
+.tab-content {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+  display: none; /* hidden by default, show active tab */
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* Form inside tabs (reuse postjob form vibes) */
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #1a1a1a;
+}
+
+input, select, textarea {
+  border: 1.5px solid #c9d5ec;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #1a1a1a;
+  background-color: #fff;
+  transition: all 0.15s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: #1a73e8;
+  box-shadow: 0 0 5px rgba(26,115,232,0.18);
+  outline: none;
+}
+
+input::placeholder, textarea::placeholder { color: #9ba5b8; }
+
+/* Buttons */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.btn-submit { 
+  background-color: #1a73e8; 
+  color: white; 
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-submit:hover { background-color: #0b57cf; }
+
+.btn-reset {
+  background-color: #ccc;
+  color: #222;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.btn-reset:hover { background-color: #b3b3b3; }
+
+/* Error styles */
+input.error, select.error, textarea.error {
+  border-color: #e53935 !important;
+  background-color: #fff7f7;
+}
+
+/* Specific tabs customization */
+.change-password input[type="password"] { letter-spacing: 1px; }
+
+.company-logo-preview {
+  margin-top: 10px;
+  max-width: 120px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .profile-tabs {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .profile-tab {
+    text-align: center;
+  }
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+}
+
+.profile-picture {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e5e7eb;
+}
+
+.profile-details h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.profile-details p {
+  margin: 4px 0;
+  color: #374151;
+  font-size: 0.95rem;
+}

@@ -1,0 +1,138 @@
+/* Thêm container cha nếu chưa có */
+.login-page {
+  display: flex;
+  justify-content: center; /* căn giữa ngang */
+  align-items: center;     /* căn giữa dọc */
+  height: 100vh;
+  width: 100%;
+  background-color: #f7fafc; /* giống nền app */
+  box-sizing: border-box;
+  padding: 0 16px; /* tránh dính lề mobile */
+}
+
+.login-container {
+  max-width: 400px;
+  width: 100%;
+  margin: auto; /* centers horizontally & vertically only if parent has height */
+  padding: 32px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+
+
+
+.login-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a73e8; /* primary blue */
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.login-subtitle {
+  font-size: 14px;
+  color: #4a5568; /* medium gray */
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.login-input {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 0.95rem; /* match filter-input font size */
+  border: 1px solid #d1d5db; /* same as filter-input */
+  border-radius: 6px; /* same as filter inputs */
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: #ffffff;
+}
+
+.login-input:focus {
+  border-color: #2563eb; /* deeper TopCV blue like filter button hover */
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+}
+
+.login-button {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 0.95rem; /* match filter button font size */
+  font-weight: 500;
+  color: #ffffff;
+  background-color: #2563eb; /* same as filter-row-bottom button */
+  border: none;
+  border-radius: 6px; /* match filter buttons */
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.login-button:hover {
+  background-color: #1e40af; /* match button hover */
+}
+
+.login-button:active {
+  transform: scale(0.98);
+}
+
+.login-error {
+  font-size: 0.85rem;
+  color: #dc2626; /* red like cv-status-tag rejected */
+  margin-top: -8px;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.login-footer {
+  font-size: 0.85rem;
+  color: #4a5568;
+  text-align: center;
+  margin-top: 12px;
+}
+
+.login-footer a {
+  color: #2563eb; /* same as buttons */
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.login-footer a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive tweaks */
+@media (max-width: 500px) {
+  .login-container {
+    padding: 24px;
+  }
+
+  .login-title {
+    font-size: 24px;
+  }
+
+  .login-button {
+    font-size: 0.9rem;
+  }
+}
+
+/* Container that holds both boxes */
+.login-page-cheese {
+  display: flex;
+  justify-content: center; /* horizontal centering */
+  align-items: center;     /* vertical centering */
+  height: 100vh;
+  width: 100%;
+  background-color: #f7fafc;
+  gap: 0; /* no extra spacing needed */
+  box-sizing: border-box;
+  padding: 0 16px;
+}
+
+/* Invisible box: just a width to push login box to center */
+.login-invisible-box {
+  width: 50%; /* tweak this to adjust visual centering */
+  height: 0;  /* invisible */
+}
