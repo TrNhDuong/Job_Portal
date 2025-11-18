@@ -1,0 +1,103 @@
+/* frontend/src/pages/AboutPage.css */
+/* --- PHIÊN BẢN NÂNG CẤP UI --- */
+
+.about-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.about-card {
+  background: var(--bg-white, white);
+  border-radius: 12px;
+  padding: 24px 28px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border, #e5e7eb);
+  transition: all 0.2s ease;
+}
+
+/* --- THÊM MỚI: Thẻ "Hero" (điểm nhấn) --- */
+.about-card.hero {
+  /* Màu nền xanh dương rất nhạt (giống màu active sidebar) */
+  background-color: #eef2ff; 
+  border-color: #c7d2fe;
+}
+.about-card.hero h2 {
+  color: #1e40af; /* Màu xanh đậm hơn */
+}
+/* --- KẾT THÚC THÊM --- */
+
+
+.about-card h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-color, #1a73e8);
+  margin-top: 0;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border, #e5e7eb);
+  padding-bottom: 8px;
+
+  /* --- THÊM MỚI: Căn chỉnh Icon và Tiêu đề --- */
+  display: flex;
+  align-items: center;
+  gap: 12px; /* Khoảng cách giữa icon và chữ */
+}
+
+.about-card h2 svg {
+  /* Style cho icon */
+  flex-shrink: 0; /* Đảm bảo icon không bị bóp méo */
+  font-size: 1.3em; /* Icon to hơn chữ một chút */
+  opacity: 0.8;
+}
+/* --- KẾT THÚC THÊM --- */
+
+
+.about-card p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-medium, #4a5568);
+  margin-bottom: 12px;
+}
+.about-card p:last-child { margin-bottom: 0; }
+.about-card a {
+  color: var(--primary-color, #1a73e8);
+  text-decoration: none;
+  font-weight: 600;
+}
+.about-card a:hover { text-decoration: underline; }
+
+/* --- THAY THẾ: Kiểu danh sách thành viên --- */
+.team-list {
+  /* Bỏ <ul>, dùng div */
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Khoảng cách giữa các thành viên */
+  padding-left: 0;
+}
+
+.team-list-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1rem;
+  color: var(--text-medium, #4a5568);
+  padding: 12px;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.team-list-item:hover {
+  background-color: var(--bg-light, #f9fafb);
+}
+
+.team-list-item strong {
+  color: var(--text-dark, #1a202c); /* Tên thành viên */
+}
+
+.team-list-item span {
+  color: var(--text-light, #a0aec0); /* MSSV */
+}
+/* --- KẾT THÚC THAY THẾ --- */
