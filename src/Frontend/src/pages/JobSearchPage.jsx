@@ -5,33 +5,30 @@ import JobListings from '../components/JobListings';
 import JobDetailPanel from '../components/JobDetailPanel';
 
 export default function JobSearchPage() {
-  // State 1: Lưu trữ job đang được chọn
   const [selectedJob, setSelectedJob] = useState(null);
-
-  // State 2: Lưu trữ các filter (khớp với Backend của bạn)
   const [filters, setFilters] = useState({
-  	keyword: "", // 'keyword' sẽ được lọc ở Frontend (giống code mẫu)
+  	keyword: "",
   	location: "",
-  	major: "", // (Backend của bạn dùng 'major')
+  	major: "",
   	jobType: "",
-    salaryMin: "", // (Backend của bạn dùng 'salaryMin')
-    salaryMax: "", // (Backend của bạn dùng 'salaryMax')
+    salaryMin: "",
+    salaryMax: "",
     experience: "",
     degree: "",
-    page: 1, // Bắt đầu ở trang 1
+    page: 1,
   });
 
   return (
-    // Dùng 'max-h-[calc(100vh-80px)]' (100vh trừ đi chiều cao Navbar ~80px)
-    <main className="flex max-h-[calc(100vh-80px)] bg-gray-50">
+    // Sửa: Dùng 'bg-background' (xám nhạt) và 'max-h'
+    <main className="flex max-h-[calc(100vh-80px)] bg-background">
       
-      {/* Sidebar Trái (Lọc) */}
-      <aside className="w-full md:w-80 bg-white border-r border-gray-200 overflow-y-auto p-4">
+      {/* Sidebar Trái (Lọc) - Sửa: Dùng 'bg-sidebar' (màu tối) */}
+      <aside className="w-full md:w-80 bg-sidebar text-sidebar-foreground border-r border-sidebar-border overflow-y-auto p-4">
         <SearchFilters filters={filters} setFilters={setFilters} />
       </aside>
 
-      {/* Cột Giữa (Danh sách) */}
-      <div className="flex-1 border-r border-gray-200 overflow-y-auto">
+      {/* Cột Giữa (Danh sách) - Sửa: Dùng 'border-border' */}
+      <div className="flex-1 border-r border-border overflow-y-auto">
         <JobListings 
           selectedJob={selectedJob} 
           onSelectJob={setSelectedJob} 
@@ -40,9 +37,9 @@ export default function JobSearchPage() {
         />
       </div>
 
-      {/* Cột Phải (Chi tiết) - Chỉ hiện khi có selectedJob */}
+      {/* Cột Phải (Chi tiết) - Sửa: Dùng 'bg-card' (xám) */}
       {selectedJob && (
-        <div className="hidden lg:block w-96 bg-white border-l border-gray-200 overflow-y-auto">
+        <div className="hidden lg:block w-96 bg-card border-l border-border overflow-y-auto">
           <JobDetailPanel 
             job={selectedJob} 
             onClose={() => setSelectedJob(null)} 

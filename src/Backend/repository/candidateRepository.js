@@ -40,7 +40,7 @@ export class CandidateRepository {
         };
     }
     static async updateCandidate(email, updatesCandidate) {
-        const candidateAttributes = ["name", "password", "listSaveJob", "appliedJobs", "CV"];
+        const candidateAttributes = ["name", "password", "listSaveJob", "appliedJobs", "CV", "email"];
         let candidate = await this.getCandidate(email);
         if (!candidate.success) {
             return {
@@ -49,7 +49,7 @@ export class CandidateRepository {
                 data: null
             };
         }
-
+        console.log("haha")
         for (const attribute of candidateAttributes) {
             candidate.data[attribute] = updatesCandidate[attribute] || candidate.data[attribute];
         }

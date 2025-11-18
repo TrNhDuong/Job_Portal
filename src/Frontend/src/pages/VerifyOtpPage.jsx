@@ -15,7 +15,7 @@ export default function VerifyOtpPage() {
   const [otp, setOtp] = useState(new Array(6).fill(""));
   const [msg, setMsg] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [countdown, setCountdown] = useState(30);
+  const [countdown, setCountdown] = useState(120);
   
   const [data, setData] = useState(null); 
   const [email, setEmail] = useState(""); 
@@ -84,7 +84,7 @@ export default function VerifyOtpPage() {
   	try {
   	  await client.post("/api/send-otp", { email: email });
   	  setMsg({ type: 'success', text: 'OTP mới đã được gửi!' });
-  	  setCountdown(30); 
+  	  setCountdown(120); 
   	} catch (err) {
   	  setMsg({ type: 'error', text: 'Lỗi gửi OTP.' });
   	} finally {
@@ -123,8 +123,8 @@ export default function VerifyOtpPage() {
 
         // THỬ 1: chỉ update name + phone, KHÔNG động tới email
         await client.patch(
-          `/api/candidate?email=${encodeURIComponent(oldEmail)}`,
-          { name, phone },
+          `/api/candidate?email=${oldEmail}`,
+          { name: name, email: newWEmail},
         );
 
         if (user) {
