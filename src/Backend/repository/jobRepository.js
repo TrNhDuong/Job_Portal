@@ -34,9 +34,34 @@ export class JobRepository {
         };
     }
     static async createJobPost(jobData) {
-        const newJobPost = new JobPost(jobData);
-        await newJobPost.save();
-        return { success: true, data: newJobPost, message: "Job post created successfully" };
+        try {
+            const newJobPost = new JobPost(jobData);
+            
+            const savedPost = await newJobPost.save();
+            
+            return { 
+                success: true, 
+                data: savedPost, 
+                message: "Job post created successfully" 
+            };
+            
+        } catch (error) {
+            console.error("Lỗi khi lưu bài đăng:", error.message);
+            if (error.name === 'ValidationError') {
+                // Lỗi do thiếu trường bắt buộc, enum sai, hoặc kiểu dữ liệu không khớp
+                return { 
+                    success: false, 
+                    message: "Validation failed: Please check required fields and data types.", 
+                    errors: error.errors // Trả về chi tiết lỗi validation
+                };
+            }
+            
+            return { 
+                success: false, 
+                message: "Server error during job creation.",
+                rawError: error 
+            };
+        }
     }
     static async updateJobPost(jobId, updates) {
         const updatedJobPost = await this.getJobPost(jobId);

@@ -1,0 +1,177 @@
+/* frontend/src/styles/employerProfileEdit.css */
+
+.profile-edit-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.edit-title {
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+.edit-form {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.form-main-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+}
+
+.form-column h2 {
+    font-size: 20px;
+    color: #3a86ff;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.form-group, .form-group-inline {
+    margin-bottom: 15px;
+}
+
+.form-group-inline {
+    display: flex;
+    gap: 20px;
+}
+.form-group-inline .form-group {
+    flex: 1;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.edit-form input, .edit-form textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+.edit-form input:focus, .edit-form textarea:focus {
+    border-color: #3a86ff;
+    outline: none;
+}
+
+.edit-form input[disabled] {
+    background-color: #f5f5f5;
+    color: #999;
+}
+
+.error-text {
+    color: #d93025;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+/* --- Upload Group Styles --- */
+.upload-group {
+    margin-bottom: 25px;
+}
+
+.btn-upload {
+    background-color: #eef2f7;
+    color: #3a86ff;
+    border: 1px solid #3a86ff;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+.btn-upload:hover {
+    background-color: #dbeaff;
+}
+
+.logo-preview {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-top: 10px;
+    border: 1px solid #eee;
+}
+
+.wallpaper-preview {
+    width: 100%;
+    height: 100px;
+    border-radius: 8px;
+    background-size: cover;
+    background-position: center;
+    margin-top: 10px;
+}
+
+/* --- Password Section --- */
+.form-group-password-section h3 {
+    font-size: 16px;
+    margin-top: 20px;
+    margin-bottom: 15px;
+    color: #777;
+    font-weight: 600;
+}
+
+/* --- Action Buttons (Sticky Footer) --- */
+.form-actions-sticky {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    padding: 15px 0;
+    margin-top: 20px;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    z-index: 20;
+}
+
+.btn-cancel, .btn-save {
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    transition: opacity 0.2s;
+}
+
+.btn-cancel {
+    background-color: #f0f0f0;
+    color: #555;
+    border: none;
+}
+.btn-cancel:hover {
+    opacity: 0.8;
+}
+
+.btn-save {
+    background-color: #3a86ff;
+    color: #fff;
+    border: none;
+}
+.btn-save:hover {
+    background-color: #2b70e2;
+}
