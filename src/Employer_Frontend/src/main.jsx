@@ -6,12 +6,11 @@ import App from './App.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+  
     <AuthProvider>
       {/* Bọc App bằng Router */}
       <BrowserRouter> 
         <App />
       </BrowserRouter>
     </AuthProvider>
-  </StrictMode>,
 );

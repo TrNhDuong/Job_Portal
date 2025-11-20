@@ -130,6 +130,36 @@ export class EmployerRepository {
             };
         }
     }
+    static async removeJobPostFromEmployer(email, jobPostId) {
+        try {
+            const updatedEmployer = await Employer.findOneAndUpdate(
+                { email: email },
+                { $pull: { jobPosted: jobPostId } },
+                { new: true }
+            );
+
+            if (!updatedEmployer) {
+                return {
+                    success: false,
+                    message: "Employer not found",
+                    data: null
+                };
+            }
+
+            return {
+                success: true,
+                data: updatedEmployer
+            };
+
+        } catch (error) {
+            console.error("Error removing job post from employer:", error);
+            return {
+                success: false,
+                message: "Database update error",
+                data: null
+            };
+        }
+    }
     // Return top 10 branch hot
     static async getTopFeature() {
         try {

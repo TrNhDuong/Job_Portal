@@ -1,11 +1,13 @@
 import { JobRepository } from "../../repository/jobRepository.js";
+import mongoose from "mongoose";
 
 export const getJobPostByID = async (req, res) => {
     const id = req.query.jobId;  // lấy từ query param
-    console.log(id)
     try {
-        const jobPost = await JobRepository.getJobPost(id);
+        const jobId = new mongoose.Types.ObjectId(id); // Chuyển đổi chuỗi ID thành ObjectId
+        const jobPost = await JobRepository.getJobPost(jobId);
         if (jobPost.success) {
+            console.log(jobPost.data);
             res.status(200).json({
                 success: true,
                 data: jobPost.data,

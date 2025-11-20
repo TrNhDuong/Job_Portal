@@ -7,21 +7,12 @@ const EmployerProfileEdit = ({ initialData, onSave, onCancel }) => {
     // Khởi tạo state form từ initialData
     const [form, setForm] = useState({
         company: initialData.companyName || '',
-        tagline: initialData.tagline || '',
-        description: initialData.tagline || '', // Dùng tagline làm description tạm thời
-        website: initialData.info?.website || '',
-        // Account Info
-        email: initialData.email || '',
-        currentPassword: '',
-        newPassword: '',
-        confirmNewPassword: '',
+        description: initialData.description || '', // Dùng tagline làm description tạm thời
+        website: initialData.website || '',
+        address: initialData.address || '',
         // Wallpaper và Logo
-        wallpaperUrl: initialData.wallpaper?.url || '',
-        logoUrl: initialData.logo?.url || '',
-        // Các trường info blocks: industry, employees, founded...
-        industry: initialData.info?.industry || '',
-        employees: initialData.info?.employees || '',
-        founded: initialData.info?.founded || '',
+        wallpaperUrl: initialData.wallpaper || '',
+        logoUrl: initialData.logo || '',
     });
 
     const [errors, setErrors] = useState({});
@@ -36,9 +27,6 @@ const EmployerProfileEdit = ({ initialData, onSave, onCancel }) => {
         const newErrors = {};
         // Logic validation đơn giản: kiểm tra tên công ty
         if (!form.company.trim()) newErrors.company = "Tên công ty không được để trống.";
-        if (form.newPassword && form.newPassword !== form.confirmNewPassword) {
-            newErrors.confirmNewPassword = "Mật khẩu mới không khớp.";
-        }
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -51,14 +39,9 @@ const EmployerProfileEdit = ({ initialData, onSave, onCancel }) => {
                 company: form.company,
                 description: form.description, // Gửi description (tagline)
                 website: form.website,
-                // Gửi thông tin để cập nhật mật khẩu nếu có
-                currentPassword: form.currentPassword,
-                newPassword: form.newPassword,
-                // ... (Thêm các trường khác)
+                address: form.address
             };
-            
-            // Xử lý API ở đây hoặc gọi prop onSave
-            // onSave(dataToSubmit); 
+            onSave(dataToSubmit);
             onCancel(); // Tạm thời đóng form sau khi lưu
             alert("Đã gửi dữ liệu cập nhật. Vui lòng kiểm tra Console.");
         }
@@ -96,7 +79,7 @@ const EmployerProfileEdit = ({ initialData, onSave, onCancel }) => {
 
                         {/* Mô tả/Overview */}
                         <div className="form-group">
-                            <label>Giới thiệu ngắn (Tagline/Mô tả)</label>
+                            <label>Mô tả (Description)</label>
                             <textarea name="description" value={form.description} onChange={handleChange} rows="4" />
                         </div>
                         
@@ -106,49 +89,9 @@ const EmployerProfileEdit = ({ initialData, onSave, onCancel }) => {
                             <input name="website" value={form.website} onChange={handleChange} placeholder="https://" />
                         </div>
                         
-                        <div className="form-group-inline">
-                            <div className="form-group">
-                                <label>Ngành nghề</label>
-                                <input name="industry" value={form.industry} onChange={handleChange} />
-                            </div>
-                            <div className="form-group">
-                                <label>Quy mô (Employees)</label>
-                                <input name="employees" value={form.employees} onChange={handleChange} />
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* --- Cột Phải: Thông tin Tài khoản (Account Security) --- */}
-                    <div className="form-column">
-                        <h2>Cài đặt Tài khoản</h2>
                         
-                        {/* Email (Thường là không đổi hoặc phải qua quy trình riêng) */}
-                        <div className="form-group">
-                            <label>Email (Không thể thay đổi)</label>
-                            <input name="email" value={form.email} readOnly disabled />
-                        </div>
-
-                        <div className="form-group-password-section">
-                            <h3>Đổi Mật khẩu</h3>
-                            
-                            <div className="form-group">
-                                <label>Mật khẩu Hiện tại (*)</label>
-                                <input type="password" name="currentPassword" value={form.currentPassword} onChange={handleChange} className={errors.currentPassword ? 'error' : ''} />
-                                {errors.currentPassword && <p className="error-text">{errors.currentPassword}</p>}
-                            </div>
-                            
-                            <div className="form-group">
-                                <label>Mật khẩu Mới</label>
-                                <input type="password" name="newPassword" value={form.newPassword} onChange={handleChange} />
-                            </div>
-                            
-                            <div className="form-group">
-                                <label>Xác nhận Mật khẩu Mới</label>
-                                <input type="password" name="confirmNewPassword" value={form.confirmNewPassword} onChange={handleChange} className={errors.confirmNewPassword ? 'error' : ''} />
-                                {errors.confirmNewPassword && <p className="error-text">{errors.confirmNewPassword}</p>}
-                            </div>
-                        </div>
                     </div>
+
                 </div>
 
                 {/* --- Action Buttons --- */}

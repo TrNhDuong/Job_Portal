@@ -2,14 +2,16 @@ import { JobPost } from "../../model/jobPost.js";
 import { JobRepository } from "../../repository/jobRepository.js";
 import { CandidateRepository } from "../../repository/candidateRepository.js";
 import { ApplicationRepository } from "../../repository/applicationRepository.js";
+import mongoose from "mongoose";
 
 export const updatePostJob = async (req, res) => {
   const id = req.query.jobId;
+  const jobId = new mongoose.Types.ObjectId(id);
   const {title, company, position, location, salary, 
         jobType, major, degree, experience, state, description, expiredDay } = req.body;
 
   try {
-    const result = await JobRepository.updateJobPost(id, {
+    const result = await JobRepository.updateJobPost(jobId, {
         title,
         company,
         position,
@@ -33,7 +35,6 @@ export const updatePostJob = async (req, res) => {
 
     res.status(200).json({ 
         success: true,
-        data: updatedJobPost,
         message: "Job post updated successfully"
     });
   } catch (error) {
@@ -46,7 +47,8 @@ export const updatePostJob = async (req, res) => {
 };
 
 export const applyJob = async (req, res) => {
-    const jobId = req.query.jobId;
+    const id = req.query.jobId;
+    const jobId = new mongoose.Types.ObjectId(id);
     const { email } = req.body;
     try {
         const candidate = await CandidateRepository.getCandidate(email);
@@ -75,7 +77,8 @@ export const applyJob = async (req, res) => {
 };
 
 export const removeApplyJob = async (req, res) => {
-    const jobId  = req.query.jobId;
+    const id = req.query.jobId;
+    const jobId = new mongoose.Types.ObjectId(id);
     const { email } = req.body;
     try {
         const candidate = await CandidateRepository.getCandidate(email);
@@ -97,10 +100,11 @@ export const removeApplyJob = async (req, res) => {
 }
 
 export const extendJobExpiry = async (req, res) => {
-    const { id } = req.params;
+    const id = req.query.jobId;
+    const jobId = new mongoose.Types.ObjectId(id);
     const { expireDay } = req.body;
     try {
-      const jobPost = await JobPost.findById(id);
+      const jobPost = await JobPost.findById(jobId);
       if (!jobPost) {
         return res.status(404).json({ message: "Job post not found" });
       }

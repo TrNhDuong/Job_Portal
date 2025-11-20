@@ -7,7 +7,7 @@ export const createStorage = (folderPath) => {
         cloudinary,
         params: {
             folder: folderPath,
-            allowed_formats: ["jpg", "jpeg", "png", "webp"],
+            allowed_formats: ["jpg", "jpeg", "png", "webp", "pdf", "doc", "docx"],
             transformation: [{ width: 500, height: 500, crop: "limit" }],
         }
     })

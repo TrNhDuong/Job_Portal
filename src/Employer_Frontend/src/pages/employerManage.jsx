@@ -312,7 +312,7 @@ export default function EmployerDashboard({ jobPosts }) {
           </div>
 
           {/* CV List */}
-          <div className="job-post-list" style={{ paddingTop: "240px", paddingBottom: "90px" }}>
+          <div className="job-post-list" style={{ paddingTop: "70px", paddingBottom: "90px" }}>
             {filteredCVs.length > 0 ? filteredCVs.map(cv => (
               <div key={cv.id} className={`cv-card ${cv.status !== 'chua_xem' ? 'faded' : ''}`}>
                 <input 

@@ -1,7 +1,6 @@
 // frontend/src/context/AuthContext.jsx
-// --- PHIÊN BẢN NÂNG CẤP (KHỚP VỚI LOGINFORM MỚI) ---
 import React, { createContext, useState, useEffect, useContext } from "react";
-import client from "../api/client"; // Đảm bảo đường dẫn này đúng
+import client from "../api/client";
 
 export const AuthContext = createContext();
 
@@ -9,8 +8,10 @@ export const AuthProvider = ({ children }) => {
   const [auth, setAuth] = useState({
     token: localStorage.getItem("token") || null,
     user: JSON.parse(localStorage.getItem("user")) || null,
+    employerData: JSON.parse(localStorage.getItem("employerData")) || null,
   });
 
+  // Lưu token & user vào localStorage
   useEffect(() => {
     if (auth.token) {
       client.defaults.headers.common["Authorization"] = `Bearer ${auth.token}`;
@@ -21,35 +22,91 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
     }
-  }, [auth.token]); // Chỉ chạy khi token thay đổi
+  }, [auth.token]);
 
-  const login = (token, user) => {
-    setAuth({
-      token: token,
-      user: user,
+  const login = (email) => {
+    setAuth(prev => ({
+      ...prev,
+      email: email
+    }));
+  };
+
+  const setMail = (email) => {
+    setAuth(prevAuth => ({
+      ...prevAuth,
+      email: email
+    }));
+  };
+
+  const logout = () => {
+    setAuth({ token: null, user: null, employerData: null });
+    localStorage.removeItem("employerData");
+  };
+
+  // --- FIXED: Luôn tạo NEW OBJECT ---
+  const setEmployerData = (data) => {
+    setAuth(prev => ({
+      ...prev,
+      employerData: {
+        ...data
+      }
+    }));
+    localStorage.setItem("employerData", JSON.stringify(data));
+  };
+
+  // --- FIXED: Tạo lại STATE mới (NO MUTATION) ---
+  const updateEmployerWithData = async (updatedData) => {
+    setAuth(prev => {
+      const newEmployer = {
+        ...prev.employerData,
+        data: {
+          ...prev.employerData?.data,
+          ...updatedData
+        }
+      };
+
+      // Lưu vào localStorage
+      localStorage.setItem("employerData", JSON.stringify(newEmployer));
+
+      return {
+        ...prev,
+        employerData: newEmployer
+      };
     });
   };
 
-  // Hàm Đăng xuất (như cũ)
-  const logout = () => {
-    setAuth({ token: null, user: null });
+  // Fetch lại từ backend
+  const updateData = async () => {
+    const email = auth?.employerData?.data?.email;
+    if (!email) return false;
+
+    const result = await client.get(`api/employer?email=${email}`);
+    if (result.data.success) {
+      setEmployerData(result.data);
+      return true;
+    } else {
+      return false;
+    }
   };
 
-  const setEmployerData = (data) => {
-    setAuth(prevAuth => ({ 
-        ...prevAuth, 
-        employerData: data 
-    }));
-    localStorage.setItem("employerData", JSON.stringify(data));
-  };
+  const getEmployerData = () => {
+    return auth.employerData;
+  };
 
   return (
-    <AuthContext.Provider value={{ auth, login, logout, setEmployerData }}>
+    <AuthContext.Provider value={{
+      auth,
+      login,
+      logout,
+      setEmployerData,
+      updateEmployerWithData,
+      updateData,
+      getEmployerData,
+      setMail
+    }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+export const useAuth = () => useContext(AuthContext);

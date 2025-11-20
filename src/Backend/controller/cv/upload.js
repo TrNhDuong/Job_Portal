@@ -8,10 +8,12 @@ export const uploadCandidateCV = async (req, res) => {
     const email = req.query.email;
     const upload = multer({ storage }).single("cv");
     upload(req, res, async (err) => {
-        if (err) return res.status(500).json({
+        if (err) {
+            console.log("Upload CV Error:", err);
+            return res.status(500).json({
             success: false,
             message: "Failed to upload CV"
-        })
+        })}
         const candidateUpdateData = await CandidateRepository.updateCandidate(email, {
             CV: {
                 url: req.file.path,
@@ -20,7 +22,9 @@ export const uploadCandidateCV = async (req, res) => {
                 uploadedAt: new Date()
             }
         })
+        console.log("Candidate Update Data:", candidateUpdateData);
         if (candidateUpdateData.success){
+            console.log("CV uploaded and candidate updated successfully");
             res.status(200).json({
                 success: true,
                 message: "Upload successfully"

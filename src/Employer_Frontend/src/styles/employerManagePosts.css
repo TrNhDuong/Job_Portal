@@ -21,7 +21,7 @@
 /* --- TÔI ĐÃ SỬA: Đây là thay đổi quan trọng nhất --- */
 .filter-bar {
   position: fixed; /* Cố định thanh lọc */
-  top: 104px; /* Dưới thanh hotbar (60px) + tab-bar (44px) */
+  top: 50px; /* Dưới thanh hotbar (60px) + tab-bar (44px) */
   right: 0; /* Căn phải */
   /* 'left' và 'transition' sẽ được thêm từ inline style */
   

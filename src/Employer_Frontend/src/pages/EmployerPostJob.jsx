@@ -159,9 +159,6 @@ const EmployerPostJob = ({ onSubmit, initialData }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validateForm()) {
-      
-      // --- BƯỚC 1: ĐỊNH DẠNG DỮ LIỆU ---
-      // Backend yêu cầu 'salary' là Object và 'experience' là Number.
       const formattedData = {
         ...form, // Lấy tất cả các trường cũ (title, position, v.v.)
         

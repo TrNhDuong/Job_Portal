@@ -110,7 +110,7 @@ export default function EmployerManagePosts({
         </div>
       )}
 
-      <div className="job-post-list" style={{ paddingTop: disableFilterBar ? "0px" : "120px" }}>
+      <div className="job-post-list" style={{ paddingTop: disableFilterBar ? "0px" : "90px" }}>
         {filteredPosts.length > 0 ? (
           filteredPosts.map((post) => (
             <div

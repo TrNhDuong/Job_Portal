@@ -107,12 +107,14 @@
 .company-tagline {
     color: #777;
     margin-top: 15px;
+    margin-bottom: 30px;
     line-height: 1.6;
     max-width: 80%;
 }
 
 .company-links {
     margin-top: 15px;
+    margin-bottom: 15px;
 }
 
 .company-links a {

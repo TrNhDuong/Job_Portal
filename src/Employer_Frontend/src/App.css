@@ -3,7 +3,7 @@ html, body {
   /* --- THAY ĐỔI: Nền xám nhạt (TopCV) --- */
   background: var(--bg-light); 
   color: var(--text-dark); 
-  font-family: "Montserrat", sans-serif;
+  font-family: "Poppins", sans-serif;
   margin: 0;
   padding: 0;
 }
@@ -37,46 +37,38 @@ html, body {
 * {
   box-sizing: border-box;
   font-family: inherit;
-  background-color: unset;
-  color: inherit;
 }
 
+html, body {
+  background: var(--bg-light);
+  color: var(--text-dark);
+}
 .page-wrap {
-  display: grid;
-  width: 100vw;
-  gap: 0;
-  margin-top: 60px;
-  height: calc(100vh - 60px);
+    /* Đặt grid-template-columns linh hoạt hơn */
+    display: grid;
+    /* CHỈNH SỬA Ở ĐÂY: Thêm 20px gap */
+    grid-template-columns: 17.5% 1fr; /* Sidebar 17.5%, Nội dung 1fr */
+    gap: 20px; /* <--- KHOẢNG CÁCH CHUYÊN NGHIỆP GIỮA CÁC CỘT */
+    /* Giữ nguyên transition: grid-template-columns 0.3s ease; */
+    
+    /* Cấu trúc chung của trang */
+    min-height: 100vh;
+    background-color: #f7f9fc; /* Nền nhẹ nhàng cho cả trang */
 }
 
-/* --- THAY ĐỔI: .hotbar (Nền than chì) --- */
-.hotbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 60px;
-  background: var(--hotbar-bg); /* Nền than chì */
-  color: var(--text-light); /* Chữ xám nhạt (cho logo) */
-  display: flex;
-  align-items: center;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* Bóng mờ */
-  z-index: 1000;
-  padding: 0 12px;
-  border-bottom: 1px solid #000; /* Viền đen */
-}
-/* --- KẾT THÚC THAY ĐỔI .hotbar --- */
 
 /* --- THAY ĐỔI: .left-col (Nền trắng) --- */
-.left-col {
+.side-bar {
+  background: #ffffff;
+  padding: 24px 12px;
+  height: 100vh;
+  border-right: 1px solid #e6e6e6;
+  display: flex;
   flex-direction: column;
-  overflow-y: auto;
-  overflow-x: hidden;
-  height: calc(100vh - 60px);
-  transition: width 0.3s ease;
-  background: var(--sidebar-bg); /* Nền trắng */
-  color: var(--text-medium); /* Chữ xám */
-  border-right: 1px solid var(--border); /* Thêm viền phải */
+  gap: 20px;
+  position: sticky;
+  top: 0;
+  
 }
 /* --- KẾT THÚC THAY ĐỔI .left-col --- */
 
@@ -124,27 +116,52 @@ html, body {
 .right-panel {
   overflow-y: auto;
   height: calc(100vh - 60px);
-  padding: 24px;
+  padding: 20px 30px;
   background: var(--bg-light); /* Nền xám siêu nhạt */
 }
 
 /* --- THAY ĐỔI: "Thanh phụ" nền trắng --- */
 .tab-name-bar {
-  position: fixed;
-  top: 60px;
-  left: 17.5%;
-  width: calc(100% - 200px);
-  height: 44px;
-  background: var(--bg-white); /* Nền trắng */
-  color: var(--text-dark);
-  display: flex;
-  align-items: center;
-  font-size: 20px;
-  font-weight: 500;
-  padding: 0 32px;
-  border-bottom: 1px solid var(--border); /* Viền xám */
-  box-shadow: 0 1px 3px rgba(0,0,0,0.03); /* Thêm bóng mờ nhẹ */
-  z-index: 999;
+    /* --- 1. Vị trí & Kích thước --- */
+    position: fixed; 
+    top: 0;
+    /* Giữ nguyên Left/Width inline style để đồng bộ với Sidebar */
+    height: 64px; /* Hơi thấp hơn (70px -> 64px) trông hiện đại hơn */
+    
+    /* --- 2. Giao diện & Hiệu ứng --- */
+    background-color: rgba(255, 255, 255, 0.98); /* Gần như trắng hoàn toàn */
+    
+    /* Blur Backdrop Tinh Tế */
+    backdrop-filter: blur(5px); 
+    -webkit-backdrop-filter: blur(5px); 
+    
+    /* Box Shadow "Pro" mới: Nhẹ nhàng hơn, tập trung vào cạnh dưới */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); 
+    
+    /* --- 3. Căn chỉnh Nội dung & Padding --- */
+    display: flex;
+    align-items: center; 
+    padding: 0 40px; /* Tăng padding ngang (30px -> 40px) cho không gian thở */
+    
+    /* --- 4. Kiểu chữ (Typography) CHUYÊN NGHIỆP --- */
+    font-size: 1.55rem; /* Kích thước phù hợp, không quá lấn át */
+    font-weight: 600; /* Đậm vừa, sắc nét */
+    color: #2c3e50; /* Màu chữ Dark Navy (Xanh đen) thay vì đen tuyền (tương phản mềm hơn) */
+    
+    /* Đảm bảo chữ không bị chọn (Optional) */
+    user-select: none; 
+    
+    z-index: 99; 
+    transition: left 0.3s ease, width 0.3s ease, box-shadow 0.3s ease; 
+}
+
+/* --- BÙ KHOẢNG TRỐNG NỘI DUNG (Cần được áp dụng cho nội dung chính) --- */
+
+/* Thay thế style={{ marginTop: "80px" }} cũ bằng padding-top */
+/* Giả sử bạn có một content wrapper bên trong right-panel */
+.right-panel > div:nth-child(2) {
+    /* (64px chiều cao bar + 20px khoảng trống) */
+    padding-top: 0px !important; 
 }
 /* --- KẾT THÚC THAY ĐỔI .tab-name-bar --- */
 
@@ -167,41 +184,126 @@ html, body {
 /* ... (Các class .sub-card-container, .button... giữ nguyên) ... */
 
 
-/* --- THAY ĐỔI (Yêu cầu 2): Nút trên Hotbar (Style TopCV) --- */
-.top-nav-bubble {
-  /* Style "viên thuốc" (pill) giống TopCV */
-  border: none;
-  background: var(--hotbar-button-bg); /* Nền xám xanh */
-  color: var(--text-white); /* Chữ trắng */
-  font-weight: 500;
-  padding: 8px 14px; 
-  cursor: pointer;
-  transition: background 0.2s;
-  border-radius: 20px; /* Bo tròn */
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  box-shadow: none;
-}
-
-.top-nav-bubble:hover {
-  background: var(--hotbar-button-hover); /* Nền sáng hơn khi hover */
-  color: var(--text-white); 
-  transform: none; 
-}
-
-/* --- THAY ĐỔI: Bỏ class .cta --- */
-/* Chúng ta không cần .cta nữa vì tất cả các nút đều giống nhau */
-.top-nav-bubble.cta {
-  /* Giữ style giống các nút khác */
-  background: var(--hotbar-button-bg); 
-  color: var(--text-white);
-  font-weight: 500;
-}
-
-.top-nav-bubble.cta:hover {
-  background: var(--hotbar-button-hover);
-  color: var(--text-white); 
-}
+/*  */
 /* --- KẾT THÚC THAY ĐỔI .top-nav-bubble --- */
+
+
+.sidebar-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+  margin: 1px;
+}
+
+.sidebar-logo {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  padding: 6px;
+  border-radius: 50%;
+  background: #f7f7f7;
+  border: 1px solid #ececec;
+}
+
+.menu-header {
+  font-weight: 30px;
+  margin-bottom: 10px;
+}
+
+.logo-container {
+    display: flex;             /* Kích hoạt Flexbox */
+    align-items: center;       /* Căn giữa các mục theo chiều dọc */
+    gap: 10px;                 /* Tạo khoảng cách giữa logo và chữ TND */
+}
+
+.sidebar-top-section {
+    padding: 16px 20px;
+    background-color: #ffffff; /* Nền trắng sạch sẽ */
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); /* Shadow nhẹ ở dưới cùng */
+}
+
+/* ----------------------------------------------------------------
+   2. Khu vực Logo Ứng dụng (TND)
+---------------------------------------------------------------- */
+
+.app-name {
+    font-size: 1.5rem; /* Kích thước chữ lớn hơn */
+    font-weight: 700;  /* Rất đậm */
+    color: var(--text-dark);
+    letter-spacing: -0.5px; /* Giảm khoảng cách chữ để trông hiện đại hơn */
+}
+
+/* ----------------------------------------------------------------
+   3. Khu vực Thông tin Tài khoản (User Info Area)
+---------------------------------------------------------------- */
+.user-info-area {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    border-radius: 8px; /* Bo góc */
+    transition: background-color 0.2s, box-shadow 0.2s;
+    user-select: none; /* Không cho phép chọn văn bản */
+}
+
+/* Hiệu ứng tương tác: Nút Tài khoản */
+.user-info-area:hover {
+    background-color: var(--hover-bg);
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Shadow nổi nhẹ khi hover */
+}
+
+.user-info-area:active {
+    background-color: #e5e7eb; /* Hiệu ứng nhấn xuống */
+}
+
+/* Ảnh đại diện người dùng */
+.user-avatar {
+    width: 48px; /* Kích thước lớn hơn để nổi bật */
+    height: 48px;
+    border-radius: 50%; /* Hình tròn hoàn hảo */
+    object-fit: cover;
+    margin-right: 12px;
+    border: 2px solid var(--primary-color); /* Border màu chủ đạo */
+    box-shadow: 0 0 0 2px #ffffff; /* Tạo hiệu ứng border kép */
+}
+
+/* Chi tiết Tên và Email */
+.user-details {
+    flex-grow: 1; /* Chiếm hết không gian có thể */
+    overflow: hidden; /* Ẩn nếu tên/email quá dài */
+}
+
+.user-details > .user-info:first-child { /* Tên người dùng */
+    font-size: 1rem;
+    font-weight: 600; /* Đậm vừa */
+    color: var(--text-dark);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* ... khi quá dài */
+}
+
+.user-details > .user-info:last-child { /* Email */
+    font-size: 0.875rem; /* Tương đương 14px */
+    color: var(--text-light);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 2px;
+}
+
+/* Hiệu ứng khi khu vực tài khoản được "kích hoạt" (ví dụ: dropdown đang mở) */
+.user-info-area.active .account-dropdown-icon {
+    transform: rotate(180deg); /* Xoay mũi tên lên */
+    color: var(--primary-color);
+}
+
+/* ----------------------------------------------------------------
+   4. Đường Phân cách (Divider)
+---------------------------------------------------------------- */
+.header-divider {
+    border: none;
+    height: 1px;
+    background-color: var(--border-color);
+    margin: 5px 0;
+}
