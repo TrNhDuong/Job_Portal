@@ -24,7 +24,7 @@ router.post("/candidateRegister", async (req, res) => {
         description: "",
         appliedJobs: [],
         listSaveJobs: [],
-        CV: ""
+        CV: []
     });
     if (result.success) {
         res.status(201).json({ message: "Candidate registered successfully" });

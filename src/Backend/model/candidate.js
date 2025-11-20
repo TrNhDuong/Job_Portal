@@ -21,14 +21,26 @@ const candidateSchema = new mongoose.Schema({
     description: {
         type: String,
     },
-    listSaveJobs: [String],
+    listSaveJobs: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'JobPost',
+        }
+    ],
     appliedJobs: [
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'JobPost',
         }
     ],
-    CV: Buffer,
+    CV: [
+        {
+            url: String,
+            public_id: String,
+            name: String,
+            uploadedAt: { type: Date, default: Date.now }
+        }
+    ],
 });
 
 const Candidate = mongoose.model('Candidate', candidateSchema);

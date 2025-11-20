@@ -1,4 +1,5 @@
 import { CandidateRepository } from "./candidateRepository.js";
+import { JobRepository } from "./jobRepository.js";
 
 export class ApplicationRepository {
     static async createApplication(candidateID, jobId) {
@@ -10,10 +11,10 @@ export class ApplicationRepository {
             await applicationCandidate.data.save();
         }
         
-        const applicationJobPost = await JobPost.findById(jobId);
-        if (applicationJobPost) {
-            applicationJobPost.applicants.push(candidateID);
-            await applicationJobPost.save();
+        const applicationJobPost = await JobRepository.getJobPost(jobId);
+        if (applicationJobPost.success) {
+            applicationJobPost.data.applicants.push(candidateID);
+            await applicationJobPost.data.save();
         }
 
         return {

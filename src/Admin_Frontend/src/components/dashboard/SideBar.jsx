@@ -12,19 +12,48 @@ const Sidebar = ({ onMenuSelect, selectedMenu }) => {
 
       <nav className="menu-section">
         <ul>
-          <li
+          {/* <li
             onClick={() => onMenuSelect("analytics")}
             className={selectedMenu === "analytics" ? "active" : ""}
           >
             <FaChartLine className="menu-icon" /> Statistics & Analytics
+          </li> */}
+          <li className="menu-header">Statistics</li>
+
+          <li
+            onClick={() => onMenuSelect("performance")}
+            className={selectedMenu === "performance" ? "active" : ""}
+          >
+            <FaChartLine className="menu-icon" /> Performance 
+            {/* Statistics for performance include access website, user register
+            of 2 types (candidate and employer), job post
+             */}
           </li>
 
           <li
-            onClick={() => onMenuSelect("data")}
-            className={selectedMenu === "data" ? "active" : ""}
+            onClick={() => onMenuSelect("payment")}
+            className={selectedMenu === "payment" ? "active" : ""}
+            // Statistics for payment include total revenue, total transaction,
           >
-            <FaDatabase className="menu-icon" /> Data Management
+            <FaChartLine className="menu-icon" /> Payment
           </li>
+
+          <li className="menu-header">Management</li>
+
+          <li
+            onClick={() => onMenuSelect("jobpost-management")}
+            className={selectedMenu === "jobpost-management" ? "active" : ""}
+          >
+            <FaDatabase className="menu-icon" /> JobPost Management
+          </li>
+          {/* Manage for violation reports */}
+          <li
+            onClick={() => onMenuSelect("user-management")}
+            className={selectedMenu === "user-management" ? "active" : ""}
+          >
+            <FaDatabase className="menu-icon" /> User Management
+          </li>
+          {/* Manage for violation account */}
         </ul>
       </nav>
 

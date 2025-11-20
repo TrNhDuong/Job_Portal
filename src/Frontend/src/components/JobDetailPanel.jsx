@@ -3,16 +3,32 @@ import React from "react";
 import { X, MapPin, DollarSign, Briefcase, Clock, Heart } from "lucide-react";
 import { Link as RouterLink } from "react-router-dom";
 
+// HÀM FORMAT LƯƠNG
+function formatSalary(salary) {
+  if (!salary) return "Negotiable";
+  if (typeof salary === "string") return salary;
+  if (typeof salary === "number") return salary.toString();
+  if (typeof salary === "object") {
+    const { minSalary, maxSalary, currency } = salary;
+    const curr = currency || "";
+    if (minSalary && maxSalary) {
+      return `${minSalary} - ${maxSalary} ${curr}`.trim();
+    }
+    if (minSalary) {
+      return `From ${minSalary} ${curr}`.trim();
+    }
+    if (maxSalary) {
+      return `Up to ${maxSalary} ${curr}`.trim();
+    }
+  }
+  return "Negotiable";
+}
+
 export default function JobDetailPanel({ job, onClose }) {
-  // Dữ liệu giả (vì CSDL của bạn không có 2 trường này)
+  // Dữ liệu giả cho ngày đăng (nếu DB chưa có)
   const postedDate = "2 days ago";
 
-  // Nếu sau này DB có requirements thì bạn đổi lại chỗ này
-  const requirements = job.requirements || [
-    "React",
-    "TypeScript",
-    "5+ years experience",
-  ];
+  // ĐÃ XÓA: const requirements = ...
 
   return (
     <div className="h-full flex flex-col bg-white">
@@ -53,7 +69,7 @@ export default function JobDetailPanel({ job, onClose }) {
                 Salary
               </div>
               <p className="font-semibold text-slate-900">
-                {job.salary || "Negotiable"}
+                {formatSalary(job.salary)}
               </p>
             </div>
 
@@ -76,7 +92,7 @@ export default function JobDetailPanel({ job, onClose }) {
             </div>
           </div>
 
-          {/* Mô tả */}
+          {/* Mô tả (Bao gồm cả Requirements) */}
           <div>
             <h3 className="font-semibold text-slate-900 mb-3">
               About the Role
@@ -86,23 +102,7 @@ export default function JobDetailPanel({ job, onClose }) {
             </p>
           </div>
 
-          {/* Requirements */}
-          <div>
-            <h3 className="font-semibold text-slate-900 mb-3">
-              Requirements
-            </h3>
-            <div className="space-y-2">
-              {requirements.map((req, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-start gap-3 text-sm text-slate-700"
-                >
-                  <div className="h-2 w-2 rounded-full bg-sky-500 mt-1.5 shrink-0" />
-                  <span>{req}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+          {/* ĐÃ XÓA: Phần hiển thị Requirements */}
 
           {/* Category */}
           <div>

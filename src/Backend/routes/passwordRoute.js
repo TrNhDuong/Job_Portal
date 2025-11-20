@@ -15,7 +15,7 @@ Router.post("/password/candidate", async (req, res) => {
         })
     }
     const hashPass = account.data.password
-    const isMatch = bcrypt.compare(password, hashPass);
+    const isMatch = await bcrypt.compare(password, hashPass);
 
     if (isMatch){
         const result = await CandidateRepository.updateCandidate(email, {password: newpassword})

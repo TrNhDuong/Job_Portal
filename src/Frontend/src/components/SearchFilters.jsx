@@ -1,125 +1,147 @@
 // src/components/SearchFilters.jsx
-import React from 'react';
-import { Search, MapPin } from 'lucide-react';
+import React from "react";
+import { Search, MapPin } from "lucide-react";
 
 export default function SearchFilters({ filters, setFilters }) {
-  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFilters({ ...filters, [name]: value, page: 1 });
   };
-  
+
+  const handleSalaryChange = (e) => {
+    const { name, value } = e.target;
+    setFilters({ ...filters, [name]: value, page: 1 });
+  };
+
   const handleCheckboxChange = (name, value) => {
     const newValue = filters[name] === value ? "" : value;
     setFilters({ ...filters, [name]: newValue, page: 1 });
   };
 
-  // Hàm (giả) cho nút Search Jobs
-  const handleSearch = () => {
-    // Logic tìm kiếm đã được xử lý tự động bởi hook 'useJobs'
-    // Nút này chỉ để cho đẹp
-    console.log("Đang tìm với filters:", filters);
-  };
-
   return (
-    <div className="p-2 space-y-6">
-      <div>
-        <h2 className="text-xl font-semibold text-sidebar-foreground mb-2">Find Jobs</h2>
-        <p className="text-sm text-sidebar-foreground/70">Search and filter positions</p>
-      </div>
-
-      {/* Keyword Search */}
-      <div className="space-y-2">
-        <label className="text-sm font-medium text-sidebar-foreground">Keyword</label>
-        <div className="relative">
-          <Search className="absolute left-3 top-3 h-4 w-4 text-sidebar-foreground/50" />
-          <input
-            name="keyword"
-            placeholder="Job title, skill..."
-            className="pl-10 w-full px-3 py-2 bg-sidebar-accent/50 border border-sidebar-border text-sidebar-foreground placeholder:text-sidebar-foreground/50 rounded-md text-sm"
-            value={filters.keyword}
-            onChange={handleChange}
-          />
+    <div className="h-full bg-[#0D1117] text-white">
+      <div className="px-5 py-6 space-y-6">
+        <div className="mx-8">
+        {/* Header */}
+        <div className="space-y-1">
+          <h2 className="text-xl font-semibold">Find Jobs</h2>
+          <p className="text-sm text-gray-400">
+            Search and filter available positions
+          </p>
         </div>
-      </div>
 
-      {/* Location */}
-      <div className="space-y-2">
-        <label className="text-sm font-medium text-sidebar-foreground">Location</label>
-        <div className="relative">
-          <MapPin className="absolute left-3 top-3 h-4 w-4 text-sidebar-foreground/50" />
-          <input
-            name="location"
-            placeholder="City, region..."
-            className="pl-10 w-full px-3 py-2 bg-sidebar-accent/50 border border-sidebar-border text-sidebar-foreground placeholder:text-sidebar-foreground/50 rounded-md text-sm"
-            value={filters.location}
-            onChange={handleChange}
-          />
-        </div>
-      </div>
-
-      {/* Major (Category) */}
-      <div className="space-y-2">
-        <label className="text-sm font-medium text-sidebar-foreground">Category</label>
-        <select
-          name="major"
-          className="w-full px-3 py-2 bg-sidebar-accent/50 border border-sidebar-border text-sidebar-foreground rounded-md text-sm"
-          value={filters.major}
-          onChange={handleChange}
-        >
-          <option value="">All categories</option>
-          <option value="IT">IT</option>
-          <option value="Business">Business</option>
-          <option value="Finance">Finance</option>
-          <option value="Marketing">Marketing</option>
-          <option value="Sales">Sales</option>
-          <option value="Other">Other</option>
-        </select>
-      </div>
-      
-      {/* Salary (Lương) */}
-      <div className="space-y-2">
-        <label className="text-sm font-medium text-sidebar-foreground">Salary Range</label>
-        <select
-          name="salaryRange" // Tạm thời dùng 1 select (dễ hơn)
-          className="w-full px-3 py-2 bg-sidebar-accent/50 border border-sidebar-border text-sidebar-foreground rounded-md text-sm"
-          value={filters.salaryRange || ""} // (Backend chưa hỗ trợ, đây là UI)
-          onChange={(e) => {
-            // (Logic này cần được cập nhật khi Backend hỗ trợ salaryMin/Max)
-            const [min, max] = e.target.value.split('-');
-            setFilters({ ...filters, salaryMin: min || "", salaryMax: max || "", page: 1 });
-          }}
-        >
-          <option value="">Any salary</option>
-          <option value="10000000-20000000">10tr - 20tr</option>
-          <option value="20000000-30000000">20tr - 30tr</option>
-          <option value="30000000-50000000">30tr - 50tr</option>
-        </select>
-      </div>
-
-      <button 
-        onClick={handleSearch}
-        className="w-full py-2 bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90 rounded-md font-semibold"
-      >
-        Search Jobs
-      </button>
-
-      <hr className="border-sidebar-border" />
-
-      {/* Job Type */}
-      <div className="space-y-3 text-sm">
-        <h3 className="font-medium text-sidebar-foreground">Employment Type</h3>
-        {['Full-time', 'Part-time', 'Contract'].map((type) => (
-          <label key={type} className="flex items-center space-x-2 cursor-pointer">
-            <input 
-              type="checkbox" 
-              className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500" // (Tailwind mặc định)
-              checked={filters.jobType === type}
-              onChange={() => handleCheckboxChange("jobType", type)}
+        {/* Keyword */}
+        <div style={{ height: 20 }} />
+        <div className="space-y-2 mt-8">
+          <label className="text-sm font-medium">Keyword</label>
+          <div className="relative mx-4">
+            {!filters.keyword && (
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-300" />
+            )}
+            <input
+              name="keyword"
+              placeholder="       Job title, skill..."
+              value={filters.keyword}
+              onChange={handleChange}
+              className="w-full h-10 rounded-md bg-[#445760] text-white 
+                         placeholder-gray-300 pl-10 pr-3 
+                         border border-[#2F3B42]
+                         focus:outline-none focus:ring-2 focus:ring-[#00A5B8] mx-8"
             />
-            <span className="text-sidebar-foreground">{type}</span>
-          </label>
-        ))}
+          </div>
+        </div>
+
+        {/* Location */}
+        <div style={{ height: 20 }} />
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Location</label>
+          <div className="relative mx-4">
+            {!filters.location && (
+              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-300" />
+            )}
+            <input
+              name="location"
+              placeholder="       City, region..."
+              value={filters.location}
+              onChange={handleChange}
+              className="w-full h-10 rounded-md bg-[#445760] text-white 
+                         placeholder-gray-300 pl-10 pr-3 
+                         border border-[#2F3B42]
+                         focus:outline-none focus:ring-2 focus:ring-[#00A5B8] mx-8"
+            />
+          </div>
+        </div>
+
+        {/* Salary Range */}
+        <div style={{ height: 20 }} />
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Salary Range</label>
+          <div className="grid grid-cols-2 gap-3 mx-4">
+            <input
+              name="salaryMin"
+              placeholder="  Min"
+              value={filters.salaryMin || ""}
+              onChange={handleSalaryChange}
+              className="h-10 rounded-md bg-[#445760] text-white 
+                         placeholder-gray-300 px-3 
+                         border border-[#2F3B42]
+                         focus:outline-none focus:ring-2 focus:ring-[#00A5B8] mx-8"
+            />
+            <input
+              name="salaryMax"
+              placeholder="  Max"
+              value={filters.salaryMax || ""}
+              onChange={handleSalaryChange}
+              className="h-10 rounded-md bg-[#445760] text-white 
+                         placeholder-gray-300 px-3 
+                         border border-[#2F3B42]
+                         focus:outline-none focus:ring-2 focus:ring-[#00A5B8] mx-8"
+            />
+          </div>
+        </div>
+
+        {/* Category */}
+        <div style={{ height: 20 }} />
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Category</label>
+          <select
+            name="major"
+            value={filters.major}
+            onChange={handleChange}
+            className="w-full h-10 rounded-md bg-[#445760] text-white 
+                       px-3 border border-[#2F3B42]
+                       focus:outline-none mx-8"
+          >
+            <option value=""> All categories</option>
+            <option value="IT">IT</option>
+            <option value="Business">Business</option>
+            <option value="Finance">Finance</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Sales">Sales</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <hr className="border-gray-700 mx-8" />
+
+        {/* Employment Type */}
+        <div style={{ height: 20 }} />
+        <div className="space-y-3 text-sm">
+          <h3 className="font-medium">Employment Type</h3>
+          {["Full-time", "Part-time", "Contract"].map((type) => (
+            <label key={type} className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={filters.jobType === type}
+                onChange={() => handleCheckboxChange("jobType", type)}
+                className="w-4 h-4 rounded border border-gray-400 bg-[#445760]
+                           focus:ring-[#0097A7]"
+              />
+              <span>{type}</span>
+            </label>
+          ))}
+        </div>
+        </div>
       </div>
     </div>
   );

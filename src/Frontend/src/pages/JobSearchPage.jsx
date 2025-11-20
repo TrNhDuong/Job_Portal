@@ -7,27 +7,24 @@ import JobDetailPanel from '../components/JobDetailPanel';
 export default function JobSearchPage() {
   const [selectedJob, setSelectedJob] = useState(null);
   const [filters, setFilters] = useState({
-  	keyword: "",
-  	location: "",
-  	major: "",
-  	jobType: "",
+  	keyword: "",
+  	location: "",
+  	major: "",
+  	jobType: "",
     salaryMin: "",
     salaryMax: "",
     experience: "",
     degree: "",
     page: 1,
-  });
+  });
 
   return (
-    // Sửa: Dùng 'bg-background' (xám nhạt) và 'max-h'
-    <main className="flex max-h-[calc(100vh-80px)] bg-background">
+    <main className="flex h-full bg-background">
       
-      {/* Sidebar Trái (Lọc) - Sửa: Dùng 'bg-sidebar' (màu tối) */}
       <aside className="w-full md:w-80 bg-sidebar text-sidebar-foreground border-r border-sidebar-border overflow-y-auto p-4">
         <SearchFilters filters={filters} setFilters={setFilters} />
       </aside>
 
-      {/* Cột Giữa (Danh sách) - Sửa: Dùng 'border-border' */}
       <div className="flex-1 border-r border-border overflow-y-auto">
         <JobListings 
           selectedJob={selectedJob} 

@@ -1,4 +1,6 @@
 import Employer from "../model/employer.js";
+import bcrypt from "bcryptjs";
+import { destroyCloudData } from "../service/cloudinary.js";
 
 export class EmployerRepository {
     static async getEmployer(email) {
@@ -30,7 +32,7 @@ export class EmployerRepository {
             };
     }
     static async updateEmployer(email, updatesEmployer) {
-        const employerAttributes = ["company", "email", "password", "phone", "address", "description", "website", "jobPosted", "point"];
+        const employerAttributes = ["company", "email", "password", "phone", "address", "description", "logo", "wallpaper", "website", "jobPosted", "point"];
         let employer = await this.getEmployer(email);
         if (!employer.success) {
             return {
@@ -40,12 +42,35 @@ export class EmployerRepository {
             };
         }
 
-        for (const attribute of employerAttributes) {
-            employer.data[attribute] = updatesEmployer[attribute] || employer.data[attribute];
+
+        if (updatesEmployer["password"]) {
+            employer.data["password"] = bcrypt.hashSync(updatesEmployer["password"], 10);
         }
 
-        if (employer.data["password"]) {
-            employer.data["password"] = bcrypt.hashSync(updatesEmployer["password"], 10);
+        if (updatesEmployer["logo"]){
+            if (employer.data.logo.public_id){
+                const result = await destroyCloudData(employer.data.logo.public_id);
+                if (result){
+                    console.log('Deleted image')
+                } else {
+                    console.log('Failed to deleted image')
+                }
+            }
+        }
+
+        if (updatesEmployer["wallpaper"]){
+            if (employer.data.wallpaper.public_id){
+                const result = await destroyCloudData(employer.data.wallpaper.public_id);
+                if (result){
+                    console.log('Deleted image wallpaper')
+                } else {
+                    console.log('Failed to deleted image')
+                }
+            }
+        }
+
+        for (const attribute of employerAttributes) {
+            employer.data[attribute] = updatesEmployer[attribute] || employer.data[attribute];
         }
 
         const updatedEmployer = await Employer.findOneAndUpdate({ email }, employer.data, { new: true });

@@ -106,6 +106,39 @@
   margin: 10px 0 5px 10px;
 }
 
+/* Vô hiệu hóa hiệu ứng hover cho menu-header */
+.menu-section .menu-header {
+  cursor: default; /* Đổi con trỏ chuột thành mặc định */
+  background: none; /* Bỏ màu nền gradient */
+  color: #888; /* Đảm bảo màu chữ không đổi (giống như heading) */
+  transform: none; /* Bỏ hiệu ứng dịch chuyển */
+  box-shadow: none; /* Bỏ box-shadow */
+  padding: 12px 18px; /* Giữ padding mặc định nếu cần */
+  margin: 10px 0 5px 10px; /* Thêm margin cho heading (hoặc dùng giá trị bạn muốn) */
+  font-weight: 500; /* Bỏ bold */
+  border-radius: 0; /* Bỏ bo góc */
+  display: block; /* Đảm bảo nó không bị ảnh hưởng bởi display: flex của li cha */
+}
+
+/* Vô hiệu hóa hover trên menu-header */
+.menu-section .menu-header:hover,
+.menu-section .menu-header.active {
+  background: none;
+  color: #888;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Vô hiệu hóa icon và hiệu ứng ::before khi hover */
+.menu-section .menu-header:hover .menu-icon,
+.menu-section .menu-header.active .menu-icon {
+  color: #888; /* Hoặc màu ban đầu của icon */
+}
+
+.menu-section .menu-header::before {
+  display: none; /* Tắt hiệu ứng ::before */
+}
+
 /* Nút đăng xuất */
 .logout {
   margin-top: auto;

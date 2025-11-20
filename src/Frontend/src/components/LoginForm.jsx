@@ -1,47 +1,60 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+// src/components/LoginForm.jsx
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import client from "../api/client";
-import { useAuth } from "../context/AuthContext.jsx";
+import { useAuth } from "../context/AuthContext";
 
 export default function LoginForm() {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
-  const [remember, setRemember] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();        // <-- lấy login từ AuthContext
 
   const [loading, setLoading] = useState(false);
-  const [msg, setMsg] = useState(null);          
+  const [msg, setMsg] = useState(null);
 
-  const { login } = useAuth();
-
-  const handleSubmit = async (e) => {            
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMsg(null);
     try {
-      const res = await client.post("/api/login", {
+      // 1. Gửi request đăng nhập candidate
+      const res = await client.post("/api/loginCandidate", {
         email: identifier,
         password,
       });
-      setMsg({ type: "success", text: res?.data?.message || "Đăng nhập thành công" });
-      if (res?.data?.token) localStorage.setItem("token", res.data.token);
-      const userData = res.data.user;
 
-      // Lấy dữ liệu user từ API và cập nhật vào Context
-      if (userData) {
-        // Tốt! API trả về user, Navbar sẽ có tên, email, avatar
-        login(userData);
-      } else {
-        // Giải pháp tạm: Nếu API chỉ trả về token
-        console.warn("API không trả về 'user' data. Tạm dùng email.");
-        login({ email: identifier, name: identifier.split('@')[0] });
+      // 2. (Tuỳ backend) Lấy thông tin candidate để lưu vào AuthContext
+      // Nếu backend của bạn có GET /api/candidate?email=... thì dùng:
+      let userData = null;
+      try {
+        const profileRes = await client.get(
+          `/api/candidate?email=${encodeURIComponent(identifier)}`
+        );
+        // tuỳ format backend trả về, chỉnh lại cho đúng
+        userData = profileRes.data.data || profileRes.data;
+      } catch (e) {
+        // fallback: nếu chưa có API profile thì ít nhất lưu email
+        userData = {
+          name: identifier.split("@")[0],
+          email: identifier,
+        };
       }
+
+      // 3. Cập nhật AuthContext -> Navbar, DashboardSidebar sẽ đổi theo
+      login(userData);
+
+      setMsg({
+        type: "success",
+        text: res?.data?.message || "Đăng nhập thành công",
+      });
+
+      // 4. Điều hướng về trang Home
       navigate("/");
     } catch (err) {
-      const text = err?.response?.data?.message || err.message || "Đăng nhập thất bại";
+      const text =
+        err?.response?.data?.message || err.message || "Đăng nhập thất bại";
       setMsg({ type: "error", text });
       console.error("Login error:", err);
     } finally {
@@ -49,15 +62,16 @@ export default function LoginForm() {
     }
   };
 
-  // tạo nền hiệu ứng (256 khối)
-  const gridSpans = Array.from({ length: 256 }).map((_, i) => <span key={i}></span>);
+  const gridSpans = Array.from({ length: 256 }).map((_, i) => (
+    <span key={i}></span>
+  ));
 
   return (
     <section className="background">
       {gridSpans}
+
       <div className="login-box">
-        <h2>Đăng nhập</h2>
-        <p>Cùng xây dựng một hồ sơ nổi bật và nhận được các cơ hội sự nghiệp lý tưởng.</p>
+        <h2>Job Portal Candidate</h2>
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -81,44 +95,19 @@ export default function LoginForm() {
                 placeholder="Mật khẩu"
                 required
               />
-              <FontAwesomeIcon
-                icon={showPassword ? faEyeSlash : faEye}
-                className="toggle-password"
-                onClick={() => setShowPassword(!showPassword)}
-              />
             </div>
           </div>
 
-          <div className="form-options">
-            <label>
-              <input
-                type="checkbox"
-                checked={remember}
-                onChange={(e) => setRemember(e.target.checked)}
-              />{" "}
-              Remember me
-            </label>
-            <Link to="/forgot" className="forgot">Quên mật khẩu?</Link> {/* <-- THAY */}
-          </div>
-
-          {msg && <div className={msg.type === "error" ? "error" : "success"}>{msg.text}</div>} {/* <-- THÊM */}
+          {msg && (
+            <div className={msg.type === "error" ? "error" : "success"}>
+              {msg.text}
+            </div>
+          )}
 
           <button type="submit" className="btn-login" disabled={loading}>
             {loading ? "Đang xử lý..." : "Đăng nhập"}
           </button>
-
-          <p className="or">— hoặc đăng nhập bằng —</p>
-          <div className="social-buttons">
-            <button type="button" className="btn-social google">Google</button>
-          </div>
-
-          <div className="bottom-links">
-            <Link to="/register" className="register">
-              Bạn chưa có tài khoản?
-            </Link>
-          </div>
         </form>
-
       </div>
     </section>
   );
