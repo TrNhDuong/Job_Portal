@@ -3,9 +3,11 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthContext } from './context/AuthContext.jsx';
 
 import Homepage from './pages/Homepage.jsx';
-import LoginPage from './pages/employerLogin.jsx';     // File LoginForm.jsx của bạn
-import RegisterPage from './pages/employerRegister.jsx'; // File Register.jsx của bạn
-
+import LoginPage from './pages/employerLogin.jsx';     
+import RegisterPage from './pages/employerRegister.jsx'; 
+//THANH TOÁN
+import EmployerDeposit from './pages/EmployerDeposit.jsx'; 
+import EmployerJobRenewal from './pages/EmployerJobRenewal.jsx';
 
 
 export default function App() {
@@ -32,6 +34,21 @@ export default function App() {
             <Homepage />
         }
       />
+
+      {/* THANH TOÁN */}
+      <Route
+        path="/deposit"
+        element={
+            <EmployerDeposit />
+        }
+      />
+      <Route
+        path="/renewal"
+        element={
+            <EmployerJobRenewal />
+        }
+      />
+
     </Routes>
   );
 }

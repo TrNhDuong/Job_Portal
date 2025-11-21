@@ -19,6 +19,10 @@ import monoLogo from "../assets/mono-logo.png";
 import { HiOutlineCog } from 'react-icons/hi';
 import { HiOutlineInformationCircle, HiOutlineCreditCard, HiArrowPath } from 'react-icons/hi2';
 
+//THANH TOÁN
+import EmployerDeposit from "./EmployerDeposit.jsx";
+import EmployerJobRenewal from "./EmployerJobRenewal.jsx";
+
 export default function Homepage() {
   const navigate = useNavigate();
   const auth = useContext(AuthContext);
@@ -236,172 +240,188 @@ export default function Homepage() {
   
   return (
     <div>
+      <div className="dashboard-theme">
+        <div className="page-wrap"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "17.5% 1fr",
+              transition: "grid-template-columns 0.3s ease",
+            }}>
 
-      <div className="page-wrap"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "17.5% 1fr",
-            transition: "grid-template-columns 0.3s ease",
-          }}>
+          <div className="side-bar">
 
-        <div className="side-bar">
+            <div className="sidebar-top-section">
+              <div className="user-info-area" onClick={() => setActiveSetting("Profile")} >
+                  <img src={monoLogo} alt="User Avatar" className="user-avatar" />
+                  <div className="user-details">
+                      <div className="user-info">{auth.getEmployerData()?.data?.company || "Công ty chưa đặt tên"}</div>
+                      <div className="user-info">{auth.getEmployerData()?.data?.email || "email@cua.ban"}</div>
+                  </div>
+                  
+              </div>
 
-          <div className="sidebar-top-section">
-            <div className="user-info-area" onClick={() => setActiveSetting("Profile")} >
-                <img src={monoLogo} alt="User Avatar" className="user-avatar" />
-                <div className="user-details">
-                    <div className="user-info">{auth.getEmployerData()?.data?.company || "Công ty chưa đặt tên"}</div>
-                    <div className="user-info">{auth.getEmployerData()?.data?.email || "email@cua.ban"}</div>
+              {/* Đường phân cách cuối (Optional) */}
+              <hr className="header-divider" /> 
+          </div>
+
+            {/* <div className="sidebar-header">
+                <div className="logo-container">
+                    <img src={logoImage} alt="Logo" className="sidebar-logo-small" />
+                    <span className="app-acronym">TND</span>
                 </div>
-                
+            </div> */}
+
+            <div className="sidebar-menu">
+              <li className="menu-header">Tuyển dụng</li>
+              <NavItem
+                icon={<HiUserGroup />}
+                label="Quản lý ứng viên"
+                onClick={() => setActiveSetting("CVManage")}
+                isActive={activeSetting === "CVManage"}
+              />
+
+              <NavItem
+                icon={<HiOutlineBriefcase />}
+                label="Quản lý bài đăng"
+                onClick={() => setActiveSetting("ManagePosts")}
+                isActive={activeSetting === "ManagePosts"}
+              />
+
+              <NavItem
+                icon={<HiDocumentAdd />}
+                label="Đăng tin tuyển dụng"
+                onClick={handlePostNavClick}
+                isActive={activeSetting === "PostJob"}
+              />
+              <li className="menu-header">Giao dịch</li>
+              <NavItem
+                icon={<HiArrowPath />}
+                label="Gia hạn bài đăng"
+                onClick={() => setActiveSetting("Renew")}
+                isActive={activeSetting === "Renew"}
+              />
+              <NavItem
+                icon={<HiOutlineCreditCard />}
+                label="Nạp tiền"
+                onClick={() => setActiveSetting("Donate")}
+                isActive={activeSetting === "Donate"}
+              />
+
+              <li className="menu-header">Cài đặt quản lí</li>
+              <NavItem
+                icon={<HiOutlineInformationCircle />}
+                label="Về chúng tôi"
+                onClick={() => setActiveSetting("About")}
+                isActive={activeSetting === "About"}
+              />
+
+              <NavItem
+                icon={<HiOutlineCog />}
+                label="Cài đặt"
+                onClick={() => setActiveSetting("Setting")}
+                isActive={activeSetting === "Setting"}
+              />
+
+              <NavItem
+                icon={<HiLogout />}
+                label="Đăng xuất"
+                onClick={() => { auth.logout(); navigate("/login"); }}
+              />
+            </div>
+          </div>
+
+            {/* --- Nội dung (Phải) --- */}
+          <div className="right-panel">
+            
+            <div
+              className="tab-name-bar"
+              style={{
+                left: "17.5%",
+                width: "82.5%",
+                transition: "left 0.3s ease",
+              }}
+            >
+              {tabNameMap[activeSetting] || (activeSetting === "Profile" ? "Tài khoản" : "Cài đặt")}
             </div>
 
-            {/* Đường phân cách cuối (Optional) */}
-            <hr className="header-divider" /> 
-        </div>
+            <div style={{ marginTop: "80px" }}>
+              {isLoading ? (
+                <div className="card">
+                  <h3>Đang tải dữ liệu...</h3>
+                </div>
+              ) : (
+              <>
 
-          {/* <div className="sidebar-header">
-              <div className="logo-container">
-                  <img src={logoImage} alt="Logo" className="sidebar-logo-small" />
-                  <span className="app-acronym">TND</span>
-              </div>
-          </div> */}
+              {activeSetting === null && (
+                <h1 className="title">Chọn một cài đặt để xem nội dung</h1>
+              )}
 
-          <div className="sidebar-menu">
-            <li className="menu-header">Tuyển dụng</li>
-            <NavItem
-              icon={<HiUserGroup />}
-              label="Quản lý ứng viên"
-              onClick={() => setActiveSetting("CVManage")}
-              isActive={activeSetting === "CVManage"}
-            />
-
-            <NavItem
-              icon={<HiOutlineBriefcase />}
-              label="Quản lý bài đăng"
-              onClick={() => setActiveSetting("ManagePosts")}
-              isActive={activeSetting === "ManagePosts"}
-            />
-
-            <NavItem
-              icon={<HiDocumentAdd />}
-              label="Đăng tin tuyển dụng"
-              onClick={handlePostNavClick}
-              isActive={activeSetting === "PostJob"}
-            />
-            <li className="menu-header">Giao dịch</li>
-            <NavItem
-              icon={<HiArrowPath />}
-              label="Gia hạn bài đăng"
-              onClick={() => setActiveSetting("Renew")}
-              isActive={activeSetting === "Renew"}
-            />
-            <NavItem
-              icon={<HiOutlineCreditCard />}
-              label="Nạp tiền"
-              onClick={() => setActiveSetting("Donate")}
-              isActive={activeSetting === "Donate"}
-            />
-
-            <li className="menu-header">Cài đặt quản lí</li>
-            <NavItem
-              icon={<HiOutlineInformationCircle />}
-              label="Về chúng tôi"
-              onClick={() => setActiveSetting("About")}
-              isActive={activeSetting === "About"}
-            />
-
-            <NavItem
-              icon={<HiOutlineCog />}
-              label="Cài đặt"
-              onClick={() => setActiveSetting("Setting")}
-              isActive={activeSetting === "Setting"}
-            />
-
-            <NavItem
-              icon={<HiLogout />}
-              label="Đăng xuất"
-              onClick={() => { auth.logout(); navigate("/login"); }}
-            />
-          </div>
-        </div>
-
-          {/* --- Nội dung (Phải) --- */}
-        <div className="right-panel">
-          
-          <div
-            className="tab-name-bar"
-            style={{
-              left: "17.5%",
-              width: "82.5%",
-              transition: "left 0.3s ease",
-            }}
-          >
-            {tabNameMap[activeSetting] || (activeSetting === "Profile" ? "Tài khoản" : "Cài đặt")}
-          </div>
-
-          <div style={{ marginTop: "80px" }}>
-            {isLoading ? (
-              <div className="card">
-                <h3>Đang tải dữ liệu...</h3>
-              </div>
-            ) : (
-            <>
-
-            {activeSetting === null && (
-              <h1 className="title">Chọn một cài đặt để xem nội dung</h1>
-            )}
-
-            {activeSetting === "CVManage" && (
-              <div>
-                <CVManage 
-                  jobPosts={jobPosts}
+              {activeSetting === "CVManage" && (
+                <div>
+                  <CVManage 
+                    jobPosts={jobPosts}
+                  />
+                </div>
+              )}
+              
+              {activeSetting === "ManagePosts" && (
+                <EmployerManagePosts
+                  posts={jobPosts}
+                  onEdit={handleEditClick}
+                  onDelete={handleDeletePost}
                 />
-              </div>
-            )}
-            
-            {activeSetting === "ManagePosts" && (
-              <EmployerManagePosts
-                posts={jobPosts}
-                onEdit={handleEditClick}
-                onDelete={handleDeletePost}
-              />
-            )}
+              )}
 
-            {activeSetting === "PostJob" && (
-              <div style={{ paddingTop: 10 }}>
-                <EmployerPostJob
-                  onSubmit={editingPost ? handleUpdatePost : handleCreatePost}
-                  initialData={editingPost}
+              {activeSetting === "PostJob" && (
+                <div style={{ paddingTop: 10 }}>
+                  <EmployerPostJob
+                    onSubmit={editingPost ? handleUpdatePost : handleCreatePost}
+                    initialData={editingPost}
+                  />
+                </div>
+              )}
+
+              {activeSetting === "Profile" && (
+                <div style={{ paddingTop: 10 }}>
+                  <EmployerProfile 
+                    onProfileUpdate={handleProfileUpdate} 
+                    data={auth.getEmployerData().data}
+                  />
+                </div>
+              )}
+
+              {activeSetting === "About" && (
+                <div style={{ paddingTop: 10 }}>
+                  <AboutPage />
+                </div>
+              )}
+
+              {/*THANH TOÁN*/}
+              {activeSetting === "Renew" && (
+                <div style={{ paddingTop: 10 }}>
+                  <EmployerJobRenewal
+                    onNavigateToDeposit={() => setActiveSetting("Donate")}
+                  />
+                </div>
+              )}
+
+              {activeSetting === "Donate" && (
+                <div style={{ paddingTop: 10 }}>
+                  <EmployerDeposit />
+                </div>
+              )}
+
+              {activeSetting === "Setting" && (
+                <Setting 
+                  isVisible={true}
+                  onClose={() => setActiveSetting(null)}
                 />
-              </div>
-            )}
-
-            {activeSetting === "Profile" && (
-              <div style={{ paddingTop: 10 }}>
-                <EmployerProfile 
-                  onProfileUpdate={handleProfileUpdate} 
-                  data={auth.getEmployerData().data}
-                />
-              </div>
-            )}
-
-            {activeSetting === "About" && (
-              <div style={{ paddingTop: 10 }}>
-                <AboutPage />
-              </div>
-            )}
-
-            {activeSetting === "Setting" && (
-              <Setting 
-                isVisible={true}
-                onClose={() => setActiveSetting(null)}
-              />
-            )}
-            </>
-            )}
+              )}
+              </>
+              )}
+            </div>
           </div>
-        </div>
+      </div>
     </div>
   </div>
   );

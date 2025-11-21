@@ -1,0 +1,187 @@
+.renewal-page {
+    background-color: #f4f6f8;
+    min-height: 100vh;
+    padding-bottom: 50px;
+}
+
+.renewal-container {
+    max-width: 900px;
+    margin: 0 auto;
+    margin-top: -50px; /* Đẩy lên đè vào phần xanh */
+    padding: 0 20px;
+    position: relative;
+    z-index: 10;
+}
+
+.renewal-header {
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.renewal-header h3 {
+    margin: 0 0 8px 0;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.icon-header {
+    color: #e74c3c;
+    font-size: 1.4rem;
+}
+
+.sub-text {
+    color: #666;
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+/* --- Job Grid Layout --- */
+.job-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); /* Tự động chia cột */
+    gap: 20px;
+}
+
+/* --- Job Card Styling --- */
+.job-card {
+    background: white;
+    border-radius: 16px;
+    padding: 25px; /* Tăng padding lên cho thoáng */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border: 1px solid #eee;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    min-height: 320px; 
+    justify-content: space-between; /* Đẩy các phần nội dung ra xa nhau */
+}
+
+.job-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border-color: #0061ff;
+}
+
+.job-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.job-card-header .status-badge {
+   display: none; 
+}
+
+.job-cost {
+    font-size: 0.95rem;
+    color: #0061ff; 
+    font-weight: 700; 
+    background: #eef7ff;
+    padding: 5px 10px;
+    border-radius: 8px;
+}
+
+.job-title {
+    margin: 10px 0 20px 0; 
+    font-size: 1.3rem;
+    color: #2c3e50;
+    line-height: 1.4;
+    font-weight: 800; 
+}
+
+/* --- Job Meta (Thông tin phụ) --- */
+.job-meta {
+    border-top: 1px solid #f0f0f0;
+    padding-top: 20px;
+    margin-bottom: 25px;
+    color: #555;
+    font-size: 0.95rem;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.meta-item.expire-info {
+    color: #e74c3c; 
+    font-weight: 600;
+}
+
+.meta-item svg {
+    font-size: 1.1rem; 
+}
+
+.meta-row {
+    display: flex;
+    gap: 25px;
+    margin-top: 10px;
+}
+
+/* --- Khu vực nút bấm & Badge hết hạn --- */
+.job-card-action {
+    display: flex;
+    flex-direction: column; 
+    gap: 15px; 
+    margin-top: auto; 
+}
+
+/* Nút gia hạn */
+.btn-renew-action {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(90deg, #0061ff, #00c6fb);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 10px rgba(0, 97, 255, 0.2);
+}
+
+.btn-renew-action:hover {
+    opacity: 0.95;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 97, 255, 0.3);
+}
+
+/* Badge Đã hết hạn */
+.expired-label {
+    text-align: center;
+    background: #fff0f0;
+    color: #e74c3c;
+    padding: 8px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px dashed #e74c3c;
+}
+
+/* Nếu không có bài đăng cần gia hạn */
+.empty-state {
+    background: white;
+    padding: 60px 40px; 
+    border-radius: 16px;
+    text-align: center;
+    grid-column: 1 / -1; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed #e0e0e0; 
+    color: #888;
+}
