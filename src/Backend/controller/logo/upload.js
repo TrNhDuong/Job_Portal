@@ -7,7 +7,7 @@ export const uploadEmployerLogo = async (req, res) => {
     const storage = createStorage("jobportal/employers");
     const email = req.query.email;
     const upload = multer({ storage }).single("image");
-    console.log(email)
+    console.log(email + ' dang cap nhat logo');
     upload(req, res, async (err) => {
         if (err) return res.status(500).json({
             success: false,
@@ -20,11 +20,14 @@ export const uploadEmployerLogo = async (req, res) => {
             }
         })
         if (employerUpdateData.success){
+            console.log('Cap nhat thanh cong')
             res.status(200).json({
                 success: true,
-                message: "Upload successfully"
+                message: "Upload successfully",
+                data: req.file.path
             })
         } else {
+            console.log('Cap nhat that bai')
             res.status(400).json({
                 success: false,
                 message: "Failed to upload"
@@ -51,7 +54,11 @@ export const uploadCandidateLogo = async (req, res) => {
         if (candidateUpdataData.success){
             res.status(200).json({
                 success: true,
-                message: "Upload successfully"
+                message: "Upload successfully",
+                data: {
+                    url: req.file.path,
+                    public_id: req.file.filename
+                }
             })
         } else {
             res.status(400).json({

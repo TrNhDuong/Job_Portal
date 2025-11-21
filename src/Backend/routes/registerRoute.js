@@ -12,7 +12,9 @@ router.post("/candidateRegister", async (req, res) => {
     const existingCandidate = await CandidateRepository.getCandidate(email);
     const existingEmployer = await EmployerRepository.getEmployer(email);
     if (existingCandidate.success || existingEmployer.success) {
-        return res.status(409).json({ message: "Email already exists" });
+        return res.status(409).json({
+            success: false,
+            message: "Email already exists" });
     }
     
     const saltRounds = 10;
@@ -43,7 +45,9 @@ router.post("/employerRegister", async (req, res) => {
     const existingEmployer = await EmployerRepository.getEmployer(email);
     const existingCandidate = await CandidateRepository.getCandidate(email);
     if (existingEmployer.success || existingCandidate.success) {
-        return res.status(409).json({ message: "Email already exists" });
+        return res.status(409).json({ 
+            success: false,
+            message: "Email already exists" });
     }
     
     const saltRounds = 10;

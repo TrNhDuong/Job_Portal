@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "../styles/employerLogin.css";
 
 const API_BASE_URL = "http://localhost:8080/api";

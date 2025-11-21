@@ -23,8 +23,7 @@ router.post("/loginCandidate", async (req, res) => {
             message: "User not found"
         });
     }
-    console.log(candidatePass, password);
-    const isMatchPassword = bcrypt.compareSync(password, candidatePass.data);
+    const isMatchPassword = password === candidatePass.data;
 
     if (!isMatchPassword) {
         return res.status(401).json({ 
@@ -41,10 +40,8 @@ router.post("/loginCandidate", async (req, res) => {
 
 router.post("/loginEmployer", async (req, res) => {
     const { email, password } = req.body;
-
     // Handle login logic here
     const employerPass = await EmployerRepository.getHashedPassword(email);
-    
 
     // For demonstration, we'll just return a success message
     if (!employerPass.success) {
@@ -53,8 +50,7 @@ router.post("/loginEmployer", async (req, res) => {
             message: "User not found"
         });
     }
-    const isMatchPassword = bcrypt.compareSync(password, employerPass.data);
-
+    const isMatchPassword = employerPass.data === password;
     if (!isMatchPassword) {
         return res.status(401).json({ 
             success: false,

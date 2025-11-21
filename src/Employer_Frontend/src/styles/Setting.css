@@ -104,6 +104,7 @@
     font-size: 1rem;
     font-weight: 500;
     transition: background-color 0.2s ease, color 0.2s ease, border-left 0.2s ease;
+    margin: 15px;
 }
 
 .sidebar-item svg {
@@ -118,8 +119,10 @@
 
 .sidebar-item.active {
     background-color: #e8f5ff; /* Màu nền nhẹ nhàng cho mục Active */
-    color: #007bff; /* Màu chủ đạo nổi bật */
-    border-left: 4px solid #007bff; /* Thanh dọc biểu thị trạng thái Active */
+    border-radius: 12px;
+    
+    color: #222222; /* Màu chủ đạo nổi bật */
+    /* border-left: 4px solid #007bff; Thanh dọc biểu thị trạng thái Active */
     font-weight: 600;
 }
 
@@ -343,4 +346,11 @@
     .settings-content {
         padding: 20px;
     }
+}
+
+.icon-img {
+    width: 25px; 
+    height: 25px;
+    margin: 0 10px  0 0;
+    /* ... các thuộc tính khác */
 }

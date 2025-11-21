@@ -12,9 +12,10 @@ import client from '../api/client';
 const EmployerProfile = ({}) => {
     const [activeTab, setActiveTab] = useState('Overview');
     const [mode, setMode] = useState('view');
-    const { auth, updateEmployerWithData  } = useContext(AuthContext);
-    
-    const data = auth.employerData?.data || {}; 
+    const { auth, updateEmployerWithData, updateData  } = useContext(AuthContext);
+    const [loading, setLoading] = useState(false);
+    const logo = auth.employerData?.data.logo.url || monoLogo;
+    const data = auth.employerData?.data || {};
     if (mode === 'edit') {
         return (
             <EmployerProfileEdit 
@@ -30,20 +31,51 @@ const EmployerProfile = ({}) => {
                         alert("Cập nhật hồ sơ thất bại. Vui lòng thử lại.");
                     }
                 }}
+                onChangeLogo={ async (logo) => {
+                    const formData = new FormData();
+                    formData.append('image', logo);
+
+                    try {
+                        setLoading(true);  
+                        await new Promise(resolve => setTimeout(resolve, 0));
+                        const email = localStorage.getItem("email");
+                        console.log('Email of employer: ' + email);
+                        const response = await client.post(`api/upload/logo/employer?email=${email}`, formData,
+                            {
+                                headers: {
+                                    'Content-Type': 'multipart/form-data'
+                                }
+                            }
+                        )
+                        if (response.data.success){
+                            console.log('haha');
+                            await updateData();                            
+                        }
+                    } catch ( error ){
+                        console.log(error)
+                    } finally {
+                        setLoading(false); // Tắt loading
+                    }
+                }}
             />
         );
     }
 
     return (
         <div className="employer-profile-layout">
-            
+            {loading && (
+                <div className="loading-overlay">
+                    <div className="loading-spinner"></div>
+                    <p>Đang xử lý...</p>
+                </div>
+            )}
             {/* --- Cột Trái: Hồ sơ Công ty --- */}
             <div className="profile-main-column">
                 <div className="profile-header-card">
                     <div className="header-background"></div>
                     <div className="profile-content">
                         <div className="logo-section">
-                            <img src={monoLogo} alt={`${data.company} Logo`} className="company-logo" />
+                            <img src={logo} alt={`${data.company} Logo`} className="company-logo" />
                         </div>
                         
                         <h2 className="company-name">{data.company}</h2>
@@ -69,9 +101,9 @@ const EmployerProfile = ({}) => {
                         </div>
                     
 
-                        <div className="profile-tabs">
+                        {/* <div className="profile-tabs">
                             <button className={activeTab === 'Overview' } onClick={() => setActiveTab('Overview')}>Overview</button>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
 

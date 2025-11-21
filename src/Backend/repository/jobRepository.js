@@ -2,7 +2,6 @@ import { JobPost }from "../model/jobPost.js";
 
 export class JobRepository {
     static async getJobPost(jobId) {
-        console.log("Retrieving job post with ID:", jobId);
         const jobPost = await JobPost.findOne({ _id: jobId });
         if (!jobPost) {
             return { success: false, message: "Job post not found" };

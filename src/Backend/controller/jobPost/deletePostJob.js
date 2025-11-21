@@ -20,6 +20,7 @@ export const deletePostJob = async (req, res) => {
             message: "Job post not found"
           });
         }
+        console.log("Job post deleted:", jobId);
         const employer = await EmployerRepository.removeJobPostFromEmployer(email, jobId);
         if (!employer.success) {
             return res.status(404).json({
@@ -27,6 +28,7 @@ export const deletePostJob = async (req, res) => {
                 message: employer.message
             });
         }
+        console.log("Job post removed from employer:", email, jobId);
         res.status(200).json({ 
             success: true, 
             message: "Job post deleted successfully" 
