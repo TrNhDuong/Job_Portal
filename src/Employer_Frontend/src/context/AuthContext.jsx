@@ -9,6 +9,8 @@ export const AuthProvider = ({ children }) => {
     token: localStorage.getItem("token") || null,
     user: JSON.parse(localStorage.getItem("user")) || null,
     employerData: JSON.parse(localStorage.getItem("employerData")) || null,
+    //THANH TOÁN
+    points: parseInt(localStorage.getItem("points")) || 100,
   });
 
   // Lưu token & user vào localStorage
@@ -23,6 +25,13 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem("user");
     }
   }, [auth.token]);
+
+  //THANH TOÁN LƯU VÀO LOCALSTORAGE
+  useEffect(() => {
+    if (auth.points !== undefined) {
+      localStorage.setItem("points", auth.points);
+    }
+  }, [auth.points]);
 
   const login = (email) => {
     setAuth(prev => ({
@@ -82,6 +91,7 @@ export const AuthProvider = ({ children }) => {
 
     const result = await client.get(`api/employer?email=${email}`);
     if (result.data.success) {
+      console.log(result.data);
       setEmployerData(result.data);
       return true;
     } else {
@@ -93,6 +103,15 @@ export const AuthProvider = ({ children }) => {
     return auth.employerData;
   };
 
+  //THANH TOÁN
+  const handleTransaction = (amount, type = "add") => {
+    setAuth((prev) => {
+      const newPoints = type === "add" ? prev.points + amount : prev.points - amount;
+      return { ...prev, points: newPoints };
+    });
+    return true; 
+  };
+
   return (
     <AuthContext.Provider value={{
       auth,
@@ -102,7 +121,9 @@ export const AuthProvider = ({ children }) => {
       updateEmployerWithData,
       updateData,
       getEmployerData,
-      setMail
+      setMail,
+      //THANH TOÁN
+      handleTransaction
     }}>
       {children}
     </AuthContext.Provider>

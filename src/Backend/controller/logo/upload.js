@@ -20,7 +20,8 @@ export const uploadEmployerLogo = async (req, res) => {
             }
         })
         if (employerUpdateData.success){
-            console.log('Cap nhat thanh cong')
+            console.log('Cap nhat thanh cong');
+            console.log(req.file.path);
             res.status(200).json({
                 success: true,
                 message: "Upload successfully",

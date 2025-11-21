@@ -23,7 +23,7 @@ router.post("/loginCandidate", async (req, res) => {
             message: "User not found"
         });
     }
-    const isMatchPassword = password === candidatePass.data;
+    const isMatchPassword = bcrypt.compareSync(password, candidatePass.data);
 
     if (!isMatchPassword) {
         return res.status(401).json({ 
@@ -50,7 +50,7 @@ router.post("/loginEmployer", async (req, res) => {
             message: "User not found"
         });
     }
-    const isMatchPassword = employerPass.data === password;
+    const isMatchPassword = bcrypt.compareSync(password, employerPass.data);
     if (!isMatchPassword) {
         return res.status(401).json({ 
             success: false,

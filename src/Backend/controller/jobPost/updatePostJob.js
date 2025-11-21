@@ -7,24 +7,32 @@ import mongoose from "mongoose";
 export const updatePostJob = async (req, res) => {
   const id = req.query.jobId;
   const jobId = new mongoose.Types.ObjectId(id);
-  const {title, company, position, location, salary, 
-        jobType, major, degree, experience, state, description, expiredDay } = req.body;
+  const {title, company, position, location, detailedAddress, maxSalary, minSalary, 
+        jobType, major, customMajor, degree, experience, state, description, expiredDay, postedAt } = req.body;
 
   try {
-    const result = await JobRepository.updateJobPost(jobId, {
-        title,
-        company,
-        position,
-        location,
-        salary,
-        jobType,
-        major,
-        degree,
-        experience,
-        state,
-        description,
-        expiredDay
-    });
+    const updateData = {
+      "title":title,
+      "company": company,
+      "postion": position,
+      "location": location,
+      "detailedAddress": detailedAddress,
+      "salary": {
+        "minSalary": minSalary,
+        "maxSalary": maxSalary
+      },
+      "jobType": jobType,
+      "major": major,
+      "customMajor": customMajor,
+      "degree": degree,
+      "experience": experience,
+      "state": state,
+      "description": description,
+      "postedAt": postedAt,
+      "expiredDay": expiredDay
+    }
+    console.log(updateData);
+    const result = await JobRepository.updateJobPost(jobId, updateData);
 
     if (!result.success) {
         return res.status(404).json({ 

@@ -16,6 +16,10 @@ import logoImage from "../assets/logo.png";
 import monoLogo from "../assets/mono-logo.png";
 import { HiOutlineCog } from 'react-icons/hi';
 import { HiOutlineInformationCircle, HiOutlineCreditCard, HiArrowPath } from 'react-icons/hi2';
+
+//THANH TOÁN
+import EmployerDeposit from "./EmployerDeposit.jsx";
+import EmployerJobRenewal from "./EmployerJobRenewal.jsx";
 import postIcon from '../assets/icon/post.png';
 import candidateIcon from '../assets/icon/candidate.png';
 
@@ -23,7 +27,7 @@ export default function Homepage() {
   const navigate = useNavigate();
   const auth = useContext(AuthContext);
   const postCache = useRef(new Map()); // Cache cho các bài đăng đã tải
-  const logoUrl = auth.auth.employerData.data.logo.url || monoLogo;
+  const logoUrl = auth.auth.employerData?.data.logo?.url || monoLogo;
   const [activeSetting, setActiveSetting] = useState("ManagePosts");
   const [isLoading, setIsLoading] = useState(true);
   const [jobPosts, setJobPosts] = useState([])
@@ -97,6 +101,8 @@ export default function Homepage() {
     loadDashboardData(); // Chạy hàm
   }, [auth.user]);
 
+  
+
   const tabNameMap = {
     CVManage: "Quản lý CV",
     ManagePosts: "Quản lý bài đăng",
@@ -168,7 +174,7 @@ export default function Homepage() {
 
         setJobPosts((prevPosts) =>
             prevPosts.map((post) =>
-              post._id === updatedData.id ? { ...post, ...updatedData } : post
+              post._id === updatedData.id ? { ...post, ...updatedData  } : post
             )
           );  // reload lại danh sách
         setEditingPost(null);        // thoát chế độ sửa
@@ -231,15 +237,15 @@ export default function Homepage() {
   
   return (
     <div>
+      <div className="dashboard-theme">
+        <div className="page-wrap"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "17.5% 1fr",
+              transition: "grid-template-columns 0.3s ease",
+            }}>
 
-      <div className="page-wrap"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "17.5% 1fr",
-            transition: "grid-template-columns 0.3s ease",
-          }}>
-
-        <div className="side-bar">
+          <div className="side-bar">
 
           <div className="sidebar-top-section">
             <div className="user-info-area" onClick={() => setActiveSetting("Profile")} >
@@ -264,132 +270,148 @@ export default function Homepage() {
               isActive={activeSetting === "CVManage"}
             />
 
-            <NavItem
-              icon={<HiOutlineBriefcase />}
-              label="Quản lý bài đăng"
-              onClick={() => setActiveSetting("ManagePosts")}
-              isActive={activeSetting === "ManagePosts"}
-            />
+              <NavItem
+                icon={<HiOutlineBriefcase />}
+                label="Quản lý bài đăng"
+                onClick={() => setActiveSetting("ManagePosts")}
+                isActive={activeSetting === "ManagePosts"}
+              />
 
-            <NavItem
-              icon={<img src={postIcon} alt="Post Icon" style={{ width: '1.2rem', marginRight: '0px' }} />}
-              label="Đăng tin tuyển dụng"
-              onClick={handlePostNavClick}
-              isActive={activeSetting === "PostJob"}
-            />
-            <li className="menu-header">Giao dịch</li>
-            <NavItem
-              icon={<HiArrowPath />}
-              label="Gia hạn bài đăng"
-              onClick={() => setActiveSetting("Renew")}
-              isActive={activeSetting === "Renew"}
-            />
-            <NavItem
-              icon={<HiOutlineCreditCard />}
-              label="Nạp tiền"
-              onClick={() => setActiveSetting("Donate")}
-              isActive={activeSetting === "Donate"}
-            />
+              <NavItem
+                icon={<img src={postIcon} alt="Post Icon" style={{ width: '1.2rem', marginRight: '0px' }} />}
+                label="Đăng tin tuyển dụng"
+                onClick={handlePostNavClick}
+                isActive={activeSetting === "PostJob"}
+              />
+              <li className="menu-header">Giao dịch</li>
+              <NavItem
+                icon={<HiArrowPath />}
+                label="Gia hạn bài đăng"
+                onClick={() => setActiveSetting("Renew")}
+                isActive={activeSetting === "Renew"}
+              />
+              <NavItem
+                icon={<HiOutlineCreditCard />}
+                label="Nạp tiền"
+                onClick={() => setActiveSetting("Donate")}
+                isActive={activeSetting === "Donate"}
+              />
 
-            <li className="menu-header">Cài đặt quản lí</li>
-            <NavItem
-              icon={<HiOutlineInformationCircle />}
-              label="Về chúng tôi"
-              onClick={() => setActiveSetting("About")}
-              isActive={activeSetting === "About"}
-            />
+              <li className="menu-header">Cài đặt quản lí</li>
+              <NavItem
+                icon={<HiOutlineInformationCircle />}
+                label="Về chúng tôi"
+                onClick={() => setActiveSetting("About")}
+                isActive={activeSetting === "About"}
+              />
 
-            <NavItem
-              icon={<HiOutlineCog />}
-              label="Cài đặt"
-              onClick={() => setActiveSetting("Setting")}
-              isActive={activeSetting === "Setting"}
-            />
+              <NavItem
+                icon={<HiOutlineCog />}
+                label="Cài đặt"
+                onClick={() => setActiveSetting("Setting")}
+                isActive={activeSetting === "Setting"}
+              />
 
-            <NavItem
-              icon={<HiLogout />}
-              label="Đăng xuất"
-              onClick={() => { auth.logout(); navigate("/login"); }}
-            />
-          </div>
-        </div>
-
-          {/* --- Nội dung (Phải) --- */}
-        <div className="right-panel">
-          
-          <div
-            className="tab-name-bar"
-            style={{
-              left: "17.5%",
-              width: "82.5%",
-              transition: "left 0.3s ease",
-            }}
-          >
-            {tabNameMap[activeSetting] || (activeSetting === "Profile" ? "Tài khoản" : "Cài đặt")}
+              <NavItem
+                icon={<HiLogout />}
+                label="Đăng xuất"
+                onClick={() => { auth.logout(); navigate("/login"); }}
+              />
+            </div>
           </div>
 
-          <div style={{ marginTop: "80px" }}>
-            {isLoading ? (
-              <div className="card">
-                <h3>Đang tải dữ liệu...</h3>
-              </div>
-            ) : (
-            <>
-
-            {activeSetting === null && (
-              <h1 className="title">Chọn một cài đặt để xem nội dung</h1>
-            )}
-
-            {activeSetting === "CVManage" && (
-              <div>
-                <CVManage 
-                  jobPosts={jobPosts}
-                />
-              </div>
-            )}
+            {/* --- Nội dung (Phải) --- */}
+          <div className="right-panel">
             
-            {activeSetting === "ManagePosts" && (
-              <EmployerManagePosts
-                posts={jobPosts}
-                onEdit={handleEditClick}
-                onDelete={handleDeletePost}
-              />
-            )}
+            <div
+              className="tab-name-bar"
+              style={{
+                left: "17.5%",
+                width: "82.5%",
+                transition: "left 0.3s ease",
+              }}
+            >
+              {tabNameMap[activeSetting] || (activeSetting === "Profile" ? "Tài khoản" : "Cài đặt")}
+            </div>
 
-            {activeSetting === "PostJob" && (
-              <div style={{ paddingTop: 10 }}>
-                <EmployerPostJob
-                  onSubmit={editingPost ? handleUpdatePost : handleCreatePost}
-                  initialData={editingPost}
+            <div style={{ marginTop: "80px" }}>
+              {isLoading ? (
+                <div className="card">
+                  <h3>Đang tải dữ liệu...</h3>
+                </div>
+              ) : (
+              <>
+
+              {activeSetting === null && (
+                <h1 className="title">Chọn một cài đặt để xem nội dung</h1>
+              )}
+
+              {activeSetting === "CVManage" && (
+                <div>
+                  <CVManage 
+                    jobPosts={jobPosts}
+                  />
+                </div>
+              )}
+              
+              {activeSetting === "ManagePosts" && (
+                <EmployerManagePosts
+                  posts={jobPosts}
+                  onEdit={handleEditClick}
+                  onDelete={handleDeletePost}
                 />
-              </div>
-            )}
+              )}
 
-            {activeSetting === "Profile" && (
-              <div style={{ paddingTop: 10 }}>
-                <EmployerProfile 
-                  onProfileUpdate={handleProfileUpdate} 
-                  data={auth.getEmployerData().data}
+              {activeSetting === "PostJob" && (
+                <div style={{ paddingTop: 10 }}>
+                  <EmployerPostJob
+                    onSubmit={editingPost ? handleUpdatePost : handleCreatePost}
+                    initialData={editingPost}
+                  />
+                </div>
+              )}
+
+              {activeSetting === "Profile" && (
+                <div style={{ paddingTop: 10 }}>
+                  <EmployerProfile 
+                    onProfileUpdate={handleProfileUpdate} 
+                    data={auth.getEmployerData().data}
+                  />
+                </div>
+              )}
+
+              {activeSetting === "About" && (
+                <div style={{ paddingTop: 10 }}>
+                  <AboutPage />
+                </div>
+              )}
+
+              {/*THANH TOÁN*/}
+              {activeSetting === "Renew" && (
+                <div style={{ paddingTop: 10 }}>
+                  <EmployerJobRenewal
+                    onNavigateToDeposit={() => setActiveSetting("Donate")}
+                  />
+                </div>
+              )}
+
+              {activeSetting === "Donate" && (
+                <div style={{ paddingTop: 10 }}>
+                  <EmployerDeposit />
+                </div>
+              )}
+
+              {activeSetting === "Setting" && (
+                <Setting 
+                  isVisible={true}
+                  onClose={() => setActiveSetting(null)}
                 />
-              </div>
-            )}
-
-            {activeSetting === "About" && (
-              <div style={{ paddingTop: 10 }}>
-                <AboutPage />
-              </div>
-            )}
-
-            {activeSetting === "Setting" && (
-              <Setting 
-                isVisible={true}
-                onClose={() => setActiveSetting(null)}
-              />
-            )}
-            </>
-            )}
+              )}
+              </>
+              )}
+            </div>
           </div>
-        </div>
+      </div>
     </div>
   </div>
   );

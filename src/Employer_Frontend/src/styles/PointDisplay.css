@@ -1,0 +1,115 @@
+/* --- 1. Container chính --- */
+.point-display-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #0061ff 0%, #60efff 100%);
+    padding: 50px 20px 80px 20px;
+    border-radius: 0 0 40px 40px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0, 97, 255, 0.2);
+}
+
+/* --- 2. Vòng tròn trung tâm --- */
+.point-circle {
+    width: 220px;
+    height: 220px;
+    background: rgba(255, 255, 255, 0.2); /* Kính mờ */
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    display: flex;              /* Quan trọng: Dùng Flex để căn giữa */
+    justify-content: center;    /* Căn giữa ngang */
+    align-items: center;        /* Căn giữa dọc */
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+/* Wrapper nội dung bên trong để đảm bảo text không bị lệch */
+.point-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+}
+
+.icon-plus {
+    font-size: 1.5rem;
+    line-height: 1;
+    margin-bottom: 0px;
+}
+
+.point-number {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin: 0;
+    line-height: 1.1;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.label-points {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.9;
+    margin-bottom: 10px;
+}
+
+/* --- 3. Styles cho Badge (Huy hiệu Rank) --- */
+.membership-badge {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    white-space: nowrap; /* Không cho xuống dòng */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    margin-top: 5px;
+    
+    /* Quan trọng: Text color sẽ được set cụ thể bên dưới */
+}
+
+/* Màu sắc cụ thể cho từng rank */
+.badge-diamond {
+    background: #2c004e; /* Tím đậm */
+    color: #00d2ff;      /* Chữ xanh sáng */
+    border: 1px solid #00d2ff;
+}
+
+.badge-gold {
+    background: #fff5c3; /* Vàng nhạt */
+    color: #b48811;      /* Chữ vàng đậm */
+    border: 1px solid #b48811;
+}
+
+.badge-silver {
+    background: #f0f4f8;
+    color: #5b6f82;
+    border: 1px solid #5b6f82;
+}
+
+.badge-starter {
+    background: rgba(255,255,255,0.3);
+    color: white;
+}
+
+/* --- 4. Trang trí nền (Giản lược cho đỡ rối) --- */
+.tech-bg-decoration {
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+    background-size: 30px 30px; /* Chấm bi nhỏ kiểu tech */
+    opacity: 0.3;
+    pointer-events: none;
+}

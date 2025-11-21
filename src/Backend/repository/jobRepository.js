@@ -68,7 +68,7 @@ export class JobRepository {
         if (!updatedJobPost.success) {
             return { success: false, message: "Job post not found" };
         }
-        const jobPostAtributes = ["title", "position", "salary", "degree", "experience", "jobType", "major", "description"];
+        const jobPostAtributes = ["title", "company", "position", "salary", "degree", "experience", "jobType", "major", "description", "logo"];
         for (const attribute of jobPostAtributes){
             updatedJobPost.data[attribute] = updates[attribute] || updatedJobPost.data[attribute];
         }
