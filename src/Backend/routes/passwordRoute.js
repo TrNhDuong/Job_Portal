@@ -40,6 +40,7 @@ Router.post("/password/candidate", async (req, res) => {
 
 Router.post("/password/employer", async (req, res) => {
     const {email, password, newpassword} = req.body;
+    console.log(email, password, newpassword);
     const account = await EmployerRepository.getEmployer(email);
     if (!account){
         res.json({

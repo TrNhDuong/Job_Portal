@@ -1,168 +1,198 @@
 import React, { useState, useContext } from 'react';
 import '../styles/Setting.css';
 import { FaUser, FaBell, FaSave, FaTimes } from 'react-icons/fa';
-import { AuthContext } from '../context/AuthContext'; // Giả định AuthContext đã được import
+import profileIcon from '../assets/icon/profile.png'; // Giữ lại nếu cần, mặc dù đang dùng securityIcon
+import securityIcon from '../assets/icon/security.png';
+import bellIcon from '../assets/icon/bell.png';
+import client from '../api/client';
+import { AuthContext } from "../context/AuthContext.jsx"; 
 
+// Khởi tạo state: ĐÃ THÊM currentPassword
 const accountInitialState = {
-    currentPassword: '',
-    newPassword: '',
-    confirmNewPassword: '',
+    currentPassword: '', // <--- ĐÃ THÊM TRƯỜNG NÀY
+    newPassword: '',
+    confirmNewPassword: '',
 };
 
 const Setting = ({ isVisible, onClose }) => {
-    // 💡 GIẢ ĐỊNH: Lấy thông tin user (email) từ AuthContext
-    const { auth, logout } = useContext(AuthContext);
-    const userEmail = auth.user?.email || 'employer@example.com'; 
+    // 💡 Lấy thông tin user từ AuthContext
+    const auth = useContext(AuthContext);
+    // SỬ DỤNG EMAIL THỰC TẾ
+    const userEmail = auth.auth.employerData?.data?.email || 'employer@example.com'; 
 
-    const [activeSection, setActiveSection] = useState('account');
-    const [accountForm, setAccountForm] = useState(accountInitialState);
-    const [errors, setErrors] = useState({});
+    const [activeSection, setActiveSection] = useState('account');
+    const [accountForm, setAccountForm] = useState(accountInitialState);
+    const [errors, setErrors] = useState({});
 
-    if (!isVisible) return null;
+    if (!isVisible) return null;
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setAccountForm(prev => ({ ...prev, [name]: value }));
-        setErrors(prev => ({ ...prev, [name]: '' }));
-    };
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setAccountForm(prev => ({ ...prev, [name]: value }));
+        setErrors(prev => ({ ...prev, [name]: '' }));
+    };
 
-    const handlePasswordChange = (e) => {
-        e.preventDefault();
-        const newErrors = {};
+    const handlePasswordChange = async (e) => {
+        e.preventDefault();
+        const newErrors = {};
 
+        // 1. Validation cơ bản
         if (!accountForm.currentPassword) {
             newErrors.currentPassword = 'Vui lòng nhập mật khẩu hiện tại.';
         }
-        if (accountForm.newPassword.length < 6) {
-            newErrors.newPassword = 'Mật khẩu mới phải có ít nhất 6 ký tự.';
-        }
-        if (accountForm.newPassword !== accountForm.confirmNewPassword) {
-            newErrors.confirmNewPassword = 'Xác nhận mật khẩu không khớp.';
-        }
+        if (accountForm.newPassword.length < 6) {
+            newErrors.newPassword = 'Mật khẩu mới phải có ít nhất 6 ký tự.';
+        }
+        if (accountForm.newPassword !== accountForm.confirmNewPassword) {
+            newErrors.confirmNewPassword = 'Xác nhận mật khẩu không khớp.';
+        }
 
-        if (Object.keys(newErrors).length > 0) {
-            setErrors(newErrors);
-            return;
-        }
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            return;
+        }
 
-        // 💡 LOGIC GỌI API ĐỔI MẬT KHẨU SẼ Ở ĐÂY
-        console.log("Đổi mật khẩu thành công (Mô phỏng):", accountForm.newPassword);
-        alert('Đổi mật khẩu thành công (Mô phỏng)!');
-        setAccountForm(accountInitialState);
-        onClose();
-    };
-    
-    // --- Render Sections ---
+        try {
+            // 2. Đảm bảo sử dụng email và currentPassword/newPassword từ state
+            const data = {
+                email: userEmail, // <-- SỬ DỤNG BIẾN EMAIL THỰC TẾ
+                password: accountForm.currentPassword, // <-- SỬ DỤNG currentPassword
+                newpassword: accountForm.newPassword
+            }
+            console.log("Dữ liệu gửi lên API:", data); // Kiểm tra lại dữ liệu
+            
+            // 3. Gửi request
+            const response = await client.post(`/api/password/employer`, data);
 
-    const renderAccountSettings = () => (
-        <div className="settings-content-main">
-            <h3>Thông tin Tài khoản</h3>
-            <div className="form-group-static">
-                <label>Email</label>
-                <input type="text" value={userEmail} readOnly disabled />
-            </div>
+            if (response.data.success){
+                alert('Cập nhật mật khẩu thành công')
+            } else {
+                // Xử lý lỗi từ server (ví dụ: mật khẩu cũ không đúng)
+                alert(response.data.message || 'Đã có lỗi xảy ra khi cập nhật mật khẩu');
+            }
+            setAccountForm(accountInitialState);
+            onClose();
+        } catch (err) {
+            alert('Lỗi kết nối hoặc server. Vui lòng thử lại.');
+            console.error("Lỗi đổi mật khẩu:", err);
+            return;
+        }
+    };
+    
+    // --- Render Sections ---
 
-            <div className="password-change-box">
-                <h4>Đổi Mật khẩu</h4>
-                <form onSubmit={handlePasswordChange}>
-                    
-                    <div className="form-group">
-                        <label>Mật khẩu Hiện tại</label>
-                        <input 
-                            type="password" 
-                            name="currentPassword" 
-                            value={accountForm.currentPassword}
-                            onChange={handleChange}
-                            className={errors.currentPassword ? 'error' : ''}
-                        />
-                        {errors.currentPassword && <p className="error-text">{errors.currentPassword}</p>}
-                    </div>
+    const renderAccountSettings = () => (
+        <div className="settings-content-main">
+            <h3>Thông tin Tài khoản</h3>
+            <div className="form-group-static">
+                <label>Email</label>
+                <input type="text" value={userEmail} readOnly disabled />
+            </div>
 
-                    <div className="form-group">
-                        <label>Mật khẩu Mới</label>
-                        <input 
-                            type="password" 
-                            name="newPassword" 
-                            value={accountForm.newPassword}
-                            onChange={handleChange}
-                            className={errors.newPassword ? 'error' : ''}
-                        />
-                        {errors.newPassword && <p className="error-text">{errors.newPassword}</p>}
-                    </div>
+            <div className="password-change-box">
+                <h4>Đổi Mật khẩu</h4>
+                <form onSubmit={handlePasswordChange}>
+                    
+                    {/* Input Mật khẩu Hiện tại: Đảm bảo name="currentPassword" và value={accountForm.currentPassword} */}
+                    <div className="form-group">
+                        <label>Mật khẩu Hiện tại</label>
+                        <input 
+                            type="password" 
+                            name="currentPassword" 
+                            value={accountForm.currentPassword} // Đã có trong state
+                            onChange={handleChange}
+                            className={errors.currentPassword ? 'error' : ''}
+                        />
+                        {errors.currentPassword && <p className="error-text">{errors.currentPassword}</p>}
+                    </div>
 
-                    <div className="form-group">
-                        <label>Nhập lại Mật khẩu Mới</label>
-                        <input 
-                            type="password" 
-                            name="confirmNewPassword" 
-                            value={accountForm.confirmNewPassword}
-                            onChange={handleChange}
-                            className={errors.confirmNewPassword ? 'error' : ''}
-                        />
-                        {errors.confirmNewPassword && <p className="error-text">{errors.confirmNewPassword}</p>}
-                    </div>
-                    
-                    <button type="submit" className="btn-save-password">
-                        <FaSave /> Xác nhận Đổi mật khẩu
-                    </button>
-                </form>
-            </div>
-            
+                    {/* Input Mật khẩu Mới */}
+                    <div className="form-group">
+                        <label>Mật khẩu Mới</label>
+                        <input 
+                            type="password" 
+                            name="newPassword" 
+                            value={accountForm.newPassword}
+                            onChange={handleChange}
+                            className={errors.newPassword ? 'error' : ''}
+                        />
+                        {errors.newPassword && <p className="error-text">{errors.newPassword}</p>}
+                    </div>
 
-        </div>
-    );
+                    {/* Input Nhập lại Mật khẩu Mới */}
+                    <div className="form-group">
+                        <label>Nhập lại Mật khẩu Mới</label>
+                        <input 
+                            type="password" 
+                            name="confirmNewPassword" 
+                            value={accountForm.confirmNewPassword}
+                            onChange={handleChange}
+                            className={errors.confirmNewPassword ? 'error' : ''}
+                        />
+                        {errors.confirmNewPassword && <p className="error-text">{errors.confirmNewPassword}</p>}
+                    </div>
+                    
+                    <button type="submit" className="btn-save-password">
+                        <FaSave /> Xác nhận Đổi mật khẩu
+                    </button>
+                </form>
+            </div>
+            
 
-    const renderNotificationSettings = () => (
-        <div className="settings-content-main">
-            <h3>Cài đặt Thông báo</h3>
-            <div className="setting-toggle-item">
-                <label>Nhận thông báo về CV mới</label>
-                <input type="checkbox" defaultChecked />
-            </div>
-            <div className="setting-toggle-item">
-                <label>Email thông báo hàng tuần</label>
-                <input type="checkbox" />
-            </div>
-            <button className="btn-save-changes">
-                <FaSave /> Lưu thay đổi
-            </button>
-        </div>
-    );
+        </div>
+    );
 
-    return (
-        <div className="settings-modal-overlay">
-            <div className="settings-modal-card">
-                <div className="settings-header">
-                    <h2>Settings</h2>
-                    <button className="close-btn" onClick={onClose}><FaTimes size={24} /></button>
-                </div>
+    const renderNotificationSettings = () => (
+        <div className="settings-content-main">
+            <h3>Cài đặt Thông báo</h3>
+            <div className="setting-toggle-item">
+                <label>Nhận thông báo về CV mới</label>
+                <input type="checkbox" defaultChecked />
+            </div>
+            <div className="setting-toggle-item">
+                <label>Email thông báo hàng tuần</label>
+                <input type="checkbox" />
+            </div>
+            <button className="btn-save-changes">
+                <FaSave /> Lưu thay đổi
+            </button>
+        </div>
+    );
 
-                <div className="settings-body">
-                    {/* Sidebar */}
-                    <div className="settings-sidebar">
-                        <div 
-                            className={`sidebar-item ${activeSection === 'account' ? 'active' : ''}`}
-                            onClick={() => setActiveSection('account')}
-                        >
-                            <FaUser /> Tài khoản
-                        </div>
-                        <div 
-                            className={`sidebar-item ${activeSection === 'notification' ? 'active' : ''}`}
-                            onClick={() => setActiveSection('notification')}
-                        >
-                            <FaBell /> Thông báo
-                        </div>
-                    </div>
+    return (
+        <div className="settings-modal-overlay">
+            <div className="settings-modal-card">
+                <div className="settings-header">
+                    <h2>Settings</h2>
+                    <button className="close-btn" onClick={onClose}><FaTimes size={24} /></button>
+                </div>
 
-                    {/* Nội dung chính */}
-                    <div className="settings-content">
-                        {activeSection === 'account' && renderAccountSettings()}
-                        {activeSection === 'notification' && renderNotificationSettings()}
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
+                <div className="settings-body">
+                    {/* Sidebar */}
+                    <div className="settings-sidebar">
+                        <div 
+                            className={`sidebar-item ${activeSection === 'account' ? 'active' : ''}`}
+                            onClick={() => setActiveSection('account')}
+                        >
+                            <img src={securityIcon} alt="Bảo mật" className="icon-img" /> Bảo mật
+                        </div>
+                        <div 
+                            className={`sidebar-item ${activeSection === 'notification' ? 'active' : ''}`}
+                            onClick={() => setActiveSection('notification')}
+                        >
+                            <img src={bellIcon} alt="Thông báo" className="icon-img" /> Thông báo
+                        </div>
+                    </div>
+
+                    {/* Nội dung chính */}
+                    <div className="settings-content">
+                        {activeSection === 'account' && renderAccountSettings()}
+                        {activeSection === 'notification' && renderNotificationSettings()}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 };
 
 export default Setting;

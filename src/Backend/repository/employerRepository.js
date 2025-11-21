@@ -44,22 +44,26 @@ export class EmployerRepository {
 
 
         if (updatesEmployer["password"]) {
+            console.log(updatesEmployer["password"]);
             employer.data["password"] = bcrypt.hashSync(updatesEmployer["password"], 10);
         }
 
         if (updatesEmployer["logo"]){
-            if (employer.data.logo.public_id){
+            if (employer?.data?.logo?.public_id){
+                console.log('Dang xoa public')
                 const result = await destroyCloudData(employer.data.logo.public_id);
                 if (result){
                     console.log('Deleted image')
                 } else {
                     console.log('Failed to deleted image')
                 }
+                employer.data.logo.url = '';
             }
+            employer.data.logo = updatesEmployer["logo"];
         }
 
         if (updatesEmployer["wallpaper"]){
-            if (employer.data.wallpaper.public_id){
+            if (employer?.data?.wallpaper?.public_id){
                 const result = await destroyCloudData(employer.data.wallpaper.public_id);
                 if (result){
                     console.log('Deleted image wallpaper')
@@ -67,6 +71,7 @@ export class EmployerRepository {
                     console.log('Failed to deleted image')
                 }
             }
+            employer.data.logo = updatesEmployer["wallpaper"];
         }
 
         for (const attribute of employerAttributes) {
