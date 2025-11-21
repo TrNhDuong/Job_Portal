@@ -27,9 +27,13 @@ router.post("/candidateRegister", async (req, res) => {
         CV: []
     });
     if (result.success) {
-        res.status(201).json({ message: "Candidate registered successfully" });
+        res.status(201).json({ 
+            success: true,
+            message: "Candidate registered successfully" });
     } else {
-        res.status(500).json({ message: "Error registering candidate" });
+        res.status(500).json({ 
+            success: false,
+            message: "Error registering candidate" });
     }
 });
 
@@ -52,9 +56,14 @@ router.post("/employerRegister", async (req, res) => {
         phone: phone
     });
     if (result.success) {
-        res.status(201).json({ message: "Employer registered successfully" });
+        res.status(201).json({ 
+            success: true,
+            message: "Employer registered successfully"
+         });
     } else {
-        res.status(500).json({ message: "Error registering employer" });
+        res.status(500).json({
+            success: false,
+            message: "Error registering employer" });
     }
 });
 

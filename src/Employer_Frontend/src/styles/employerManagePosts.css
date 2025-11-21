@@ -1,0 +1,229 @@
+:root {
+  --primary-color: #1a73e8;
+  --text-color-dark: #111827;
+  --text-color-medium: #6b7280;
+  --text-color-light: #374151;
+  --bg-light: #f9fafb;
+  --bg-white: #ffffff;
+  --border: #e5e7eb;
+  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 3px 8px rgba(0, 0, 0, 0.15);
+  --error-color: #d93025;
+  --delete-color: #e53935;
+}
+
+.manage-posts-container {
+  /* --- TÔI ĐÃ XÓA: Xóa display:flex, height:100% --- */
+  /* Container giờ chỉ là một wrapper đơn giản */
+  background-color: transparent; /* Cho phép nền của right-panel hiển thị */
+}
+
+/* --- TÔI ĐÃ SỬA: Đây là thay đổi quan trọng nhất --- */
+.filter-bar {
+  position: fixed; /* Cố định thanh lọc */
+  top: 50px; /* Dưới thanh hotbar (60px) + tab-bar (44px) */
+  right: 0; /* Căn phải */
+  /* 'left' và 'transition' sẽ được thêm từ inline style */
+  
+  background: var(--bg-white);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  z-index: 998; /* Dưới tab-bar (999) */
+  box-sizing: border-box; /* Đảm bảo padding không ảnh hưởng 'left'/'right' */
+}
+/* -------------------------------------------------- */
+
+.filter-row-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.filter-input {
+  flex: 1;
+  min-width: 220px;
+  max-width: 400px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.filter-row-bottom {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.filter-options select {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-light);
+  font-size: 0.95rem;
+  cursor: pointer;
+  flex: 1;
+  min-width: 160px;
+}
+
+.filter-row-bottom button {
+  background: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.filter-row-bottom button:hover {
+  background: #1e40af;
+}
+
+/* --- TÔI ĐÃ SỬA: Thay thế class này --- */
+.job-post-list {
+  /* 'padding-top' vẫn được thêm từ inline style (120px) */
+  
+  /* Thêm các thuộc tính để tạo tấm nền trắng */
+  background: var(--bg-light); /* Thêm nền trắng */
+  border-radius: 12px;        /* Bo góc cho tấm nền */
+  box-shadow: var(--shadow-sm); /* Thêm bóng mờ nhẹ */
+  
+  /* Thêm lại padding cho các cạnh */
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 20px;
+  
+  /* Các thuộc tính cũ giữ nguyên */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  box-sizing: border-box;
+}
+/* ------------------------------------- */
+
+.job-post-card {
+  background: var(--bg-white);
+  border-radius: 10px;
+  padding: 16px 20px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+}
+
+.job-post-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.job-post-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  overflow: hidden;
+  margin-right: 12px;
+}
+
+.job-post-header h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-color-dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.job-post-position {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text-color-medium);
+  font-weight: 500;
+}
+
+.job-post-location,
+.job-post-salary {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-color-light);
+}
+
+.job-post-salary {
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.no-results {
+  text-align: center;
+  color: var(--text-color-medium);
+  font-size: 1rem;
+  margin-top: 40px;
+  grid-column: 1 / -1;
+}
+
+/* Kiểu dáng cho Menu "..." (Không đổi) */
+.actions-container {
+  position: relative;
+  flex-shrink: 0;
+}
+.action-menu-toggle {
+  background: transparent;
+  border: none;
+  padding: 4px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-color-medium);
+}
+.action-menu-toggle:hover {
+  background-color: #f3f4f6;
+  color: var(--text-color-dark);
+}
+.action-menu {
+  position: absolute;
+  top: 30px;
+  right: 0;
+  background: var(--bg-white);
+  border-radius: 8px;
+  box-shadow: var(--shadow-md);
+  z-index: 10;
+  width: 140px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.action-menu button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 10px 14px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-color-dark);
+}
+.action-menu button:hover {
+  background-color: var(--bg-light);
+}
+.action-menu button.delete {
+  color: var(--delete-color);
+}
+.action-menu button.delete:hover {
+  background-color: #fff7f7;
+}

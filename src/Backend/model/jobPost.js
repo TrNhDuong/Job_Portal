@@ -13,6 +13,11 @@ const jobPost = new mongoose.Schema({
         type: String,
         required: true,
     },
+    detailedAddress: { // Detailed address (street, number)
+        type: String,
+        required: true, // Chúng ta đã đặt nó là bắt buộc ở form
+        default: "" 
+    },
     location: { // Location of the company
         type: String,
         required: true,
@@ -20,11 +25,6 @@ const jobPost = new mongoose.Schema({
     logo: {
         url: String,
         public_id: String
-    },
-    detailedAddress: { // Detailed address (street, number)
-        type: String,
-        required: true, // Chúng ta đã đặt nó là bắt buộc ở form
-        default: "" 
     },
     salary: {  
         type: Object, 
@@ -56,20 +56,9 @@ const jobPost = new mongoose.Schema({
         required: true,
         enum: ['Bachelor', 'Master', 'Doctorate', 'Associate', 'Diploma', 'High School', 'No Degree']
     },
-    experience: {
-        type: Object,
+    experience: { // Number of years of experience required
+        type: Number, 
         required: true,
-        default: { value: 0, unit: 'years' },
-        value: {
-            type: Number,
-            required: true,
-            default: 0
-        },
-        unit: {
-            type: String,
-            enum: ['years', 'months'],
-            default: 'years'
-        }
     },
     postedAt: {
         type: Date,
@@ -89,7 +78,7 @@ const jobPost = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Application',
         }
-    ], // array of candidate emails who applied for the job
+    ],
     description: {  // Description of the job, which is displayed when the user clicks on the job post
         type: String,
         required: true,

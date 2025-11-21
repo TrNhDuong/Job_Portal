@@ -53,7 +53,6 @@ router.post("/loginEmployer", async (req, res) => {
             message: "User not found"
         });
     }
-    console.log(employerPass, password);
     const isMatchPassword = bcrypt.compareSync(password, employerPass.data);
 
     if (!isMatchPassword) {

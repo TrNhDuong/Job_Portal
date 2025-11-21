@@ -1,0 +1,110 @@
+/* src/pages/employerpost.css (phiên bản đã chỉnh để nhúng trong right-panel) */
+.postjob-container {
+  background-color: transparent; /* cho hòa nhập với right-panel */
+  min-height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0; /* right-panel đã cung cấp padding */
+  font-family: "Montserrat", sans-serif;
+  width: 100%;
+}
+
+.postjob-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+  width: 100%;
+  max-width: 920px;
+  padding: 28px 36px;
+  margin: 8px 0;
+}
+
+.postjob-title {
+  color: #1a237e;
+  text-align: center;
+  margin-bottom: 18px;
+  font-weight: 700;
+  font-size: 22px;
+}
+
+.postjob-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.form-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group.small {
+  flex: 0.32;
+  min-width: 120px;
+}
+
+label {
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 6px;
+}
+
+label span { color: red; margin-left: 3px; }
+
+input,
+select,
+textarea {
+  border: 1.5px solid #c9d5ec;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #1a1a1a !important;
+  background-color: #fff;
+  transition: all 0.15s ease;
+}
+
+input::placeholder,
+textarea::placeholder { color: #9ba5b8; }
+
+input:focus, select:focus, textarea:focus {
+  border-color: #1a73e8;
+  box-shadow: 0 0 5px rgba(26,115,232,0.18);
+  outline: none;
+}
+
+select { background-color: #fff; }
+
+button {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.btn-submit { background-color: #1a73e8; color: white; }
+.btn-reset { background-color: #ccc; color: #222; }
+
+.btn-submit:hover { background-color: #0b57cf; }
+.btn-reset:hover { background-color: #b3b3b3; }
+
+input.error, select.error, textarea.error {
+  border-color: #e53935 !important;
+  background-color: #fff7f7;
+}

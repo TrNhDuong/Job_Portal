@@ -93,6 +93,73 @@ export class EmployerRepository {
             data: employer.data.password
         };
     }
+    static async addJobPostToEmployer(email, jobPostId) {
+    
+        // 1. Kiểm tra sự tồn tại (giữ nguyên, nhưng không cần lấy toàn bộ dữ liệu)
+        const employer = await Employer.findOne({ email });
+        if (!employer) { // Kiểm tra trực tiếp object Mongoose
+            return {
+                success: false,
+                message: "Employer not found",
+                data: null
+            };
+        }
+        console.log("Employer tìm thấy để thêm job post:", employer);
+        try {
+            // 2. SỬ DỤNG $push ĐỂ CẬP NHẬT NGUYÊN TỬ (ATOMIC UPDATE)
+            console.log("Thêm job post ID:", jobPostId, "vào employer với email:", email);
+            const updatedEmployer = await Employer.findOneAndUpdate(
+                { email: email }, // Query: Tìm theo email
+                { $push: { jobPosted: jobPostId } }, // Update: Thêm jobPostId vào mảng jobPosted
+                { new: true } // Options: Trả về tài liệu đã cập nhật
+            );
+            console.log("Cập nhật employer thành công:", updatedEmployer);
+            // 3. Trả về kết quả
+            return {
+                success: true,
+                data: updatedEmployer
+            };
+            
+        } catch (error) {
+            // Nên thêm khối try...catch ở đây để bắt lỗi database/validation
+            console.error("Lỗi khi thêm Job Post vào Employer:", error);
+            return {
+                success: false,
+                message: "Database update error",
+                data: null
+            };
+        }
+    }
+    static async removeJobPostFromEmployer(email, jobPostId) {
+        try {
+            const updatedEmployer = await Employer.findOneAndUpdate(
+                { email: email },
+                { $pull: { jobPosted: jobPostId } },
+                { new: true }
+            );
+
+            if (!updatedEmployer) {
+                return {
+                    success: false,
+                    message: "Employer not found",
+                    data: null
+                };
+            }
+
+            return {
+                success: true,
+                data: updatedEmployer
+            };
+
+        } catch (error) {
+            console.error("Error removing job post from employer:", error);
+            return {
+                success: false,
+                message: "Database update error",
+                data: null
+            };
+        }
+    }
     // Return top 10 branch hot
     static async getTopFeature() {
         try {
