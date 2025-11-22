@@ -3,6 +3,7 @@ import PointDisplay from "../components/PointDisplay";
 import { useAuth } from "../context/AuthContext";
 import { HiOutlineCreditCard, HiCheckCircle, HiX, HiSparkles, HiOutlineLightningBolt, HiOutlineStar, HiOutlineBriefcase, HiOutlineGlobeAlt } from "react-icons/hi";
 import "../styles/employerDeposit.css";
+import toast from 'react-hot-toast';
 
 const EXCHANGE_RATE = 500; // 500 VND = 1 Point
 
@@ -72,7 +73,7 @@ const EmployerDeposit = () => {
 
   const handleBuy = () => {
     if (pointsToBuy <= 0) {
-        alert("Vui lòng nhập số điểm lớn hơn 0");
+        toast.error("Vui lòng nhập số điểm lớn hơn 0");
         return;
     }
     setShowQR(true);
@@ -82,7 +83,7 @@ const EmployerDeposit = () => {
     const totalPoints = parseInt(pointsToBuy) + bonusPoints;
     handleTransaction(totalPoints, "add");
     setShowQR(false);
-    alert(`Thanh toán thành công! Bạn nhận được ${totalPoints} điểm.`);
+    toast.success(`Thanh toán thành công! +${totalPoints} điểm.`);
     setPointsToBuy(0);
   };
 

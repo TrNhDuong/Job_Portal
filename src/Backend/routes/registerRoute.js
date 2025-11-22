@@ -10,8 +10,7 @@ router.post("/candidateRegister", async (req, res) => {
     const { email, password, name } = req.body;
     
     const existingCandidate = await CandidateRepository.getCandidate(email);
-    const existingEmployer = await EmployerRepository.getEmployer(email);
-    if (existingCandidate.success || existingEmployer.success) {
+    if (existingCandidate.success) {
         return res.status(409).json({
             success: false,
             message: "Email already exists" });
@@ -43,8 +42,7 @@ router.post("/employerRegister", async (req, res) => {
     const { email, password, phone, company, address } = req.body;
 
     const existingEmployer = await EmployerRepository.getEmployer(email);
-    const existingCandidate = await CandidateRepository.getCandidate(email);
-    if (existingEmployer.success || existingCandidate.success) {
+    if (existingEmployer.success) {
         return res.status(409).json({ 
             success: false,
             message: "Email already exists" });
@@ -52,6 +50,13 @@ router.post("/employerRegister", async (req, res) => {
     
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
+    console.log({
+        email: email,
+        password: hashedPassword,
+        company: company,
+        address: address,
+        phone: phone
+    });
     const result = await EmployerRepository.createEmployer({
         email: email,
         password: hashedPassword,

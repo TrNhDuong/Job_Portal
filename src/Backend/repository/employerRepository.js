@@ -32,7 +32,7 @@ export class EmployerRepository {
             };
     }
     static async updateEmployer(email, updatesEmployer) {
-        const employerAttributes = ["company", "email", "password", "phone", "address", "description", "logo", "wallpaper", "website", "jobPosted", "point"];
+        const employerAttributes = ["company", "email", "phone", "address", "description", "logo", "wallpaper", "website", "jobPosted", "point"];
         let employer = await this.getEmployer(email);
         if (!employer.success) {
             return {
@@ -60,6 +60,7 @@ export class EmployerRepository {
                 employer.data.logo.url = '';
             }
             employer.data.logo = updatesEmployer["logo"];
+            console.log(employer.data);
         }
 
         if (updatesEmployer["wallpaper"]){
@@ -72,6 +73,7 @@ export class EmployerRepository {
                 }
             }
             employer.data.logo = updatesEmployer["wallpaper"];
+            console.log(employer.data);
         }
 
         for (const attribute of employerAttributes) {

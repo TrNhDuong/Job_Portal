@@ -5,15 +5,28 @@ import { AuthContext } from './context/AuthContext.jsx';
 import Homepage from './pages/Homepage.jsx';
 import LoginPage from './pages/employerLogin.jsx';     
 import RegisterPage from './pages/employerRegister.jsx'; 
-//THANH TOÁN
-import EmployerDeposit from './pages/EmployerDeposit.jsx'; 
-import EmployerJobRenewal from './pages/EmployerJobRenewal.jsx';
+
+import { Toaster } from 'react-hot-toast';
 
 
 export default function App() {
   const { auth } = useContext(AuthContext);
 
   return (
+    <>
+    <Toaster 
+        position="top-right" 
+        reverseOrder={false} 
+        toastOptions={{
+          // Tùy chỉnh font chữ cho đồng bộ với web
+          style: {
+            fontFamily: "'Be Vietnam Pro', sans-serif",
+            fontSize: '0.95rem',
+          },
+          // Chỉnh thời gian hiện mặc định
+          duration: 3000, 
+        }}
+      />
     <Routes>
 
       <Route path="/" element={<Navigate to="/login" />} />
@@ -35,20 +48,7 @@ export default function App() {
         }
       />
 
-      {/* THANH TOÁN */}
-      <Route
-        path="/deposit"
-        element={
-            <EmployerDeposit />
-        }
-      />
-      <Route
-        path="/renewal"
-        element={
-            <EmployerJobRenewal />
-        }
-      />
-
     </Routes>
+    </>
   );
 }

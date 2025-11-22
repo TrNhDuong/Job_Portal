@@ -14,7 +14,7 @@ const EmployerProfile = ({}) => {
     const [mode, setMode] = useState('view');
     const { auth, updateEmployerWithData, updateData  } = useContext(AuthContext);
     const [loading, setLoading] = useState(false);
-    const logo = auth.employerData?.data.logo.url || monoLogo;
+    const logo = auth.employerData?.data.logo?.url || monoLogo;
     const data = auth.employerData?.data || {};
     if (mode === 'edit') {
         return (

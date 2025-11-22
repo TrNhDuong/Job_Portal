@@ -16,6 +16,10 @@ import logoImage from "../assets/logo.png";
 import monoLogo from "../assets/mono-logo.png";
 import { HiOutlineCog } from 'react-icons/hi';
 import { HiOutlineInformationCircle, HiOutlineCreditCard, HiArrowPath } from 'react-icons/hi2';
+
+//THANH TOÁN
+import EmployerDeposit from "./EmployerDeposit.jsx";
+import EmployerJobRenewal from "./EmployerJobRenewal.jsx";
 import postIcon from '../assets/icon/post.png';
 import candidateIcon from '../assets/icon/candidate.png';
 
@@ -23,7 +27,7 @@ export default function Homepage() {
   const navigate = useNavigate();
   const auth = useContext(AuthContext);
   const postCache = useRef(new Map()); // Cache cho các bài đăng đã tải
-  const logoUrl = auth.auth.employerData.data.logo.url || monoLogo;
+  const logoUrl = auth.auth.employerData?.data.logo?.url || monoLogo;
   const [activeSetting, setActiveSetting] = useState("ManagePosts");
   const [isLoading, setIsLoading] = useState(true);
   const [jobPosts, setJobPosts] = useState([])
@@ -97,6 +101,8 @@ export default function Homepage() {
     loadDashboardData(); // Chạy hàm
   }, [auth.user]);
 
+  
+
   const tabNameMap = {
     CVManage: "Quản lý CV",
     ManagePosts: "Quản lý bài đăng",
@@ -168,7 +174,7 @@ export default function Homepage() {
 
         setJobPosts((prevPosts) =>
             prevPosts.map((post) =>
-              post._id === updatedData.id ? { ...post, ...updatedData } : post
+              post._id === updatedData.id ? { ...post, ...updatedData  } : post
             )
           );  // reload lại danh sách
         setEditingPost(null);        // thoát chế độ sửa
@@ -271,25 +277,25 @@ export default function Homepage() {
                 isActive={activeSetting === "ManagePosts"}
               />
 
-            <NavItem
-              icon={<img src={postIcon} alt="Post Icon" style={{ width: '1.2rem', marginRight: '0px' }} />}
-              label="Đăng tin tuyển dụng"
-              onClick={handlePostNavClick}
-              isActive={activeSetting === "PostJob"}
-            />
-            <li className="menu-header">Giao dịch</li>
-            <NavItem
-              icon={<HiArrowPath />}
-              label="Gia hạn bài đăng"
-              onClick={() => setActiveSetting("Renew")}
-              isActive={activeSetting === "Renew"}
-            />
-            <NavItem
-              icon={<HiOutlineCreditCard />}
-              label="Nạp tiền"
-              onClick={() => setActiveSetting("Donate")}
-              isActive={activeSetting === "Donate"}
-            />
+              <NavItem
+                icon={<img src={postIcon} alt="Post Icon" style={{ width: '1.2rem', marginRight: '0px' }} />}
+                label="Đăng tin tuyển dụng"
+                onClick={handlePostNavClick}
+                isActive={activeSetting === "PostJob"}
+              />
+              <li className="menu-header">Giao dịch</li>
+              <NavItem
+                icon={<HiArrowPath />}
+                label="Gia hạn bài đăng"
+                onClick={() => setActiveSetting("Renew")}
+                isActive={activeSetting === "Renew"}
+              />
+              <NavItem
+                icon={<HiOutlineCreditCard />}
+                label="Nạp tiền"
+                onClick={() => setActiveSetting("Donate")}
+                isActive={activeSetting === "Donate"}
+              />
 
               <li className="menu-header">Cài đặt quản lí</li>
               <NavItem

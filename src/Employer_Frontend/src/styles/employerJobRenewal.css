@@ -5,7 +5,8 @@
 }
 
 .renewal-container {
-    max-width: 900px;
+    /*max-width: 900px;*/
+    max-width: 1350px;
     margin: 0 auto;
     margin-top: -50px; /* Đẩy lên đè vào phần xanh */
     padding: 0 20px;
@@ -45,21 +46,21 @@
 /* --- Job Grid Layout --- */
 .job-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); /* Tự động chia cột */
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
 }
 
 /* --- Job Card Styling --- */
 .job-card {
     background: white;
-    border-radius: 16px;
-    padding: 25px; /* Tăng padding lên cho thoáng */
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border-radius: 12px;
+    padding: 15px; 
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     border: 1px solid #eee;
     transition: transform 0.2s, box-shadow 0.2s;
     display: flex;
     flex-direction: column;
-    min-height: 320px; 
+    min-height: 220px; 
     justify-content: space-between; /* Đẩy các phần nội dung ra xa nhau */
 }
 
@@ -69,32 +70,31 @@
     border-color: #0061ff;
 }
 
-.job-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 15px;
+/* Dải trạng thái Đã hết hạn */
+.status-strip {
+    font-size: 0.7rem;
+    color: #e74c3c;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 5px;
 }
-
-.job-card-header .status-badge {
-   display: none; 
-}
-
-.job-cost {
-    font-size: 0.95rem;
-    color: #0061ff; 
-    font-weight: 700; 
-    background: #eef7ff;
-    padding: 5px 10px;
-    border-radius: 8px;
+.status-strip::before {
+    content: ''; width: 6px; height: 6px; background: #e74c3c; border-radius: 50%;
 }
 
 .job-title {
-    margin: 10px 0 20px 0; 
-    font-size: 1.3rem;
+    margin: 0 0 10px 0; 
+    font-size: 0.95rem;
     color: #2c3e50;
-    line-height: 1.4;
-    font-weight: 800; 
+    line-height: 1.3;
+    font-weight: 700;
+    flex-grow: 1;
+    display: -webkit-box; 
+    -webkit-line-clamp: 3; 
+    line-clamp: 3;
+    -webkit-box-orient: vertical; 
+    overflow: hidden;
 }
 
 /* --- Job Meta (Thông tin phụ) --- */
@@ -103,7 +103,7 @@
     padding-top: 20px;
     margin-bottom: 25px;
     color: #555;
-    font-size: 0.95rem;
+    font-size: 0.8rem;
 }
 
 .meta-item {
@@ -128,48 +128,29 @@
     margin-top: 10px;
 }
 
-/* --- Khu vực nút bấm & Badge hết hạn --- */
-.job-card-action {
-    display: flex;
-    flex-direction: column; 
-    gap: 15px; 
-    margin-top: auto; 
-}
 
 /* Nút gia hạn */
 .btn-renew-action {
     width: 100%;
-    padding: 14px;
-    background: linear-gradient(90deg, #0061ff, #00c6fb);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-weight: 700;
-    font-size: 1rem;
+    padding: 10px;
+    background: #f0f7ff; 
+    color: #0061ff;
+    border: 1px solid #0061ff; 
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.2s;
+    margin-top: auto;
     box-shadow: 0 4px 10px rgba(0, 97, 255, 0.2);
 }
 
 .btn-renew-action:hover {
-    opacity: 0.95;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(0, 97, 255, 0.3);
+    background: #0061ff; /* Hover thì đổi nền đậm */
+    color: white;
+    box-shadow: none;
 }
 
-/* Badge Đã hết hạn */
-.expired-label {
-    text-align: center;
-    background: #fff0f0;
-    color: #e74c3c;
-    padding: 8px;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border: 1px dashed #e74c3c;
-}
 
 /* Nếu không có bài đăng cần gia hạn */
 .empty-state {
@@ -185,3 +166,55 @@
     border: 2px dashed #e0e0e0; 
     color: #888;
 }
+
+/* --- MODAL STYLE (MỚI HOÀN TOÀN) --- */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6); z-index: 2000; /* Cao hơn Sidebar */
+    display: flex; justify-content: center; align-items: center;
+    backdrop-filter: blur(3px);
+}
+
+.renewal-modal {
+    background: white; padding: 25px; border-radius: 16px;
+    width: 90%; max-width: 400px;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.btn-close {
+    position: absolute; top: 15px; right: 15px;
+    background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #999;
+}
+
+.renewal-modal h4 { margin: 0 0 5px 0; color: #333; font-size: 1.2rem; }
+.job-name-modal { font-weight: 700; color: #0061ff; margin: 0 0 20px 0; font-size: 1rem; }
+
+.renewal-form label { display: block; margin-bottom: 8px; font-weight: 600; color: #555; }
+
+.input-row { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+.input-row input {
+    width: 80px; padding: 8px; border: 2px solid #eee; border-radius: 8px;
+    font-weight: 700; text-align: center; font-size: 1.1rem; outline: none;
+}
+.input-row input:focus { border-color: #0061ff; }
+.unit-text { font-weight: 600; color: #666; }
+
+.range-slider { width: 100%; margin-bottom: 20px; cursor: pointer; accent-color: #0061ff; }
+
+.cost-summary {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 1.1rem; border-top: 1px dashed #eee; padding-top: 15px;
+}
+.cost-value { color: #e74c3c; font-size: 1.4rem; }
+.rate-note { font-size: 0.8rem; color: #999; text-align: right; margin-top: 5px; }
+
+.btn-confirm-renew {
+    width: 100%; padding: 12px; margin-top: 20px;
+    background: linear-gradient(90deg, #0061ff, #00c6fb);
+    color: white; border: none; border-radius: 10px;
+    font-weight: 700; cursor: pointer; display: flex; justify-content: center; gap: 8px;
+}
+.btn-confirm-renew:hover { opacity: 0.9; transform: translateY(-2px); }

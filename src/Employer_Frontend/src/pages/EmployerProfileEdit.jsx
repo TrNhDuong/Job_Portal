@@ -12,7 +12,7 @@ const EmployerProfileEdit = ({ initialData, onSave, onCancel, onChangeLogo }) =>
         website: initialData.website || '',
         address: initialData.address || '',
         wallpaperUrl: initialData.wallpaper || '',
-        logoUrl: initialData.logo.url || monoLogo,
+        logoUrl: initialData.logo?.url || monoLogo,
     });
 
     const [errors, setErrors] = useState({});
@@ -49,7 +49,7 @@ const EmployerProfileEdit = ({ initialData, onSave, onCancel, onChangeLogo }) =>
     useEffect(() => {
         setForm(prev => ({
             ...prev,
-            logoUrl: initialData.logo.url || monoLogo
+            logoUrl: initialData.logo?.url || monoLogo
         }));
     }, [initialData.logo]);
 
