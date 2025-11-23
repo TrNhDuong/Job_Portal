@@ -208,8 +208,10 @@ html, body {
 }
 
 .menu-header {
-  font-weight: 30px;
-  margin-bottom: 10px;
+  font-weight: bold;
+  font-size: 1.1em;
+  margin-top: 10px;
+  margin-bottom: -2px;
 }
 
 .logo-container {
