@@ -18,22 +18,22 @@ const EmployerDeposit = () => {
   // Cấu hình các gói nạp (Thêm trường name)
   const quickPackages = [
     { 
-      id: 1, points: 40, price: 20000, name: "Gói Khởi Động", bonus: 0, 
+      id: 1, points: 40, price: 19999, name: "Gói Khởi Động", bonus: 0, 
       icon: <HiOutlineStar />, 
       theme: "blue" 
     },
     { 
-      id: 2, points: 100, price: 50000, name: "Gói Tăng Tốc", bonus: 10, recommend: true, 
+      id: 2, points: 100, price: 49999, name: "Gói Tăng Tốc", bonus: 10, recommend: true, 
       icon: <HiOutlineLightningBolt />, 
       theme: "orange" 
     },
     { 
-      id: 3, points: 400, price: 200000, name: "Gói Chuyên Nghiệp", bonus: 50, 
+      id: 3, points: 400, price: 199999, name: "Gói Chuyên Nghiệp", bonus: 50, 
       icon: <HiOutlineBriefcase />, 
       theme: "purple" 
     },
     { 
-      id: 4, points: 1000, price: 500000, name: "Gói Doanh Nghiệp", bonus: 150, 
+      id: 4, points: 1000, price: 499999, name: "Gói Doanh Nghiệp", bonus: 150, 
       icon: <HiOutlineGlobeAlt />, 
       theme: "gold" 
     },
