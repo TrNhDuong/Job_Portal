@@ -96,7 +96,7 @@ const EmployerProfile = ({}) => {
                         </div>
 
                         <div className="company-address-link">
-                            <FaMapMarkerAlt className="icon-address" /> 
+                            <FaMapMarkerAlt className="icon-address" style={{ marginRight: '7px' }} /> 
                             <span>{data.address}</span>
                         </div>
                     
