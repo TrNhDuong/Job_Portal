@@ -79,6 +79,20 @@ const jobPost = new mongoose.Schema({
             ref: 'Application',
         }
     ],
+    metric: {
+        newed: {
+            type: Number,
+            default: 0
+        },
+        pass: {
+            type: Number,
+            default: 0
+        },
+        interviewed: {
+            type: Number,
+            default: 0
+        }
+    },
     description: {  // Description of the job, which is displayed when the user clicks on the job post
         type: String,
         required: true,

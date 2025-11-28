@@ -77,7 +77,7 @@
 .cv-list {
   flex: 1;
   overflow-y: auto;
-  padding: calc(104px + 48px) 20px 20px; top padding = filter bar height + extra margin
+  padding: calc(104px + 48px) 20px 20px; /* top padding = filter bar height + extra margin */
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 16px;
@@ -360,3 +360,66 @@
 .stat-tu-choi strong { color: #dc2626; }
 .stat-da-xem strong { color: #4c80f1; }
 .stat-chua-xem strong { color: #6b7280; }
+
+.job-post-metrics {
+  display: flex;
+  justify-content: space-between; /* Chia đều khoảng cách */
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid #f1f5f9; /* Đường kẻ ngang ngăn cách */
+}
+
+.metric-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1; /* Chia đều chiều rộng */
+  position: relative;
+}
+
+/* Đường kẻ dọc ngăn cách giữa các metrics (trừ thằng cuối cùng) */
+.metric-item:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  height: 70%;
+  width: 1px;
+  background-color: #e2e8f0;
+}
+
+.metric-count {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.metric-label {
+  font-size: 0.75rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+/* --- COLOR CODING (MÃ HÓA MÀU) --- */
+
+/* 1. Mới (Quan trọng nhất - Màu đỏ/cam) */
+.count-new .metric-count {
+  color: #ef4444; /* Red 500 */
+}
+/* Hiệu ứng nền nhẹ khi hover vào số (Optional) */
+.count-new:hover .metric-count {
+  text-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+}
+
+/* 2. Tiềm năng (Màu xanh lá - Positive) */
+.count-potential .metric-count {
+  color: #10b981; /* Emerald 500 */
+}
+
+/* 3. Phỏng vấn (Màu xanh dương - Process) */
+.count-interviewed .metric-count {
+  color: #3b82f6; /* Blue 500 */
+}

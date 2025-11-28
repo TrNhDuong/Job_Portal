@@ -7,10 +7,12 @@ import { updatePostJob, extendJobExpiry, applyJob, removeApplyJob } from "../con
 import { deletePostJob } from "../controller/jobPost/deletePostJob.js";
 import { getJobPostByID, getPostJobPerPage } from "../controller/jobPost/getPostJob.js";
 import { saveJob, removeSaveJob } from "../controller/jobPost/saveJob.js";
+import { getAllApplicantsOfJob } from "../controller/jobPost/getAllApplicant.js";
 //router.get("/post-job/employer", getJobPostEmployer);
 // Không cần endpoint này nữa vì chỉ cần lấy data của employer là xong
 router.get("/post-job/id", getJobPostByID);
 router.get("/post-job/filter", getPostJobPerPage);
+router.get("/post-job/application", getAllApplicantsOfJob);
 router.post("/post-job", createPostJob); //
 router.patch("/post-job", updatePostJob);
 router.patch("/post-job/extend/:id", extendJobExpiry);

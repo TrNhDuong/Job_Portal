@@ -1,5 +1,6 @@
-import React, { useState, useRef, useEffect } from "react"; // Thêm useEffect
+import React, { useState, useRef, useEffect, useContext } from "react"; // Thêm useEffect
 import "../styles/employerpost.css";
+import { AuthContext } from "../context/AuthContext.jsx"; 
 
 const initialFormState = {
   id: null,
@@ -16,6 +17,7 @@ const initialFormState = {
   degree: "Bachelor",
   experience: "",
   description: "",
+  logo: ""
 };
 
 const errorStyle = { 
@@ -27,7 +29,7 @@ const errorStyle = {
 // --- TÔI ĐÃ SỬA: Component giờ nhận props ---
 const EmployerPostJob = ({ onSubmit, initialData }) => {
   // ------------------------------------------
-
+  const auth = useContext(AuthContext);
   const [form, setForm] = useState(initialFormState);
   const [errors, setErrors] = useState({});
   
@@ -50,6 +52,7 @@ const EmployerPostJob = ({ onSubmit, initialData }) => {
       degree: initialData.degree || "Bachelor",
       experience: String(initialData.experience || "0"), 
       description: initialData.description || "",
+      logo: initialData.logo || "",
     };
     setForm(flattenedData);
   } else {
@@ -73,6 +76,7 @@ const EmployerPostJob = ({ onSubmit, initialData }) => {
     customMajor: useRef(null),
     experience: useRef(null),
     description: useRef(null),
+    logo: useRef(null)
   };
 
   // (Các mảng dữ liệu ... không đổi)
@@ -166,6 +170,7 @@ const EmployerPostJob = ({ onSubmit, initialData }) => {
         experience: Number(form.experience),
         minSalary: Number(form.minSalary),
         maxSalary: Number(form.maxSalary),
+        logo: auth.auth.employerData.data.logo
       };
 
       onSubmit(formattedData);

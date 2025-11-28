@@ -242,7 +242,7 @@ export default function EmployerDashboard({ jobPosts }) {
           </div>
         </div>
         
-        <div className="manage-posts-container">
+        <div className="manage-posts-container" style={"magin-top=-20px"}>
           {/* Back Button & Filter */}
           <div className="filter-bar" style={{ left: "17.5%", width: "82.5%", transition: "left 0.3s ease" }}>
             <button className="back-btn" onClick={() => setSelectedJob(null)}>
@@ -395,7 +395,7 @@ export default function EmployerDashboard({ jobPosts }) {
       </div>
 
       {/* Job Posts */}
-      <div className="job-post-list" style={{ paddingTop: "120px" }}>
+      <div className="job-post-list" style={{ paddingTop: "90px" }}>
         {filteredPosts.length > 0 ? filteredPosts.map(post => (
           // Logic onClick đơn giản (vì bạn muốn giữ logic checkbox chung)
           <div key={post._id} className="job-post-card" onClick={() => setSelectedJob(post)}>
@@ -405,10 +405,27 @@ export default function EmployerDashboard({ jobPosts }) {
                 <p className="job-post-position">{post.position}</p>
               </div>
               <p className="job-post-location">{post.location}</p>
-              <p className="job-post-salary">
+              {/* <p className="job-post-salary">
                 {Number(post.salary.minSalary).toLocaleString()} -{" "}
                 {Number(post.salary.maxSalary).toLocaleString()} {post.salary.currency}
-              </p>
+              </p> */}
+              <div className="job-post-metrics">
+                {/* LƯU Ý: post phải có sẵn các trường newCount, potentialCount... */}
+                <div className="metric-item count-new">
+                    <span className="metric-count">{post.metric.newed || 0}</span>
+                    <span className="metric-label">Mới</span>
+                </div>
+                
+                <div className="metric-item count-potential">
+                    <span className="metric-count">{post.metric.pass || 0}</span>
+                    <span className="metric-label">Tiềm năng</span>
+                </div>
+                
+                <div className="metric-item count-interviewed">
+                    <span className="metric-count">{post.metric.interviewed || 0}</span>
+                    <span className="metric-label">Phỏng vấn</span>
+                </div>
+            </div>
             </div>
           </div>
         )) : <div className="no-results">{posts.length > 0 ? "Không tìm thấy bài đăng nào." : "Chưa có job nào luôn."}</div>}

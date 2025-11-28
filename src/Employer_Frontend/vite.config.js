@@ -10,4 +10,10 @@ export default defineConfig({
       },
     }),
   ],
+
+  // 👇 Thêm phần này để đổi port
+  server: {
+    port: 4000,       // muốn đổi sang port nào thì sửa ở đây
+    host: true,       // tùy chọn: cho phép truy cập từ mạng LAN
+  },
 })

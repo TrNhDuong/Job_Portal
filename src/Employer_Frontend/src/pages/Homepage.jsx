@@ -29,6 +29,7 @@ export default function Homepage() {
   const postCache = useRef(new Map()); // Cache cho các bài đăng đã tải
   const logoUrl = auth.auth.employerData?.data.logo?.url || monoLogo;
   const [activeSetting, setActiveSetting] = useState("ManagePosts");
+  const [preSetting, setPreSetting] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [jobPosts, setJobPosts] = useState([])
   const [editingPost, setEditingPost] = useState(null);
@@ -308,7 +309,7 @@ export default function Homepage() {
               <NavItem
                 icon={<HiOutlineCog />}
                 label="Cài đặt"
-                onClick={() => setActiveSetting("Setting")}
+                onClick={() => {setPreSetting(activeSetting); setActiveSetting("Setting")}}
                 isActive={activeSetting === "Setting"}
               />
 
@@ -404,7 +405,7 @@ export default function Homepage() {
               {activeSetting === "Setting" && (
                 <Setting 
                   isVisible={true}
-                  onClose={() => setActiveSetting(null)}
+                  onClose={() => setActiveSetting(preSetting)}
                 />
               )}
               </>
