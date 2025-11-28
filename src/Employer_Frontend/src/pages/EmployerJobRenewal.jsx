@@ -16,6 +16,8 @@ const parseDate = (dateStr) => {
 
 // Helper: Tính số ngày còn lại
 const getDaysRemaining = (expireDateStr) => {
+  if (!expireDateStr)
+    return 0
   const today = new Date();
   today.setHours(0, 0, 0, 0); // Reset giờ về 0 để so sánh chính xác
   const expire = parseDate(expireDateStr);
@@ -52,8 +54,8 @@ const EmployerJobRenewal = ({ onNavigateToDeposit, jobPosts }) => {
     const jobsWithStatus = sourceData.map(job => {
         // Giả định ngày hiện tại để test logic (Bạn có thể bỏ dòng này khi chạy thật)
         // const mockToday = new Date("2025-11-25"); 
-        
-        const daysLeft = getDaysRemaining(job.expireDate);
+  
+        const daysLeft = getDaysRemaining(job?.expireDate);
         let status = 'active'; // Mặc định xanh
         let label = `Còn ${daysLeft} ngày`;
 

@@ -105,7 +105,7 @@ export default function Homepage() {
   
 
   const tabNameMap = {
-    CVManage: "Quản lý CV",
+    CVManage: "Quản lý ứng viên",
     ManagePosts: "Quản lý bài đăng",
     PostJob: "Đăng tin tuyển dụng",
     About: "Về chúng tôi",
@@ -335,7 +335,7 @@ export default function Homepage() {
               {tabNameMap[activeSetting] || (activeSetting === "Profile" ? "Tài khoản" : "Cài đặt")}
             </div>
 
-            <div style={{ marginTop: "80px" }}>
+            <div style={{ marginTop: "100px" }}>
               {isLoading ? (
                 <div className="card">
                   <h3>Đang tải dữ liệu...</h3>
