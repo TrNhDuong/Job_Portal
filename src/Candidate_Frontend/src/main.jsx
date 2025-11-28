@@ -10,7 +10,8 @@ import "./styles/style.css";
 import "./styles/login.css";
 import "./styles/navbar.css"; 
 import "./styles/home.css";
-
+import "./styles/application.css";
+import "./styles/dashboard.css";
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>

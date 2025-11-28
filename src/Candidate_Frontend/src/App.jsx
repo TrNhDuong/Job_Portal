@@ -13,10 +13,11 @@ import ApplicationStatusPage from "./pages/ApplicationStatusPage.jsx";
 import JobManagement from "./pages/JobManagement.jsx"; 
 import MyCV from "./pages/MyCV.jsx"; 
 import NotificationSettings from "./pages/NotificationSettings.jsx";
-import JobSearchPage from "./pages/JobSearchPage.jsx"; // Trang Job mới
-import ProfileSettings from './pages/settings/ProfileSettings.jsx';
-import PasswordSettings from './pages/settings/PasswordSettings.jsx';
-import SecuritySettings from './pages/settings/SecuritySettings.jsx';
+import JobSearchPage from "./pages/JobSearchPage.jsx"; 
+import AccountSettingsLayout from "./pages/settings/AccountSettingsLayout.jsx";
+import ProfileSettings from "./pages/settings/ProfileSettings.jsx";
+import PasswordSettings from "./pages/settings/PasswordSettings.jsx";
+import SecuritySettings from "./pages/settings/SecuritySettings.jsx";
 
 function App() {
   const location = useLocation();
@@ -42,14 +43,16 @@ function App() {
             <Route path="/login-page" element={<Login />} />
             <Route path="/jobs/:id/apply" element={<ApplicationPage />} />
             <Route path="/jobs/:id/status" element={<ApplicationStatusPage />} />
-
+            <Route path="/apply/:id" element={<ApplicationPage />} />
             <Route path="/dashboard" element={<CandidateDashboard />}>
               <Route index element={<JobManagement />} />
               <Route path="my-cv" element={<MyCV />} />
-              <Route path="settings/profile" element={<ProfileSettings />} />
-              <Route path="settings/password" element={<PasswordSettings />} />
-              <Route path="settings/security" element={<SecuritySettings />} />
-              <Route path="notifications" element={<NotificationSettings />} />
+              <Route path="settings" element={<AccountSettingsLayout />}>
+                <Route index element={<ProfileSettings />} />
+                <Route path="profile" element={<ProfileSettings />} />
+                <Route path="password" element={<PasswordSettings />} />
+                <Route path="security" element={<SecuritySettings />} />
+              </Route>
             </Route>
           </Routes>
         </div>

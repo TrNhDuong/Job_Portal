@@ -1,32 +1,53 @@
+// src/Home/components/BrandCard.jsx
 import { Briefcase, MapPin } from "lucide-react";
 
 export default function BrandCard({ brand, onViewDetails }) {
-    const handleClick = () => {
-    onViewDetails(brand);
+  const handleClick = () => {
+    if (onViewDetails) onViewDetails(brand);
   };
 
+  const placeholderLogo =
+    "https://ui-avatars.com/api/?name=" +
+    encodeURIComponent(brand?.name || "Brand") +
+    "&background=0D8ABC&color=fff";
+
   return (
-    <div
-      className="rounded-xl border bg-white shadow-sm p-4 flex items-center gap-3
-                 transition-all duration-200 hover:shadow-lg hover:scale-[1.02] cursor-pointer"
+    <article
+      className="home-brand-card"
       onClick={handleClick}
     >
-      <img
-        src={brand.logoUrl}
-        alt={brand.name}
-        className="w-12 h-12 rounded-md object-contain bg-gray-100"
-      />
-      <div className="flex-1 overflow-hidden">
-        <div className="font-semibold line-clamp-1">{brand.name}</div>
-        <div className="text-sm text-gray-600 flex items-center gap-1">
-          <Briefcase className="w-3 h-3" /> {brand.jobs} việc làm
+      {/* Logo + tên brand */}
+      <div className="home-brand-card-main">
+        <div className="home-brand-card-logo-wrap">
+          <img
+            src={brand.logoUrl || placeholderLogo}
+            alt={brand.name}
+            className="home-brand-card-logo"
+          />
         </div>
-        {brand.location && (
-          <div className="text-sm text-gray-500 flex items-center gap-1">
-            <MapPin className="w-3 h-3" /> {brand.location}
+
+        <div className="home-brand-card-text">
+          <h3 className="home-brand-card-name">
+            {brand.name || "Thương hiệu chưa đặt tên"}
+          </h3>
+
+          <div className="home-brand-card-meta">
+            <div className="home-brand-card-meta-item">
+              <Briefcase className="home-brand-card-meta-icon" />
+              <span>
+                {brand.jobs ?? 0} việc làm
+              </span>
+            </div>
+
+            {brand.location && (
+              <div className="home-brand-card-meta-item">
+                <MapPin className="home-brand-card-meta-icon" />
+                <span>{brand.location}</span>
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
-    </div>
+    </article>
   );
 }

@@ -1,59 +1,79 @@
+// src/Home/components/BrandDetailModal.jsx
 import { Link } from "react-router-dom";
 import { X, MapPin, Briefcase } from "lucide-react";
 
 export default function BrandDetailModal({ brand, onClose }) {
+  const safeBrand = brand || {};
+  const placeholderLogo =
+    "https://ui-avatars.com/api/?name=" +
+    encodeURIComponent(safeBrand.name || "Brand") +
+    "&background=0D8ABC&color=fff";
+
   const handleBackdropClick = (e) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
+    if (e.target === e.currentTarget) onClose();
   };
 
   return (
-    <div
-      className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4"
-      onClick={handleBackdropClick}
-    >
-      <div className="bg-white rounded-lg shadow-2xl max-w-2xl w-full p-6 relative animate-fade-in-down">
-        
-        <button
-          onClick={onClose}
-          className="absolute top-3 right-3 text-gray-400 hover:text-gray-700"
-        >
-          <X className="w-6 h-6" />
+    <div className="home-modal-backdrop" onClick={handleBackdropClick}>
+      <div className="home-brand-modal" onClick={(e) => e.stopPropagation()}>
+        {/* Close */}
+        <button className="home-modal-close" onClick={onClose}>
+          <X className="home-modal-close-icon" />
         </button>
 
-        <div className="flex gap-4">
-          <img
-            src={brand.logoUrl}
-            alt={brand.name}
-            className="w-16 h-16 rounded-md object-contain bg-gray-100"
-          />
-          <div>
-            <h2 className="text-xl font-bold text-blue-600">{brand.name}</h2>
-            <div className="text-gray-700 flex items-center gap-1 mt-1">
-              <MapPin className="w-4 h-4" /> {brand.location}
+        {/* Header */}
+        <header className="home-brand-modal-header">
+          <div className="home-brand-modal-header-main">
+            <div className="home-brand-modal-logo-wrap">
+              <img
+                src={safeBrand.logoUrl || placeholderLogo}
+                alt={safeBrand.name}
+                className="home-brand-modal-logo"
+              />
             </div>
-            <div className="text-gray-700 flex items-center gap-1">
-              <Briefcase className="w-4 h-4" /> {brand.jobs} việc làm đang tuyển
+            <div className="home-brand-modal-header-text">
+              <h2 className="home-brand-modal-title">
+                {safeBrand.name || "Thương hiệu chưa đặt tên"}
+              </h2>
+
+              <div className="home-brand-modal-meta">
+                {safeBrand.location && (
+                  <div className="home-brand-modal-meta-item">
+                    <MapPin className="home-brand-modal-meta-icon" />
+                    <span>{safeBrand.location}</span>
+                  </div>
+                )}
+
+                <div className="home-brand-modal-meta-item">
+                  <Briefcase className="home-brand-modal-meta-icon" />
+                  <span>
+                    {safeBrand.jobs ?? 0} việc làm đang tuyển
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+        </header>
 
-        <div className="mt-4">
-          <h3 className="font-semibold text-gray-800">Giới thiệu công ty:</h3>
-          <p className="text-sm text-gray-700 h-60 overflow-y-auto mt-1 p-2 bg-gray-50 rounded">
-            {brand.description || "Mô tả công ty không có sẵn."}
-          </p>
-        </div>
+        {/* Body */}
+        <section className="home-brand-modal-body">
+          <h3 className="home-brand-modal-subtitle">
+            Giới thiệu công ty
+          </h3>
+          <div className="home-brand-modal-desc">
+            {safeBrand.description || "Mô tả công ty không có sẵn."}
+          </div>
+        </section>
 
-        <div className="flex gap-3 mt-4">
+        {/* Footer */}
+        <footer className="home-brand-modal-footer">
           <Link
-            to={`/company/${brand._id}`}
-            className="flex-1 text-center px-4 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700"
+            to={`/company/${safeBrand._id}`}
+            className="home-job-modal-btn primary"
           >
-            Xem tất cả việc làm ({brand.jobs})
+            Xem tất cả việc làm ({safeBrand.jobs ?? 0})
           </Link>
-        </div>
+        </footer>
       </div>
     </div>
   );

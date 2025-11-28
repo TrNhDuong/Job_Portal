@@ -1,20 +1,17 @@
 // src/home/components/JobCard.jsx
 import { MapPin, DollarSign } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function JobCard({ job, onViewDetails, onApply, onSave, isSaved }) {
+  const navigate = useNavigate();  // <<< BẮT BUỘC CÓ
+
   const handleCardClick = () => {
     if (onViewDetails) onViewDetails(job);
   };
 
   const handleApplyClick = (e) => {
     e.stopPropagation();
-    if (onApply) {
-      onApply(job);
-    } else if (onViewDetails) {
-      // Tạm thời: nếu chưa truyền onApply, dùng view details
-      onViewDetails(job);
-    }
+    navigate(`/apply/${job._id}`);   // <<< CHUYỂN TRANG APPLY
   };
 
   const handleSaveClick = (e) => {
@@ -22,7 +19,6 @@ export default function JobCard({ job, onViewDetails, onApply, onSave, isSaved }
     if (onSave) {
       onSave(job);
     }
-    // sau này có thể thêm toast "Đã lưu job"
   };
 
   const companyInitial = (job.company && job.company.charAt(0)) || "?";
@@ -53,19 +49,11 @@ export default function JobCard({ job, onViewDetails, onApply, onSave, isSaved }
           />
         </div>
         <div className="home-job-card-main">
-          <h3 className="home-job-card-title">
-            {job.title || "Không có tiêu đề"}
-          </h3>
-          <p className="home-job-card-company">
-            {job.company || "Không rõ công ty"}
-          </p>
+          <h3 className="home-job-card-title">{job.title || "Không có tiêu đề"}</h3>
+          <p className="home-job-card-company">{job.company || "Không rõ công ty"}</p>
 
           <div className="home-job-card-tags">
-            {job.jobType && (
-              <span className="home-job-card-tag">
-                {job.jobType}
-              </span>
-            )}
+            {job.jobType && <span className="home-job-card-tag">{job.jobType}</span>}
             {job.level && (
               <span className="home-job-card-tag home-job-card-tag-outline">
                 {job.level}
@@ -95,10 +83,11 @@ export default function JobCard({ job, onViewDetails, onApply, onSave, isSaved }
         <button
           type="button"
           className="home-job-card-btn primary"
-          onClick={handleApplyClick}
+          onClick={handleApplyClick}   // <<< CHỈ GỌI 1 CHỖ
         >
           Ứng tuyển ngay
         </button>
+
         <button
           type="button"
           className={`home-job-card-btn ${isSaved ? "saved" : "ghost"}`}

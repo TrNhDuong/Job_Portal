@@ -88,7 +88,12 @@ export default function FeaturedJobs({ enableFetch = true }) {
       </Section>
 
       {selectedJob && (
-        <JobDetailModal job={selectedJob} onClose={() => setSelectedJob(null)} />
+        <JobDetailModal
+          job={selectedJob}
+          onClose={() => setSelectedJob(null)}
+          onSave={handleSaveJob}                                
+          isSaved={savedList.includes(String(selectedJob._id))} 
+        />
       )}
     </>
   );
