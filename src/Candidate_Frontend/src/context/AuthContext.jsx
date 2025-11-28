@@ -1,14 +1,30 @@
-import React, { createContext, useContext, useState } from "react";
+// src/context/AuthContext.jsx
+import { createContext, useContext, useState } from "react";
 
 const AuthContext = createContext(null);
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    const storedUser = localStorage.getItem("user");
-    return storedUser ? JSON.parse(storedUser) : null;
-  });
+function safeGetStoredUser() {
+  try {
+    const raw = localStorage.getItem("user");
+    if (!raw || raw === "undefined" || raw === "null") return null;
+    return JSON.parse(raw);
+  } catch (e) {
+    console.warn("Failed to parse stored user, clearing it", e);
+    localStorage.removeItem("user");
+    return null;
+  }
+}
+
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(() => safeGetStoredUser());
 
   const login = (userData) => {
+    if (!userData) {
+      // không lưu dữ liệu lỗi
+      setUser(null);
+      localStorage.removeItem("user");
+      return;
+    }
     setUser(userData);
     localStorage.setItem("user", JSON.stringify(userData));
   };
@@ -23,8 +39,6 @@ export const AuthProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
-};
+}
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+export const useAuth = () => useContext(AuthContext);

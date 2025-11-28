@@ -1,55 +1,94 @@
-// src/home/components/FeaturedJobs.jsx
-import { useState } from "react";
+// src/Home/components/FeaturedJobs.jsx
+import { useState, useEffect } from "react";
 import Section from "./Section";
 import JobCard from "./JobCard";
 import JobDetailModal from "./JobDetailModal";
-import { Bookmark } from "lucide-react"; 
+import { Bookmark } from "lucide-react";
 import useFeatured from "../hooks/useFeatured";
 import { fetchFeaturedJobs } from "../services/home-api";
+import { saveJob as apiSaveJob, removeSaveJob as apiRemoveSaveJob } from "../../api/candidate";
+import { useAuth } from "../../context/AuthContext.jsx";
 
 const featuredJobsTitle = (
-  <div className="flex items-center gap-2">
-    <Bookmark className="w-6 h-6 text-red-600 fill-red-600" />
-    <span className="text-2xl md:text-3xl font-bold">Việc Làm Nổi Bật</span>
+  <div className="home-featured-title">
+    <div className="home-featured-title-icon-wrap">
+      <Bookmark className="home-featured-title-icon" />
+    </div>
+    <div className="home-featured-title-text">Việc làm nổi bật</div>
   </div>
 );
 
 export default function FeaturedJobs({ enableFetch = true }) {
-  const { data: jobs, loading, error } = useFeatured(
-    fetchFeaturedJobs, 
-    enableFetch
-  );
+  const { data: jobs, loading, error } = useFeatured(fetchFeaturedJobs, enableFetch);
 
-  // Sửa: Thêm lại state "selectedJob"
+  // 🔹 TẤT CẢ HOOKS NẰM TRONG COMPONENT
+  const { user } = useAuth();
+  const [savedList, setSavedList] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
+  
+  // Lấy listSaveJobs ban đầu từ user (nếu backend có trả về)
+  useEffect(() => {
+    if (user && Array.isArray(user.listSaveJobs)) {
+      setSavedList(user.listSaveJobs.map(String)); // ép về string cho chắc
+    }
+  }, [user]);
+
+  const handleSaveJob = async (job) => {
+    if (!user) {
+      alert("Bạn cần đăng nhập để lưu job");
+      return;
+    }
+
+    const jobId = String(job._id);
+
+    try {
+      // nếu đã lưu rồi -> bỏ lưu
+      if (savedList.includes(jobId)) {
+        await apiRemoveSaveJob(user.email, jobId);
+        setSavedList((prev) => prev.filter((id) => id !== jobId));
+      } else {
+        // chưa lưu -> lưu
+        await apiSaveJob(user.email, jobId);
+        setSavedList((prev) => [...prev, jobId]);
+      }
+    } catch (err) {
+      console.error("Error (save job):", err);
+      alert(err?.response?.data?.message || "Không thể lưu job");
+    }
+  };
+
 
   return (
-    <> 
-      <Section title={featuredJobsTitle} right={error && <span className="text-sm text-red-600">{error}</span>}>
-        {loading ? (
-          <div className="grid md:grid-cols-3 gap-4">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-24 bg-gray-100 rounded-xl animate-pulse" />
-            ))}
-          </div>
-        ) : (
-          <div className="grid md:grid-cols-3 gap-4">
-            {jobs.map(j => (
-              <JobCard
-                key={j._id}
-                job={j}
-                onViewDetails={setSelectedJob} 
-              />
-            ))}
-          </div>
-        )}
+    <>
+      <Section
+        title={featuredJobsTitle}
+        right={error && <span className="home-featured-error">{error}</span>}
+      >
+        <div className="home-featured-wrapper">
+          {loading ? (
+            <div className="home-featured-grid">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="home-featured-skeleton" />
+              ))}
+            </div>
+          ) : (
+            <div className="home-featured-grid">
+              {jobs.map((j) => (
+                <JobCard
+                  key={j._id}
+                  job={j}
+                  onViewDetails={setSelectedJob}
+                  onSave={handleSaveJob}
+                  isSaved={savedList.includes(String(j._id))}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </Section>
 
       {selectedJob && (
-        <JobDetailModal 
-          job={selectedJob} 
-          onClose={() => setSelectedJob(null)}
-        />
+        <JobDetailModal job={selectedJob} onClose={() => setSelectedJob(null)} />
       )}
     </>
   );

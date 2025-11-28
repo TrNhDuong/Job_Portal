@@ -5,10 +5,10 @@ const api = axios.create({
   withCredentials: false,
 });
 
-export const fetchFeaturedJobs = () => api.get("/api/post-job");
+export const fetchFeaturedJobs = () => api.get("/api/post-job/filter");
 export const fetchFeaturedBrands = () => api.get("/api/employer/feature");
 
 export const fetchJobs = (filters) => {
   const params = new URLSearchParams(filters);
-  return api.get(`/api/post-job?${params.toString()}`);
+  return api.get(`/api/post-job/filter?${params.toString()}`);
 };

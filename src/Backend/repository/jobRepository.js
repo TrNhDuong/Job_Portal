@@ -2,7 +2,6 @@ import { JobPost }from "../model/jobPost.js";
 
 export class JobRepository {
     static async getJobPost(jobId) {
-        console.log("Retrieving job post with ID:", jobId);
         const jobPost = await JobPost.findOne({ _id: jobId });
         if (!jobPost) {
             return { success: false, message: "Job post not found" };
@@ -69,7 +68,7 @@ export class JobRepository {
         if (!updatedJobPost.success) {
             return { success: false, message: "Job post not found" };
         }
-        const jobPostAtributes = ["title", "position", "salary", "degree", "experience", "jobType", "major", "description"];
+        const jobPostAtributes = ["title", "company", "position", "salary", "degree", "experience", "jobType", "major", "description", "logo"];
         for (const attribute of jobPostAtributes){
             updatedJobPost.data[attribute] = updates[attribute] || updatedJobPost.data[attribute];
         }

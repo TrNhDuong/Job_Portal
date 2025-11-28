@@ -9,6 +9,14 @@ export const AuthProvider = ({ children }) => {
     token: localStorage.getItem("token") || null,
     user: JSON.parse(localStorage.getItem("user")) || null,
     employerData: JSON.parse(localStorage.getItem("employerData")) || null,
+    //THANH TOÁN
+    points: (() => {
+      const savedPoints = localStorage.getItem("points");
+      if (savedPoints && !isNaN(savedPoints)) {
+        return parseInt(savedPoints);
+      }
+      return 100; // Giá trị mặc định nếu không có hoặc lỗi
+    })(),
   });
 
   // Lưu token & user vào localStorage
@@ -23,6 +31,14 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem("user");
     }
   }, [auth.token]);
+
+  //THANH TOÁN LƯU VÀO LOCALSTORAGE
+  useEffect(() => {
+    // Chỉ lưu khi points là một số hợp lệ
+    if (auth.token && auth.points !== undefined && !isNaN(auth.points)) {
+      localStorage.setItem("points", auth.points);
+    }
+  }, [auth.points, auth.token]);
 
   const login = (email) => {
     setAuth(prev => ({
@@ -39,8 +55,11 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    setAuth({ token: null, user: null, employerData: null });
+    setAuth({ token: null, user: null, employerData: null, points: 0 });
     localStorage.removeItem("employerData");
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("points");
   };
 
   // --- FIXED: Luôn tạo NEW OBJECT ---
@@ -82,6 +101,7 @@ export const AuthProvider = ({ children }) => {
 
     const result = await client.get(`api/employer?email=${email}`);
     if (result.data.success) {
+      console.log(result.data);
       setEmployerData(result.data);
       return true;
     } else {
@@ -93,6 +113,24 @@ export const AuthProvider = ({ children }) => {
     return auth.employerData;
   };
 
+  //THANH TOÁN
+  const handleTransaction = (amount, type = "add") => {
+    setAuth((prev) => {
+      // Nếu điểm hiện tại bị lỗi (NaN/null), coi như là 0
+      const currentPoints = isNaN(prev.points) ? 0 : parseInt(prev.points);
+      
+      const newPoints = type === "add" 
+        ? currentPoints + amount 
+        : currentPoints - amount;
+      
+      // Cập nhật luôn vào localStorage ngay lập tức để đồng bộ
+      localStorage.setItem("points", newPoints);
+
+      return { ...prev, points: newPoints };
+    });
+    return true; 
+  };
+
   return (
     <AuthContext.Provider value={{
       auth,
@@ -102,7 +140,9 @@ export const AuthProvider = ({ children }) => {
       updateEmployerWithData,
       updateData,
       getEmployerData,
-      setMail
+      setMail,
+      //THANH TOÁN
+      handleTransaction
     }}>
       {children}
     </AuthContext.Provider>

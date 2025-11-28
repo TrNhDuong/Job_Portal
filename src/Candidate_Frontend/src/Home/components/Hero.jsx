@@ -1,54 +1,35 @@
-// src/home/components/Hero.jsx
-import { Search, MapPin, Briefcase } from "lucide-react";
 
 export default function Hero() {
   return (
-    <section className="flex flex-col items-center justify-center text-center py-16 bg-[#EAF1FF]">
-      {/* Tiêu đề */}
-      <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900">
-        Find Your Dream Job
-      </h1>
-      <p className="text-gray-600 mt-3 text-lg max-w-2xl">
-        Discover opportunities that match your skills and passion
-      </p>
+    <section className="home-hero">
+      <div className="home-hero-content">
+        {/* Tiêu đề + mô tả */}
+        <h1 className="home-hero-title">
+          Khởi đầu sự nghiệp mơ ước với{" "}
+          <span className="home-hero-gradient">CDH Job Portal</span>
+        </h1>
 
-      {/* Thanh tìm kiếm */}
-      <div className="mt-10 w-full flex justify-center">
-        <div
-          className="flex flex-col md:flex-row bg-white rounded-full shadow-xl overflow-hidden border border-gray-200
-          w-[90%] max-w-5xl"
-        >
-          {/* Ô 1: Từ khóa */}
-          <div className="flex-1 flex items-center px-6 py-7 border-b md:border-b-0 md:border-r border-gray-200">
-            <Search className="w-7 h-7 text-gray-400 mr-3" />
-            <input
-              className="w-full outline-none border-none placeholder-gray-500 text-lg"
-              placeholder="Từ khóa công việc..."
-            />
+        <p className="home-hero-subtitle">
+          Khám phá hàng ngàn cơ hội việc làm từ các công ty hàng đầu – được cá
+          nhân hoá theo kỹ năng và đam mê của bạn.
+        </p>
+
+        {/* Metrics ngay dưới hero */}
+        <div className="home-hero-metrics">
+          <div className="home-hero-metric-item">
+            <div className="home-hero-metric-big">100k+</div>
+            <div className="home-hero-metric-small">Việc làm đang tuyển</div>
           </div>
 
-          {/* Ô 2: Vị trí */}
-          <div className="flex items-center px-6 py-7 border-b md:border-b-0 md:border-r border-gray-200">
-            <MapPin className="w-7 h-7 text-gray-400 mr-3" />
-            <input
-              className="w-full md:w-48 outline-none border-none placeholder-gray-500 text-lg"
-              placeholder="Vị trí"
-            />
+          <div className="home-hero-metric-item">
+            <div className="home-hero-metric-big">10k+</div>
+            <div className="home-hero-metric-small">Doanh nghiệp tin dùng</div>
           </div>
 
-          {/* Ô 3: Lĩnh vực */}
-          <div className="flex items-center px-6 py-7 border-b md:border-b-0 md:border-r border-gray-200">
-            <Briefcase className="w-7 h-7 text-gray-400 mr-3" />
-            <input
-              className="w-full md:w-48 outline-none border-none placeholder-gray-500 text-lg"
-              placeholder="Lĩnh vực"
-            />
+          <div className="home-hero-metric-item">
+            <div className="home-hero-metric-big">500+</div>
+            <div className="home-hero-metric-small">Mẫu CV chuyên nghiệp</div>
           </div>
-
-          {/* Ô 4: Nút Search */}
-          <button className="shrink-0 px-10 py-7 bg-black text-white font-semibold hover:bg-gray-800 transition text-lg rounded-r-full">
-            Search
-          </button>
         </div>
       </div>
     </section>

@@ -1,26 +1,61 @@
-// src/home/HomePage.jsx
-
 import Hero from "./components/Hero";
-import Metrics from "./components/Metrics";
 import FeaturedJobs from "./components/FeaturedJobs";
 import FeaturedBrands from "./components/FeaturedBrands";
 import TopSectors from "./components/TopSectors";
 import CareerTips from "./components/CareerTips";
+import { useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
+import client from "../api/client";
 
 export default function HomePage() {
+  const { user, login } = useAuth();
+
+  useEffect(() => {
+    const fetchCandidate = async () => {
+      if (!user?.email) return;
+
+      try {
+        const res = await client.get(
+          `/api/candidate?email=${user.email}`
+        );
+        const candidate = res.data;
+
+        if (candidate) {
+          login(candidate); 
+        } else {
+          console.warn("Không tìm thấy candidate cho email", user.email);
+        }
+      } catch (err) {
+        console.error("Lỗi khi lấy dữ liệu user:", err);
+      }
+    };
+
+    fetchCandidate();
+  }, [user?.email]);
+
   return (
-    <div className="py-6 bg-[#EAF1FF]">
-      {/* DÒNG QUAN TRỌNG NHẤT LÀ DÒNG DƯỚI ĐÂY.
-        Nó PHẢI giống hệt class container trong Navbar.jsx
-      */}
-      <div className=" mx-auto px-4 md:px-6 lg:px-10">
-        <Hero />
-        <Metrics />
-        <div className="mt-8"><FeaturedJobs enableFetch={true} /></div>
-        <div className="mt-8"><FeaturedBrands enableFetch={true} /></div>
-        <div className="mt-8"><TopSectors /></div>
-        <div className="mt-8 pb-8"><CareerTips /></div>
+    <main className="home-page">
+      <div className="home-shell">
+        <section className="home-section">
+          <Hero />
+        </section>
+
+        <section className="home-section">
+          <FeaturedJobs enableFetch={true} />
+        </section>
+
+        <section className="home-section">
+          <FeaturedBrands enableFetch={true} />
+        </section>
+
+        <section className="home-section">
+          <TopSectors />
+        </section>
+
+        <section className="home-section home-section-last">
+          <CareerTips />
+        </section>
       </div>
-    </div>
+    </main>
   );
 }

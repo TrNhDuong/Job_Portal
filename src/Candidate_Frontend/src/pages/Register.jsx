@@ -2,26 +2,44 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import client from "../api/client";
+import { Eye, EyeOff } from "lucide-react";
 
-// Icon giống trong RegisterCandidateForm cũ
 const UserIcon = () => (
-  <svg className="icon-left" viewBox="0 0 24 24" fill="none">
-    <circle cx="12" cy="8" r="4" stroke="currentColor" />
-    <path d="M4 20c2-4 6-4 8-4s6 0 8 4" stroke="currentColor" />
+  <svg
+    className="register-input-icon"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.6"
+  >
+    <circle cx="12" cy="8" r="4" />
+    <path d="M4 20c2-4 6-4 8-4s6 0 8 4" />
   </svg>
 );
 
 const MailIcon = () => (
-  <svg className="icon-left" viewBox="0 0 24 24" fill="none">
-    <path d="M4 6h16v12H4z" stroke="currentColor" />
-    <path d="m4 7 8 6 8-6" stroke="currentColor" />
+  <svg
+    className="register-input-icon"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.6"
+  >
+    <rect x="4" y="6" width="16" height="12" rx="2" />
+    <path d="m5 7 7 5 7-5" />
   </svg>
 );
 
 const LockIcon = () => (
-  <svg className="icon-left" viewBox="0 0 24 24" fill="none">
-    <rect x="4" y="10" width="16" height="10" rx="2" stroke="currentColor" />
-    <path d="M8 10V8a4 4 0 0 1 8 0v2" stroke="currentColor" />
+  <svg
+    className="register-input-icon"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.6"
+  >
+    <rect x="4" y="10" width="16" height="10" rx="2" />
+    <path d="M8 10V8a4 4 0 0 1 8 0v2" />
   </svg>
 );
 
@@ -87,10 +105,8 @@ export default function Register() {
     try {
       setLoading(true);
 
-      // Gửi OTP
       await client.post("/api/send-otp", { email: form.email });
 
-      // Lưu thông tin đăng ký candidate vào sessionStorage
       sessionStorage.setItem(
         "registrationData",
         JSON.stringify({
@@ -100,7 +116,6 @@ export default function Register() {
         })
       );
 
-      // Chuyển sang trang verify OTP
       navigate("/verify-otp");
     } catch (err) {
       setMsg({
@@ -112,133 +127,186 @@ export default function Register() {
     }
   };
 
-  // tạo nền hiệu ứng nếu bạn dùng CSS cũ, có thể bỏ nếu không cần
-  // const gridSpans = Array.from({ length: 256 }).map((_, i) => <span key={i}></span>);
-
   return (
-    <div className="page-wrap">
-      {/* LEFT: form */}
-      <div className="left-col">
-        <div className="form-card">
-          <h1 className="title">Chào mừng bạn đến với Job Portal</h1>
-          <p className="subtitle">
-            Cùng xây dựng một hồ sơ nổi bật và nhận được các cơ hội sự nghiệp lý
-            tưởng
-          </p>
+    <div className="register-page">
+      <div className="register-wrapper">
+        <div className="register-badge">
+          <span className="register-badge-dot" />
+          <span>JOB PORTAL • ĐĂNG KÝ ỨNG VIÊN</span>
+        </div>
 
-          {/* Chỉ còn role Ứng viên */}
-          <div className="role-tabs">
-            <button className="active">Ứng viên</button>
+        <div className="register-card">
+          <div className="register-back-btn-wrapper">
+            <button
+              type="button"
+              className="register-back-btn"
+              onClick={() => navigate("/")}
+            >
+              ← Quay lại trang chủ
+            </button>
+          </div>
+          <div className="register-header">
+            <h1 className="register-title">
+              Chào mừng đến với{" "}
+              <span className="register-title-gradient">CDH Job Portal</span>
+            </h1>
           </div>
 
-          {/* FORM ĐĂNG KÝ CANDIDATE */}
-          <form className="form-stack" onSubmit={onSubmit}>
-            <div className="input-wrap">
-              <UserIcon />
-              <input
-                className="input"
-                name="name"
-                placeholder="Nhập họ tên"
-                value={form.name}
-                onChange={onChange}
-              />
+          <form className="register-form" onSubmit={onSubmit}>
+            {/* Họ tên */}
+            <div className="register-field">
+              <label htmlFor="name" className="register-label">
+                Họ và tên
+              </label>
+              <div className="register-input-row">
+                <UserIcon />
+                <input
+                  id="name"
+                  name="name"
+                  className="register-input-control"
+                  placeholder="Nhập họ tên đầy đủ của bạn"
+                  value={form.name}
+                  onChange={onChange}
+                />
+              </div>
             </div>
 
-            <div className="input-wrap">
-              <MailIcon />
-              <input
-                className="input"
-                name="email"
-                type="email"
-                placeholder="Nhập email"
-                value={form.email}
-                onChange={onChange}
-              />
+            {/* Email */}
+            <div className="register-field">
+              <label htmlFor="email" className="register-label">
+                Email
+              </label>
+              <div className="register-input-row">
+                <MailIcon />
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  className="register-input-control"
+                  placeholder="Nhập email đăng ký"
+                  value={form.email}
+                  onChange={onChange}
+                />
+              </div>
             </div>
 
-            <div className="input-wrap">
-              <LockIcon />
-              <input
-                className="input password-input"
-                name="password"
-                placeholder="Nhập mật khẩu"
-                type={show1 ? "text" : "password"}
-                value={form.password}
-                onChange={onChange}
-              />
-              <span
-                className="icon-right cursor-pointer select-none"
-                onClick={() => setShow1((s) => !s)}
-              >
-                {show1 ? "Ẩn" : "Hiện"}
-              </span>
+            {/* Mật khẩu */}
+            <div className="register-field">
+              <div className="register-label-row">
+                <label htmlFor="password" className="register-label">
+                  Mật khẩu
+                </label>
+                <span className="register-hint">
+                  Tối thiểu 8 kí tự, có chữ hoa, chữ thường, số & kí tự đặc biệt
+                </span>
+              </div>
+              <div className="register-input-row">
+                <LockIcon />
+                <input
+                  id="password"
+                  name="password"
+                  type={show1 ? "text" : "password"}
+                  className="register-input-control"
+                  placeholder="Nhập mật khẩu"
+                  value={form.password}
+                  onChange={onChange}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShow1((s) => !s)}
+                  className="register-eye-btn"
+                >
+                  {show1 ? (
+                    <EyeOff className="register-eye-icon" />
+                  ) : (
+                    <Eye className="register-eye-icon" />
+                  )}
+                </button>
+              </div>
             </div>
 
-            <div className="input-wrap">
-              <LockIcon />
-              <input
-                className="input password-input"
-                name="confirm"
-                placeholder="Nhập lại mật khẩu"
-                type={show2 ? "text" : "password"}
-                value={form.confirm}
-                onChange={onChange}
-              />
-              <span
-                className="icon-right cursor-pointer select-none"
-                onClick={() => setShow2((s) => !s)}
-              >
-                {show2 ? "Ẩn" : "Hiện"}
-              </span>
+            {/* Xác nhận mật khẩu */}
+            <div className="register-field">
+              <label htmlFor="confirm" className="register-label">
+                Xác nhận mật khẩu
+              </label>
+              <div className="register-input-row">
+                <LockIcon />
+                <input
+                  id="confirm"
+                  name="confirm"
+                  type={show2 ? "text" : "password"}
+                  className="register-input-control"
+                  placeholder="Nhập lại mật khẩu"
+                  value={form.confirm}
+                  onChange={onChange}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShow2((s) => !s)}
+                  className="register-eye-btn"
+                >
+                  {show2 ? (
+                    <EyeOff className="register-eye-icon" />
+                  ) : (
+                    <Eye className="register-eye-icon" />
+                  )}
+                </button>
+              </div>
             </div>
 
-            <label className="checkbox-row">
+            {/* Checkbox điều khoản */}
+            <div className="register-checkbox-row">
               <input
+                id="agree"
                 type="checkbox"
                 name="agree"
                 checked={form.agree}
                 onChange={onChange}
+                className="register-checkbox"
               />
-              <span>
-                Tôi đã đọc và đồng ý với <a href="#">Điều khoản dịch vụ</a> và{" "}
-                <a href="#">Chính sách bảo mật</a>.
-              </span>
-            </label>
+              <label htmlFor="agree" className="register-checkbox-label">
+                Tôi đã đọc và đồng ý với{" "}
+                <button type="button" className="register-link">
+                  Điều khoản dịch vụ
+                </button>{" "}
+                và{" "}
+                <button type="button" className="register-link">
+                  Chính sách bảo mật
+                </button>
+                .
+              </label>
+            </div>
 
-            <button className="primary-btn" type="submit" disabled={loading}>
-              {loading ? "Đang xử lý..." : "Đăng ký"}
-            </button>
-
+            {/* Thông báo */}
             {msg && (
               <div
-                className={msg.type === "error" ? "error" : "success"}
-                style={{ marginTop: "8px" }}
+                className={
+                  msg.type === "error"
+                    ? "register-message register-message-error"
+                    : "register-message register-message-success"
+                }
               >
                 {msg.text}
               </div>
             )}
+
+            {/* Nút đăng ký */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="register-submit-btn"
+            >
+              {loading ? "Đang xử lý..." : "Đăng ký ứng viên"}
+            </button>
           </form>
 
-          <div className="divider">Hoặc đăng nhập bằng</div>
-
-          <p className="helper">
+          <div className="register-footer">
             Bạn đã có tài khoản?{" "}
-            <Link to="/login" className="text-blue-600 hover:underline">
+            <Link to="/login" className="register-footer-link">
               Đăng nhập ngay
             </Link>
-          </p>
-        </div>
-      </div>
-
-      {/* RIGHT: brand panel */}
-      <div className="right-panel">
-        <div className="right-inner">
-          <div className="brand">
-            CDH
-            <br />
-            Dẫn đầu xu thế CV
           </div>
-          <p className="tagline">Bước chân khởi đầu đến thành công</p>
         </div>
       </div>
     </div>

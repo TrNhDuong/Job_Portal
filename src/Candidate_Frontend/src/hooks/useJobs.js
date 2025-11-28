@@ -1,6 +1,6 @@
 // src/hooks/useJobs.js
 import { useEffect, useState } from "react";
-import { fetchJobs } from "../home/services/home-api";
+import { fetchJobs } from "../Home/services/home-api";
 
 export default function useJobs(filters) {
   const [jobs, setJobs] = useState([]);

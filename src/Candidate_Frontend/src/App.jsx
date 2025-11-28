@@ -1,7 +1,6 @@
 // src/App.jsx
 import React from "react";
-import { Routes, Route } from "react-router-dom";
-// ... (Giữ nguyên các import cũ của bạn)
+import { Routes, Route, useLocation } from "react-router-dom";
 import LoginForm from "./components/LoginForm";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
@@ -20,15 +19,22 @@ import PasswordSettings from './pages/settings/PasswordSettings.jsx';
 import SecuritySettings from './pages/settings/SecuritySettings.jsx';
 
 function App() {
+  const location = useLocation();
+  const hideNavbarRoutes = ["/register", "/login", "/verify-otp"];
+  const shouldHideNavbar = hideNavbarRoutes.includes(location.pathname);
+
   return (
     <div className="flex flex-col h-screen bg-background">
-      <div className="flex-none z-50">
-        <Navbar />
-      </div>
+      {!shouldHideNavbar && (
+        <div className="flex-none z-50">
+          <Navbar />
+        </div>
+      )}
+
       <div className="flex-1 overflow-hidden relative">
-        <div className="h-full w-full overflow-y-auto"> 
-          <Routes> 
-            <Route path="/jobs" element={<JobSearchPage />} /> 
+        <div className="h-full w-full overflow-y-auto">
+          <Routes>
+            <Route path="/jobs" element={<JobSearchPage />} />
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginForm />} />
             <Route path="/register" element={<Register />} />
@@ -36,7 +42,7 @@ function App() {
             <Route path="/login-page" element={<Login />} />
             <Route path="/jobs/:id/apply" element={<ApplicationPage />} />
             <Route path="/jobs/:id/status" element={<ApplicationStatusPage />} />
-            
+
             <Route path="/dashboard" element={<CandidateDashboard />}>
               <Route index element={<JobManagement />} />
               <Route path="my-cv" element={<MyCV />} />
@@ -51,5 +57,6 @@ function App() {
     </div>
   );
 }
+
 
 export default App;

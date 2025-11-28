@@ -1,62 +1,112 @@
 // src/home/components/JobCard.jsx
-
-import { MapPin, DollarSign } from "lucide-react"; // (Thêm import DollarSign nếu cần)
+import { MapPin, DollarSign } from "lucide-react";
 import { Link } from "react-router-dom";
 
-export default function JobCard({ job, onViewDetails }) {
-  
-  const handleClick = () => {
-    onViewDetails(job); 
+export default function JobCard({ job, onViewDetails, onApply, onSave, isSaved }) {
+  const handleCardClick = () => {
+    if (onViewDetails) onViewDetails(job);
   };
 
-  const companyInitial = (job.company && job.company.charAt(0)) || '?';
+  const handleApplyClick = (e) => {
+    e.stopPropagation();
+    if (onApply) {
+      onApply(job);
+    } else if (onViewDetails) {
+      // Tạm thời: nếu chưa truyền onApply, dùng view details
+      onViewDetails(job);
+    }
+  };
+
+  const handleSaveClick = (e) => {
+    e.stopPropagation();
+    if (onSave) {
+      onSave(job);
+    }
+    // sau này có thể thêm toast "Đã lưu job"
+  };
+
+  const companyInitial = (job.company && job.company.charAt(0)) || "?";
   const placeholderLogo = `https://ui-avatars.com/api/?name=${companyInitial}&background=random&color=fff`;
 
-  // --- SỬA LỖI HIỂN THỊ LƯƠNG TẠI ĐÂY ---
-  // Hàm helper để hiển thị lương đẹp
   const formatSalary = (salaryData) => {
     if (!salaryData) return "Thỏa thuận";
-    
-    // Nếu salary là chuỗi cũ (đề phòng)
-    if (typeof salaryData === 'string') return salaryData;
 
-    // Nếu salary là object mới (có min/max)
+    if (typeof salaryData === "string") return salaryData;
+
     if (salaryData.minSalary && salaryData.maxSalary) {
-        // Chuyển số thành dạng "10M - 15M" hoặc hiển thị đầy đủ
-        const min = (salaryData.minSalary / 1000000) + "M";
-        const max = (salaryData.maxSalary / 1000000) + "M";
-        return `${min} - ${max} ${salaryData.currency || "VND"}`;
+      const min = salaryData.minSalary / 1_000_000 + "M";
+      const max = salaryData.maxSalary / 1_000_000 + "M";
+      return `${min} - ${max} ${salaryData.currency || "VND"}`;
     }
-    
+
     return "Thỏa thuận";
   };
 
   return (
-    <div
-      className="rounded-xl border bg-white shadow-sm p-4 
-                 transition-all duration-200 hover:shadow-lg hover:scale-[1.02] cursor-pointer"
-      onClick={handleClick}
-    >
-      <div className="flex gap-3">
-        <img
-          src={job.logoUrl || placeholderLogo}
-          alt={job.company || 'Logo công ty'}
-          className="w-10 h-10 rounded-md object-contain bg-gray-100"
-        />
-        <div className="flex-1 overflow-hidden">
-          <div className="font-semibold line-clamp-1">{job.title || 'Không có tiêu đề'}</div>
-          <div className="text-sm text-gray-600 line-clamp-1">{job.company || 'Không rõ công ty'}</div>
-          
-          {/* GỌI HÀM formatSalary */}
-          <div className="text-sm text-gray-600 font-medium">
-            {formatSalary(job.salary)}
-          </div>
+    <article className="home-job-card" onClick={handleCardClick}>
+      <div className="home-job-card-header">
+        <div className="home-job-card-logo-wrap">
+          <img
+            src={job.logoUrl || placeholderLogo}
+            alt={job.company || "Logo công ty"}
+            className="home-job-card-logo"
+          />
+        </div>
+        <div className="home-job-card-main">
+          <h3 className="home-job-card-title">
+            {job.title || "Không có tiêu đề"}
+          </h3>
+          <p className="home-job-card-company">
+            {job.company || "Không rõ công ty"}
+          </p>
 
-          <div className="text-sm text-gray-500 flex items-center gap-1">
-            <MapPin className="w-3 h-3" /> {job.location || 'N/A'}
+          <div className="home-job-card-tags">
+            {job.jobType && (
+              <span className="home-job-card-tag">
+                {job.jobType}
+              </span>
+            )}
+            {job.level && (
+              <span className="home-job-card-tag home-job-card-tag-outline">
+                {job.level}
+              </span>
+            )}
+            {job.experience && (
+              <span className="home-job-card-tag home-job-card-tag-outline">
+                {job.experience}
+              </span>
+            )}
           </div>
         </div>
       </div>
-    </div>
+
+      <div className="home-job-card-body">
+        <div className="home-job-card-salary">
+          <DollarSign className="home-job-card-salary-icon" />
+          <span>{formatSalary(job.salary)}</span>
+        </div>
+        <div className="home-job-card-location">
+          <MapPin className="home-job-card-location-icon" />
+          <span>{job.location || "N/A"}</span>
+        </div>
+      </div>
+
+      <div className="home-job-card-footer">
+        <button
+          type="button"
+          className="home-job-card-btn primary"
+          onClick={handleApplyClick}
+        >
+          Ứng tuyển ngay
+        </button>
+        <button
+          type="button"
+          className={`home-job-card-btn ${isSaved ? "saved" : "ghost"}`}
+          onClick={handleSaveClick}
+        >
+          {isSaved ? "Đã lưu" : "Lưu job"}
+        </button>
+      </div>
+    </article>
   );
 }

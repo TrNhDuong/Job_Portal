@@ -41,7 +41,7 @@ export class CandidateRepository {
         };
     }
     static async updateCandidate(email, updatesCandidate) {
-        const candidateAttributes = ["name", "email", "password", "logo", "appliedJobs", "CV"];
+        const candidateAttributes = ["name", "email", "logo", "appliedJobs", "CV"];
         let candidate = await this.getCandidate(email);
         if (!candidate.success) {
             return {
@@ -118,7 +118,8 @@ export class CandidateRepository {
                 data: null
             };
         }
-        if (!candidate.data.listSaveJobs.includes(jobId)) {
+        const savedIds = (candidate.data.listSaveJobs || []).map(id => id.toString());
+        if (!savedIds.includes(jobId.toString()))  {
             return {
                 success: false,
                 message: "Job not found in saved list"
