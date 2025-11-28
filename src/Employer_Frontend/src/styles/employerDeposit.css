@@ -1,6 +1,6 @@
 .deposit-page {
     background-color: #f4f6f8;
-    min-height: 100vh;
+    min-height: auto;
     padding-bottom: 50px;
 }
 
@@ -280,13 +280,14 @@
     padding: 25px;
     border-radius: 16px;
     border: 1px solid #eee;
+    overflow: hidden;
 }
 
-.summary-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 1rem; color: #555; }
-.money-value { font-weight: 700; color: #333; }
+.summary-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 1rem; color: #555; align-items: flex-start; gap: 15px; }
+.money-value { font-weight: 700; color: #333; word-break: break-word; text-align: right; max-width: 60%; }
 .bonus-row { color: #27ae60; font-weight: 600; }
 .divider { height: 1px; background: #ddd; margin: 15px 0; }
-.total-row { font-size: 1.3rem; font-weight: 800; color: #0061ff; }
+.total-row { font-size: 1.3rem; font-weight: 800; color: #0061ff;}
 
 .btn-payment-momo {
     width: 100%; padding: 18px;

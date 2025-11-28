@@ -6,6 +6,7 @@ import "../styles/employerDeposit.css";
 import toast from 'react-hot-toast';
 
 const EXCHANGE_RATE = 500; // 500 VND = 1 Point
+const MAX_POINTS_LIMIT = 100000;
 
 const EmployerDeposit = () => {
   const { auth, handleTransaction } = useAuth();
@@ -15,25 +16,27 @@ const EmployerDeposit = () => {
   const [bonusPoints, setBonusPoints] = useState(0);
   const [showQR, setShowQR] = useState(false);
 
+  
+
   // Cấu hình các gói nạp (Thêm trường name)
   const quickPackages = [
     { 
-      id: 1, points: 40, price: 20000, name: "Gói Khởi Động", bonus: 0, 
+      id: 1, points: 40, price: 19999, name: "Gói Khởi Động", bonus: 0, 
       icon: <HiOutlineStar />, 
       theme: "blue" 
     },
     { 
-      id: 2, points: 100, price: 50000, name: "Gói Tăng Tốc", bonus: 10, recommend: true, 
+      id: 2, points: 100, price: 49999, name: "Gói Tăng Tốc", bonus: 10, recommend: true, 
       icon: <HiOutlineLightningBolt />, 
       theme: "orange" 
     },
     { 
-      id: 3, points: 400, price: 200000, name: "Gói Chuyên Nghiệp", bonus: 50, 
+      id: 3, points: 400, price: 199999, name: "Gói Chuyên Nghiệp", bonus: 50, 
       icon: <HiOutlineBriefcase />, 
       theme: "purple" 
     },
     { 
-      id: 4, points: 1000, price: 500000, name: "Gói Doanh Nghiệp", bonus: 150, 
+      id: 4, points: 1000, price: 499999, name: "Gói Doanh Nghiệp", bonus: 150, 
       icon: <HiOutlineGlobeAlt />, 
       theme: "gold" 
     },
@@ -51,23 +54,25 @@ const EmployerDeposit = () => {
     setPointsToBuy(pkg.points);
   };
 
-  // Xử lý Input: Chặn số âm và số 0 đứng đầu
+  // Xử lý Input: Chặn số âm, số 0 đầu VÀ số quá lớn
   const handleInputChange = (e) => {
     const val = e.target.value;
     
-    // Nếu xóa hết thì về 0
     if (val === "") {
         setPointsToBuy(0);
         return;
     }
 
-    // Parse sang số nguyên
     const num = parseInt(val, 10);
 
-    // Logic: Chỉ nhận số dương, Math.max(0, num) sẽ biến số âm thành 0
-    // parseInt sẽ tự động bỏ số 0 ở đầu (vd: 05 -> 5)
     if (!isNaN(num)) {
-        setPointsToBuy(Math.max(0, num));
+        // Logic kẹp giá trị: Không nhỏ hơn 0, không lớn hơn MAX
+        if (num > MAX_POINTS_LIMIT) {
+            setPointsToBuy(MAX_POINTS_LIMIT);
+            toast.error(`Giới hạn nạp tối đa trong một lần là ${MAX_POINTS_LIMIT.toLocaleString()} điểm.`);
+        } else {
+            setPointsToBuy(Math.max(0, num));
+        }
     }
   };
 
@@ -178,7 +183,7 @@ const EmployerDeposit = () => {
         </div>
 
         <button className="btn-payment-momo" onClick={handleBuy}>
-           Thanh toán qua MoMo
+           Thanh toán
         </button>
       </div>
 

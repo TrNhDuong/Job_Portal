@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import '../styles/Setting.css';
 import { FaUser, FaBell, FaSave, FaTimes } from 'react-icons/fa';
 import profileIcon from '../assets/icon/profile.png'; // Giữ lại nếu cần, mặc dù đang dùng securityIcon
+import { HiEye, HiEyeOff } from "react-icons/hi";
 import securityIcon from '../assets/icon/security.png';
 import bellIcon from '../assets/icon/bell.png';
 import client from '../api/client';
@@ -24,6 +25,12 @@ const Setting = ({ isVisible, onClose }) => {
     const [accountForm, setAccountForm] = useState(accountInitialState);
     const [errors, setErrors] = useState({});
 
+    const [showPassword, setShowPassword] = useState({
+        current: false,
+        new: false,
+        confirm: false
+    });
+
     if (!isVisible) return null;
 
     const handleChange = (e) => {
@@ -31,6 +38,10 @@ const Setting = ({ isVisible, onClose }) => {
         setAccountForm(prev => ({ ...prev, [name]: value }));
         setErrors(prev => ({ ...prev, [name]: '' }));
     };
+
+    const toggleShow = (field) => {
+        setShowPassword(prev => ({ ...prev, [field]: !prev[field] }));
+    };
 
     const handlePasswordChange = async (e) => {
         e.preventDefault();
@@ -96,39 +107,57 @@ const Setting = ({ isVisible, onClose }) => {
                     {/* Input Mật khẩu Hiện tại: Đảm bảo name="currentPassword" và value={accountForm.currentPassword} */}
                     <div className="form-group">
                         <label>Mật khẩu Hiện tại</label>
-                        <input 
-                            type="password" 
-                            name="currentPassword" 
-                            value={accountForm.currentPassword} // Đã có trong state
-                            onChange={handleChange}
-                            className={errors.currentPassword ? 'error' : ''}
-                        />
+                        <div className="input-with-icon"> {/* Wrapper mới để chứa icon */}
+                            <input 
+                                type={showPassword.current ? "text" : "password"} // Toggle type
+                                name="currentPassword" 
+                                value={accountForm.currentPassword} 
+                                onChange={handleChange}
+                                className={errors.currentPassword ? 'error' : ''}
+                                placeholder="Nhập mật khẩu cũ"
+                            />
+                            <div className="eye-icon-setting" onClick={() => toggleShow('current')}>
+                                {showPassword.current ? <HiEyeOff /> : <HiEye />}
+                            </div>
+                        </div>
                         {errors.currentPassword && <p className="error-text">{errors.currentPassword}</p>}
                     </div>
 
                     {/* Input Mật khẩu Mới */}
                     <div className="form-group">
                         <label>Mật khẩu Mới</label>
-                        <input 
-                            type="password" 
-                            name="newPassword" 
-                            value={accountForm.newPassword}
-                            onChange={handleChange}
-                            className={errors.newPassword ? 'error' : ''}
-                        />
+                        <div className="input-with-icon">
+                            <input 
+                                type={showPassword.new ? "text" : "password"} 
+                                name="newPassword" 
+                                value={accountForm.newPassword}
+                                onChange={handleChange}
+                                className={errors.newPassword ? 'error' : ''}
+                                placeholder="Nhập mật khẩu mới"
+                            />
+                            <div className="eye-icon-setting" onClick={() => toggleShow('new')}>
+                                {showPassword.new ? <HiEyeOff /> : <HiEye />}
+                            </div>
+                        </div>
                         {errors.newPassword && <p className="error-text">{errors.newPassword}</p>}
                     </div>
 
                     {/* Input Nhập lại Mật khẩu Mới */}
                     <div className="form-group">
                         <label>Nhập lại Mật khẩu Mới</label>
-                        <input 
-                            type="password" 
-                            name="confirmNewPassword" 
-                            value={accountForm.confirmNewPassword}
-                            onChange={handleChange}
-                            className={errors.confirmNewPassword ? 'error' : ''}
-                        />
+                        <div className="input-with-icon">
+                            <input 
+                                type={showPassword.confirm ? "text" : "password"} 
+                                name="confirmNewPassword" 
+                                value={accountForm.confirmNewPassword}
+                                onChange={handleChange}
+                                className={errors.confirmNewPassword ? 'error' : ''}
+                                placeholder="Xác nhận mật khẩu mới"
+                            />
+                            <div className="eye-icon-setting" onClick={() => toggleShow('confirm')}>
+                                {showPassword.confirm ? <HiEyeOff /> : <HiEye />}
+                            </div>
+                        </div>
                         {errors.confirmNewPassword && <p className="error-text">{errors.confirmNewPassword}</p>}
                     </div>
                     

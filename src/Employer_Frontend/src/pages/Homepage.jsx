@@ -392,6 +392,7 @@ export default function Homepage() {
                 <div style={{ paddingTop: 10 }}>
                   <EmployerJobRenewal
                     onNavigateToDeposit={() => setActiveSetting("Donate")}
+                    jobPosts={jobPosts}
                   />
                 </div>
               )}

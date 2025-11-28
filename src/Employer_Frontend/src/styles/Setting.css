@@ -387,3 +387,31 @@
     margin: 0 10px  0 0;
     /* ... các thuộc tính khác */
 }
+
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* Chỉnh lại Input để có chỗ cho Icon */
+.input-with-icon input {
+    width: 100%;
+    padding-right: 40px; /* Chừa chỗ bên phải cho icon */
+}
+
+/* Style cho Icon con mắt */
+.eye-icon-setting {
+    position: absolute;
+    right: 12px;
+    cursor: pointer;
+    color: #9ca3af;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s;
+}
+
+.eye-icon-setting:hover {
+    color: #0061ff; /* Xanh brand khi hover */
+}
