@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { HiEye, HiEyeOff, HiCheck, HiX } from "react-icons/hi";
 import logoImage from "../assets/logo.png";
 import "../styles/register.css";
+import ParticlesAuth from "../components/ParticlesAuth";
 
 const API_BASE_URL = "http://localhost:8080/api";
 
@@ -22,6 +23,7 @@ export default function EmployerRegister() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -249,7 +251,10 @@ export default function EmployerRegister() {
                     onChange={(e) => setAgreeTerms(e.target.checked)}
                 />
                 <span>
-                    Tôi đồng ý với các <a href="#" className="link-term">Điều khoản và Điều kiện</a> của dịch vụ.
+                    Tôi đồng ý với các <span className="link-term" onClick={(e) => {
+                        e.preventDefault(); // Chặn click vào checkbox
+                        setShowTerms(true); // Mở modal
+                    }}>Điều khoản và Điều kiện</span> của dịch vụ.
                 </span>
             </label>
 
@@ -269,7 +274,71 @@ export default function EmployerRegister() {
         </div>
       </div>
 
-      <div className="auth-right"></div>
+      <div className="auth-right">
+        
+        {/* Component Hạt Tương Tác */}
+        <ParticlesAuth />
+
+        {/* Nội dung đè lên trên (Quote) */}
+        <div className="hero-text-container">
+            <h1>KẾT NỐI</h1>
+            <div className="spacer"></div>
+            <h1>NHÂN TÀI</h1>
+            <div className="separator"></div>
+            <h1>KIẾN TẠO</h1>
+            <div className="spacer"></div>
+            <h1>TƯƠNG LAI</h1>
+        </div>
+      </div>
+
+      {showTerms && (
+        <div className="terms-modal-overlay" onClick={() => setShowTerms(false)}>
+            <div className="terms-modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="terms-header">
+                    <h3>Điều khoản dịch vụ & Chính sách bảo mật</h3>
+                    <button className="btn-close-terms" onClick={() => setShowTerms(false)}><HiX /></button>
+                </div>
+                
+                <div className="terms-body">
+                    <p>Chào mừng bạn đến với <strong>InspireLeader</strong>. Khi đăng ký tài khoản Nhà tuyển dụng, bạn đồng ý với các điều khoản sau:</p>
+                    
+                    <h4>1. Trách nhiệm của Nhà tuyển dụng</h4>
+                    <ul>
+                        <li>Cung cấp thông tin doanh nghiệp chính xác, trung thực.</li>
+                        <li>Không đăng tin tuyển dụng ảo, lừa đảo hoặc vi phạm pháp luật.</li>
+                        <li>Bảo mật thông tin ứng viên, không sử dụng cho mục đích thương mại khác.</li>
+                    </ul>
+
+                    <h4>2. Quyền lợi và Dịch vụ</h4>
+                    <ul>
+                        <li>Được đăng tin tuyển dụng và tiếp cận hồ sơ ứng viên theo gói dịch vụ.</li>
+                        <li>Hệ thống đảm bảo hoạt động ổn định 99.9%.</li>
+                    </ul>
+
+                    <h4>3. Thanh toán và Hoàn tiền</h4>
+                    <ul>
+                        <li>Các gói nạp điểm (Inspire Points) không được hoàn lại sau khi thanh toán thành công.</li>
+                        <li>Điểm thưởng (Bonus) không có giá trị quy đổi thành tiền mặt.</li>
+                    </ul>
+
+                    <h4>4. Xử lý vi phạm</h4>
+                    <p>InspireLeader có quyền khóa tài khoản vĩnh viễn nếu phát hiện hành vi spam, lừa đảo ứng viên hoặc vi phạm tiêu chuẩn cộng đồng mà không cần báo trước.</p>
+                    
+                    <p><em>Cập nhật lần cuối: 28/11/2025</em></p>
+                </div>
+
+                <div className="terms-footer">
+                    <button className="btn-accept" onClick={() => {
+                        setAgreeTerms(true); // Tự động tick vào checkbox khi bấm Đã hiểu
+                        setShowTerms(false);
+                    }}>
+                        Tôi đã hiểu và Đồng ý
+                    </button>
+                </div>
+            </div>
+        </div>
+      )}
+
     </div>
   );
 }

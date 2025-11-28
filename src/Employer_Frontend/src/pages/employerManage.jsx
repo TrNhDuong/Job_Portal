@@ -76,7 +76,7 @@ const JobListView = ({ jobs, onSelectJob }) => {
 
               <div className="job-right">
                 <p className="job-status">{job.status}</p>
-                <p className="job-len">{job.applicants.length}</p>
+                {/*<p className="job-len">{job?.applicants.length}</p>*/}
               </div>
             </div>
             

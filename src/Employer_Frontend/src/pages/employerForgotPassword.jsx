@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { HiArrowLeft, HiCheck, HiEye, HiEyeOff } from "react-icons/hi";
 import logoImage from "../assets/logo.png";
 import "../styles/forgotPassword.css"; // Dùng lại CSS chuẩn của Login/Register
+import ParticlesAuth from "../components/ParticlesAuth";
 
 const API_BASE_URL = "http://localhost:8080/api";
 
@@ -291,7 +292,22 @@ export default function EmployerForgotPassword({ onBack }) {
         </div>
       </div>
 
-      <div className="auth-right"></div>
+      <div className="auth-right">
+        
+        {/* Component Hạt Tương Tác */}
+        <ParticlesAuth />
+
+        {/* Nội dung đè lên trên (Quote) */}
+        <div className="hero-text-container">
+            <h1>KẾT NỐI</h1>
+            <div className="spacer"></div>
+            <h1>NHÂN TÀI</h1>
+            <div className="separator"></div>
+            <h1>KIẾN TẠO</h1>
+            <div className="spacer"></div>
+            <h1>TƯƠNG LAI</h1>
+        </div>
+      </div>
     </div>
   );
 }
