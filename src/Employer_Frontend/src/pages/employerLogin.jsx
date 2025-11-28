@@ -1,21 +1,30 @@
 import React, { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
+import { HiEye, HiEyeOff } from "react-icons/hi";
+import logoImage from "../assets/logo.png";
 import "../styles/employerLogin.css";
+import EmployerForgotPassword from "./employerForgotPassword.jsx";
 
 const API_BASE_URL = "http://localhost:8080/api";
 
 export default function EmployerLogin({ onLogin, onShowRegister }) {
   const navigate = useNavigate();
 
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  if (isForgotPassword) {
+    return <EmployerForgotPassword onBack={() => setIsForgotPassword(false)} />;
+  }
 
   const handleLogin = async () => {
     if (!email || !password) {
-      setError("Please enter email and password");
+      setError("Vui lòng nhập email và mật khẩu");
       return;
     }
 
@@ -31,19 +40,19 @@ export default function EmployerLogin({ onLogin, onShowRegister }) {
       });
 
       const data = await response.json();
-      const { success, message } = data;
+      const { success } = data;
 
       if (!success) {
-        setError(message || "Login failed.");
+        setError("Đăng nhập thất bại.");
         return;
       }
 
-      setSuccess(message || "Login successful! Redirecting...");
+      setSuccess("Đăng nhập thành công");
       localStorage.setItem("email", email)
-      navigate("/homepage");
+      setTimeout(() => navigate("/homepage"), 1000);
 
     } catch (err) {
-      setError("Cannot connect to server.");
+      setError("Không thể kết nối đến máy chủ.");
     } finally {
       setLoading(false);
     }
@@ -54,52 +63,82 @@ export default function EmployerLogin({ onLogin, onShowRegister }) {
   };
 
   return (
-    <div className="login-page">
-      <div className="login-container">
-        <h1 className="login-title">Employer Login</h1>
-        <p className="login-subtitle">Enter your credentials to access your account</p>
+    <div className="auth-page">
+      {/* Cột trái: Form */}
+      <div className="top-left-logo">
+          <img src={logoImage} alt="Logo" className="logo-img-small" />
+          <span className="brand-name-corner">InspireLeader</span>
+      </div>
+      <div className="auth-left fade-in">
+        <div className="auth-header-center">
+            <h1 className="auth-title">Chào mừng trở lại! </h1>
+            <p className="auth-subtitle">Đăng nhập để tiếp tục quản lý tuyển dụng</p>
+        </div>
 
-        <input
-          type="text"
-          placeholder="Email"
-          className="login-input"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          onKeyDown={handleKey}
-          disabled={loading}
-        />
+        <div className="auth-form">
+            <div className="form-group">
+                <label className="form-label">Email</label>
+                <div className="input-wrapper">
+                    <input
+                        type="email"
+                        className="auth-input"
+                        placeholder="company@gmail.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        onKeyDown={handleKey}
+                        disabled={loading}
+                    />
+                </div>
+            </div>
 
-        <input
-          type="password"
-          placeholder="Password"
-          className="login-input"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          onKeyDown={handleKey}
-          disabled={loading}
-        />
+            <div className="form-group">
+                <div className="label-row">
+                    <label className="form-label-bold">Mật khẩu</label>
+                    <span 
+                        className="forgot-pass-link" 
+                        onClick={() => setIsForgotPassword(true)} 
+                    >
+                        Quên mật khẩu?
+                    </span>
+                </div>
+                <div className="input-wrapper">
+                    <input
+                        type={showPassword ? "text" : "password"}
+                        className="auth-input"
+                        placeholder="Nhập mật khẩu"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        onKeyDown={handleKey}
+                        disabled={loading}
+                    />
+                    <div className="eye-icon" onClick={() => setShowPassword(!showPassword)}>
+                        {showPassword ? <HiEyeOff /> : <HiEye />}
+                    </div>
+                </div>
+            </div>
 
-        {error && <p className="login-error">{error}</p>}
-        {success && <p className="login-success">{success}</p>}
+            {error && <div className="error-msg">{error}</div>}
+            {success && <div className="success-msg">{success}</div>}
 
-        <button
-          className="login-button"
-          onClick={handleLogin}
-          disabled={loading}
-        >
-          {loading ? "Logging in..." : "Login"}
-        </button>
+            <button
+                className="auth-button"
+                onClick={handleLogin}
+                disabled={loading}
+            >
+                {loading ? "Đang đăng nhập..." : "Đăng nhập"}
+            </button>
+        </div>
 
-        <div className="login-footer">
-          Don't have an account?
-          <span
-            style={{ cursor: "pointer", color: "#2563eb", marginLeft: 4 }}
-            onClick={() => navigate("/register")}
-          >
-            Sign up
-          </span>
+        <div className="auth-footer">
+            Chưa có tài khoản? 
+            <span className="auth-link" onClick={() => navigate("/register")}>
+                Đăng ký ngay
+            </span>
         </div>
       </div>
+
+      {/* Cột phải: Ảnh Art */}
+      <div className="auth-right"></div>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 .renewal-page {
     background-color: #f4f6f8;
-    min-height: 100vh;
+    min-height: auto;
     padding-bottom: 50px;
 }
 
@@ -218,3 +218,42 @@
     font-weight: 700; cursor: pointer; display: flex; justify-content: center; gap: 8px;
 }
 .btn-confirm-renew:hover { opacity: 0.9; transform: translateY(-2px); }
+
+/* --- Status Strip Colors --- */
+.status-strip {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 6px;
+    padding: 4px 0;
+}
+
+.status-strip::before {
+    content: ''; width: 8px; height: 8px; border-radius: 50%;
+}
+
+/* 🔴 Hết hạn */
+.status-strip.expired { color: #e74c3c; }
+.status-strip.expired::before { background: #e74c3c; }
+
+/* 🟠 Sắp hết hạn (Urgent) */
+.status-strip.urgent { color: #f39c12; }
+.status-strip.urgent::before { background: #f39c12; }
+
+/* 🟢 Còn hạn (Active) */
+.status-strip.active { color: #27ae60; }
+.status-strip.active::before { background: #27ae60; }
+
+/* --- Hiệu ứng viền Card theo trạng thái --- */
+.job-card {
+    /* ... giữ nguyên ... */
+    border-left: 4px solid transparent; /* Chuẩn bị cho border màu */
+}
+
+/* Viền trái đổi màu theo status */
+.job-card.status-expired { border-left-color: #e74c3c; }
+.job-card.status-urgent { border-left-color: #f39c12; }
+.job-card.status-active { border-left-color: #27ae60; }
+
+.expire-text { color: #e74c3c; font-weight: 600; }

@@ -1,311 +1,198 @@
-html, body {
-  color-scheme: light;
-  /* --- THAY ĐỔI: Nền xám nhạt (TopCV) --- */
-  background: var(--bg-light); 
-  color: var(--text-dark); 
-  font-family: "Poppins", sans-serif;
-  margin: 0;
-  padding: 0;
-}
-
-/* --- THAY ĐỔI: Toàn bộ bảng màu --- */
+/* --- BẢNG MÀU & BIẾN (Ghi đè Font & Màu chuẩn) --- */
 :root {
-  /* Màu chính (TopCV) */
-  --primary-color: #1a73e8; 
+  /* Font chữ chuẩn (Đã import bên index.css) */
+  --font-primary: 'Be Vietnam Pro', sans-serif;
+
+  /* Màu chính (Brand Colors) */
+  --primary-color: #0061ff; 
   --primary-hover: #1e40af; 
   
-  /* Màu nền (TopCV) */
-  --hotbar-bg: #2d3748;    /* Xanh than chì (Hotbar) */
-  --sidebar-bg: #ffffff;   /* Trắng (Sidebar) */
-  --bg-light: #f7fafc;     /* Xám siêu nhạt (Nền chính) */
-  --bg-white: #ffffff;     /* Trắng (Card, Tab-bar) */
-  --border: #e5e7eb;       /* Viền xám */
+  /* Màu nền */
+  --hotbar-bg: #2d3748;
+  --sidebar-bg: #ffffff;
+  --bg-light: #f4f6f8;     
+  --bg-white: #ffffff;
+  --border: #e5e7eb;
+  --hover-bg: #f7f9fc;     
   
-  /* Màu chữ (TopCV) */
-  --text-dark: #1a202c;     /* Đen (Tiêu đề) */
-  --text-medium: #4a5568;   /* Xám (Chữ phụ, Sidebar text) */
-  --text-light: #a0aec0;    /* Xám nhạt (Hotbar text) */
-  --text-white: #ffffff;    /* Trắng (Hotbar button text) */
-  
-  /* Màu nút Hotbar (TopCV) */
-  --hotbar-button-bg: #4a5568; /* Nền nút */
-  --hotbar-button-hover: #6b7280; /* Nền nút hover */
+  /* Màu chữ */
+  --text-dark: #2c3e50;    
+  --text-medium: #4a5568;
+  --text-light: #94a3b8;   
+  --text-white: #ffffff;
 }
-/* --- KẾT THÚC BẢNG MÀU --- */
 
-
+/* --- GLOBAL RESET --- */
 * {
   box-sizing: border-box;
-  font-family: inherit;
+  font-family: inherit; 
 }
 
 html, body {
-  background: var(--bg-light);
-  color: var(--text-dark);
+  color-scheme: light;
+  background: var(--bg-light); 
+  color: var(--text-dark); 
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* 👇 Quan trọng: Chặn cuộn body để layout full màn hình */
+  overflow: hidden; 
+  height: 100vh;
 }
+
+/* --- LAYOUT CHÍNH (Sidebar + Content) --- */
 .page-wrap {
-    /* Đặt grid-template-columns linh hoạt hơn */
-    display: grid;
-    /* CHỈNH SỬA Ở ĐÂY: Thêm 20px gap */
-    grid-template-columns: 17.5% 1fr; /* Sidebar 17.5%, Nội dung 1fr */
-    gap: 20px; /* <--- KHOẢNG CÁCH CHUYÊN NGHIỆP GIỮA CÁC CỘT */
-    /* Giữ nguyên transition: grid-template-columns 0.3s ease; */
-    
-    /* Cấu trúc chung của trang */
-    min-height: 100vh;
-    background-color: #f7f9fc; /* Nền nhẹ nhàng cho cả trang */
+  display: grid;
+  grid-template-columns: 17.5% 1fr; 
+  gap: 0; 
+  height: 100vh; /* Full chiều cao màn hình */
+  background-color: var(--bg-light);
 }
 
-
-/* --- THAY ĐỔI: .left-col (Nền trắng) --- */
+/* --- SIDEBAR (CỘT TRÁI) --- */
 .side-bar {
   background: #ffffff;
   padding: 24px 12px;
-  height: 100vh;
+  height: 100%; 
   border-right: 1px solid #e6e6e6;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  position: sticky;
-  top: 0;
-  
+  gap: 15px;
+  overflow-y: auto; 
 }
-/* --- KẾT THÚC THAY ĐỔI .left-col --- */
 
-/* --- THAY ĐỔI: style cho nền sáng (Sidebar) --- */
-.collapse-button {
-  text-align: center;
-  padding: 10px;
+/* Header Sidebar */
+.sidebar-top-section {
+  padding: 0 10px 10px 10px;
+  background-color: #ffffff;
+  margin-bottom: 10px;
+}
+
+.user-info-area {
+  display: flex;
+  align-items: center;
   cursor: pointer;
-  font-weight: bold;
-  color: var(--text-medium); /* Chữ xám */
-  border-bottom: 1px solid var(--border); /* Viền xám */
+  padding: 10px;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  user-select: none;
+  border: 1px solid transparent;
+}
+
+.user-info-area:hover {
+  background-color: var(--bg-light);
+  border-color: var(--border);
+}
+
+.user-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 12px;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.user-details {
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+.user-details > .user-info:first-child {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-details > .user-info:last-child {
+  font-size: 0.8rem;
+  color: var(--text-light);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.header-divider {
+  border: none;
+  height: 1px;
+  background-color: var(--border);
+  margin: 10px 0;
+  opacity: 0.5;
+}
+
+/* Menu Items */
+.menu-header {
+  font-weight: 800; /* In đậm */
+  color: #94a3b8; 
+  font-size: 0.75rem;
+  text-transform: uppercase; 
+  letter-spacing: 1px;
+  margin: 20px 0 5px 15px; 
 }
 
 .nav-item {
-  padding: 12px;
-  border-radius: 8px;
+  padding: 12px 15px;
+  border-radius: 10px;
   cursor: pointer;
   font-weight: 500;
-  color: var(--text-medium); /* Chữ xám */
-  transition: background 0.2s, color 0.2s;
+  color: var(--text-medium);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 12px; 
+  font-size: 0.95rem;
 }
 
-/* Hover: Chữ xanh, nền xám nhạt */
+.nav-item svg { font-size: 1.2rem; }
+
 .nav-item:hover {
   color: var(--primary-color); 
-  background: var(--bg-light); 
+  background: #f0f7ff; 
 }
 
-/* Active: Chữ xanh, nền xanh nhạt, đậm hơn */
 .nav-item.active {
-  color: var(--primary-hover);
-  background: #e0e7ff; /* Màu xanh nhạt (light primary) */
+  color: #fff; 
+  background: var(--primary-color); 
   font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 97, 255, 0.25); 
 }
 
-.nav-separator {
-  border: none;
-  border-top: 1px solid var(--border); /* Viền xám */
-  margin: 12px 0;
-}
-/* --- KẾT THÚC THAY ĐỔI style nền sáng --- */
-
-
-/* --- THAY ĐỔI: Nền nội dung --- */
+/* --- RIGHT PANEL (CỘT PHẢI - QUAN TRỌNG) --- */
 .right-panel {
-  overflow-y: auto;
-  height: calc(100vh - 60px);
-  padding: 20px 30px;
-  background: var(--bg-light); /* Nền xám siêu nhạt */
+  height: 100vh; 
+  overflow-y: auto; /* Cuộn nội dung */
+  overflow-x: hidden;
+  padding: 0;    
+  background: var(--bg-light);
+  position: relative;
 }
 
-/* --- THAY ĐỔI: "Thanh phụ" nền trắng --- */
+/* Thanh tiêu đề tab */
 .tab-name-bar {
-    /* --- 1. Vị trí & Kích thước --- */
-    position: fixed; 
-    top: 0;
-    /* Giữ nguyên Left/Width inline style để đồng bộ với Sidebar */
-    height: 64px; /* Hơi thấp hơn (70px -> 64px) trông hiện đại hơn */
-    
-    /* --- 2. Giao diện & Hiệu ứng --- */
-    background-color: rgba(255, 255, 255, 0.98); /* Gần như trắng hoàn toàn */
-    
-    /* Blur Backdrop Tinh Tế */
-    backdrop-filter: blur(5px); 
-    -webkit-backdrop-filter: blur(5px); 
-    
-    /* Box Shadow "Pro" mới: Nhẹ nhàng hơn, tập trung vào cạnh dưới */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); 
-    
-    /* --- 3. Căn chỉnh Nội dung & Padding --- */
-    display: flex;
-    align-items: center; 
-    padding: 0 40px; /* Tăng padding ngang (30px -> 40px) cho không gian thở */
-    
-    /* --- 4. Kiểu chữ (Typography) CHUYÊN NGHIỆP --- */
-    font-size: 1.55rem; /* Kích thước phù hợp, không quá lấn át */
-    font-weight: 600; /* Đậm vừa, sắc nét */
-    color: #2c3e50; /* Màu chữ Dark Navy (Xanh đen) thay vì đen tuyền (tương phản mềm hơn) */
-    
-    /* Đảm bảo chữ không bị chọn (Optional) */
-    user-select: none; 
-    
-    z-index: 99; 
-    transition: left 0.3s ease, width 0.3s ease, box-shadow 0.3s ease; 
-}
-
-/* --- BÙ KHOẢNG TRỐNG NỘI DUNG (Cần được áp dụng cho nội dung chính) --- */
-
-/* Thay thế style={{ marginTop: "80px" }} cũ bằng padding-top */
-/* Giả sử bạn có một content wrapper bên trong right-panel */
-.right-panel > div:nth-child(2) {
-    /* (64px chiều cao bar + 20px khoảng trống) */
-    padding-top: 0px !important; 
-}
-/* --- KẾT THÚC THAY ĐỔI .tab-name-bar --- */
-
-/* (Các class .title, .card... đã tương thích, giữ nguyên) */
-.title {
-  font-size: 28px;
-  margin: 0 0 6px;
-  color: var(--primary-color);
-  font-weight: 700;
-}
-.card {
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 16px;
-  background: var(--bg-white); 
-  overflow: hidden;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-}
-/* ... (Các class .sub-card-container, .button... giữ nguyên) ... */
-
-
-/*  */
-/* --- KẾT THÚC THAY ĐỔI .top-nav-bubble --- */
-
-
-.sidebar-header {
+  position: fixed; 
+  top: 0;
+  height: 70px; 
+  background-color: rgba(255, 255, 255, 0.9); 
+  backdrop-filter: blur(10px); 
+  -webkit-backdrop-filter: blur(10px); 
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05); 
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  padding: 20px;
-  margin: 1px;
+  align-items: center; 
+  padding: 0 40px;
+  font-size: 1.4rem;
+  font-weight: 700; 
+  color: var(--text-dark);
+  z-index: 90; 
+  transition: left 0.3s ease, width 0.3s ease; 
 }
 
-.sidebar-logo {
-  width: 100px;
-  height: 100px;
-  object-fit: contain;
-  padding: 6px;
-  border-radius: 50%;
-  background: #f7f7f7;
-  border: 1px solid #ececec;
-}
-
-.menu-header {
-  font-weight: bold;
-  font-size: 1.1em;
-  margin-top: 10px;
-  margin-bottom: -2px;
-}
-
-.logo-container {
-    display: flex;             /* Kích hoạt Flexbox */
-    align-items: center;       /* Căn giữa các mục theo chiều dọc */
-    gap: 10px;                 /* Tạo khoảng cách giữa logo và chữ TND */
-}
-
-.sidebar-top-section {
-    padding: 16px 20px;
-    background-color: #ffffff; /* Nền trắng sạch sẽ */
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); /* Shadow nhẹ ở dưới cùng */
-}
-
-/* ----------------------------------------------------------------
-   2. Khu vực Logo Ứng dụng (TND)
----------------------------------------------------------------- */
-
-.app-name {
-    font-size: 1.5rem; /* Kích thước chữ lớn hơn */
-    font-weight: 700;  /* Rất đậm */
-    color: var(--text-dark);
-    letter-spacing: -0.5px; /* Giảm khoảng cách chữ để trông hiện đại hơn */
-}
-
-/* ----------------------------------------------------------------
-   3. Khu vực Thông tin Tài khoản (User Info Area)
----------------------------------------------------------------- */
-.user-info-area {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    border-radius: 8px; /* Bo góc */
-    transition: background-color 0.2s, box-shadow 0.2s;
-    user-select: none; /* Không cho phép chọn văn bản */
-}
-
-/* Hiệu ứng tương tác: Nút Tài khoản */
-.user-info-area:hover {
-    background-color: var(--hover-bg);
-    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Shadow nổi nhẹ khi hover */
-}
-
-.user-info-area:active {
-    background-color: #e5e7eb; /* Hiệu ứng nhấn xuống */
-}
-
-/* Ảnh đại diện người dùng */
-.user-avatar {
-    width: 48px; /* Kích thước lớn hơn để nổi bật */
-    height: 48px;
-    border-radius: 50%; /* Hình tròn hoàn hảo */
-    object-fit: cover;
-    margin-right: 12px;
-    border: 2px solid var(--primary-color); /* Border màu chủ đạo */
-    box-shadow: 0 0 0 2px #ffffff; /* Tạo hiệu ứng border kép */
-}
-
-/* Chi tiết Tên và Email */
-.user-details {
-    flex-grow: 1; /* Chiếm hết không gian có thể */
-    overflow: hidden; /* Ẩn nếu tên/email quá dài */
-}
-
-.user-details > .user-info:first-child { /* Tên người dùng */
-    font-size: 1rem;
-    font-weight: 600; /* Đậm vừa */
-    color: var(--text-dark);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis; /* ... khi quá dài */
-}
-
-.user-details > .user-info:last-child { /* Email */
-    font-size: 0.875rem; /* Tương đương 14px */
-    color: var(--text-light);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin-top: 2px;
-}
-
-/* Hiệu ứng khi khu vực tài khoản được "kích hoạt" (ví dụ: dropdown đang mở) */
-.user-info-area.active .account-dropdown-icon {
-    transform: rotate(180deg); /* Xoay mũi tên lên */
-    color: var(--primary-color);
-}
-
-/* ----------------------------------------------------------------
-   4. Đường Phân cách (Divider)
----------------------------------------------------------------- */
-.header-divider {
-    border: none;
-    height: 1px;
-    background-color: var(--border-color);
-    margin: 5px 0;
-}
+/* --- Scrollbar --- */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }

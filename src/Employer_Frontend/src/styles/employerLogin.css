@@ -1,138 +1,148 @@
-/* Thêm container cha nếu chưa có */
-.login-page {
-  display: flex;
-  justify-content: center; /* căn giữa ngang */
-  align-items: center;     /* căn giữa dọc */
-  height: 100vh;
-  width: 100%;
-  background-color: #f7fafc; /* giống nền app */
-  box-sizing: border-box;
-  padding: 0 16px; /* tránh dính lề mobile */
+/* --- Cấu trúc chung --- */
+.auth-page {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+    background-color: #fff;
+    font-family: 'Be Vietnam Pro', sans-serif;
+    overflow: hidden;
+    position: relative; /* Để định vị logo tuyệt đối */
 }
 
-.login-container {
-  max-width: 400px;
-  width: 100%;
-  margin: auto; /* centers horizontally & vertically only if parent has height */
-  padding: 32px;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+/* --- 1. LOGO GÓC TRÊN TRÁI (MỚI) --- */
+.top-left-logo {
+    position: absolute;
+    top: 40px;
+    left: 60px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 20; /* Nổi lên trên cùng */
 }
 
-
-
-
-.login-title {
-  font-size: 28px;
-  font-weight: 700;
-  color: #1a73e8; /* primary blue */
-  text-align: center;
-  margin-bottom: 8px;
+.logo-img-small {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
 }
 
-.login-subtitle {
-  font-size: 14px;
-  color: #4a5568; /* medium gray */
-  text-align: center;
-  margin-bottom: 24px;
+.brand-name-corner {
+    font-size: 1.4rem;
+    font-weight: 800; /* Rất đậm */
+    /* Gradient màu chữ cho bắt mắt */
+    background: linear-gradient(90deg, #0061ff, #60efff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
 }
 
-.login-input {
-  width: 100%;
-  padding: 12px 16px;
-  font-size: 0.95rem; /* match filter-input font size */
-  border: 1px solid #d1d5db; /* same as filter-input */
-  border-radius: 6px; /* same as filter inputs */
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  background: #ffffff;
+/* --- Cột Trái --- */
+.auth-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 100px; /* Tăng padding ngang để form gọn vào giữa */
+    max-width: 650px;
+    background: #fff;
+    position: relative;
+    z-index: 10;
 }
 
-.login-input:focus {
-  border-color: #2563eb; /* deeper TopCV blue like filter button hover */
-  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+/* --- Cột Phải --- */
+.auth-right {
+    flex: 1.2;
+    background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+.auth-right::before {
+    content: '';
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(135deg, rgba(0, 97, 255, 0.2), rgba(120, 75, 160, 0.2));
 }
 
-.login-button {
-  width: 100%;
-  padding: 12px 16px;
-  font-size: 0.95rem; /* match filter button font size */
-  font-weight: 500;
-  color: #ffffff;
-  background-color: #2563eb; /* same as filter-row-bottom button */
-  border: none;
-  border-radius: 6px; /* match filter buttons */
-  cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
+/* --- Header Center (Đã bỏ logo cũ) --- */
+.auth-header-center { 
+    margin-bottom: 30px; 
+    /* Có thể căn trái hoặc giữa tùy sở thích, hiện tại để mặc định (trái) cho thẳng hàng */
 }
 
-.login-button:hover {
-  background-color: #1e40af; /* match button hover */
+.auth-title { 
+    font-size: 2.2rem; 
+    font-weight: 800; 
+    color: #1a202c; 
+    margin-bottom: 8px; 
+    line-height: 1.2;
+}
+.auth-subtitle { color: #6b7280; font-size: 1rem; }
+
+/* --- 2. FORM COMPACT (THU GỌN KHOẢNG CÁCH) --- */
+.auth-form { display: flex; flex-direction: column; gap: 18px; } /* Giảm gap từ 20 -> 18 */
+
+.form-group { display: flex; flex-direction: column; gap: 6px; flex: 1; position: relative; } /* Giảm gap label-input từ 8 -> 6 */
+
+/* 3. LABEL IN ĐẬM */
+.form-label-bold { 
+    font-size: 0.9rem; 
+    font-weight: 700; /* In đậm */
+    color: #374151; 
 }
 
-.login-button:active {
-  transform: scale(0.98);
+.label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.login-error {
-  font-size: 0.85rem;
-  color: #dc2626; /* red like cv-status-tag rejected */
-  margin-top: -8px;
-  margin-bottom: 8px;
-  text-align: center;
+/* 4. QUÊN MẬT KHẨU */
+.forgot-pass-link {
+    font-size: 0.85rem;
+    color: #0061ff;
+    font-weight: 600;
+    cursor: pointer;
+}
+.forgot-pass-link:hover { text-decoration: underline; }
+
+.input-wrapper { position: relative; display: flex; align-items: center; }
+
+.auth-input.compact-input {
+    width: 100%; 
+    padding: 12px 16px; /* Giảm padding dọc từ 14 -> 12 */
+    font-size: 0.95rem; /* Giảm font size xíu */
+    border: 1.5px solid #e5e7eb; border-radius: 10px;
+    transition: all 0.2s ease; color: #1f2937; background: #f9fafb;
+}
+.auth-input:focus {
+    border-color: #0061ff; background: #fff; outline: none;
+    box-shadow: 0 0 0 4px rgba(0, 97, 255, 0.1);
 }
 
-.login-footer {
-  font-size: 0.85rem;
-  color: #4a5568;
-  text-align: center;
-  margin-top: 12px;
+.eye-icon {
+    position: absolute; right: 15px; cursor: pointer; color: #9ca3af; font-size: 1.2rem; transition: color 0.2s;
 }
+.eye-icon:hover { color: #0061ff; }
 
-.login-footer a {
-  color: #2563eb; /* same as buttons */
-  text-decoration: none;
-  font-weight: 500;
+.auth-button {
+    margin-top: 10px; padding: 14px; /* Nút cũng gọn hơn xíu */
+    background: #0061ff; color: white;
+    font-size: 1rem; font-weight: 600; border: none; border-radius: 10px;
+    cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0, 97, 255, 0.3);
 }
+.auth-button:hover { background: #0052d4; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0, 97, 255, 0.4); }
+.auth-button:disabled { background: #9ca3af; cursor: not-allowed; transform: none; box-shadow: none; }
 
-.login-footer a:hover {
-  text-decoration: underline;
-}
+.auth-footer { margin-top: 25px; text-align: center; font-size: 0.9rem; color: #4b5563; }
+.auth-link { color: #0061ff; font-weight: 600; cursor: pointer; margin-left: 5px; text-decoration: none; }
+.auth-link:hover { text-decoration: underline; }
 
-/* Responsive tweaks */
-@media (max-width: 500px) {
-  .login-container {
-    padding: 24px;
-  }
+.error-msg { color: #dc2626; background: #fee2e2; padding: 10px; border-radius: 8px; font-size: 0.9rem; text-align: center; border: 1px solid #fecaca; }
+.success-msg { color: #059669; background: #d1fae5; padding: 10px; border-radius: 8px; font-size: 0.9rem; text-align: center; border: 1px solid #a7f3d0; }
 
-  .login-title {
-    font-size: 24px;
-  }
-
-  .login-button {
-    font-size: 0.9rem;
-  }
-}
-
-/* Container that holds both boxes */
-.login-page-cheese {
-  display: flex;
-  justify-content: center; /* horizontal centering */
-  align-items: center;     /* vertical centering */
-  height: 100vh;
-  width: 100%;
-  background-color: #f7fafc;
-  gap: 0; /* no extra spacing needed */
-  box-sizing: border-box;
-  padding: 0 16px;
-}
-
-/* Invisible box: just a width to push login box to center */
-.login-invisible-box {
-  width: 50%; /* tweak this to adjust visual centering */
-  height: 0;  /* invisible */
+@media (max-width: 900px) {
+    .auth-right { display: none; }
+    .auth-left { padding: 40px 30px; max-width: 100%; }
+    .top-left-logo { left: 30px; top: 30px; } /* Mobile thì dời logo vào chút */
 }
