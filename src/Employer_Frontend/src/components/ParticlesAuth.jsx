@@ -54,7 +54,7 @@ const ParticlesAuth = () => {
             density: { enable: true, area: 800 },
             value: 60, // Số lượng hạt
           },
-          opacity: { value: 0.3 },
+          // opacity: { value: 0.3 },
           shape: { type: "circle" },
           size: { value: { min: 1, max: 3 } },
         },
