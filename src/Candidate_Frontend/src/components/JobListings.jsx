@@ -2,6 +2,7 @@
 import React from "react";
 import useJobs from "../hooks/useJobs";
 import { Bookmark, MapPin, DollarSign, Briefcase } from "lucide-react";
+import "../styles/job-search.css";
 
 // HÀM FORMAT LƯƠNG – giống các file khác
 function formatSalary(salary) {
@@ -29,9 +30,8 @@ function formatSalary(salary) {
   return "Thỏa thuận";
 }
 
-// Component con (Render UI)
+// ----- CARD 1 JOB -----
 function JobCard({ job, onSelectJob, isSelected }) {
-  // Sửa lỗi 'charAt': Thêm kiểm tra an toàn
   const companyInitial = (job.company && job.company.charAt(0)) || "?";
   const placeholderLogo = `https://ui-avatars.com/api/?name=${companyInitial}&background=random&color=fff`;
 
@@ -41,62 +41,64 @@ function JobCard({ job, onSelectJob, isSelected }) {
   };
 
   return (
-    // Thẻ 'button' cha
-    <button
+    <article
+      className={`job-card ${isSelected ? "job-card--selected" : ""}`}
       onClick={() => onSelectJob(job)}
-      className={`w-full text-left p-4 rounded-lg border transition-all ${
-        isSelected
-          ? "bg-accent/10 border-accent" // (Style khi được chọn)
-          : "bg-card border-border hover:border-accent/50" // (Style mặc định)
-      }`}
+      role="button"
+      tabIndex={0}
     >
-      <div className="flex items-start justify-between gap-3">
-        <img
-          src={job.logoUrl || placeholderLogo}
-          alt={job.company || "Company Logo"}
-          className="w-10 h-10 rounded-md object-contain bg-gray-100"
-        />
-        <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-foreground truncate">
+      <div className="job-card-inner">
+        <div className="job-card-logo-wrap">
+          <img
+            src={job.logoUrl || placeholderLogo}
+            alt={job.company || "Company Logo"}
+            className="job-card-logo"
+          />
+        </div>
+
+        <div className="job-card-main">
+          <h3 className="job-card-title">
             {job.title || "Không có tiêu đề"}
           </h3>
-          <p className="text-sm text-muted-foreground">
+          <p className="job-card-company">
             {job.company || "Không rõ công ty"}
           </p>
-          <div className="flex items-center gap-3 mt-3 text-xs text-muted-foreground">
-            <div className="flex items-center gap-1">
-              <MapPin className="h-3 w-3" />
-              {job.location || "N/A"}
+
+          <div className="job-card-meta-row">
+            <div className="job-card-meta">
+              <MapPin className="job-card-meta-icon" />
+              <span>{job.location || "N/A"}</span>
             </div>
-            <div className="flex items-center gap-1">
-              <DollarSign className="h-3 w-3" />
-              {formatSalary(job.salary)}
+            <div className="job-card-meta">
+              <DollarSign className="job-card-meta-icon" />
+              <span>{formatSalary(job.salary)}</span>
             </div>
           </div>
-          <div className="flex gap-2 mt-3 flex-wrap">
-            <span className="text-xs px-2 py-0.5 bg-secondary text-secondary-foreground rounded-full font-medium">
+
+          <div className="job-card-pill-row">
+            <span className="job-card-pill">
               {job.jobType || "N/A"}
             </span>
-            <span className="text-xs px-2 py-0.5 border border-border text-muted-foreground rounded-full font-medium capitalize">
+            <span className="job-card-pill job-card-pill--outline">
               {job.major || "N/A"}
             </span>
           </div>
         </div>
 
-        {/* Đổi button thành div để tránh nested button */}
-        <div
+        <button
+          type="button"
           onClick={handleBookmark}
-          className="p-2 hover:bg-secondary/50 rounded-lg transition-colors shrink-0 cursor-pointer"
+          className="job-card-bookmark"
           title="Lưu công việc"
         >
-          <Bookmark className="h-4 w-4 text-muted-foreground" />
-        </div>
+          <Bookmark className="job-card-bookmark-icon" />
+        </button>
       </div>
-    </button>
+    </article>
   );
 }
 
-// Component chính (Quản lý Data)
+// ----- DANH SÁCH JOB -----
 export default function JobListings({
   selectedJob,
   onSelectJob,
@@ -105,7 +107,6 @@ export default function JobListings({
 }) {
   const { jobs, loading, error, totalPages } = useJobs(filters);
 
-  // Lọc Frontend (cho 'keyword')
   const filteredJobs = jobs.filter((job) => {
     if (!filters.keyword) return true;
     const kw = filters.keyword.toLowerCase();
@@ -122,43 +123,45 @@ export default function JobListings({
   };
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="job-listings">
       {/* Header */}
-      <div className="p-6 border-b border-border sticky top-0 bg-background/95 backdrop-blur">
-        <h2 className="text-lg font-semibold text-foreground">
-          Jobs{" "}
-          <span className="text-muted-foreground">
+      <div className="job-listings-header">
+        <h2 className="job-listings-title">
+          Việc làm
+          <span className="job-listings-count">
             ({filteredJobs.length})
           </span>
         </h2>
       </div>
 
       {/* Danh sách */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="job-listings-body">
         {loading && (
-          <div className="p-4 space-y-2">
+          <div className="job-listings-skeleton">
             {[...Array(5)].map((_, i) => (
-              <div
-                key={i}
-                className="h-32 bg-gray-100 rounded-lg animate-pulse"
-              />
+              <div key={i} className="job-skeleton-item" />
             ))}
           </div>
         )}
 
         {!loading && error && (
-          <div className="p-6 text-center text-red-500">{error}</div>
+          <div className="job-listings-error">{error}</div>
         )}
 
         {!loading && !error && filteredJobs.length === 0 && (
-          <div className="p-6 text-center text-muted-foreground">
-            <Briefcase className="h-12 w-12 mx-auto mb-4 opacity-30" />
-            <p>No jobs found matching your criteria</p>
+          <div className="job-listings-empty">
+            <Briefcase className="job-empty-icon" />
+            <p className="job-empty-title">
+              Không tìm thấy công việc phù hợp
+            </p>
+            <p className="job-empty-subtitle">
+              Hãy thử thay đổi từ khóa hoặc bộ lọc tìm kiếm.
+            </p>
           </div>
         )}
 
         {!loading && !error && filteredJobs.length > 0 && (
-          <div className="space-y-2 p-4">
+          <div className="job-list">
             {filteredJobs.map((job) => (
               <JobCard
                 key={job._id}
@@ -171,25 +174,29 @@ export default function JobListings({
         )}
       </div>
 
-      {/* Phân trang (Pagination) */}
-      <div className="p-4 border-t border-border sticky bottom-0 bg-background">
-        <div className="flex justify-between items-center">
+      {/* Pagination */}
+      <div className="job-listings-footer">
+        <div className="job-pagination">
           <button
+            type="button"
             onClick={() => handlePageChange(filters.page - 1)}
             disabled={filters.page <= 1}
-            className="px-4 py-2 text-sm font-medium rounded-md border bg-card text-foreground disabled:opacity-50"
+            className="job-page-btn"
           >
-            Previous
+            Trang trước
           </button>
-          <span className="text-sm text-muted-foreground">
-            Page {filters.page} of {totalPages}
+
+          <span className="job-page-info">
+            Trang {filters.page} / {totalPages || 1}
           </span>
+
           <button
+            type="button"
             onClick={() => handlePageChange(filters.page + 1)}
             disabled={filters.page >= totalPages}
-            className="px-4 py-2 text-sm font-medium rounded-md border bg-card text-foreground disabled:opacity-50"
+            className="job-page-btn"
           >
-            Next
+            Trang sau
           </button>
         </div>
       </div>

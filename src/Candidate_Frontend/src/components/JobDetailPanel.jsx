@@ -1,131 +1,177 @@
 // src/components/JobDetailPanel.jsx
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { X, MapPin, DollarSign, Briefcase, Clock, Heart } from "lucide-react";
-import { Link as RouterLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import "../styles/job-search.css";
 
-// HÀM FORMAT LƯƠNG
+import { useAuth } from "../context/AuthContext";
+import {
+  saveJob as apiSaveJob,
+  removeSaveJob as apiRemoveSaveJob,
+} from "../api/candidate";
+
 function formatSalary(salary) {
-  if (!salary) return "Negotiable";
+  if (!salary) return "Thỏa thuận";
   if (typeof salary === "string") return salary;
   if (typeof salary === "number") return salary.toString();
   if (typeof salary === "object") {
-    const { minSalary, maxSalary, currency } = salary;
+    const { minSalary, maxSalary, currency } = salary || {};
     const curr = currency || "";
-    if (minSalary && maxSalary) {
-      return `${minSalary} - ${maxSalary} ${curr}`.trim();
-    }
-    if (minSalary) {
-      return `From ${minSalary} ${curr}`.trim();
-    }
-    if (maxSalary) {
-      return `Up to ${maxSalary} ${curr}`.trim();
-    }
+    if (minSalary && maxSalary) return `${minSalary} - ${maxSalary} ${curr}`.trim();
+    if (minSalary) return `Từ ${minSalary} ${curr}`.trim();
+    if (maxSalary) return `Tối đa ${maxSalary} ${curr}`.trim();
   }
-  return "Negotiable";
+  return "Thỏa thuận";
 }
 
 export default function JobDetailPanel({ job, onClose }) {
-  // Dữ liệu giả cho ngày đăng (nếu DB chưa có)
-  const postedDate = "2 days ago";
+  const postedDate = "2 ngày trước"; // placeholder
 
-  // ĐÃ XÓA: const requirements = ...
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const jobId = String(job._id);
+  const [isSaved, setIsSaved] = useState(false);
+
+  // lấy trạng thái đã lưu ban đầu từ user.listSaveJobs (giống FeaturedJobs)
+  useEffect(() => {
+    if (user && Array.isArray(user.listSaveJobs)) {
+      const hasSaved = user.listSaveJobs
+        .map(String)
+        .includes(jobId);
+      setIsSaved(hasSaved);
+    } else {
+      setIsSaved(false);
+    }
+  }, [user, jobId]);
+
+  const handleApply = () => {
+    if (!user) {
+      alert("Bạn cần đăng nhập để ứng tuyển công việc này.");
+      navigate("/login");
+      return;
+    }
+    navigate(`/jobs/${job._id}/apply`);
+  };
+
+  const handleSaveJob = async () => {
+    if (!user) {
+      alert("Bạn cần đăng nhập để lưu job.");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      if (isSaved) {
+        await apiRemoveSaveJob(user.email, jobId);
+        setIsSaved(false);
+      } else {
+        await apiSaveJob(user.email, jobId);
+        setIsSaved(true);
+      }
+    } catch (err) {
+      console.error("Error (save job):", err);
+      alert(err?.response?.data?.message || "Không thể lưu job");
+    }
+  };
 
   return (
-    <div className="h-full flex flex-col bg-white">
+    <div className="job-detail">
       {/* Header */}
-      <div className="p-6 border-b border-slate-200 flex items-start justify-between gap-4">
-        <div className="flex-1 min-w-0">
-          <h2 className="text-2xl font-bold text-slate-900 leading-snug truncate">
-            {job.title}
-          </h2>
-          <p className="text-sm text-slate-500 mt-1">{job.company}</p>
+      <div className="job-detail-header">
+        <div className="job-detail-header-main">
+          <h2 className="job-detail-title">{job.title}</h2>
+          <p className="job-detail-company">{job.company}</p>
         </div>
+
         <button
+          type="button"
           onClick={onClose}
-          className="p-2 rounded-full hover:bg-slate-100 transition-colors shrink-0"
+          className="job-detail-close"
         >
-          <X className="h-5 w-5 text-slate-500" />
+          <X className="job-detail-close-icon" />
         </button>
       </div>
 
-      {/* Nội dung (scroll) */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="p-6 space-y-8">
-          {/* Grid thông tin */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-sky-50 rounded-xl p-4">
-              <div className="flex items-center gap-2 text-xs font-medium text-slate-500 mb-1">
-                <MapPin className="h-4 w-4" />
-                Location
-              </div>
-              <p className="font-semibold text-slate-900">
-                {job.location || "N/A"}
-              </p>
+      {/* Content */}
+      <div className="job-detail-body">
+        <div className="job-detail-grid">
+          <div className="job-detail-info-card">
+            <div className="job-detail-info-label">
+              <MapPin className="job-detail-info-icon" />
+              <span>Địa điểm</span>
             </div>
-
-            <div className="bg-sky-50 rounded-xl p-4">
-              <div className="flex items-center gap-2 text-xs font-medium text-slate-500 mb-1">
-                <DollarSign className="h-4 w-4" />
-                Salary
-              </div>
-              <p className="font-semibold text-slate-900">
-                {formatSalary(job.salary)}
-              </p>
-            </div>
-
-            <div className="bg-sky-50 rounded-xl p-4">
-              <div className="flex items-center gap-2 text-xs font-medium text-slate-500 mb-1">
-                <Briefcase className="h-4 w-4" />
-                Type
-              </div>
-              <p className="font-semibold text-slate-900">
-                {job.jobType || "N/A"}
-              </p>
-            </div>
-
-            <div className="bg-sky-50 rounded-xl p-4">
-              <div className="flex items-center gap-2 text-xs font-medium text-slate-500 mb-1">
-                <Clock className="h-4 w-4" />
-                Posted
-              </div>
-              <p className="font-semibold text-slate-900">{postedDate}</p>
-            </div>
-          </div>
-
-          {/* Mô tả (Bao gồm cả Requirements) */}
-          <div>
-            <h3 className="font-semibold text-slate-900 mb-3">
-              About the Role
-            </h3>
-            <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-line">
-              {job.description}
+            <p className="job-detail-info-value">
+              {job.location || "N/A"}
             </p>
           </div>
 
-          {/* ĐÃ XÓA: Phần hiển thị Requirements */}
+          <div className="job-detail-info-card">
+            <div className="job-detail-info-label">
+              <DollarSign className="job-detail-info-icon" />
+              <span>Mức lương</span>
+            </div>
+            <p className="job-detail-info-value">
+              {formatSalary(job.salary)}
+            </p>
+          </div>
 
-          {/* Category */}
-          <div>
-            <h3 className="font-semibold text-slate-900 mb-3">Category</h3>
-            <span className="inline-flex items-center px-3 py-1 rounded-full bg-sky-50 text-sky-700 text-xs font-semibold capitalize">
-              {job.major || "General"}
-            </span>
+          <div className="job-detail-info-card">
+            <div className="job-detail-info-label">
+              <Briefcase className="job-detail-info-icon" />
+              <span>Hình thức</span>
+            </div>
+            <p className="job-detail-info-value">
+              {job.jobType || "N/A"}
+            </p>
+          </div>
+
+          <div className="job-detail-info-card">
+            <div className="job-detail-info-label">
+              <Clock className="job-detail-info-icon" />
+              <span>Ngày đăng</span>
+            </div>
+            <p className="job-detail-info-value">{postedDate}</p>
           </div>
         </div>
+
+        {/* Description */}
+        <section className="job-detail-section">
+          <h3 className="job-detail-section-title">Mô tả công việc</h3>
+          <p className="job-detail-section-text">
+            {job.description || "Chưa có mô tả chi tiết cho công việc này."}
+          </p>
+        </section>
+
+        {/* Category */}
+        <section className="job-detail-section">
+          <h3 className="job-detail-section-title">Ngành nghề</h3>
+          <span className="job-detail-chip">
+            {job.major || "General"}
+          </span>
+        </section>
       </div>
 
-      {/* Footer buttons */}
-      <div className="p-6 border-t border-slate-200 space-y-3 bg-white">
-        <RouterLink
-          to={`/jobs/${job._id}/apply`}
-          className="w-full bg-blue-900 hover:bg-blue-800 text-white text-sm py-3 font-semibold rounded-md flex items-center justify-center transition-colors"
+      {/* Footer */}
+      <div className="job-detail-footer">
+        <button
+          type="button"
+          onClick={handleApply}
+          className="job-detail-apply-btn"
         >
-          Apply Now
-        </RouterLink>
+          Ứng tuyển ngay
+        </button>
 
-        <button className="w-full flex items-center justify-center gap-2 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm py-3 rounded-md font-semibold transition-colors">
-          <Heart className="h-4 w-4" />
-          Save Job
+        <button
+          type="button"
+          onClick={handleSaveJob}
+          className="job-detail-save-btn"
+        >
+          <Heart
+            className="job-detail-save-icon"
+            fill={isSaved ? "currentColor" : "none"}
+          />
+          {isSaved ? "Đã lưu công việc" : "Lưu công việc"}
         </button>
       </div>
     </div>

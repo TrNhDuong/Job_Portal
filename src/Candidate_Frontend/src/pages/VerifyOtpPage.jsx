@@ -276,6 +276,15 @@ export default function VerifyOtpPage() {
               )}
             </button>
 
+            {/* Cancel dưới nút Xác nhận */}
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="otp-cancel-btn"
+            >
+              Hủy
+            </button>
+
             {/* Resend */}
             <div className="otp-resend">
               <p>Không nhận được mã?</p>
