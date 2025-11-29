@@ -125,7 +125,7 @@ export default function AccountSettingsLayout() {
                 `profile-tab ${isActive ? "active" : ""}`
               }
             >
-              Bảo mật &amp; quyền riêng tư
+              Quyền riêng tư
             </NavLink>
           </nav>
         </div>

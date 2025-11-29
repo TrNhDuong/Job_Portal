@@ -18,7 +18,7 @@ import AccountSettingsLayout from "./pages/settings/AccountSettingsLayout.jsx";
 import ProfileSettings from "./pages/settings/ProfileSettings.jsx";
 import PasswordSettings from "./pages/settings/PasswordSettings.jsx";
 import SecuritySettings from "./pages/settings/SecuritySettings.jsx";
-
+import MyJobsPage from "./pages/MyJobsPage.jsx";
 function App() {
   const location = useLocation();
   const hideNavbarRoutes = ["/register", "/login", "/verify-otp"];
@@ -45,6 +45,7 @@ function App() {
             <Route path="/jobs/:id/status" element={<ApplicationStatusPage />} />
             <Route path="/apply/:id" element={<ApplicationPage />} />
             <Route path="/dashboard" element={<CandidateDashboard />}>
+              <Route index element={<MyJobsPage />} />
               <Route index element={<JobManagement />} />
               <Route path="my-cv" element={<MyCV />} />
               <Route path="settings" element={<AccountSettingsLayout />}>

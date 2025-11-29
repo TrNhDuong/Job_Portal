@@ -667,3 +667,227 @@
     width: 100%;
   }
 }
+
+/* ====== MY JOBS (VIỆC LÀM CỦA TÔI) ====== */
+
+.myjobs-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Tabs */
+.myjobs-tabs {
+  display: inline-flex;
+  padding: 0.25rem;
+  border-radius: 999px;
+  background: #f3f4ff;
+  border: 1px solid #e5e7ff;
+  margin-bottom: 0.5rem;
+}
+
+.myjobs-tab {
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 0.45rem 1.4rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.myjobs-tab.active {
+  background: #0f172a;
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.3);
+}
+
+/* List & empty */
+.myjobs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.myjobs-empty {
+  padding: 2.5rem 1.5rem;
+  border-radius: 1rem;
+  border: 1px dashed #e2e8f0;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.myjobs-error {
+  font-size: 0.9rem;
+  color: #dc2626;
+}
+
+/* Card */
+.myjobs-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: 0.9rem;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.03);
+}
+
+.myjobs-card-main {
+  flex: 1;
+  cursor: pointer;
+}
+
+.myjobs-title {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 0.1rem;
+}
+
+.myjobs-company {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-bottom: 0.55rem;
+}
+
+.myjobs-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.myjobs-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.myjobs-meta-icon {
+  width: 14px;
+  height: 14px;
+}
+
+/* Right side actions */
+.myjobs-card-actions {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.5rem;
+  align-items: flex-end;
+  min-width: 190px;
+}
+
+/* Status badge */
+.myjobs-status-badge {
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+}
+
+/* variants */
+.myjobs-status-pending {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-color: #bfdbfe;
+}
+
+.myjobs-status-viewed {
+  background: #ecfeff;
+  color: #0891b2;
+  border-color: #a5f3fc;
+}
+
+.myjobs-status-rejected {
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+.myjobs-status-accepted {
+  background: #ecfdf5;
+  color: #059669;
+  border-color: #bbf7d0;
+}
+
+/* Buttons */
+.myjobs-btn-primary,
+.myjobs-btn-outline,
+.myjobs-btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.16s ease;
+}
+
+.myjobs-btn-primary {
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: #ffffff;
+  border-color: transparent;
+}
+
+.myjobs-btn-primary:hover {
+  filter: brightness(1.05);
+  box-shadow: 0 10px 24px rgba(79, 70, 229, 0.35);
+}
+
+.myjobs-btn-outline {
+  background: #ffffff;
+  color: #0f172a;
+  border-color: #e2e8f0;
+}
+
+.myjobs-btn-outline:hover {
+  background: #f9fafb;
+}
+
+.myjobs-btn-danger {
+  background: #ef4444;
+  color: #ffffff;
+  border-color: #dc2626;
+}
+
+.myjobs-btn-danger:hover {
+  background: #dc2626;
+}
+
+.myjobs-btn-primary:disabled,
+.myjobs-btn-outline:disabled,
+.myjobs-btn-danger:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .myjobs-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .myjobs-card-actions {
+    width: 100%;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+}
+

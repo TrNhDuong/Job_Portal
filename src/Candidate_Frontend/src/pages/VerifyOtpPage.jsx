@@ -45,7 +45,6 @@ export default function VerifyOtpPage() {
     const stored = sessionStorage.getItem(storageKey);
 
     if (!stored) {
-      // Không có dữ liệu → quay lại đúng trang
       if (action === "update-profile") navigate("/dashboard/settings/profile");
       else if (action === "update-password") navigate("/login");
       else navigate("/register");
@@ -64,10 +63,11 @@ export default function VerifyOtpPage() {
     return () => clearTimeout(timer);
   }, [countdown]);
 
-  // 3. Xử lý change OTP
+  // --- OTP handlers ---
+
   const handleChange = (e, index) => {
     const { value } = e.target;
-    if (/[^0-9]/.test(value)) return; // chỉ cho nhập số
+    if (/[^0-9]/.test(value)) return;
 
     const newOtp = [...otp];
     newOtp[index] = value;
@@ -81,6 +81,24 @@ export default function VerifyOtpPage() {
   const handleKeyDown = (e, index) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
+    }
+  };
+
+  // Cho phép paste cả dãy OTP
+  const handlePaste = (e) => {
+    e.preventDefault();
+    const paste = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    if (!paste) return;
+
+    const nextOtp = [...otp];
+    for (let i = 0; i < paste.length; i++) {
+      nextOtp[i] = paste[i];
+    }
+    setOtp(nextOtp);
+
+    const lastIndex = paste.length - 1;
+    if (lastIndex >= 0 && lastIndex < 6) {
+      inputRefs.current[lastIndex]?.focus();
     }
   };
 
@@ -118,12 +136,11 @@ export default function VerifyOtpPage() {
       // Bước 1: verify OTP
       await client.post("/api/verify-otp", { email, otp: code });
 
-      // Bước 2: xử lý theo action (tất cả đều là candidate)
+      // Bước 2: xử lý theo action (candidate)
       if (action === "update-profile") {
         if (!data) throw new Error("Không tìm thấy dữ liệu cập nhật profile");
         const { oldEmail, email: newEmail, name, phone } = data;
 
-        // Backend: PATCH /api/candidate?email=oldEmail
         await client.patch(`/api/candidate?email=${oldEmail}`, {
           name,
           email: newEmail,
@@ -131,7 +148,6 @@ export default function VerifyOtpPage() {
         });
 
         if (user) {
-          // Cập nhật AuthContext
           login({ ...user, name, email: newEmail, phone });
         }
 
@@ -176,49 +192,40 @@ export default function VerifyOtpPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 relative overflow-hidden">
-      {/* Background blur */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
-        <div className="absolute -top-32 -left-32 w-[500px] h-[500px] bg-indigo-300/20 rounded-full blur-[100px]" />
-        <div className="absolute -bottom-32 -right-32 w-[500px] h-[500px] bg-purple-300/20 rounded-full blur-[100px]" />
+    <div className="otp-page">
+      {/* background decor */}
+      <div className="otp-bg">
+        <div className="otp-bg-circle otp-bg-circle-1" />
+        <div className="otp-bg-circle otp-bg-circle-2" />
       </div>
 
-      <div className="w-full max-w-md z-10 px-4">
-        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] border border-white p-8 md:p-10">
+      <div className="otp-container">
+        <div className="otp-card">
           {/* Icon */}
-          <div className="flex justify-center mb-8">
-            <div className="relative group">
-              <div className="absolute inset-0 bg-indigo-500 blur-xl opacity-20 rounded-full group-hover:opacity-30 transition-opacity duration-500" />
-              <div className="relative w-20 h-20 bg-gradient-to-br from-indigo-50 to-white rounded-2xl border border-indigo-100 flex items-center justify-center shadow-inner">
-                <ShieldCheck
-                  className="w-10 h-10 text-indigo-600"
-                  strokeWidth={1.5}
-                />
-              </div>
-              <div className="absolute -bottom-2 -right-2 bg-white p-1.5 rounded-full shadow-md border border-slate-50">
-                <div className="bg-emerald-500 rounded-full p-1">
-                  <Lock className="w-3 h-3 text-white" />
-                </div>
+          <div className="otp-icon-wrap">
+            <div className="otp-icon-glow" />
+            <div className="otp-icon-main">
+              <ShieldCheck className="otp-icon-shield" strokeWidth={1.5} />
+            </div>
+            <div className="otp-icon-badge">
+              <div className="otp-icon-badge-inner">
+                <Lock className="otp-icon-lock" />
               </div>
             </div>
           </div>
 
           {/* Title */}
-          <div className="text-center space-y-3 mb-10">
-            <h2 className="text-3xl font-bold text-slate-800 tracking-tight">
-              Xác thực bảo mật
-            </h2>
-            <p className="text-slate-500 text-base leading-relaxed">
-              Nhập mã 6 số chúng tôi vừa gửi tới email <br />
-              <span className="font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">
-                {email}
-              </span>
+          <div className="otp-header">
+            <h2>Xác thực bảo mật</h2>
+            <p>
+              Nhập mã 6 số chúng tôi vừa gửi tới email{" "}
+              <span className="otp-email">{email}</span>
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-8">
+          <form onSubmit={handleSubmit} className="otp-form">
             {/* OTP inputs */}
-            <div className="flex justify-between gap-2">
+            <div className="otp-input-row">
               {otp.map((digit, index) => (
                 <input
                   key={index}
@@ -228,11 +235,8 @@ export default function VerifyOtpPage() {
                   value={digit}
                   onChange={(e) => handleChange(e, index)}
                   onKeyDown={(e) => handleKeyDown(e, index)}
-                  className={`w-12 h-16 sm:w-14 sm:h-16 text-center text-2xl font-bold bg-white border-2 rounded-xl shadow-sm transition-all duration-200 outline-none ${
-                    digit
-                      ? "border-indigo-500 text-indigo-600 bg-indigo-50/30"
-                      : "border-slate-200 text-slate-700 hover:border-indigo-300"
-                  } focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 focus:-translate-y-1`}
+                  onPaste={handlePaste}
+                  className={`otp-input ${digit ? "otp-input-filled" : ""}`}
                 />
               ))}
             </div>
@@ -240,18 +244,16 @@ export default function VerifyOtpPage() {
             {/* Message */}
             {msg && (
               <div
-                className={`flex items-center justify-center gap-2 text-sm font-medium py-2 rounded-lg ${
-                  msg.type === "error"
-                    ? "bg-red-50 text-red-600"
-                    : "bg-emerald-50 text-emerald-600"
+                className={`otp-alert ${
+                  msg.type === "error" ? "otp-alert-error" : "otp-alert-success"
                 }`}
               >
                 {msg.type === "error" ? (
-                  <AlertCircle className="w-4 h-4" />
+                  <AlertCircle className="otp-alert-icon" />
                 ) : (
-                  <CheckCircle2 className="w-4 h-4" />
+                  <CheckCircle2 className="otp-alert-icon" />
                 )}
-                {msg.text}
+                <span>{msg.text}</span>
               </div>
             )}
 
@@ -259,37 +261,33 @@ export default function VerifyOtpPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full group relative overflow-hidden rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-8 py-4 text-white shadow-lg shadow-indigo-500/30 transition-all hover:shadow-indigo-500/50 hover:scale-[1.01] disabled:opacity-70 disabled:cursor-not-allowed"
+              className="otp-submit-btn"
             >
-              <span className="relative z-10 flex items-center justify-center gap-2 font-bold text-lg tracking-wide">
-                {loading ? (
-                  <>
-                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    Đang xử lý...
-                  </>
-                ) : (
-                  <>
-                    Xác nhận ngay
-                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                  </>
-                )}
-              </span>
+              {loading ? (
+                <>
+                  <div className="otp-submit-spinner" />
+                  Đang xử lý...
+                </>
+              ) : (
+                <>
+                  Xác nhận ngay
+                  <ArrowRight className="otp-submit-icon" />
+                </>
+              )}
             </button>
 
             {/* Resend */}
-            <div className="text-center border-t border-slate-100 pt-6">
-              <p className="text-slate-500 text-sm mb-2">Không nhận được mã?</p>
+            <div className="otp-resend">
+              <p>Không nhận được mã?</p>
               <button
                 type="button"
                 onClick={handleResend}
                 disabled={countdown > 0}
-                className={`inline-flex items-center gap-2 text-sm font-semibold ${
-                  countdown > 0
-                    ? "text-slate-400 cursor-not-allowed"
-                    : "text-indigo-600 hover:text-indigo-800 hover:underline"
+                className={`otp-resend-btn ${
+                  countdown > 0 ? "otp-resend-btn-disabled" : ""
                 }`}
               >
-                <RotateCcw className="w-4 h-4" />
+                <RotateCcw className="otp-resend-icon" />
                 {countdown > 0
                   ? `Gửi lại sau ${Math.floor(countdown / 60)}:${(
                       countdown % 60

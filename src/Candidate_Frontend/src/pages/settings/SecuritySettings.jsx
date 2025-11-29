@@ -1,30 +1,27 @@
-// src/pages/settings/SecuritySettings.jsx
+import React, { useState } from "react";
+import { useAuth } from "../../context/AuthContext";
+import client from "../../api/client";
+import { AlertCircle, CheckCircle, CheckCircle2 } from "lucide-react";
 
-import React, { useState } from 'react';
-import { useAuth } from '../../context/AuthContext';
-import client from '../../api/client';
-import { AlertCircle, CheckCircle, CheckCircle2 } from 'lucide-react';
-
-// Component con
+// Toggle item
 const SecurityToggle = ({ label, description, checked, onChange }) => {
-  const id = label.replace(/\s+/g, '-').toLowerCase();
+  const id = label.replace(/\s+/g, "-").toLowerCase();
 
   return (
-    <div className="flex items-start p-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/40">
-      <div className="flex-shrink-0 mt-1">
+    <div className="security-toggle">
+      <div className="security-toggle-checkbox">
         <input
           id={id}
           type="checkbox"
           checked={checked}
           onChange={onChange}
-          className="w-4 h-4 rounded border-slate-300 dark:border-slate-600"
         />
       </div>
-      <div className="ml-3 min-w-0 flex-1">
-        <label htmlFor={id} className="text-sm font-medium text-slate-900 dark:text-slate-100 cursor-pointer">
+      <div className="security-toggle-content">
+        <label htmlFor={id} className="security-toggle-label">
           {label}
         </label>
-        <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">{description}</p>
+        <p className="security-toggle-desc">{description}</p>
       </div>
     </div>
   );
@@ -36,12 +33,11 @@ export default function SecuritySettings() {
   const [allowCVReview, setAllowCVReview] = useState(true);
   const [msg, setMsg] = useState(null);
   const [loading, setLoading] = useState(false);
-
   const [isCompleted, setIsCompleted] = useState(false);
 
   const [showNotification, setShowNotification] = useState(false);
-  const [notificationType, setNotificationType] = useState('success');
-  const [notificationMessage, setNotificationMessage] = useState('');
+  const [notificationType, setNotificationType] = useState("success");
+  const [notificationMessage, setNotificationMessage] = useState("");
 
   const showToast = (type, text) => {
     setNotificationType(type);
@@ -56,19 +52,22 @@ export default function SecuritySettings() {
     setLoading(true);
 
     try {
-      await client.patch(`/api/candidate?email=${encodeURIComponent(user.email)}`, {
-        allowJobOffers,
-        allowCVReview,
-      });
+      await client.patch(
+        `/api/candidate?email=${encodeURIComponent(user.email)}`,
+        {
+          allowJobOffers,
+          allowCVReview,
+        }
+      );
 
-      const text = 'Lưu cài đặt bảo mật thành công!';
-      setMsg({ type: 'success', text });
+      const text = "Lưu cài đặt bảo mật thành công!";
+      setMsg({ type: "success", text });
       setIsCompleted(true);
-      showToast('success', text);
+      showToast("success", text);
     } catch (err) {
-      const text = err.response?.data?.message || 'Lỗi lưu cài đặt.';
-      setMsg({ type: 'error', text });
-      showToast('error', text);
+      const text = err.response?.data?.message || "Lỗi lưu cài đặt.";
+      setMsg({ type: "error", text });
+      showToast("error", text);
     } finally {
       setLoading(false);
     }
@@ -78,54 +77,49 @@ export default function SecuritySettings() {
 
   return (
     <>
-      {/* Toast */}
+      {/* Toast nổi góc phải */}
       {showNotification && (
-        <div className="fixed top-20 right-6 z-50 animate-in fade-in slide-in-from-top-2">
+        <div className="security-toast-wrapper">
           <div
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg ${
-              notificationType === 'success'
-                ? 'bg-emerald-50 dark:bg-emerald-950 border border-emerald-200 dark:border-emerald-800'
-                : 'bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800'
+            className={`security-toast ${
+              notificationType === "success"
+                ? "security-toast-success"
+                : "security-toast-error"
             }`}
           >
-            {notificationType === 'success' ? (
-              <CheckCircle className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            {notificationType === "success" ? (
+              <CheckCircle className="security-toast-icon" />
             ) : (
-              <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
+              <AlertCircle className="security-toast-icon" />
             )}
-            <span
-              className={
-                notificationType === 'success'
-                  ? 'text-emerald-700 dark:text-emerald-300'
-                  : 'text-red-700 dark:text-red-300'
-              }
-            >
-              {notificationMessage}
-            </span>
+            <span className="security-toast-text">{notificationMessage}</span>
           </div>
         </div>
       )}
 
-      <div className="bg-white dark:bg-slate-950 rounded-lg shadow-sm p-6 md:p-8 border border-slate-200 dark:border-slate-800">
-        <div className="flex items-start justify-between mb-6">
+      {/* Card chính */}
+      <div className="security-card">
+        <div className="security-header">
           <div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Thay đổi cài đặt bảo mật</h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-              Kiểm soát cách nhà tuyển dụng và hệ thống hỗ trợ tương tác với bạn.
+            <h2>Thay đổi cài đặt bảo mật</h2>
+            <p>
+              Kiểm soát cách nhà tuyển dụng và hệ thống hỗ trợ tương tác với
+              bạn.
             </p>
           </div>
           {isCompleted && (
-            <CheckCircle2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+            <CheckCircle2 className="security-header-icon" />
           )}
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4 max-w-2xl">
+        <form onSubmit={handleSubmit} className="security-form">
           <SecurityToggle
             label="Nhận cơ hội việc làm tốt hơn"
             description="Nhận cơ hội việc làm với mức lương cao hơn 20 - 50% lương hiện tại từ các nhà tuyển dụng phù hợp."
             checked={allowJobOffers}
             onChange={() => setAllowJobOffers(!allowJobOffers)}
           />
+
           <SecurityToggle
             label="Cho phép hỗ trợ sửa và đánh giá CV"
             description="Cho phép hệ thống và chuyên gia cải thiện, tối ưu CV để tăng tỉ lệ được phỏng vấn."
@@ -133,24 +127,24 @@ export default function SecuritySettings() {
             onChange={() => setAllowCVReview(!allowCVReview)}
           />
 
-          <div className="flex items-center gap-4 pt-2">
+          <div className="security-actions">
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2 rounded-lg font-semibold shadow-sm
-                bg-blue-600 hover:bg-blue-700 disabled:opacity-50
-                text-white transition-colors"
+              className="security-save-btn"
             >
-              {loading ? 'Đang lưu...' : 'Lưu'}
+              {loading ? "Đang lưu..." : "Lưu thay đổi"}
             </button>
 
             {msg && (
               <div
-                className={`flex items-center gap-2 text-sm ${
-                  msg.type === 'error' ? 'text-red-600' : 'text-emerald-600'
+                className={`security-inline-msg ${
+                  msg.type === "error"
+                    ? "security-inline-msg-error"
+                    : "security-inline-msg-success"
                 }`}
               >
-                <AlertCircle className="w-4 h-4" />
+                <AlertCircle className="security-inline-icon" />
                 <span>{msg.text}</span>
               </div>
             )}
