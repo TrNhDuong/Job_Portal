@@ -58,7 +58,7 @@
 
 .home-hero-gradient {
   background: linear-gradient(90deg, #4f46e5, #7c3aed, #22c55e);
-
+  -webkit-background-clip: text;
   color: transparent;
 }
 

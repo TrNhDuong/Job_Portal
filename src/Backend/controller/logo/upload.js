@@ -7,7 +7,6 @@ export const uploadEmployerLogo = async (req, res) => {
     const storage = createStorage("jobportal/employers");
     const email = req.query.email;
     const upload = multer({ storage }).single("image");
-
     upload(req, res, async (err) => {
         if (err) return res.status(500).json({
             success: false,

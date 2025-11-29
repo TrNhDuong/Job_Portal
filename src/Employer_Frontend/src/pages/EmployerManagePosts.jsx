@@ -2,7 +2,6 @@ import React, { useState, useRef, useMemo } from "react";
 import "../styles/employerManagePosts.css";
 import { HiDotsVertical } from "react-icons/hi";
 
-
 const jobTypes = ["Full-time", "Part-time", "Internship", "Freelance", "Contract"];
 
 export default function EmployerManagePosts({

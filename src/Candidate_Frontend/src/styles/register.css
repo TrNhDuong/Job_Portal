@@ -1,117 +1,304 @@
-:root {
-  --primary: #00a65a;      /* xanh nút Đăng ký */
-  --text: #111827;         /* xám đậm */
-  --muted: #6b7280;        /* xám nhạt */
-  --border: #e5e7eb;       /* viền input */
-  --bg: #ffffff;
-}
 
-* { box-sizing: border-box }
-
-.page-wrap {
+.register-page {
   min-height: 100vh;
-  display: grid;
-  grid-template-columns: 1fr 520px; /* trái rộng, phải 520px */
-  gap: 0;
-  background: #fff;
-}
-
-@media (max-width: 1024px) {
-  .page-wrap { grid-template-columns: 1fr; }
-  .right-panel { display: none; }
-}
-
-.left-col {
   display: flex;
+  align-items: center;
   justify-content: center;
-  align-items: flex-start;
-  padding: 48px 24px;
+  padding: 24px 16px;
+  background: linear-gradient(135deg, #e0f2fe 0%, #f9fafb 45%, #ecfeff 100%);
+  color: #0f172a;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
 }
 
-.form-card {
+.register-wrapper {
   width: 100%;
-  max-width: 620px;
+  max-width: 560px;
+  position: relative;
 }
 
-.title {
-  font-size: 28px;
-  margin: 0 0 6px;
-  color: var(--primary);
-  font-weight: 700;
+/* Badge nhỏ phía trên card */
+.register-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(148, 163, 184, 0.3);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+  margin: 0 auto;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
 }
-.subtitle {
-  color: var(--muted);
+
+.register-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: #22c55e;
+}
+
+/* Card chính */
+.register-card {
+  margin-top: 10px;
+  border-radius: 28px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.2);
+  padding: 32px 32px 26px;
+}
+
+/* Header */
+.register-header {
+  text-align: center;
   margin-bottom: 20px;
 }
 
-.role-tabs {
-  display: flex; gap: 8px; margin: 12px 0 16px;
-}
-.role-tabs button {
-  padding: 8px 12px; border-radius: 8px; cursor: pointer;
-  border: 1px solid var(--border); background: #fff;
-}
-.role-tabs button.active {
-  border: 2px solid #1f2937; background: #f6f6f6;
-}
-
-.form-stack { display: grid; gap: 12px; margin-top: 6px; }
-
-.input-wrap {
-  position: relative;
-}
-.input-wrap .icon-left {
-  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
-  width: 18px; height: 18px; opacity: .8;
-}
-.input-wrap .icon-right {
-  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-  width: 18px; height: 18px; opacity: .6; cursor: pointer;
-}
-.input {
-  width: 100%; height: 44px; padding: 0 40px 0 40px;
-  border: 1px solid var(--border); border-radius: 8px;
-  outline: none; font-size: 14px;
-}
-.input:focus { border-color: #9ca3af; }
-
-.checkbox-row {
-  display: flex; align-items: flex-start; gap: 10px; margin-top: 6px;
-  font-size: 14px; color: var(--text);
-}
-.checkbox-row a { color: #0ea5e9; text-decoration: none; }
-.checkbox-row input { margin-top: 2px; }
-
-.primary-btn {
-  background: var(--primary); color: #fff; font-weight: 600;
-  height: 46px; border: none; border-radius: 8px; cursor: pointer;
-}
-.primary-btn:disabled { opacity: .7; cursor: not-allowed; }
-
-.divider { display: flex; align-items: center; gap: 12px; margin: 12px 0; color: var(--muted); }
-.divider::before, .divider::after { content: ""; height: 1px; background: var(--border); flex: 1; }
-
-.social-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-.social-btn {
-  height: 42px; border-radius: 8px; border: none; color: #fff; cursor: pointer; transition: opacity 0.2s;
+.register-title {
+  font-size: clamp(24px, 3vw, 32px);
   font-weight: 600;
+  color: #020617;
+  margin: 0;
 }
-.social-google { background-color: #ea4335; }
-.social-facebook { background-color: #1877f2; }
-.social-linkedin { background-color: #0a66c2; }
 
-.helper {
-  text-align: center; margin-top: 10px; font-size: 14px;
+.register-title-gradient {
+  background: linear-gradient(90deg, #0ea5e9, #6366f1, #22c55e);
+  -webkit-background-clip: text;
+  color: transparent;
 }
-.helper a { color: #0ea5e9; text-decoration: none; }
 
-.right-panel {
-  background: radial-gradient(80% 120% at 100% 10%, #0b9f65 0%, #0b2940 60%);
-  color: #fff; display: flex; align-items: center; justify-content: center;
-  padding: 48px 24px;
+/* Form */
+.register-form {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
-.right-inner { max-width: 380px; }
-.brand { font-size: 36px; font-weight: 800; line-height: 1.2; margin: 0 0 8px; }
-.tagline { opacity: .9; line-height: 1.5; }
-.error { color: #b91c1c; font-size: 14px; }
-.success { color: #047857; font-size: 14px; }
+
+.register-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.register-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.register-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #0f172a;
+}
+
+.register-hint {
+  font-size: 11px;
+  color: #64748b;
+}
+
+/* Input row */
+.register-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 56px; /* CHIỀU CAO Ô NHẬP */
+  border-radius: 999px;
+  border: 1px solid #cbd5f5;
+  padding: 0 16px;
+  background: #ffffff;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease,
+    transform 0.12s ease;
+}
+
+.register-input-row:focus-within {
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.18);
+  transform: translateY(-1px);
+}
+
+.register-input-icon {
+  width: 20px;
+  height: 20px;
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+.register-input-control {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  color: #0f172a;
+}
+
+.register-input-control::placeholder {
+  color: #94a3b8;
+}
+
+/* Eye button */
+.register-eye-btn {
+  border: none;
+  outline: none;
+  background: transparent;
+  border-radius: 999px;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.register-eye-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.register-eye-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Checkbox & điều khoản */
+.register-checkbox-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+.register-checkbox {
+  margin-top: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1px solid #cbd5e1;
+  accent-color: #0ea5e9;
+}
+
+.register-checkbox-label {
+  font-size: 13px;
+  color: #1f2937;
+}
+
+.register-link {
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: none;
+  color: #0369a1;
+  font-size: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+/* Message */
+.register-message {
+  font-size: 13px;
+  border-radius: 12px;
+  padding: 8px 12px;
+  border: 1px solid transparent;
+}
+
+.register-message-error {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.register-message-success {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+  color: #166534;
+}
+
+/* Submit button */
+.register-submit-btn {
+  margin-top: 4px;
+  width: 100%;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  border-radius: 999px;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  background-image: linear-gradient(90deg, #0284c7, #4f46e5, #10b981);
+  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.35);
+  transition: transform 0.12s ease, box-shadow 0.12s ease,
+    filter 0.15s ease;
+}
+
+.register-submit-btn:hover {
+  filter: brightness(1.05);
+  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.45);
+}
+
+.register-submit-btn:active {
+  transform: translateY(1px) scale(0.99);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+}
+
+.register-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Footer */
+.register-footer {
+  margin-top: 18px;
+  text-align: center;
+  font-size: 14px;
+  color: #4b5563;
+}
+
+.register-footer-link {
+  color: #0369a1;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+@media (max-width: 480px) {
+  .register-card {
+    padding: 24px 20px 22px;
+    border-radius: 22px;
+  }
+
+  .register-input-row {
+    height: 52px;
+  }
+}
+
+.register-back-btn-wrapper {
+  margin-bottom: 12px;
+}
+
+.register-back-btn {
+  background: none;
+  border: none;
+  color: #0369a1;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s ease;
+}
+
+.register-back-btn:hover {
+  color: #0c4a6e;
+}
