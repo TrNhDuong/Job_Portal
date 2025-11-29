@@ -29,6 +29,8 @@
 
 /* --- 2. CỘT TRÁI (FORM) --- */
 .auth-left-register {
+    width: 45%; 
+    flex: none;
     padding: 40px 60px 20px 60px; 
     justify-content: flex-start; /* Đẩy nội dung lên trên thay vì căn giữa */
     max-width: 650px;
@@ -39,16 +41,73 @@
 
 /* --- Cột Phải --- */
 .auth-right {
-    flex: 1.2;
-    background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop');
-    background-size: cover;
-    background-position: center;
+    flex: 1; 
+    /* background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%); */
+    background: linear-gradient(135deg, #0061ff 0%, #60efff 100%);   
     position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; 
+    justify-content: center;
+    padding: 80px;
 }
-.auth-right::before {
-    content: '';
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(135deg, rgba(0, 97, 255, 0.2), rgba(120, 75, 160, 0.2));
+
+/* --- HỘP QUOTE (STYLE MỚI) --- */
+.hero-text-container {
+    position: relative;
+    z-index: 10;
+    color: #ffffff;
+    text-align: right; /* Căn lề phải cho chữ */
+    animation: fadeInRight 1s ease-out;
+    user-select: none;
+    -webkit-user-select: none;
+    pointer-events: none;
+}
+
+.hero-text-container h1 {
+    font-size: 3.5rem; /* Chữ to, đậm */
+    font-weight: 900;
+    line-height: 1;   /* Dòng sát nhau cho chắc chắn */
+    margin: 0;
+    letter-spacing: 1px;
+    color: #ffffff;
+    text-shadow: 0 4px 15px rgba(0, 50, 150, 0.3);
+    mix-blend-mode: overlay;
+    opacity: 0.75;
+    text-shadow: none;
+}
+
+/* Tạo khoảng cách nhỏ giữa 2 cụm từ (thay cho gạch ngang) */
+.spacer {
+    height: 30px; 
+}
+
+.separator {
+    width: 100px;
+    height: 3px;
+    background: white;
+    margin: 30px 0 30px auto;
+    border-radius: 3px;
+    opacity: 0.7;
+    mix-blend-mode: overlay;
+}
+
+/* Animation trượt từ phải sang cho động */
+@keyframes fadeInRight {
+    from { opacity: 0; transform: translateX(30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* Responsive: Thu nhỏ và căn giữa lại khi màn hình bé */
+@media (max-width: 1100px) {
+    .auth-right {
+        align-items: center; /* Quay về giữa */
+        padding-right: 0;
+        text-align: center;
+    }
+    .hero-text-container { text-align: center; }
+    .hero-text-container h1 { font-size: 2.5rem; }
 }
 
 /* --- 3. HEADER (SÁT LẠI) --- */
@@ -170,10 +229,87 @@
 @media (max-width: 900px) {
     .auth-right { display: none; }
     .auth-left { padding: 90px 20px 20px 20px; max-width: 100%; }
-    .top-left-logo-register { top: 20px; left: 20px; 
-        .form-row {
+    .top-left-logo-register { top: 20px; left: 20px; }
+    .form-row {
         flex-direction: column;
         gap: 10px;
     }
-    }
 }
+
+/* --- TERMS MODAL (Thêm vào cuối file) --- */
+.terms-modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Nền tối */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* Đè lên tất cả */
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.3s ease;
+}
+
+.terms-modal-content {
+    background: white;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh; /* Chiều cao tối đa 80% màn hình */
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    animation: slideUpModal 0.3s ease;
+}
+
+.terms-header {
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.terms-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.btn-close-terms {
+    background: none; border: none; cursor: pointer; color: #999; font-size: 1.2rem;
+}
+.btn-close-terms:hover { color: #333; }
+
+/* Khu vực nội dung cuộn được */
+.terms-body {
+    padding: 20px;
+    overflow-y: auto; /* Cho phép cuộn dọc */
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #555;
+    text-align: justify;
+}
+
+.terms-body h4 { margin-top: 15px; margin-bottom: 8px; color: #0061ff; }
+.terms-body ul { padding-left: 20px; margin-bottom: 10px; }
+
+.terms-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #eee;
+    text-align: right;
+}
+
+.btn-accept {
+    background: #0061ff;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+}
+.btn-accept:hover { background: #0052d4; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUpModal { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
