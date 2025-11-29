@@ -26,20 +26,25 @@ export default function AccountSettingsLayout() {
     if (!file || !user?.email) return;
 
     const fd = new FormData();
-    fd.append("image", file); // backend key: "image" cho logo candidate
+    fd.append("image", file); // đúng với backend
 
     try {
       setUploadingAvatar(true);
       const res = await client.post(
         `/api/upload/logo/candidate?email=${encodeURIComponent(user.email)}`,
-        fd
+        fd,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data", 
+          },
+        }
       );
 
       const newLogo = res.data?.data || res.data?.logo;
       if (newLogo?.url) {
         login({ ...user, logo: newLogo });
       } else {
-        console.warn("Không nhận được logo.url từ server");
+        console.warn("Không nhận được logo.url từ server", res.data);
       }
     } catch (err) {
       console.error("Upload avatar error:", err);
@@ -52,6 +57,7 @@ export default function AccountSettingsLayout() {
       e.target.value = null;
     }
   };
+
 
   return (
     <div className="profile-shell">
@@ -130,8 +136,6 @@ export default function AccountSettingsLayout() {
           </nav>
         </div>
       </header>
-
-      {/* Phần nội dung từng tab (Profile / Password / Security) */}
       <Outlet />
     </div>
   );
