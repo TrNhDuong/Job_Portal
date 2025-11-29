@@ -41,7 +41,7 @@ export class CandidateRepository {
         };
     }
     static async updateCandidate(email, updatesCandidate) {
-        const candidateAttributes = ["name", "email", "logo", "appliedJobs"];
+        const candidateAttributes = ["name", "email", "logo", "appliedJobs", "CV"];
         let candidate = await this.getCandidate(email);
         if (!candidate.success) {
             return {
@@ -57,25 +57,12 @@ export class CandidateRepository {
         }
 
         if (updatesCandidate["logo"]){
-            if (candidate?.data?.logo.public_id){
+            if (candidate.data?.logo?.public_id){
                 const result = await destroyCloudData(candidate.data.logo.public_id);
                 if (result){
                     console.log('Deleted image')
                 } else {
                     console.log('Failed to deleted image')
-                }
-                candidate.data.logo.url = '';
-            }
-            candidate.data.logo = updatesCandidate["logo"]
-        }
-
-        if (updatesCandidate["CV"]){
-            if (candidate?.data?.CV.length < 3){
-                candidate.data.CV.push(updatesCandidate["CV"]);
-            } else {
-                return {
-                    success: false,
-                    message: 'Number of candidate CV reach the limitation - 3 CVs'
                 }
             }
         }
@@ -131,7 +118,8 @@ export class CandidateRepository {
                 data: null
             };
         }
-        if (!candidate.data.listSaveJobs.includes(jobId)) {
+        const savedIds = (candidate.data.listSaveJobs || []).map(id => id.toString());
+        if (!savedIds.includes(jobId.toString()))  {
             return {
                 success: false,
                 message: "Job not found in saved list"

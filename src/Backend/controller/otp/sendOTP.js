@@ -5,8 +5,7 @@ import { sendMail } from "../../service/mail.js";
 export const sendOTP = async (req, res) => {
     const { email } = req.body;
     const otp = generateOTP();
-    console.log(email)
-    console.log(otp)
+
     try {
         const otpEntry = new OTP({ email, otp });
         await otpEntry.save();
