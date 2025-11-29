@@ -29,7 +29,7 @@ export default function FeaturedJobs({ enableFetch = true }) {
   // Lấy listSaveJobs ban đầu từ user (nếu backend có trả về)
   useEffect(() => {
     if (user && Array.isArray(user.listSaveJobs)) {
-      setSavedList(user.listSaveJobs.map(String)); // ép về string cho chắc
+      setSavedList(user.listSaveJobs.map(String)); 
     }
   }, [user]);
 

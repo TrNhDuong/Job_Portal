@@ -16,7 +16,7 @@ import "./styles/mycv.css";
 import "./styles/verify-otp.css";
 import "./styles/password-setting.css";
 import "./styles/security-settings.css";
-
+import "./styles/job-search.css";
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>

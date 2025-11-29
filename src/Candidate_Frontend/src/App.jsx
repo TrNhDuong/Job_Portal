@@ -4,7 +4,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import LoginForm from "./components/LoginForm";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
-import HomePage from "./home/Homepage.jsx"; 
+import HomePage from "./Home/Homepage.jsx"; 
 import Navbar from "./components/Navbar.jsx";
 import VerifyOtpPage from "./pages/VerifyOtpPage.jsx";
 import CandidateDashboard from "./pages/CandidateDashboard.jsx"; 
@@ -47,6 +47,7 @@ function App() {
             <Route path="/dashboard" element={<CandidateDashboard />}>
               <Route index element={<MyJobsPage />} />
               <Route index element={<JobManagement />} />
+              <Route path="notifications" element={<NotificationSettings />} />
               <Route path="my-cv" element={<MyCV />} />
               <Route path="settings" element={<AccountSettingsLayout />}>
                 <Route index element={<ProfileSettings />} />

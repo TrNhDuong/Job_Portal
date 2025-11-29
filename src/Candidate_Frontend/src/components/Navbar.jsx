@@ -8,23 +8,29 @@ export default function Navbar() {
   const { user } = useAuth();
   const EMPLOYER_URL = "http://localhost:8000/login";
 
-  // class cho item menu chính
   const navItemClass = ({ isActive }) =>
     `navbar-pill ${isActive ? "navbar-pill-active" : ""}`;
+
+  const avatarUrl = user?.logo?.url || user?.avatar || null;
+
+  const initials =
+    user?.name
+      ?.trim()
+      .split(" ")
+      .map((w) => w[0])
+      .join("")
+      .toUpperCase() || "U";
 
   return (
     <header className="navbar-root">
       <div className="navbar-shell">
         <div className="navbar-bar">
-          {/* LOGO */}
           <Link to="/" className="navbar-logo">
             <div className="navbar-logo-glow" />
             <img src={logo} alt="CDH Job Portal" className="navbar-logo-img" />
           </Link>
 
-          {/* NAV LINKS + AUTH */}
           <div className="navbar-right">
-            {/* Các link chính */}
             <nav className="navbar-links">
               <NavLink to="/" className={navItemClass}>
                 <Home className="navbar-icon" />
@@ -37,31 +43,27 @@ export default function Navbar() {
               </NavLink>
             </nav>
 
-            {/* Link Nhà tuyển dụng */}
-            <a
-              href={EMPLOYER_URL}
-              className="navbar-employer-link"
-            >
+            <a href={EMPLOYER_URL} className="navbar-employer-link">
               <span>Nhà tuyển dụng</span>
               <span className="navbar-employer-underline" />
             </a>
 
             <div className="navbar-divider" />
 
-            {/* Auth area */}
             {user ? (
-              // Đã đăng nhập
               <Link to="/dashboard" className="navbar-user">
                 <div className="navbar-user-avatar-wrap">
-                  {user.avatar ? (
+                  {avatarUrl ? (
                     <img
-                      src={user.avatar}
-                      alt="avatar"
+                      src={avatarUrl}
+                      alt={user.name || "avatar"}
                       className="navbar-user-avatar-img"
                     />
                   ) : (
                     <div className="navbar-user-avatar-fallback">
-                      <User className="navbar-user-avatar-icon" />
+                      <span className="text-xs font-semibold">
+                        {initials}
+                      </span>
                     </div>
                   )}
                   <span className="navbar-user-status-dot" />
@@ -75,7 +77,6 @@ export default function Navbar() {
                 </div>
               </Link>
             ) : (
-              // Chưa đăng nhập
               <div className="navbar-auth-guest">
                 <NavLink to="/login" className="navbar-login-link">
                   Đăng nhập
@@ -91,7 +92,6 @@ export default function Navbar() {
               </div>
             )}
 
-            {/* Menu mobile (chưa làm drawer, chỉ icon) */}
             <button className="navbar-menu-btn">
               <Menu className="navbar-menu-icon" />
             </button>

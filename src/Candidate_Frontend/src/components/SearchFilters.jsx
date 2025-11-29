@@ -19,128 +19,103 @@ export default function SearchFilters({ filters, setFilters }) {
   };
 
   return (
-    <div className="h-full bg-[#0D1117] text-white">
-      <div className="px-5 py-6 space-y-6">
-        <div className="mx-8">
-        {/* Header */}
-        <div className="space-y-1">
-          <h2 className="text-xl font-semibold">Find Jobs</h2>
-          <p className="text-sm text-gray-400">
-            Search and filter available positions
-          </p>
-        </div>
+    <div className="job-filters-card">
+      {/* Header */}
+      <div className="job-filters-header">
+        <h2 className="job-filters-title">Tìm kiếm việc làm</h2>
+        <p className="job-filters-subtitle">
+          Lọc và khám phá các vị trí phù hợp với bạn
+        </p>
+      </div>
 
-        {/* Keyword */}
-        <div style={{ height: 20 }} />
-        <div className="space-y-2 mt-8">
-          <label className="text-sm font-medium">Keyword</label>
-          <div className="relative mx-4">
-            {!filters.keyword && (
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-300" />
-            )}
-            <input
-              name="keyword"
-              placeholder="       Job title, skill..."
-              value={filters.keyword}
-              onChange={handleChange}
-              className="w-full h-10 rounded-md bg-[#445760] text-white 
-                         placeholder-gray-300 pl-10 pr-3 
-                         border border-[#2F3B42]
-                         focus:outline-none focus:ring-2 focus:ring-[#00A5B8] mx-8"
-            />
-          </div>
-        </div>
-
-        {/* Location */}
-        <div style={{ height: 20 }} />
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Location</label>
-          <div className="relative mx-4">
-            {!filters.location && (
-              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-300" />
-            )}
-            <input
-              name="location"
-              placeholder="       City, region..."
-              value={filters.location}
-              onChange={handleChange}
-              className="w-full h-10 rounded-md bg-[#445760] text-white 
-                         placeholder-gray-300 pl-10 pr-3 
-                         border border-[#2F3B42]
-                         focus:outline-none focus:ring-2 focus:ring-[#00A5B8] mx-8"
-            />
-          </div>
-        </div>
-
-        {/* Salary Range */}
-        <div style={{ height: 20 }} />
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Salary Range</label>
-          <div className="grid grid-cols-2 gap-3 mx-4">
-            <input
-              name="salaryMin"
-              placeholder="  Min"
-              value={filters.salaryMin || ""}
-              onChange={handleSalaryChange}
-              className="h-10 rounded-md bg-[#445760] text-white 
-                         placeholder-gray-300 px-3 
-                         border border-[#2F3B42]
-                         focus:outline-none focus:ring-2 focus:ring-[#00A5B8] mx-8"
-            />
-            <input
-              name="salaryMax"
-              placeholder="  Max"
-              value={filters.salaryMax || ""}
-              onChange={handleSalaryChange}
-              className="h-10 rounded-md bg-[#445760] text-white 
-                         placeholder-gray-300 px-3 
-                         border border-[#2F3B42]
-                         focus:outline-none focus:ring-2 focus:ring-[#00A5B8] mx-8"
-            />
-          </div>
-        </div>
-
-        {/* Category */}
-        <div style={{ height: 20 }} />
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Category</label>
-          <select
-            name="major"
-            value={filters.major}
+      {/* Keyword */}
+      <div className="job-filters-section">
+        <label className="job-filters-label">Từ khóa</label>
+        <div className="job-filters-input-wrapper">
+          <Search className="job-filters-input-icon" />
+          <input
+            name="keyword"
+            placeholder="Chức danh, kỹ năng..."
+            value={filters.keyword}
             onChange={handleChange}
-            className="w-full h-10 rounded-md bg-[#445760] text-white 
-                       px-3 border border-[#2F3B42]
-                       focus:outline-none mx-8"
-          >
-            <option value=""> All categories</option>
-            <option value="IT">IT</option>
-            <option value="Business">Business</option>
-            <option value="Finance">Finance</option>
-            <option value="Marketing">Marketing</option>
-            <option value="Sales">Sales</option>
-            <option value="Other">Other</option>
-          </select>
+            className="job-filters-input job-filters-input--with-icon"
+          />
         </div>
+      </div>
 
-        <hr className="border-gray-700 mx-8" />
+      {/* Location */}
+      <div className="job-filters-section">
+        <label className="job-filters-label">Địa điểm</label>
+        <div className="job-filters-input-wrapper">
+          <MapPin className="job-filters-input-icon" />
+          <input
+            name="location"
+            placeholder="Thành phố, khu vực..."
+            value={filters.location}
+            onChange={handleChange}
+            className="job-filters-input job-filters-input--with-icon"
+          />
+        </div>
+      </div>
 
-        {/* Employment Type */}
-        <div style={{ height: 20 }} />
-        <div className="space-y-3 text-sm">
-          <h3 className="font-medium">Employment Type</h3>
+      {/* Salary Range */}
+      <div className="job-filters-section">
+        <label className="job-filters-label">Mức lương (triệu VNĐ)</label>
+        <div className="job-filters-salary-row">
+          <input
+            name="salaryMin"
+            placeholder="Tối thiểu"
+            value={filters.salaryMin || ""}
+            onChange={handleSalaryChange}
+            className="job-filters-input"
+          />
+          <span className="job-filters-salary-separator">—</span>
+          <input
+            name="salaryMax"
+            placeholder="Tối đa"
+            value={filters.salaryMax || ""}
+            onChange={handleSalaryChange}
+            className="job-filters-input"
+          />
+        </div>
+      </div>
+
+      {/* Category */}
+      <div className="job-filters-section">
+        <label className="job-filters-label">Ngành nghề</label>
+        <select
+          name="major"
+          value={filters.major}
+          onChange={handleChange}
+          className="job-filters-select"
+        >
+          <option value="">Tất cả ngành nghề</option>
+          <option value="IT">Công nghệ thông tin</option>
+          <option value="Business">Kinh doanh</option>
+          <option value="Finance">Tài chính</option>
+          <option value="Marketing">Marketing</option>
+          <option value="Sales">Bán hàng</option>
+          <option value="Other">Khác</option>
+        </select>
+      </div>
+
+      <div className="job-filters-divider" />
+
+      {/* Employment Type */}
+      <div className="job-filters-section">
+        <h3 className="job-filters-label">Hình thức làm việc</h3>
+        <div className="job-filters-checkbox-group">
           {["Full-time", "Part-time", "Contract"].map((type) => (
-            <label key={type} className="flex items-center gap-2 cursor-pointer">
+            <label key={type} className="job-filters-checkbox-item">
               <input
                 type="checkbox"
                 checked={filters.jobType === type}
                 onChange={() => handleCheckboxChange("jobType", type)}
-                className="w-4 h-4 rounded border border-gray-400 bg-[#445760]
-                           focus:ring-[#0097A7]"
+                className="job-filters-checkbox"
               />
-              <span>{type}</span>
+              <span className="job-filters-checkbox-label">{type}</span>
             </label>
           ))}
-        </div>
         </div>
       </div>
     </div>
