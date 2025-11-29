@@ -1,0 +1,198 @@
+/* --- BẢNG MÀU & BIẾN (Ghi đè Font & Màu chuẩn) --- */
+:root {
+  /* Font chữ chuẩn (Đã import bên index.css) */
+  --font-primary: 'Be Vietnam Pro', sans-serif;
+
+  /* Màu chính (Brand Colors) */
+  --primary-color: #0061ff; 
+  --primary-hover: #1e40af; 
+  
+  /* Màu nền */
+  --hotbar-bg: #2d3748;
+  --sidebar-bg: #ffffff;
+  --bg-light: #f4f6f8;     
+  --bg-white: #ffffff;
+  --border: #e5e7eb;
+  --hover-bg: #f7f9fc;     
+  
+  /* Màu chữ */
+  --text-dark: #2c3e50;    
+  --text-medium: #4a5568;
+  --text-light: #94a3b8;   
+  --text-white: #ffffff;
+}
+
+/* --- GLOBAL RESET --- */
+* {
+  box-sizing: border-box;
+  font-family: inherit; 
+}
+
+html, body {
+  color-scheme: light;
+  background: var(--bg-light); 
+  color: var(--text-dark); 
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* 👇 Quan trọng: Chặn cuộn body để layout full màn hình */
+  overflow: hidden; 
+  height: 100vh;
+}
+
+/* --- LAYOUT CHÍNH (Sidebar + Content) --- */
+.page-wrap {
+  display: grid;
+  grid-template-columns: 17.5% 1fr; 
+  gap: 0; 
+  height: 100vh; /* Full chiều cao màn hình */
+  background-color: var(--bg-light);
+}
+
+/* --- SIDEBAR (CỘT TRÁI) --- */
+.side-bar {
+  background: #ffffff;
+  padding: 24px 12px;
+  height: 100%; 
+  border-right: 1px solid #e6e6e6;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  overflow-y: auto; 
+}
+
+/* Header Sidebar */
+.sidebar-top-section {
+  padding: 0 10px 10px 10px;
+  background-color: #ffffff;
+  margin-bottom: -30px;
+}
+
+.user-info-area {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  user-select: none;
+  border: 1px solid transparent;
+}
+
+.user-info-area:hover {
+  background-color: var(--bg-light);
+  border-color: var(--border);
+}
+
+.user-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 12px;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.user-details {
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+.user-details > .user-info:first-child {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-details > .user-info:last-child {
+  font-size: 0.8rem;
+  color: var(--text-light);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.header-divider {
+  border: none;
+  height: 1px;
+  background-color: var(--border);
+  margin: 10px 0;
+  opacity: 0.5;
+}
+
+/* Menu Items */
+.menu-header {
+  font-weight: 800; /* In đậm */
+  color: #94a3b8; 
+  font-size: 0.75rem;
+  text-transform: uppercase; 
+  letter-spacing: 1px;
+  margin: 20px 0 5px 15px; 
+}
+
+.nav-item {
+  padding: 12px 15px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--text-medium);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 12px; 
+  font-size: 0.95rem;
+}
+
+.nav-item svg { font-size: 1.2rem; }
+
+.nav-item:hover {
+  color: var(--primary-color); 
+  background: #f0f7ff; 
+}
+
+.nav-item.active {
+  color: #fff; 
+  background: var(--primary-color); 
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 97, 255, 0.25); 
+}
+
+/* --- RIGHT PANEL (CỘT PHẢI - QUAN TRỌNG) --- */
+.right-panel {
+  height: 100vh; 
+  overflow-y: auto; /* Cuộn nội dung */
+  overflow-x: hidden;
+  padding: 0;    
+  background: var(--bg-light);
+  position: relative;
+}
+
+/* Thanh tiêu đề tab */
+.tab-name-bar {
+  position: fixed; 
+  top: 0;
+  height: 70px; 
+  background-color: rgba(255, 255, 255, 0.9); 
+  backdrop-filter: blur(10px); 
+  -webkit-backdrop-filter: blur(10px); 
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05); 
+  display: flex;
+  align-items: center; 
+  padding: 0 40px;
+  font-size: 1.4rem;
+  font-weight: 700; 
+  color: var(--text-dark);
+  z-index: 90; 
+  transition: left 0.3s ease, width 0.3s ease; 
+}
+
+/* --- Scrollbar --- */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }

@@ -1,0 +1,252 @@
+/* ===== RESET ===== */
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Quicksand', sans-serif;
+}
+
+/* ===== HIỆU ỨNG NỀN ===== */
+.background {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background: #000;
+}
+
+/* Không cần animation nữa — bỏ nhấp nháy */
+.background::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  z-index: 1;
+}
+
+/* Các ô vuông liền nhau (16x16 grid) */
+.background span {
+  display: block;
+  width: 6.25vw;   /* 100 / 16 = 6.25 */
+  height: 6.25vw;
+  background: #181818;
+  transition: background 0.1s ease-in, box-shadow 0.1s ease-in;
+  z-index: 2;
+}
+
+/* Khi hover mới phát sáng */
+.background span:hover {
+  background: #00BFFF;
+  box-shadow: 0 0 10px #00BFFF, 0 0 20px #00BFFF;
+  transition: background 0.1s ease-in, box-shadow 0.1s ease-in;
+}
+
+.background span:not(:hover) {
+  transition: background 0.8s ease-out, box-shadow 0.8s ease-out;
+}
+
+/* ===== FORM LOGIN ===== */
+.login-box {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 380px;
+  padding: 30px;
+  background: rgba(34, 34, 34, 0.9);
+  border-radius: 8px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  z-index: 100;
+}
+
+.login-box h2 {
+  text-align: center;
+  color: #00BFFF;
+  margin-bottom: 10px;
+}
+.login-box p {
+  text-align: center;
+  color: #bbb;
+  margin-bottom: 25px;
+}
+
+/* ===== INPUT ===== */
+.form-group {
+  margin-bottom: 15px;
+}
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: #aaa;
+  font-size: 14px;
+}
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  background: #333;
+  color: #fff;
+  outline: none;
+}
+
+/* Hiệu ứng viền sáng khi focus */
+.form-group input:focus {
+  border: 2px solid #33CCFF;
+  box-shadow: 0 0 5px #00BFFF, 0 0 20px #00BFFF;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Giữ viền bình thường khi chưa focus */
+.form-group input:not(:focus) {
+  border: 2px solid transparent;
+  transition: all 0.3s ease-in-out;
+}
+
+.form-group input::placeholder {
+  color: #777;
+}
+
+/* ===== PASSWORD EYE ===== */
+.password-input::-ms-reveal,
+.password-input::-ms-clear { display: none; }
+
+/* Ẩn các nút auto-fill/reveal của Chromium-based & WebKit */
+.password-input::-webkit-credentials-auto-fill-button,
+.password-input::-webkit-contacts-auto-fill-button,
+.password-input::-webkit-textfield-decoration-container {
+  visibility: hidden;
+  display: none !important;
+  pointer-events: none;
+}
+
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.password-wrapper input {
+  width: 100%;
+  padding-right: 35px;
+}
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  color: #aaa;
+  font-size: 14px;
+  opacity: 0.6;
+  transition: all 0.2s ease;
+}
+.toggle-password:hover {
+  color: #00BFFF;
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+/* ===== OPTIONS ===== */
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0;
+  font-size: 13px;
+}
+.form-options a {
+  color: #00BFFF;
+  text-decoration: none;
+}
+.form-options a:hover {
+  text-decoration: underline;
+}
+
+/* ===== BUTTON ===== */
+.btn-login {
+  width: 100%;
+  padding: 10px;
+  background-color: #00BFFF;
+  color: #000;
+  font-weight: 600;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: 0.2s;
+}
+.btn-login:hover {
+  background-color: #33CCFF;
+}
+
+/* ===== SOCIAL BUTTON ===== */
+.or {
+  text-align: center;
+  color: #888;
+  font-size: 14px;
+  margin: 15px 0 8px 0;
+}
+.social-buttons {
+  display: flex;
+  justify-content: center;
+}
+.social-buttons button {
+  background-color: #222;
+  border: 1px solid #444;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 0 auto; /* căn giữa */
+  width: 100%;
+  transition: background 0.2s;
+}
+.social-buttons button:hover {
+  background-color: #00BFFF;
+  color: #000;
+}
+
+/* ===== REGISTER LINK ===== */
+.bottom-links {
+  text-align: center;
+  margin-top: 15px;
+}
+.bottom-links a {
+  color: #00BFFF;
+  text-decoration: none;
+  font-size: 14px;
+}
+.bottom-links a:hover {
+  text-decoration: underline;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .login-box {
+    width: 90%;
+    padding: 20px;
+  }
+  .background span {
+    width: 12.5vw; /* Giảm số ô khi màn nhỏ */
+    height: 12.5vw;
+  }
+}
+
+/* Card shadow nhẹ kiểu Figma */
+.login-shadow-md { box-shadow: 0 6px 16px rgba(0,0,0,0.08); }
+.login-shadow-lg { box-shadow: 0 10px 24px rgba(0,0,0,0.12); }
+
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-down {
+  animation: fadeInDown 0.3s ease-out;
+}
