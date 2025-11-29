@@ -57,14 +57,16 @@ export class CandidateRepository {
         }
 
         if (updatesCandidate["logo"]){
-            if (candidate.data.logo.public_id){
+            if (candidate?.data?.logo.public_id){
                 const result = await destroyCloudData(candidate.data.logo.public_id);
                 if (result){
                     console.log('Deleted image')
                 } else {
                     console.log('Failed to deleted image')
                 }
+                candidate.data.logo.url = '';
             }
+            candidate.data.logo = updatesCandidate["logo"]
         }
 
         for (const attribute of candidateAttributes) {
