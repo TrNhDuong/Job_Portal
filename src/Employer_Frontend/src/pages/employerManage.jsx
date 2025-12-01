@@ -85,8 +85,8 @@ const JobListView = ({ jobs, onSelectJob }) => {
                 className="metric-box new" 
                 onClick={(e) => { e.stopPropagation(); onSelectJob(job, 'new'); }}
               >
-                <span className={`metric-number ${(job.metric.newed || 0) === 0 ? 'zero' : ''}`}>
-                  {job.metric.newed || 0}
+                <span className={`metric-number ${(job.metric?.newed || 0) === 0 ? 'zero' : ''}`}>
+                  {job.metric?.newed || 0}
                 </span>
                 <span className="metric-label">Mới</span>
               </div>

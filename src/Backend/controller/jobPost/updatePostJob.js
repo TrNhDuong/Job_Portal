@@ -7,7 +7,7 @@ import mongoose from "mongoose";
 export const updatePostJob = async (req, res) => {
   const id = req.query.jobId;
   const jobId = new mongoose.Types.ObjectId(id);
-  const {title, company, position, location, detailedAddress, maxSalary, minSalary, 
+  const {title, company, position, location, detailedAddress, maxSalary, minSalary, currency,
         jobType, major, customMajor, degree, experience, state, description, expiredDay, postedAt } = req.body;
 
   try {
@@ -19,7 +19,8 @@ export const updatePostJob = async (req, res) => {
       "detailedAddress": detailedAddress,
       "salary": {
         "minSalary": minSalary,
-        "maxSalary": maxSalary
+        "maxSalary": maxSalary,
+        "currency": currency
       },
       "jobType": jobType,
       "major": major,
@@ -125,3 +126,35 @@ export const extendJobExpiry = async (req, res) => {
       res.status(500).json({ message: "Internal server error" });
     }
 };
+
+export const updateState = async (req, res) => {
+    const id = req.query.jobId;
+    const state = req.query.state;
+    const jobId = new mongoose.Types.ObjectId(id);
+
+    try {
+      console.log(jobId, state)
+      const findJobResult = await JobRepository.getJobPost(jobId);
+      if (findJobResult.success){
+        findJobResult.data.state = state;
+        if (state === 'Closed'){
+          console.log(findJobResult.data.expireDay)
+          const today = new Date()
+          today.setHours(0,0,0,0);
+          const dif = findJobResult.data.expireDay - today;
+          const daysLeft = Math.ceil(dif / (1000 * 60 * 60 * 24))
+          findJobResult.data.daysLeft = daysLeft;
+        }
+        console.log("Before save");
+        await findJobResult.data.save();
+        console.log("Save successfully")
+      } else {
+        res.status(404).json({
+          success: false,
+          message: 'Job post not found'
+        })
+      }
+    } catch ( err ){
+      res.status(500).json({ message: "Internal server error" });
+    }
+}
