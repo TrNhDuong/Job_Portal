@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { HiArrowLeft, HiCheck, HiEye, HiEyeOff } from "react-icons/hi";
+import { HiArrowLeft, HiCheck, HiEye, HiEyeOff, HiX } from "react-icons/hi";
 import logoImage from "../assets/logo.png";
 import "../styles/forgotPassword.css"; // Dùng lại CSS chuẩn của Login/Register
 import ParticlesAuth from "../components/ParticlesAuth";
@@ -25,6 +25,14 @@ export default function EmployerForgotPassword({ onBack }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  // -------------------- OTP STATE --------------------
+  const [otpModal, setOtpModal] = useState(false);
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0);
+
   // Logic Validate Mật khẩu (Tái sử dụng từ Register)
   const passCriteria = {
     length: formData.newPassword.length >= 8,
@@ -40,73 +48,109 @@ export default function EmployerForgotPassword({ onBack }) {
 
   // --- BƯỚC 1: GỬI OTP ---
   const handleSendOTP = async () => {
-    if (!formData.email) return setError("Vui lòng nhập email");
-    
-    setLoading(true);
+    if (!formData.email) {
+      setError("Vui lòng nhập email");
+      return;
+    }
+    sendOtp();
+  };
+
+  // -------------------- SEND OTP FUNCTION --------------------
+  const sendOtp = async () => {
+    setOtpLoading(true);
+    setError("");
+
     try {
+      const res = await fetch(`${API_BASE_URL}/send-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: formData.email }),
+      });
 
-        // Giả lập UI
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        setSuccess("Mã OTP giả lập (123456) đã được gửi!");
+      const raw = await res.text();
+      const data = JSON.parse(raw);
 
-        // SỬA ĐOẠN NÀY KẾT NỐI API
-        //   const response = await fetch(`${API_BASE_URL}/otp/send`, {
-        //     method: "POST",
-        //     headers: { "Content-Type": "application/json" },
-        //     body: JSON.stringify({ email: formData.email }),
-        //   });
-        //   const data = await response.json();
+      if (!res.ok) throw new Error(data.message);
 
-        //   if (!data.success) throw new Error(data.message || "Không tìm thấy email.");     
-        //    setSuccess("Mã OTP đã được gửi đến email của bạn.");
+      setOtpSent(true);
+      setOtpModal(true);
+      setSuccess("OTP đã được gửi! Kiểm tra email của bạn.");
 
-
-      setTimeout(() => {
-          setStep(2);
-          setSuccess("");
-          setError("");
+      // Resend countdown
+      setResendTimer(30);
+      let countdown = setInterval(() => {
+        setResendTimer((prev) => {
+          if (prev <= 1) {
+            clearInterval(countdown);
+            return 0;
+          }
+          return prev - 1;
+        });
       }, 1000);
+
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Không thể gửi OTP.");
     } finally {
-      setLoading(false);
+      setOtpLoading(false);
     }
   };
 
   // --- BƯỚC 2: XÁC THỰC OTP ---
   const handleVerifyOTP = async () => {
-    if (!formData.otp) return setError("Vui lòng nhập mã OTP");
+    verifyOtp();
+  };
 
-    setLoading(true);
+  // -------------------- VERIFY OTP FUNCTION --------------------
+  const verifyOtp = async () => {
+    const otpCode = otp.join("");
+    if (otpCode.length !== 6) {
+      setError("OTP chưa đầy đủ.");
+      return;
+    }
+
+    setOtpLoading(true);
+    setError("");
+
     try {
+      const res = await fetch(`${API_BASE_URL}/verify-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: formData.email, otp: otpCode }),
+      });
 
-        // Giả lập UI
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        if (formData.otp !== "123456") {
-            throw new Error("Mã OTP sai rồi (Thử nhập 123456 xem)");
-        }
+      const raw = await res.text();
+      const data = JSON.parse(raw);
 
-        // SỬA API Ở ĐÂY
-        //   const response = await fetch(`${API_BASE_URL}/otp/verify`, {
-        //     method: "POST",
-        //     headers: { "Content-Type": "application/json" },
-        //     body: JSON.stringify({ email: formData.email, otp: formData.otp }),
-        //   });
-        //   const data = await response.json();
+      if (!res.ok) throw new Error(data.message);
 
-        //   if (!data.success) throw new Error("Mã OTP không chính xác hoặc đã hết hạn");
-
-      setSuccess("Xác thực thành công!");
-      setTimeout(() => {
-          setStep(3);
-          setSuccess("");
-          setError("");
-      }, 1000);
+      setOtpVerified(true);
+      setOtpModal(false);
+      setStep(3); // move to reset password step
+      setSuccess("Xác thực OTP thành công!");
     } catch (err) {
       setError(err.message);
     } finally {
-      setLoading(false);
+      setOtpLoading(false);
     }
+  };
+
+  // -------------------- OTP INPUT HANDLER --------------------
+  const handleOtpInput = (value, index) => {
+    if (!/^[0-9]?$/.test(value)) return;
+
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
+
+    if (value && index < 5) {
+      document.getElementById(`otp-${index + 1}`).focus();
+    }
+  };
+
+  // -------------------- CLOSE OTP MODAL --------------------
+  const closeOtpModal = () => {
+    setOtpModal(false);
+    setOtpSent(false);
   };
 
   // --- BƯỚC 3: ĐỔI MẬT KHẨU ---
@@ -116,23 +160,25 @@ export default function EmployerForgotPassword({ onBack }) {
 
     setLoading(true);
     try {
+      const response = await fetch(`${API_BASE_URL}/password/employer`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: formData.email, password: "dummy", newpassword: formData.newPassword }),
+      });
 
-        // Giả lập UI
-        await new Promise(resolve => setTimeout(resolve, 2000));
+      const text = await response.text(); // grab raw response first
+      let data;
+      try {
+        data = JSON.parse(text); // try parsing JSON
+      } catch {
+        throw new Error(`Server returned unexpected response: ${text}`);
+      }
 
-        // SỬA API Ở ĐÂY
-        //   const response = await fetch(`${API_BASE_URL}/password/reset`, {
-        //     method: "POST",
-        //     headers: { "Content-Type": "application/json" },
-        //     body: JSON.stringify({ email: formData.email, newPassword: formData.newPassword }),
-        //   });
-        //   const data = await response.json();
-
-        //   if (!data.success) throw new Error(data.message || "Đổi mật khẩu thất bại");
+      if (!data.success) throw new Error(data.message || "Đổi mật khẩu thất bại");
 
       setSuccess("Đổi mật khẩu thành công! Đang chuyển về trang đăng nhập...");
       setTimeout(() => {
-          if (onBack) onBack(); 
+        if (onBack) onBack();
       }, 2000);
     } catch (err) {
       setError(err.message);
@@ -143,169 +189,176 @@ export default function EmployerForgotPassword({ onBack }) {
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
-        if (step === 1) handleSendOTP();
-        else if (step === 2) handleVerifyOTP();
-        else if (step === 3) handleResetPassword();
+      if (step === 1) handleSendOTP();
+      else if (step === 2) handleVerifyOTP();
+      else if (step === 3) handleResetPassword();
     }
   };
 
   return (
     <div className="auth-page">
-      {/* Logo */}
       <div className="top-left-logo">
-          <img src={logoImage} alt="Logo" className="logo-img-small" />
-          <span className="brand-name-corner">InspireLeader</span>
+        <img src={logoImage} alt="Logo" className="logo-img-small" />
+        <span className="brand-name-corner">InspireLeader</span>
       </div>
 
       <div className="auth-left fade-in">
-        {/* Nút Back nhỏ để quay lại Login */}
-        <div 
-            className="back-link" 
-            onClick={onBack} 
-        >
-            <HiArrowLeft /> Quay lại đăng nhập
+        <div className="back-link" onClick={onBack}>
+          <HiArrowLeft /> Quay lại đăng nhập
         </div>
 
         <div className="auth-header-compact">
-            <h1 className="auth-title">Quên mật khẩu?</h1>
-            <p className="auth-subtitle">
-                {step === 1 && "Nhập email để nhận mã xác thực"}
-                {step === 2 && `Nhập mã OTP đã gửi tới ${formData.email}`}
-                {step === 3 && "Thiết lập mật khẩu mới cho tài khoản của bạn"}
-            </p>
+          <h1 className="auth-title">Quên mật khẩu?</h1>
+          <p className="auth-subtitle">
+            {step === 1 && "Nhập email để nhận mã xác thực"}
+            {step === 2 && `Nhập mã OTP đã gửi tới ${formData.email}`}
+            {step === 3 && "Thiết lập mật khẩu mới cho tài khoản của bạn"}
+          </p>
         </div>
 
         <div className="auth-form">
-            
-            {/* --- FORM BƯỚC 1: EMAIL --- */}
-            {step === 1 && (
-                <div className="form-group">
-                    <label className="form-label">Email đăng ký</label>
-                    <div className="input-wrapper">
-                        <input
-                            name="email" type="email" className="auth-input"
-                            placeholder="hr@company.com"
-                            value={formData.email} onChange={handleChange}
-                            onKeyDown={handleKeyDown}
-                        />
-                    </div>
+          {step === 1 && (
+            <div className="form-group">
+              <label className="form-label">Email đăng ký</label>
+              <div className="input-wrapper">
+                <input
+                  name="email" type="email" className="auth-input"
+                  placeholder="hr@company.com"
+                  value={formData.email} onChange={handleChange}
+                  onKeyDown={handleKeyDown}
+                />
+              </div>
+            </div>
+          )}
+
+          {step === 3 && (
+            <>
+              <div className="form-group">
+                <label className="form-label">Mật khẩu mới</label>
+                <div className="input-wrapper">
+                  <input
+                    name="newPassword"
+                    type={showPassword ? "text" : "password"}
+                    className="auth-input"
+                    placeholder="Nhập mật khẩu mới"
+                    value={formData.newPassword} onChange={handleChange}
+                    onKeyDown={handleKeyDown}
+                  />
+                  <div className="eye-icon" onClick={() => setShowPassword(!showPassword)}>
+                    {showPassword ? <HiEyeOff /> : <HiEye />}
+                  </div>
                 </div>
-            )}
-
-            {/* --- FORM BƯỚC 2: OTP --- */}
-            {step === 2 && (
-                <div className="form-group">
-                    <label className="form-label">Mã OTP (6 số)</label>
-                    <div className="input-wrapper">
-                        <input
-                            name="otp" type="text" className="auth-input"
-                            placeholder="123456" maxLength="6"
-                            value={formData.otp} onChange={handleChange}
-                            onKeyDown={handleKeyDown}
-                            style={{letterSpacing: 5, fontWeight: 'bold', textAlign: 'center'}}
-                        />
-                    </div>
-                    <div style={{textAlign: 'right', marginTop: 5, fontSize: '0.85rem'}}>
-                        <span style={{color: '#0061ff', cursor: 'pointer'}} onClick={handleSendOTP}>Gửi lại mã?</span>
-                    </div>
+                <div className="validation-box" onMouseDown={(e) => e.preventDefault()}>
+                  <div className="validation-header">Mật khẩu của bạn phải chứa:</div>
+                  <ul className="validation-list">
+                    <li className={`validation-item ${passCriteria.length ? 'valid' : ''}`}>
+                      {passCriteria.length ? <HiCheck className="check-icon"/> : <span className="dot">•</span>} 
+                      Từ 8 ký tự trở lên
+                    </li>
+                    <li className={`validation-item ${passCriteria.lower ? 'valid' : ''}`}>
+                      {passCriteria.lower ? <HiCheck className="check-icon"/> : <span className="dot">•</span>}
+                      Ít nhất 1 chữ thường
+                    </li>
+                    <li className={`validation-item ${passCriteria.upper ? 'valid' : ''}`}>
+                      {passCriteria.upper ? <HiCheck className="check-icon"/> : <span className="dot">•</span>}
+                      Ít nhất 1 chữ hoa
+                    </li>
+                    <li className={`validation-item ${passCriteria.number ? 'valid' : ''}`}>
+                      {passCriteria.number ? <HiCheck className="check-icon"/> : <span className="dot">•</span>}
+                      Ít nhất 1 số
+                    </li>
+                  </ul>
                 </div>
-            )}
+              </div>
+              
+              <div className="form-group">
+                <label className="form-label">Xác nhận mật khẩu</label>
+                <div className="input-wrapper">
+                  <input
+                    name="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    className="auth-input"
+                    placeholder="Nhập lại mật khẩu"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    onKeyDown={handleKeyDown}
+                  />
+                  <div className="eye-icon" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                    {showConfirmPassword ? <HiEyeOff /> : <HiEye />}
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
 
-            {/* --- FORM BƯỚC 3: MẬT KHẨU MỚI --- */}
-            {step === 3 && (
-                <>
-                    <div className="form-group">
-                        <label className="form-label">Mật khẩu mới</label>
-                        <div className="input-wrapper">
-                            <input
-                                name="newPassword"
-                                type={showPassword ? "text" : "password"}
-                                className="auth-input"
-                                placeholder="Nhập mật khẩu mới"
-                                value={formData.newPassword} onChange={handleChange}
-                                onKeyDown={handleKeyDown}
-                            />
-                            <div className="eye-icon" onClick={() => setShowPassword(!showPassword)}>
-                                {showPassword ? <HiEyeOff /> : <HiEye />}
-                            </div>
-                        </div>
-                        {/* Tái sử dụng UI Validation đẹp mắt */}
-                        <div className="validation-box" onMouseDown={(e) => e.preventDefault()}>
-                            <div className="validation-header">Mật khẩu của bạn phải chứa:</div>
-                            <ul className="validation-list">
-                                <li className={`validation-item ${passCriteria.length ? 'valid' : ''}`}>
-                                    {passCriteria.length ? <HiCheck className="check-icon"/> : <span className="dot">•</span>} 
-                                    Từ 8 ký tự trở lên
-                                </li>
-                                <li className={`validation-item ${passCriteria.lower ? 'valid' : ''}`}>
-                                    {passCriteria.lower ? <HiCheck className="check-icon"/> : <span className="dot">•</span>}
-                                    Ít nhất 1 chữ thường
-                                </li>
-                                <li className={`validation-item ${passCriteria.upper ? 'valid' : ''}`}>
-                                    {passCriteria.upper ? <HiCheck className="check-icon"/> : <span className="dot">•</span>}
-                                    Ít nhất 1 chữ hoa
-                                </li>
-                                <li className={`validation-item ${passCriteria.number ? 'valid' : ''}`}>
-                                    {passCriteria.number ? <HiCheck className="check-icon"/> : <span className="dot">•</span>}
-                                    Ít nhất 1 số
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div className="form-group">
-                        <label className="form-label">Xác nhận mật khẩu</label>
-                        <div className="input-wrapper">
-                            <input
-                                name="confirmPassword"
-                                type={showConfirmPassword ? "text" : "password"}
-                                className="auth-input"
-                                placeholder="Nhập lại mật khẩu"
-                                value={formData.confirmPassword}
-                                onChange={handleChange}
-                                onKeyDown={handleKeyDown}
-                            />
-                            <div className="eye-icon" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
-                                {showConfirmPassword ? <HiEyeOff /> : <HiEye />}
-                            </div>
-                        </div>
-                    </div>
-                </>
-            )}
+          {error && <div className="error-msg">{error}</div>}
+          {success && <div className="success-msg">{success}</div>}
 
-            {/* Thông báo lỗi/thành công */}
-            {error && <div className="error-msg">{error}</div>}
-            {success && <div className="success-msg">{success}</div>}
-
-            {/* Nút bấm thay đổi theo từng bước */}
-            <button className="auth-button" onClick={() => {
-                if (step === 1) handleSendOTP();
-                if (step === 2) handleVerifyOTP();
-                if (step === 3) handleResetPassword();
-            }} disabled={loading}>
-                {loading ? "Đang xử lý..." : 
-                    step === 1 ? "Gửi mã xác thực" : 
-                    step === 2 ? "Xác nhận OTP" : 
-                    "Đổi mật khẩu"
-                }
-            </button>
+          <button className="auth-button" onClick={() => {
+            if (step === 1) handleSendOTP();
+            if (step === 2) handleVerifyOTP();
+            if (step === 3) handleResetPassword();
+          }} disabled={loading}>
+            {loading ? "Đang xử lý..." : 
+                step === 1 ? "Gửi mã xác thực" : 
+                step === 2 ? "Xác nhận OTP" : 
+                "Đổi mật khẩu"
+            }
+          </button>
         </div>
       </div>
 
-      <div className="auth-right">
-        
-        {/* Component Hạt Tương Tác */}
-        <ParticlesAuth />
+      {/* ---------------------- OTP MODAL ---------------------- */}
+      {otpModal && (
+        <div className="otp-overlay">
+          <div className="otp-modal">
+            <h2 className="otp-title">Nhập mã OTP</h2>
+            <p className="otp-sub">Chúng mình đã gửi mã đến email: <b>{formData.email}</b></p>
+            
+            <div className="otp-inputs">
+              {otp.map((digit, index) => (
+                <input
+                  key={index}
+                  id={`otp-${index}`}
+                  className="otp-input"
+                  maxLength="1"
+                  value={digit}
+                  onChange={(e) => handleOtpInput(e.target.value, index)}
+                />
+              ))}
+            </div>
 
-        {/* Nội dung đè lên trên (Quote) */}
+            <button className="otp-submit" onClick={verifyOtp} disabled={otpLoading}>
+              {otpLoading ? "Đang xác thực..." : "Xác nhận OTP"}
+            </button>
+
+            {resendTimer > 0 ? (
+              <p className="otp-resend-disabled">
+                Gửi lại OTP sau {resendTimer}s
+              </p>
+            ) : (
+              <p className="otp-resend" onClick={sendOtp}>
+                Gửi lại mã OTP
+              </p>
+            )}
+
+            <button className="otp-close" onClick={closeOtpModal}>
+              <HiX />
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="auth-right">
+        <ParticlesAuth />
         <div className="hero-text-container">
-            <h1>KẾT NỐI</h1>
-            <div className="spacer"></div>
-            <h1>NHÂN TÀI</h1>
-            <div className="separator"></div>
-            <h1>KIẾN TẠO</h1>
-            <div className="spacer"></div>
-            <h1>TƯƠNG LAI</h1>
+          <h1>KẾT NỐI</h1>
+          <div className="spacer"></div>
+          <h1>NHÂN TÀI</h1>
+          <div className="separator"></div>
+          <h1>KIẾN TẠO</h1>
+          <div className="spacer"></div>
+          <h1>TƯƠNG LAI</h1>
         </div>
       </div>
     </div>

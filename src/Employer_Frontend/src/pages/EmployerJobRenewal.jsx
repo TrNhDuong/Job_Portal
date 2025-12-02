@@ -109,6 +109,11 @@ const EmployerJobRenewal = ({ onNavigateToDeposit, jobPosts }) => {
     setDays(val);
   };
 
+  const maxDaysAffordable = Math.min(
+      Math.floor(auth.points / POINTS_PER_DAY), // số ngày tối đa dựa trên điểm hiện có
+      MAX_DAYS // không vượt quá MAX_DAYS
+  );
+
   const openRenewalModal = (job) => {
     setSelectedJob(job);
     setDays(1);
@@ -199,7 +204,7 @@ const EmployerJobRenewal = ({ onNavigateToDeposit, jobPosts }) => {
                     <label>Số ngày gia hạn thêm (tối đa: {MAX_DAYS} ngày)</label>
                     <div className="input-row">
                         <input 
-                            type="number" min="1" max= {MAX_DAYS}
+                            type="number" min="1" max= {maxDaysAffordable}
                             value={days.toString()} 
                             onChange={handleDayChange}
                             onBlur={handleBlur}
@@ -207,7 +212,7 @@ const EmployerJobRenewal = ({ onNavigateToDeposit, jobPosts }) => {
                         <span className="unit-text">ngày</span>
                     </div>
                     <input 
-                        type="range" min="1" max= {MAX_DAYS} value={days || 1} 
+                        type="range" min="1"  max={maxDaysAffordable} value={days || 1} 
                         onChange={(e) => setDays(parseInt(e.target.value))}
                         className="range-slider"
                     />

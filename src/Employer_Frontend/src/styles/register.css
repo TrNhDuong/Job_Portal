@@ -311,5 +311,156 @@
 }
 .btn-accept:hover { background: #0052d4; }
 
+/* Dark overlay behind modal */
+.otp-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.45); /* soft dim */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+/* OTP modal box */
+.otp-modal {
+  background: #fff;
+  width:420px;
+  padding: 28px 24px;
+  border-radius: 14px;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  animation: fadeUp 0.25s ease-out;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Title */
+.otp-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+/* Subtitle */
+.otp-sub {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 22px;
+}
+
+/* OTP input row */
+/* OTP input container — stays horizontal */
+.otp-inputs {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+/* Individual OTP input — now with glow animation */
+.otp-input {
+  width: 52px;
+  height: 58px;
+  font-size: 26px;
+  font-weight: 600;
+  text-align: center;
+  border: 2px solid #dcdcdc;
+  border-radius: 10px;
+  background: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.25s ease, transform 0.12s ease;
+}
+
+/* Focus glow */
+.otp-input:focus {
+  outline: none;
+  border-color: #4d7cff;
+  box-shadow: 0 0 10px rgba(77, 124, 255, 0.45);
+  transform: scale(1.06);
+}
+
+/* lil “pop” animation when user types */
+@keyframes otpPop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Apply pop when input has value */
+.otp-input:not(:placeholder-shown) {
+  animation: otpPop 0.25s ease-out;
+}
+
+
+/* Confirm button */
+.otp-confirm-btn {
+  width: 100%;
+  padding: 12px 0;
+  background: #4d7cff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.otp-confirm-btn:hover {
+  background: #3a63d6;
+}
+
+/* Resend link */
+.otp-resend {
+  margin-top: 18px;
+  font-size: 14px;
+  color: #777;
+}
+
+.otp-resend span {
+  color: #4d7cff;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+}
+
+.otp-resend span:hover {
+  text-decoration: underline;
+}
+
+/* Close button (optional) */
+.otp-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  cursor: pointer;
+  font-size: 20px;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.otp-close:hover {
+  opacity: 1;
+}
+
+
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slideUpModal { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }

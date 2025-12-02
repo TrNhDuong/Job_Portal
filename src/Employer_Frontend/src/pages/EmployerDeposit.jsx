@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 
 const EXCHANGE_RATE = 500; // 500 VND = 1 Point
 const MAX_POINTS_LIMIT = 100000;
+const DISCOUNT = 1;
 
 const EmployerDeposit = () => {
   const { auth, handleTransaction } = useAuth();
@@ -21,26 +22,29 @@ const EmployerDeposit = () => {
   // Cấu hình các gói nạp (Thêm trường name)
   const quickPackages = [
     { 
-      id: 1, points: 40, price: 19999, name: "Gói Khởi Động", bonus: 0, 
+      id: 1, points: 40, price: 20000, priceDiscount: 19999, name: "Gói Khởi Động", bonus: 0, 
       icon: <HiOutlineStar />, 
       theme: "blue" 
     },
     { 
-      id: 2, points: 100, price: 49999, name: "Gói Tăng Tốc", bonus: 10, recommend: true, 
+      id: 2, points: 100, price: 50000, priceDiscount: 49999, name: "Gói Tăng Tốc", bonus: 10, recommend: true, 
       icon: <HiOutlineLightningBolt />, 
       theme: "orange" 
     },
     { 
-      id: 3, points: 400, price: 199999, name: "Gói Chuyên Nghiệp", bonus: 50, 
+      id: 3, points: 400, price: 200000, priceDiscount: 199999, // example discount
+      name: "Gói Chuyên Nghiệp", bonus: 50, 
       icon: <HiOutlineBriefcase />, 
       theme: "purple" 
     },
     { 
-      id: 4, points: 1000, price: 499999, name: "Gói Doanh Nghiệp", bonus: 150, 
+      id: 4, points: 1000, price: 500000, priceDiscount: 499999, // example discount
+      name: "Gói Doanh Nghiệp", bonus: 150, 
       icon: <HiOutlineGlobeAlt />, 
       theme: "gold" 
     },
   ];
+
 
   // Tự động tính bonus khi nhập tay
   useEffect(() => {
@@ -119,11 +123,6 @@ const EmployerDeposit = () => {
                         className={`package-card theme-${pkg.theme} ${pkg.recommend ? 'recommended' : ''} ${isSelected ? 'selected' : ''} ${isDimmed ? 'dimmed' : ''}`}
                         onClick={() => handleSelectPackage(pkg)}
             >
-              {pkg.recommend && (
-                <div className="badge-recommend">
-                    <HiSparkles /> Khuyên dùng
-                </div>
-              )}
 
               {/* Icon đại diện */}
               <div className="pkg-icon-circle">
@@ -141,8 +140,23 @@ const EmployerDeposit = () => {
                  {pkg.bonus > 0 ? `+ Tặng ${pkg.bonus}` : 'Không ưu đãi'}
               </div>
 
+              {/* Package icon, name, points, etc. */}
+              {pkg.recommend && (
+                <div className="badge-recommend">
+                    <HiSparkles /> Khuyên dùng
+                </div>
+              )}
+
+
               <div className="pkg-price-tag">
-                  {pkg.price.toLocaleString('vi-VN')}đ
+                {pkg.price && pkg.priceDiscount ? (
+                  <>
+                    <span className="original-price">{pkg.price.toLocaleString('vi-VN')}đ</span>
+                    <span className="discount-price">{pkg.priceDiscount.toLocaleString('vi-VN')}đ</span>
+                  </>
+                ) : (
+                  <span className="discount-price">{pkg.price.toLocaleString('vi-VN')}đ</span>
+                )}
               </div>
             </div>
           );
@@ -166,7 +180,7 @@ const EmployerDeposit = () => {
             <div className="summary-box">
                 <div className="summary-row">
                     <span>Thành tiền:</span>
-                    <span className="money-value">{(pointsToBuy * EXCHANGE_RATE).toLocaleString("vi-VN")} VNĐ</span>
+                    <span className="money-value">{Math.max(0, pointsToBuy * EXCHANGE_RATE - DISCOUNT).toLocaleString("vi-VN")} VNĐ</span>
                 </div>
                 {bonusPoints > 0 && (
                     <div className="summary-row bonus-row">
