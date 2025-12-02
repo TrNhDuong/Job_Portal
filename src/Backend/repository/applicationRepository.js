@@ -19,8 +19,6 @@ export class ApplicationRepository {
             applicationJobPost.data.metric.newed += 1;
             await applicationJobPost.data.save();
         }
-
-
         return {
             success: true,
             data: newApplication,
@@ -109,4 +107,3 @@ export class ApplicationRepository {
         };
     }
 }
-

@@ -111,7 +111,6 @@ export class EmployerRepository {
                 data: null
             };
         }
-        console.log("Employer tìm thấy để thêm job post:", employer);
         try {
             // 2. SỬ DỤNG $push ĐỂ CẬP NHẬT NGUYÊN TỬ (ATOMIC UPDATE)
             console.log("Thêm job post ID:", jobPostId, "vào employer với email:", email);
@@ -120,7 +119,6 @@ export class EmployerRepository {
                 { $push: { jobPosted: jobPostId } }, // Update: Thêm jobPostId vào mảng jobPosted
                 { new: true } // Options: Trả về tài liệu đã cập nhật
             );
-            console.log("Cập nhật employer thành công:", updatedEmployer);
             // 3. Trả về kết quả
             return {
                 success: true,

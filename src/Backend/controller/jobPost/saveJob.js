@@ -2,8 +2,7 @@ import { CandidateRepository } from "../../repository/candidateRepository.js";
 
 export const saveJob = async (req, res) => {
     const { email } = req.body;
-    const { jobId } = req.query.jobId;
-
+    const jobId = req.query.jobId;
     try {
         const result = await CandidateRepository.saveJob(email, jobId);
         if (!result.success) {
@@ -18,7 +17,7 @@ export const saveJob = async (req, res) => {
 
 export const removeSaveJob = async (req, res) => {
     const { email } = req.body;
-    const { jobId } = req.query.jobId;
+    const jobId = req.query.jobId;
 
     try {
         const result = await CandidateRepository.removeSaveJob(email, jobId);

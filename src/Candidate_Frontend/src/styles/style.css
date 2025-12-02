@@ -35,7 +35,7 @@
   display: block;
   width: 6.25vw;   /* 100 / 16 = 6.25 */
   height: 6.25vw;
-  background: #807b7b;
+  background: #181818;
   transition: background 0.1s ease-in, box-shadow 0.1s ease-in;
   z-index: 2;
 }
@@ -116,6 +116,18 @@
 }
 
 /* ===== PASSWORD EYE ===== */
+.password-input::-ms-reveal,
+.password-input::-ms-clear { display: none; }
+
+/* Ẩn các nút auto-fill/reveal của Chromium-based & WebKit */
+.password-input::-webkit-credentials-auto-fill-button,
+.password-input::-webkit-contacts-auto-fill-button,
+.password-input::-webkit-textfield-decoration-container {
+  visibility: hidden;
+  display: none !important;
+  pointer-events: none;
+}
+
 .password-wrapper {
   position: relative;
   display: flex;
@@ -224,4 +236,17 @@
     width: 12.5vw; /* Giảm số ô khi màn nhỏ */
     height: 12.5vw;
   }
+}
+
+/* Card shadow nhẹ kiểu Figma */
+.login-shadow-md { box-shadow: 0 6px 16px rgba(0,0,0,0.08); }
+.login-shadow-lg { box-shadow: 0 10px 24px rgba(0,0,0,0.12); }
+
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-down {
+  animation: fadeInDown 0.3s ease-out;
 }

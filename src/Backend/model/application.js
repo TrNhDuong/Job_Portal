@@ -12,6 +12,9 @@ const applicationSchema = new mongoose.Schema(
       ref: 'JobPost',
       required: true,
     },
+    CV_url: {
+      url: String,
+    },
     appliedDate: {
       type: Date,
       default: Date.now,
@@ -19,7 +22,7 @@ const applicationSchema = new mongoose.Schema(
     label: {
       type: String,
       default: 'New',
-      enum: ['New', 'Viewed', 'Pass', 'Interviewed', 'Rejected', 'Hired'],
+      enum: ['New', 'Viewed', 'Interviewing', 'Rejected', 'Hired'],
     },
   },
   { timestamps: true }

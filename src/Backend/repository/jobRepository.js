@@ -36,7 +36,8 @@ export class JobRepository {
     static async createJobPost(jobData) {
         try {
             const newJobPost = new JobPost(jobData);
-            
+            console.log('Job data o createJobPost repository')
+            console.log(jobData)
             const savedPost = await newJobPost.save();
             
             return { 

@@ -51,7 +51,7 @@ export default function EmployerLogin({ onLogin, onShowRegister }) {
 
       setSuccess("Đăng nhập thành công");
       localStorage.setItem("email", email)
-      setTimeout(() => navigate("/homepage"), 1000);
+      setTimeout(() => navigate("/homepage"), 300);
 
     } catch (err) {
       setError("Không thể kết nối đến máy chủ.");

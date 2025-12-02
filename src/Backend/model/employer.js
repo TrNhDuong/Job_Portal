@@ -10,10 +10,10 @@ const employerSchema = new mongoose.Schema({
         required: true,
         unique: true,
     },
-    // name: { // Dùng để lưu tên "Họ tên" (CEO/Người đại diện)
-    //     type: String,
-    //     default: "" 
-    // },
+    name: { // Dùng để lưu tên "Họ tên" (CEO/Người đại diện)
+        type: String,
+        default: "" 
+    },
     password: {
         type: String,
         required: true,

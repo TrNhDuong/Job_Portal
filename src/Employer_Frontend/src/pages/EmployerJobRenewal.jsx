@@ -28,7 +28,7 @@ const getDaysRemaining = (expireDateStr) => {
 // 👇 NHẬN PROP jobPosts TỪ CHA (HOMEPAGE)
 const EmployerJobRenewal = ({ onNavigateToDeposit, jobPosts }) => {
   const { auth, handleTransaction } = useAuth();
-  
+  console.log(jobPosts)
   // State Modal
   const [selectedJob, setSelectedJob] = useState(null);
   const [days, setDays] = useState(1);
@@ -177,10 +177,10 @@ const EmployerJobRenewal = ({ onNavigateToDeposit, jobPosts }) => {
               
               <div className="job-meta">
                   <div className={`meta-item ${job.status === 'expired' ? 'expire-text' : ''}`}>
-                      <HiOutlineCalendar /> <span>Hết hạn: {job.expireDate}</span>
+                      <HiOutlineCalendar /> <span>Hết hạn: {job.expireDay}</span>
                   </div>
                   <div className="meta-item">
-                      <HiOutlineUsers /> <span>{job.applicants} ứng viên</span>
+                      <HiOutlineUsers /> <span>{job.applicants.length} ứng viên</span>
                   </div>
               </div>
 
