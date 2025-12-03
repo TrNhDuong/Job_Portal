@@ -121,6 +121,10 @@ export default function Homepage() {
 
   // --- BƯỚC 2: XÁC NHẬN THANH TOÁN & GỌI API ---
   const handleConfirmPayment = async () => {
+    if (!postDuration || parseInt(postDuration) < 1) {
+        alert("Vui lòng nhập thời hạn đăng bài (tối thiểu 1 ngày).");
+        return;
+    }
     if (!canAfford) {
         alert("Số dư không đủ. Vui lòng nạp thêm tiền.");
         return;
@@ -271,7 +275,7 @@ export default function Homepage() {
                     <div className="user-info">{auth.getEmployerData()?.data?.company || "Công ty chưa đặt tên"}</div>
                     {/* Hiển thị điểm ở Sidebar luôn cho tiện theo dõi */}
                     <div className="user-info" style={{color: '#2563eb', fontWeight: 'bold'}}>
-                        {currentPoints.toLocaleString()} Points
+                        {currentPoints.toLocaleString()} ĐIỂM
                     </div>
                 </div>
             </div>
@@ -401,85 +405,74 @@ export default function Homepage() {
       {/* --- PAYMENT MODAL (POPUP THANH TOÁN) --- */}
       {showPaymentModal && (
         <div className="modal-overlay">
-            <div className="modal-content">
-                <h2 style={{marginTop:0, color: '#111827'}}>Xác nhận đăng tin</h2>
-                <p>Vui lòng chọn thời hạn hiển thị cho bài đăng tuyển dụng này.</p>
+            <div className="payment-modal">
+                <div className="payment-header">
+                    <h2>Xác nhận đăng tin</h2>
+                    <p className="payment-desc">Chọn thời hạn hiển thị để bài đăng của bạn tiếp cận ứng viên tốt nhất.</p>
+                </div>
                 
-                <div className="payment-info">
-                    <div className="info-row">
-                        <span>Số dư hiện tại:</span>
-                        <strong style={{color: canAfford ? '#059669' : '#dc2626'}}>
-                            {currentPoints.toLocaleString()} điểm
-                        </strong>
-                    </div>
-                    
-                    <div className="input-group" style={{margin: '20px 0'}}>
-                        <label style={{display:'block', marginBottom: 8, fontWeight:500}}>Thời hạn đăng (ngày):</label>
-                        <input 
-                            type="number" 
-                            min="1" 
-                            max="365"
-                            value={postDuration}
-                            onChange={(e) => setPostDuration(e.target.value)}
-                            style={{
-                                width: '100%', padding: '10px', 
-                                border: '1px solid #d1d5db', borderRadius: '8px',
-                                fontSize: '16px'
-                            }}
-                        />
-                        <div style={{fontSize: '13px', color: '#6b7280', marginTop: 4}}>
-                            Đơn giá: {COST_PER_DAY} điểm / ngày
-                        </div>
-                    </div>
-
-                    <div className="info-row total-row" style={{
-                        borderTop: '1px solid #e5e7eb', paddingTop: 15, marginTop: 15,
-                        display: 'flex', justifyContent: 'space-between', alignItems: 'center'
-                    }}>
-                        <span style={{fontSize: '16px'}}>Tổng thanh toán:</span>
-                        <strong style={{fontSize: '20px', color: '#2563eb'}}>
-                            {totalCost.toLocaleString()} điểm
-                        </strong>
-                    </div>
-
-                    {!canAfford && (
-                        <div style={{
-                            backgroundColor: '#fee2e2', color: '#b91c1c', 
-                            padding: '10px', borderRadius: '8px', marginTop: '15px', fontSize: '14px'
-                        }}>
-                            ⛔ Số dư không đủ! Bạn còn thiếu {(totalCost - currentPoints).toLocaleString()} điểm.
-                        </div>
-                    )}
+                <div className="balance-box">
+                    <span className="balance-label">Số dư hiện tại:</span>
+                    <span className={`balance-value ${!canAfford ? 'error' : ''}`}>
+                        {currentPoints.toLocaleString()} điểm
+                    </span>
                 </div>
 
-                <div className="modal-actions" style={{display: 'flex', gap: '10px', marginTop: '25px', justifyContent: 'flex-end'}}>
-                    <button 
-                        onClick={() => setShowPaymentModal(false)}
-                        style={{
-                            padding: '10px 20px', borderRadius: '8px', border: '1px solid #d1d5db',
-                            background: 'white', cursor: 'pointer', fontWeight: 500
+                <div className="duration-input-group">
+                    <label className="duration-label">Thời hạn đăng (ngày):</label>
+                    <input 
+                        type="number" 
+                        min="1" max="365"
+                        className="duration-input"
+                        value={postDuration.toString()}
+                        onChange={(e) => {
+                            const val = e.target.value;
+                            // Nếu xóa hết thì để rỗng, ngược lại ép về số nguyên (tự mất số 0 đầu)
+                            if (val === "") {
+                                setPostDuration("");
+                            } else {
+                                setPostDuration(parseInt(val, 10)); 
+                            }
                         }}
-                    >
+                        
+                    />
+                    <div className="unit-hint">Đơn giá: {COST_PER_DAY} điểm / ngày</div>
+                </div>
+
+                {!canAfford && (
+                    <div className="error-noti">
+                        ⛔ Số dư không đủ! Bạn còn thiếu {(totalCost - currentPoints).toLocaleString()} điểm.
+                    </div>
+                )}
+
+                <div className="total-row">
+                    <span className="total-label">Tổng cộng:</span>
+                    <span className="total-price">{totalCost.toLocaleString()} điểm</span>
+                </div>
+
+                <div className="modal-actions">
+                    <button className="btn-cancel" onClick={() => setShowPaymentModal(false)}>
                         Hủy bỏ
                     </button>
                     
                     {canAfford ? (
-                        <button 
-                            onClick={handleConfirmPayment}
-                            style={{
-                                padding: '10px 20px', borderRadius: '8px', border: 'none',
-                                background: '#2563eb', color: 'white', cursor: 'pointer', fontWeight: 600
-                            }}
+                        <button className="btn-pay" onClick={handleConfirmPayment}
+                        disabled={!postDuration || parseInt(postDuration) < 1}
+                          style={{
+                              padding: '10px 20px', borderRadius: '8px', border: 'none',
+                              // Đổi màu xám nếu disabled
+                              background: (!postDuration || parseInt(postDuration) < 1) ? '#9ca3af' : '#2563eb', 
+                              color: 'white', cursor: (!postDuration || parseInt(postDuration) < 1) ? 'not-allowed' : 'pointer', 
+                              fontWeight: 600
+                          }}
                         >
                             Thanh toán & Đăng
                         </button>
                     ) : (
                         <button 
+                            className="btn-pay" 
+                            style={{background: '#059669'}} // Màu xanh lá cho nút Nạp tiền
                             onClick={() => { setShowPaymentModal(false); setActiveSetting("Donate"); }}
-                            style={{
-                                padding: '10px 20px', borderRadius: '8px', border: 'none',
-                                background: '#059669', color: 'white', cursor: 'pointer', fontWeight: 600
-                            }}
                         >
                             Nạp tiền ngay
                         </button>
