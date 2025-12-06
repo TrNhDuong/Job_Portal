@@ -32,7 +32,7 @@ export class EmployerRepository {
             };
     }
     static async updateEmployer(email, updatesEmployer) {
-        const employerAttributes = ["company", "email", "phone", "address", "description", "logo", "wallpaper", "website", "jobPosted", "point"];
+        const employerAttributes = ["company", "email", "phone", "address", "description", "logo", "wallpaper", "website", "contact", "jobPosted", "point"];
         let employer = await this.getEmployer(email);
         if (!employer.success) {
             return {
