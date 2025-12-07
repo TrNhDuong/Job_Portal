@@ -6,7 +6,7 @@ import { useAuth } from "../context/AuthContext.jsx";
 
 export default function Navbar() {
   const { user } = useAuth();
-  const EMPLOYER_URL = "http://localhost:8000/login";
+  const EMPLOYER_URL = "http://localhost:5173/login";
 
   const navItemClass = ({ isActive }) =>
     `navbar-pill ${isActive ? "navbar-pill-active" : ""}`;

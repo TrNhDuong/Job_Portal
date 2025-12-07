@@ -47,7 +47,7 @@ export default function FeaturedBrands({ enableFetch = true }) {
             </div>
           ) : (
             <div className="home-brands-grid">
-              {brands.map((b) => (
+              {brands.slice(0, 8).map((b) => (
                 <BrandCard
                   key={b._id}
                   brand={b}

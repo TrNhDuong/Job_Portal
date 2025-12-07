@@ -4,6 +4,9 @@ import { Link, useNavigate } from "react-router-dom";
 import client from "../api/client";
 import { Eye, EyeOff } from "lucide-react";
 
+import PolicyModal from "../components/PolicyModal";
+import { TERMS_CONTENT, PRIVACY_CONTENT } from "../components/Policies";
+
 const UserIcon = () => (
   <svg
     className="register-input-icon"
@@ -56,6 +59,9 @@ export default function Register() {
   const [show2, setShow2] = useState(false);
   const [msg, setMsg] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  // null | "terms" | "privacy"
+  const [policy, setPolicy] = useState(null);
 
   const navigate = useNavigate();
 
@@ -145,6 +151,7 @@ export default function Register() {
               ← Quay lại trang chủ
             </button>
           </div>
+
           <div className="register-header">
             <h1 className="register-title">
               Chào mừng đến với{" "}
@@ -267,11 +274,19 @@ export default function Register() {
               />
               <label htmlFor="agree" className="register-checkbox-label">
                 Tôi đã đọc và đồng ý với{" "}
-                <button type="button" className="register-link">
+                <button
+                  type="button"
+                  className="register-link"
+                  onClick={() => setPolicy("terms")}
+                >
                   Điều khoản dịch vụ
                 </button>{" "}
                 và{" "}
-                <button type="button" className="register-link">
+                <button
+                  type="button"
+                  className="register-link"
+                  onClick={() => setPolicy("privacy")}
+                >
                   Chính sách bảo mật
                 </button>
                 .
@@ -309,6 +324,17 @@ export default function Register() {
           </div>
         </div>
       </div>
+
+      {/* Modal điều khoản / chính sách */}
+      <PolicyModal
+        open={policy !== null}
+        title={
+          policy === "terms" ? "Điều khoản dịch vụ" : "Chính sách bảo mật"
+        }
+        onClose={() => setPolicy(null)}
+      >
+        {policy === "terms" ? TERMS_CONTENT : PRIVACY_CONTENT}
+      </PolicyModal>
     </div>
   );
 }

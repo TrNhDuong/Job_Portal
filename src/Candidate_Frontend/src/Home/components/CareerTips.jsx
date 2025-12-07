@@ -47,7 +47,7 @@ const tipsTitle = (
     <div className="home-tips-title-icon">
       <CheckCircle2 />
     </div>
-    <div className="home-tips-title-text">Cẩm nang tìm việc</div>
+    <div className="home-featured-title-text">Cẩm nang tìm việc</div>
   </div>
 );
 
