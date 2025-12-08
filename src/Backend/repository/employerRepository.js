@@ -1,10 +1,12 @@
 import Employer from "../model/employer.js";
 import bcrypt from "bcryptjs";
 import { destroyCloudData } from "../service/cloudinary.js";
+import mongoose from 'mongoose'; // Cần thiết để đảm bảo môi trường Mongoose
 
 export class EmployerRepository {
     static async getEmployer(email) {
         try {
+            // Sử dụng .lean() để trả về plain JS object, tối ưu cho read-only
             const employer = await Employer.findOne({ email }).lean();
             if (!employer) {
                 return {
@@ -22,70 +24,7 @@ export class EmployerRepository {
             return { success: false, message: "Error fetching employer" };
         }
     }
-    static async createEmployer(employerData) {
-            const newEmployer = new Employer(employerData);
-            await newEmployer.save();
-            return {
-                success: true,
-                data: newEmployer,
-                message: "Employer created successfully"
-            };
-    }
-    static async updateEmployer(email, updatesEmployer) {
-        const employerAttributes = ["company", "email", "phone", "address", "description", "logo", "wallpaper", "website", "contact", "jobPosted", "point"];
-        let employer = await this.getEmployer(email);
-        if (!employer.success) {
-            return {
-                success: false,
-                message: "Employer not found",
-                data: null
-            };
-        }
 
-
-        if (updatesEmployer["password"]) {
-            console.log(updatesEmployer["password"]);
-            employer.data["password"] = bcrypt.hashSync(updatesEmployer["password"], 10);
-        }
-
-        if (updatesEmployer["logo"]){
-            if (employer?.data?.logo?.public_id){
-                console.log('Dang xoa public')
-                const result = await destroyCloudData(employer.data.logo.public_id);
-                if (result){
-                    console.log('Deleted image')
-                } else {
-                    console.log('Failed to deleted image')
-                }
-                employer.data.logo.url = '';
-            }
-            employer.data.logo = updatesEmployer["logo"];
-            console.log(employer.data);
-        }
-
-        if (updatesEmployer["wallpaper"]){
-            if (employer?.data?.wallpaper?.public_id){
-                const result = await destroyCloudData(employer.data.wallpaper.public_id);
-                if (result){
-                    console.log('Deleted image wallpaper')
-                } else {
-                    console.log('Failed to deleted image')
-                }
-            }
-            employer.data.logo = updatesEmployer["wallpaper"];
-            console.log(employer.data);
-        }
-
-        for (const attribute of employerAttributes) {
-            employer.data[attribute] = updatesEmployer[attribute] || employer.data[attribute];
-        }
-
-        const updatedEmployer = await Employer.findOneAndUpdate({ email }, employer.data, { new: true });
-        return {
-            success: true,
-            data: updatedEmployer
-        };
-    }
     static async getHashedPassword(email) {
         const employer = await this.getEmployer(email);
         if (!employer.success) {
@@ -100,33 +39,118 @@ export class EmployerRepository {
             data: employer.data.password
         };
     }
-    static async addJobPostToEmployer(email, jobPostId) {
-    
-        // 1. Kiểm tra sự tồn tại (giữ nguyên, nhưng không cần lấy toàn bộ dữ liệu)
-        const employer = await Employer.findOne({ email });
-        if (!employer) { // Kiểm tra trực tiếp object Mongoose
+
+    static async createEmployer(employerData) {
+        try {
+            const newEmployer = new Employer(employerData);
+            await newEmployer.save();
+            return {
+                success: true,
+                data: newEmployer,
+                message: "Employer created successfully"
+            };
+        } catch (error) {
+            console.error(`Error creating employer:`, error);
+            return { success: false, message: "Error creating employer" };
+        }
+    }
+
+    // --- HÀM CẬP NHẬT DỮ LIỆU (Đã sửa lỗi Read-Modify-Write và thêm Session) ---
+    static async updateEmployer(email, updatesEmployer, options = {}) {
+        // Lấy session từ options (Mongoose sẽ bỏ qua nếu options.session là undefined)
+        const { session } = options; 
+        
+        // 1. Tìm employer để kiểm tra sự tồn tại và lấy dữ liệu cũ (cần cho logo/wallpaper)
+        const employerResult = await this.getEmployer(email);
+        if (!employerResult.success) {
             return {
                 success: false,
                 message: "Employer not found",
                 data: null
             };
         }
+        const employer = employerResult.data;
+        
+        // 2. Chuẩn bị Payload cho $set (Cập nhật nguyên tử)
+        let updatePayload = {};
+        
+        // 2a. Xử lý Mật khẩu
+        if (updatesEmployer["password"]) {
+            updatePayload["password"] = bcrypt.hashSync(updatesEmployer["password"], 10);
+        }
+
+        // 2b. Xử lý Logo (Nếu có logo mới, xóa logo cũ trên Cloud)
+        if (updatesEmployer["logo"]){
+            if (employer?.logo?.public_id){
+                console.log('Đang xóa logo cũ...');
+                await destroyCloudData(employer.logo.public_id);
+            }
+            updatePayload["logo"] = updatesEmployer["logo"];
+        }
+
+        // 2c. Xử lý Wallpaper (Nếu có wallpaper mới, xóa wallpaper cũ trên Cloud)
+        if (updatesEmployer["wallpaper"]){
+            if (employer?.wallpaper?.public_id){
+                console.log('Đang xóa wallpaper cũ...');
+                await destroyCloudData(employer.wallpaper.public_id);
+            }
+            updatePayload["wallpaper"] = updatesEmployer["wallpaper"];
+        }
+
+        // 2d. Xử lý các fields thông thường (bao gồm cả 'point' nếu được truyền)
+        const employerAttributes = ["company", "email", "phone", "address", "description", "website", "contact", "point"];
+        for (const attribute of employerAttributes) {
+             if (updatesEmployer[attribute] !== undefined) {
+                 updatePayload[attribute] = updatesEmployer[attribute];
+             }
+        }
+        
+        // 3. Thực hiện cập nhật nguyên tử bằng findOneAndUpdate
         try {
-            // 2. SỬ DỤNG $push ĐỂ CẬP NHẬT NGUYÊN TỬ (ATOMIC UPDATE)
-            console.log("Thêm job post ID:", jobPostId, "vào employer với email:", email);
             const updatedEmployer = await Employer.findOneAndUpdate(
-                { email: email }, // Query: Tìm theo email
-                { $push: { jobPosted: jobPostId } }, // Update: Thêm jobPostId vào mảng jobPosted
-                { new: true } // Options: Trả về tài liệu đã cập nhật
+                { email }, 
+                { $set: updatePayload }, // Chỉ cập nhật các trường trong updatePayload
+                { new: true, session } // Thêm options.session
             );
-            // 3. Trả về kết quả
+            
+            if (!updatedEmployer) {
+                 return { success: false, message: "Employer not found during update." };
+            }
+
+            return {
+                success: true,
+                data: updatedEmployer
+            };
+        } catch (error) {
+            console.error(`Error updating employer ${email}:`, error);
+            return { success: false, message: "Database update error" };
+        }
+    }
+    
+    // --- HÀM THÊM JOB VÀO EMPLOYER (Hỗ trợ Session) ---
+    static async addJobPostToEmployer(email, jobPostId, options = {}) {
+        const { session } = options;
+        try {
+            const updatedEmployer = await Employer.findOneAndUpdate(
+                { email: email }, 
+                { $push: { jobPosted: jobPostId } }, 
+                { new: true, session } // Thêm options.session
+            );
+
+            if (!updatedEmployer) {
+                return {
+                    success: false,
+                    message: "Employer not found",
+                    data: null
+                };
+            }
+            
             return {
                 success: true,
                 data: updatedEmployer
             };
             
         } catch (error) {
-            // Nên thêm khối try...catch ở đây để bắt lỗi database/validation
             console.error("Lỗi khi thêm Job Post vào Employer:", error);
             return {
                 success: false,
@@ -135,12 +159,15 @@ export class EmployerRepository {
             };
         }
     }
-    static async removeJobPostFromEmployer(email, jobPostId) {
+    
+    // --- HÀM XÓA JOB KHỎI EMPLOYER (Hỗ trợ Session) ---
+    static async removeJobPostFromEmployer(email, jobPostId, options = {}) {
+        const { session } = options;
         try {
             const updatedEmployer = await Employer.findOneAndUpdate(
                 { email: email },
                 { $pull: { jobPosted: jobPostId } },
-                { new: true }
+                { new: true, session } // Thêm options.session
             );
 
             if (!updatedEmployer) {
@@ -165,7 +192,8 @@ export class EmployerRepository {
             };
         }
     }
-    // Return top 10 branch hot
+    
+    // --- HÀM ĐỌC DỮ LIỆU (Giữ nguyên) ---
     static async getTopFeature() {
         try {
             const topEmployerEmails = await Employer.aggregate([
@@ -184,8 +212,8 @@ export class EmployerRepository {
                 },
                 {
                     $project: {
-                        _id: 0,         // Loại bỏ trường _id
-                        email: 1        // CHỈ giữ lại trường email
+                        _id: 0, 
+                        email: 1 
                     }
                 }
             ]);
@@ -193,7 +221,7 @@ export class EmployerRepository {
 
             return {
                 success: true,
-                data: emailList // Trả về mảng chỉ chứa các chuỗi email
+                data: emailList 
             };
         } catch (error) {
             console.error(`Error fetching top feature employer emails:`, error);
@@ -204,6 +232,6 @@ export class EmployerRepository {
             };
         }
     }
-};
+}
 
 export default EmployerRepository;

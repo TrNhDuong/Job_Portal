@@ -7,7 +7,6 @@ export const getJobPostByID = async (req, res) => {
         const jobId = new mongoose.Types.ObjectId(id); // Chuyển đổi chuỗi ID thành ObjectId
         const jobPost = await JobRepository.getJobPost(jobId);
         if (jobPost.success) {
-            console.log(jobPost.data);
             res.status(200).json({
                 success: true,
                 data: jobPost.data,

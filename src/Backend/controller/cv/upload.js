@@ -64,7 +64,7 @@ export const removeCandidateCV = async (req, res) => {
   else if (candidate.CV) cvList = [candidate.CV];
 
   const updatedCVs = cvList.filter((cv) => cv.public_id !== cvPublicId);
-
+  await destroyCloudData(cvPublicId);
   if (updatedCVs.length === cvList.length) {
     // không tìm thấy CV có public_id trùng
     return res.status(404).json({
