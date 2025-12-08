@@ -98,7 +98,7 @@ export class EmployerRepository {
         }
 
         // 2d. Xử lý các fields thông thường (bao gồm cả 'point' nếu được truyền)
-        const employerAttributes = ["company", "email", "phone", "address", "description", "website", "contact", "point"];
+        const employerAttributes = ["company", "email", "phone", "address", "description", "website", "contact", "point", "scale"];
         for (const attribute of employerAttributes) {
              if (updatesEmployer[attribute] !== undefined) {
                  updatePayload[attribute] = updatesEmployer[attribute];

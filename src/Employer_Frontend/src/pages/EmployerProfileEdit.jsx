@@ -17,7 +17,7 @@ const EmployerProfileEdit = ({ initialData, onSave, onCancel, onChangeLogo, onCh
         scale: initialData.scale || '10-24 nhân viên', // Default value
         description: initialData.description || '',
         logoUrl: initialData.logo?.url || monoLogo,
-        wallpaperUrl: initialData.wallpaper || 'https://via.placeholder.com/1200x300'
+        wallpaperUrl: initialData.wallpaper?.url || 'https://via.placeholder.com/1200x300'
     });
 
     const [errors, setErrors] = useState({});

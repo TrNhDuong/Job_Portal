@@ -18,7 +18,7 @@ const EmployerProfile = () => {
     const data = auth.employerData?.data || {};
 
     // Logic hiển thị ảnh bìa: Nếu chưa có trong DB thì dùng MOCK_BANNER mới
-    const currentBanner = data.wallpaper || MOCK_BANNER;
+    const currentBanner = data.wallpaper.url || MOCK_BANNER;
     const companyScale = data.scale || "100-499 nhân viên";
 
     // --- MODE: EDIT ---
@@ -55,12 +55,23 @@ const EmployerProfile = () => {
                         setLoading(false); 
                     }
                 }}
-                onChangeWallpaper={async (file) => {
-                    setLoading(true);
-                    console.log("Đang giả lập upload wallpaper...", file);
-                    await new Promise(resolve => setTimeout(resolve, 1500));
-                    setLoading(false);
-                    // Code backend upload wallpaper sẽ nằm ở đây
+                onChangeWallpaper={async (wallpaper) => {
+                    const formData = new FormData();
+                    formData.append('image', wallpaper);
+                    try {
+                        setLoading(true);  
+                        const email = localStorage.getItem("email");
+                        const response = await client.post(`api/upload/wallpaper?email=${email}`, formData,
+                            { headers: { 'Content-Type': 'multipart/form-data' } }
+                        )
+                        if (response.data.success){
+                            await updateData();                            
+                        }
+                    } catch ( error ){
+                        console.log(error)
+                    } finally {
+                        setLoading(false); 
+                    }
                 }}
             />
         );
