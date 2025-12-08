@@ -37,6 +37,7 @@
   border: 1px solid #d1d5db;
   border-radius: 6px;
   font-size: 0.95rem;
+  font-family: 'Be Vietnam Pro', sans-serif;
 }
 
 .filter-row-bottom {
@@ -46,15 +47,36 @@
   flex-wrap: wrap;
 }
 
-.filter-options select {
-  padding: 8px 10px;
+.filter-select select{
+  -webkit-appearance: none; 
+  -moz-appearance: none;    
+  appearance: none;
+  /* 2. Thiết lập kích thước & padding */
+  padding: 8px 12px;
+  padding-right: 35px; 
   border: 1px solid #d1d5db;
   border-radius: 6px;
-  background: #f9fafb;
+  background-color: #f9fafb;
+  /* 3. Thêm mũi tên tùy chỉnh (Icon SVG màu xám) */
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 10px center; /* Căn phải 10px, Căn giữa dọc */
+  background-size: 16px; /* Kích thước mũi tên */
   font-size: 0.95rem;
   cursor: pointer;
   flex: 1;
   min-width: 160px;
+  /* 4. Fix lỗi mất font (nếu có) */
+  font-family: 'Be Vietnam Pro', sans-serif;
+  color: #374151; /* Màu chữ xám đậm cho rõ */
+}
+
+/* Hiệu ứng khi di chuột hoặc focus */
+.filter-select select:hover,
+.filter-select select:focus {
+  border-color: #2563eb; /* Viền xanh khi chọn */
+  outline: none;
+  background-color: #fff;
 }
 
 .filter-row-bottom button {
@@ -67,6 +89,7 @@
   font-weight: 500;
   cursor: pointer;
   transition: background 0.2s ease;
+  font-family: 'Be Vietnam Pro', sans-serif;
 }
 
 .filter-row-bottom button:hover {
