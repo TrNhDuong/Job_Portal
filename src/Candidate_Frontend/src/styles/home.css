@@ -181,7 +181,7 @@
 
 .home-featured-skeleton {
   height: 150px;
-  border-radius: 18px;
+  border-radius: 10px;
   background: linear-gradient(
     90deg,
     #f1f5f9 0%,
@@ -206,7 +206,7 @@
 ============================ */
 
 .home-job-card {
-  border-radius: 22px;
+  border-radius: 10px;
   background: #ffffff;
   border: 1px solid #e2e8f0;
   padding: 14px 14px 12px;
@@ -240,7 +240,7 @@
 .home-job-card-logo {
   width: 44px;
   height: 44px;
-  border-radius: 14px;
+  border-radius: 12px;
   object-fit: contain;
   background: #f1f5f9;
 }
@@ -477,7 +477,7 @@
 /* Card */
 
 .home-brand-card {
-  border-radius: 1rem;
+  border-radius: 10px;
   border: 1px solid rgba(148, 163, 184, 0.3);
   background: radial-gradient(circle at top left, #eff6ff 0, #ffffff 40%);
   padding: 0.85rem 0.9rem;
@@ -511,7 +511,7 @@
   flex-shrink: 0;
   width: 3rem;
   height: 3rem;
-  border-radius: 0.9rem;
+  border-radius: 0.2rem;
   padding: 0.25rem;
   background: radial-gradient(circle at 10% 0%, #e0f2fe 0, #eff6ff 35%, #f9fafb 100%);
   box-shadow: 0 6px 14px rgba(148, 163, 184, 0.35);
@@ -520,7 +520,7 @@
 .home-brand-card-logo {
   width: 100%;
   height: 100%;
-  border-radius: 0.7rem;
+  border-radius: 10px;
   object-fit: contain;
   background-color: #f1f5f9;
 }
@@ -589,7 +589,7 @@
 
 .home-job-modal {
   background: #ffffff;
-  border-radius: 1.25rem;
+  border-radius: 15px;
   width: 100%;
   max-width: 64rem;
   max-height: 90vh;
@@ -819,11 +819,10 @@
 }
 
 /* BRAND MODAL */
-/* BRAND DETAIL MODAL – UI mới, không đè nội dung, cực thoáng */
 
 .home-brand-modal {
   background: #ffffff;
-  border-radius: 1.25rem;
+  border-radius: 10px;
   width: 100%;
   max-width: 36rem;
   max-height: 80vh;
@@ -887,7 +886,7 @@
 .home-brand-modal-logo-wrap {
   width: 3.2rem;
   height: 3.2rem;
-  border-radius: 1rem;
+  border-radius: 12px;
   padding: 0.28rem;
   background: radial-gradient(circle at 10% 0%, #e0f2fe 0, #eff6ff 35%, #f9fafb 100%);
   box-shadow: 0 8px 18px rgba(148, 163, 184, 0.45);
@@ -897,7 +896,7 @@
 .home-brand-modal-logo {
   width: 100%;
   height: 100%;
-  border-radius: 0.8rem;
+  border-radius: 12px;
   object-fit: contain;
   background: #f1f5f9;
 }
@@ -1110,7 +1109,7 @@
 .home-sector-card {
   position: relative;
   min-height: 130px;
-  border-radius: 1.25rem;
+  border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 12px 28px rgba(15, 23, 42, 0.25);
   cursor: pointer;
@@ -1206,77 +1205,12 @@
 }
 
 /* Card */
-.home-brand-card {
-  position: relative;
-  border-radius: 1.05rem;
-  border: 1px solid rgba(148, 163, 184, 0.35);
-  background: radial-gradient(circle at top left, #eff6ff 0, #ffffff 45%);
-  padding: 0.9rem 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
-  cursor: pointer;
-  transition:
-    transform 0.18s ease,
-    box-shadow 0.18s ease,
-    border-color 0.18s ease,
-    background 0.18s ease;
-}
-
-.home-brand-card:hover {
-  transform: translateY(-3px);
-  border-color: #38bdf8;
-  box-shadow: 0 18px 45px rgba(56, 189, 248, 0.28);
-  background: radial-gradient(circle at top left, #dbeafe 0, #ffffff 60%);
-}
-
-.home-brand-card-logo-wrap {
-  flex-shrink: 0;
-  width: 3rem;
-  height: 3rem;
-  border-radius: 0.95rem;
-  padding: 0.25rem;
-  background: radial-gradient(
-    circle at 10% 0%,
-    #e0f2fe 0,
-    #eff6ff 35%,
-    #f9fafb 100%
-  );
-  box-shadow: 0 6px 14px rgba(148, 163, 184, 0.35);
-}
-
-.home-brand-card-logo {
-  width: 100%;
-  height: 100%;
-  border-radius: 0.7rem;
-  object-fit: contain;
-  background-color: #f1f5f9;
-}
-
-.home-brand-card-text {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
 
 .home-brand-card-top-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.35rem;
-}
-
-.home-brand-card-name {
-  font-size: 0.96rem;
-  font-weight: 700;
-  color: #0f172a;
-  margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .home-brand-card-chip {
@@ -1290,32 +1224,12 @@
   border: 1px solid #bbf7d0;
 }
 
-.home-brand-card-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem 0.6rem;
-}
-
-.home-brand-card-meta-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.28rem;
-  font-size: 0.78rem;
-  color: #64748b;
-  max-width: 100%;
-}
-
 .home-brand-card-meta-item span {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.home-brand-card-meta-icon {
-  width: 0.8rem;
-  height: 0.8rem;
-  flex-shrink: 0;
-}
 
 @media (max-width: 480px) {
   .home-brand-card-top-row {
@@ -1422,7 +1336,7 @@
 
 .home-tip-card {
   background: #ffffff;
-  border-radius: 1.35rem;
+  border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
   display: flex;

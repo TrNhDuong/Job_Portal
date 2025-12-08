@@ -17,17 +17,68 @@ export default function ApplicationPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
+  const [candidateCVs, setCandidateCVs] = useState([]);   // <<< NEW
+  const [loadingCVs, setLoadingCVs] = useState(true);     // <<< NEW
+
   const [selectedCV, setSelectedCV] = useState(null);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  useEffect(() => {
-    if (user?.CV?.length > 0) {
-      setSelectedCV(user.CV[0]._id);
+  // ---------------------- FETCH CV LIST ---------------------- //
+
+  // Chuẩn hóa CV thành mảng & sort mới nhất lên trước
+  const normalizeCVArray = (cv) => {
+    if (!cv) return [];
+    let arr = [];
+    if (Array.isArray(cv)) arr = cv;
+    else arr = [cv];
+
+    return arr.sort(
+      (a, b) =>
+        new Date(b.uploadedAt || 0).getTime() -
+        new Date(a.uploadedAt || 0).getTime()
+    );
+  };
+
+  const fetchCandidateCVs = async (email) => {
+    if (!email) {
+      setCandidateCVs([]);
+      setLoadingCVs(false);
+      return;
     }
-  }, [user]);
+
+    setLoadingCVs(true);
+    try {
+      const res = await client.get(`/api/candidate?email=${email}`);
+      const candidate =
+        res.data?.success && res.data.data ? res.data.data : res.data;
+
+      const cvArray = normalizeCVArray(candidate?.CV);
+      setCandidateCVs(cvArray);
+
+      // tự chọn CV mới nhất
+      if (cvArray.length > 0) {
+        setSelectedCV(cvArray[0]._id);
+      }
+    } catch (err) {
+      console.error(err);
+      setCandidateCVs([]);
+    } finally {
+      setLoadingCVs(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user?.email) {
+      fetchCandidateCVs(user.email);
+    } else {
+      setLoadingCVs(false);
+    }
+  }, [user?.email]);
+
+  // ------------------------- HANDLERS ------------------------ //
 
   const handleSelectCV = (cvId) => {
     setSelectedCV(cvId);
@@ -75,22 +126,42 @@ export default function ApplicationPage() {
     }
 
     setLoading(true);
+    setError(null);
+
     try {
-      // Upload new CV
+      let resumeIdToUse = selectedCV;
+
       if (uploadedFile) {
         const fd = new FormData();
         fd.append("cv", uploadedFile);
+
         await client.post(
           `/api/upload/candidate/cv?email=${encodeURIComponent(
             user.email
           )}`,
-          fd
+          fd,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
         );
+
+        const res = await client.get(
+          `/api/candidate?email=${user.email}`
+        );
+        const candidate =
+          res.data?.success && res.data.data ? res.data.data : res.data;
+
+        const cvArray = normalizeCVArray(candidate?.CV);
+        setCandidateCVs(cvArray);
+
+        if (cvArray.length > 0) {
+          resumeIdToUse = cvArray[0]._id; // CV mới nhất
+          setSelectedCV(cvArray[0]._id);
+        }
       }
 
-      // Apply Job
       const body = { email: user.email };
-      if (selectedCV) body.resumeId = selectedCV;
+      if (resumeIdToUse) body.resumeId = resumeIdToUse;
 
       await client.patch(
         `/api/post-job/applyJob?jobId=${jobId}`,
@@ -99,9 +170,9 @@ export default function ApplicationPage() {
 
       setIsSuccess(true);
     } catch (err) {
+      console.error(err);
       setError(
-        err.response?.data?.message ||
-          "Failed to submit application."
+        err.response?.data?.message || "Failed to submit application."
       );
     } finally {
       setLoading(false);
@@ -183,12 +254,12 @@ export default function ApplicationPage() {
 
           <div className="apply-card-body">
             {/* EXISTING CV LIST */}
-            {user?.CV?.length > 0 && (
+            {candidateCVs.length > 0 && (
               <div>
                 <h2 className="apply-section-label">Your Resumes</h2>
 
                 <div className="apply-cv-list">
-                  {user.CV.map((cv) => (
+                  {candidateCVs.map((cv) => (
                     <label
                       key={cv._id}
                       className={`apply-cv-item ${
@@ -208,11 +279,15 @@ export default function ApplicationPage() {
                       </div>
 
                       <div>
-                        <p className="apply-cv-name">{cv.name || "Resume"}</p>
+                        <p className="apply-cv-name">
+                          {cv.name || "Resume"}
+                        </p>
                         <p className="apply-cv-meta">
                           Uploaded{" "}
                           {cv.uploadedAt
-                            ? new Date(cv.uploadedAt).toLocaleDateString()
+                            ? new Date(
+                                cv.uploadedAt
+                              ).toLocaleDateString()
                             : "N/A"}
                         </p>
                       </div>
@@ -227,7 +302,7 @@ export default function ApplicationPage() {
             )}
 
             {/* SEPARATOR */}
-            {user?.CV?.length > 0 && (
+            {candidateCVs.length > 0 && (
               <div className="apply-divider">OR UPLOAD NEW</div>
             )}
 
