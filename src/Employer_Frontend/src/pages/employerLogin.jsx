@@ -5,11 +5,9 @@ import logoImage from "../assets/logo.png";
 import "../styles/employerLogin.css";
 import EmployerForgotPassword from "./employerForgotPassword.jsx";
 import ParticlesAuth from "../components/ParticlesAuth";
+import client from "../api/client.js";
 
-
-const API_BASE_URL = "http://localhost:8080/api";
-
-export default function EmployerLogin({ onLogin, onShowRegister }) {
+export default function EmployerLogin() {
   const navigate = useNavigate();
 
   const [isForgotPassword, setIsForgotPassword] = useState(false);
@@ -35,13 +33,9 @@ export default function EmployerLogin({ onLogin, onShowRegister }) {
     setSuccess("");
 
     try {
-      const response = await fetch(`${API_BASE_URL}/loginEmployer`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+      const response = await client.post(`/api/loginEmployer`, {email: email, password: password});
 
-      const data = await response.json();
+      const data = await response.data;
       const { success } = data;
 
       if (!success) {

@@ -68,13 +68,17 @@ export class CandidateRepository {
         }
 
         if (updatesCandidate["CV"]){
-            if (candidate.data.CV.length > 3){
+            if (candidate.data.CV.length === 3){
                 return {
                     success: false,
                     message: "Number of CVs get limited"
                 }
             }
             candidate.data.CV.push(updatesCandidate["CV"]);
+        }
+
+        if (updatesCandidate["rmCV"]){
+            candidate.data.CV = updatesCandidate["rmCV"]
         }
 
         for (const attribute of candidateAttributes) {
