@@ -41,7 +41,7 @@ export class CandidateRepository {
         };
     }
     static async updateCandidate(email, updatesCandidate) {
-        const candidateAttributes = ["name", "email", "logo", "appliedJobs", "CV"];
+        const candidateAttributes = ["name", "email", "logo", "appliedJobs"];
         let candidate = await this.getCandidate(email);
         if (!candidate.success) {
             return {
@@ -67,11 +67,21 @@ export class CandidateRepository {
             }
         }
 
+        if (updatesCandidate["CV"]){
+            if (candidate.data.CV.length > 3){
+                return {
+                    success: false,
+                    message: "Number of CVs get limited"
+                }
+            }
+            candidate.data.CV.push(updatesCandidate["CV"]);
+        }
+
         for (const attribute of candidateAttributes) {
             candidate.data[attribute] = updatesCandidate[attribute] || candidate.data[attribute];
         }
 
-        const updatedCandidate = await Candidate.findOneAndUpdate({ email }, candidate.data, { new: true });
+        await Candidate.findOneAndUpdate({ email }, candidate.data, { new: true });
         return {
             success: true,
             message: "Candidate updated successfully"
