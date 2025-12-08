@@ -162,7 +162,7 @@ const EmployerJobRenewal = ({ onNavigateToDeposit, jobPosts }) => {
 
         <div className="job-grid">
           {processedJobs.map((job) => (
-            <div key={job.id} className={`job-card status-${job.status}`}>
+            <div key={job.id || job._id || index} className={`job-card status-${job.status}`}>
               {/* Dải trạng thái có màu thay đổi theo status */}
               <div className={`status-strip ${job.status}`}>
                   {job.label}

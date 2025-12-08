@@ -7,7 +7,7 @@
 .deposit-container {
     max-width: 950px;
     margin: 0 auto;
-    margin-top: -60px;
+    margin-top: -50px;
     background: white;
     border-radius: 20px;
     padding: 40px;
@@ -144,6 +144,30 @@
     transform: scale(1.02); /* Phóng to nhẹ khi chọn */
 }
 
+/* 1. Gói Khởi Động (Blue) -> Nền xanh dương nhạt */
+.package-card.theme-blue.selected {
+    background-color: #eff6ff; 
+    border-color: #3498db;
+}
+
+/* 2. Gói Tăng Tốc (Orange) -> Nền cam nhạt */
+.package-card.theme-orange.selected {
+    background-color: #fff7ed; 
+    border-color: #e67e22;
+}
+
+/* 3. Gói Chuyên Nghiệp (Purple) -> Nền tím nhạt */
+.package-card.theme-purple.selected {
+    background-color: #faf5ff; 
+    border-color: #9b59b6;
+}
+
+/* 4. Gói Doanh Nghiệp (Gold) -> Nền vàng nhạt */
+.package-card.theme-gold.selected {
+    background-color: #fefce8; 
+    border-color: #f1c40f;
+}
+
 .pkg-icon-circle {
     width: 50px;
     height: 50px;
@@ -229,6 +253,69 @@
     .package-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
+.deposit-page .input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+/* Style cho ô Input */
+.deposit-page .input-wrapper input {
+    width: 100%;
+    padding: 15px;
+    padding-right: 70px; /* 👇 Quan trọng: Chừa chỗ bên phải để không đè lên chữ ĐIỂM */
+    padding-left: 15px;  /* 👇 Căn lề trái */
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 1.4rem; /* Số to rõ */
+    font-weight: 800;
+    color: #333;
+    text-align: left; /* 👇 Đảm bảo số nằm bên trái */
+    transition: all 0.2s;
+}
+
+.deposit-page .input-wrapper input:focus {
+    border-color: #3f84f2;
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(0, 97, 255, 0.1);
+}
+
+/* Style cho chữ "ĐIỂM" bên phải */
+.deposit-page .input-suffix {
+    position: absolute;
+    right: 15px;      /* Cách lề phải 15px */
+    top: 50%;
+    transform: translateY(-50%); /* Căn giữa dọc */
+    font-weight: 700;
+    color: #999;      /* Màu xám nhạt cho tinh tế */
+    font-size: 0.9rem;
+    pointer-events: none; /* 👇 Quan trọng: Để bấm vào chữ ĐIỂM vẫn focus vào input */
+    user-select: none;
+    background: #f4f6f8; /* Nền nhẹ bao quanh chữ ĐIỂM (tùy chọn) */
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.deposit-page .input-wrapper input:focus + .input-suffix {
+    color: #3f84f2;         /* Màu chữ bạn yêu cầu */
+    background: #eef6ff;    /* (Khuyên dùng) Đổi nền sang xanh nhạt xíu cho đồng bộ */
+}
+
+/* --- TẮT MŨI TÊN TĂNG GIẢM TRONG Ô NHẬP SỐ --- */
+
+/* Cho Chrome, Safari, Edge, Opera */
+.input-group input::-webkit-outer-spin-button,
+.input-group input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Cho Firefox */
+.input-group input {
+  -moz-appearance: textfield;
+  appearance: none;
+}
+
 /* --- Hiệu ứng làm mờ các gói không chọn --- */
 .package-card.dimmed {
     opacity: 0.5; 
@@ -249,18 +336,18 @@
     align-items: flex-start;
 }
 
-.input-group {
+.deposit-page .input-group {
     flex: 1;
 }
 
-.input-group label {
+.deposit-page .input-group label {
     display: block;
     margin-bottom: 8px;
     font-weight: 600;
     color: #444;
 }
 
-.input-group input {
+.deposit-page .input-group input {
     width: 100%;
     padding: 15px;
     border: 2px solid #e0e0e0;
@@ -269,7 +356,7 @@
     font-weight: bold;
 }
 
-.input-group input:focus {
+.deposit-page .input-group input:focus {
     border-color: #0061ff;
     outline: none;
 }

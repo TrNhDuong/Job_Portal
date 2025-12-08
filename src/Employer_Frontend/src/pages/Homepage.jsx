@@ -345,7 +345,7 @@ export default function Homepage() {
 
             <div style={{ marginTop: "100px" }}>
               {isLoading ? (
-                <div className="card"><h3>Đang tải dữ liệu...</h3></div>
+                <div className="card"><h3></h3></div>
               ) : (
               <>
               {activeSetting === "CVManage" && (
