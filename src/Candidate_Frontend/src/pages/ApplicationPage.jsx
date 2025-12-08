@@ -4,12 +4,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import client from "../api/client";
 import {
-  UploadCloud,
   FileText,
   AlertCircle,
   CheckCircle,
   ChevronRight,
-  X,
 } from "lucide-react";
 
 export default function ApplicationPage() {
@@ -17,23 +15,19 @@ export default function ApplicationPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const [candidateCVs, setCandidateCVs] = useState([]);   // <<< NEW
-  const [loadingCVs, setLoadingCVs] = useState(true);     // <<< NEW
+  const [candidateCVs, setCandidateCVs] = useState([]);
+  const [loadingCVs, setLoadingCVs] = useState(true);
 
   const [selectedCV, setSelectedCV] = useState(null);
-  const [uploadedFile, setUploadedFile] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
   // ---------------------- FETCH CV LIST ---------------------- //
 
-  // Chuẩn hóa CV thành mảng & sort mới nhất lên trước
   const normalizeCVArray = (cv) => {
     if (!cv) return [];
-    let arr = [];
-    if (Array.isArray(cv)) arr = cv;
-    else arr = [cv];
+    let arr = Array.isArray(cv) ? cv : [cv];
 
     return arr.sort(
       (a, b) =>
@@ -82,41 +76,12 @@ export default function ApplicationPage() {
 
   const handleSelectCV = (cvId) => {
     setSelectedCV(cvId);
-    setUploadedFile(null);
     setError(null);
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const allowed = [
-      "application/pdf",
-      "application/msword",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    ];
-    if (!allowed.includes(file.type)) {
-      setError("Only PDF, DOC, or DOCX files are allowed.");
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      setError("File must be under 5MB.");
-      return;
-    }
-
-    setSelectedCV(null);
-    setUploadedFile(file);
-    setError(null);
-  };
-
-  const handleRemoveUploadedFile = (e) => {
-    e.stopPropagation();
-    setUploadedFile(null);
   };
 
   const handleSubmit = async () => {
-    if (!selectedCV && !uploadedFile) {
-      setError("Please select or upload a resume.");
+    if (!selectedCV) {
+      setError("Please select a resume.");
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
@@ -129,44 +94,12 @@ export default function ApplicationPage() {
     setError(null);
 
     try {
-      let resumeIdToUse = selectedCV;
+      const body = {
+        email: user.email,
+        resumeId: selectedCV,
+      };
 
-      if (uploadedFile) {
-        const fd = new FormData();
-        fd.append("cv", uploadedFile);
-
-        await client.post(
-          `/api/upload/candidate/cv?email=${encodeURIComponent(
-            user.email
-          )}`,
-          fd,
-          {
-            headers: { "Content-Type": "multipart/form-data" },
-          }
-        );
-
-        const res = await client.get(
-          `/api/candidate?email=${user.email}`
-        );
-        const candidate =
-          res.data?.success && res.data.data ? res.data.data : res.data;
-
-        const cvArray = normalizeCVArray(candidate?.CV);
-        setCandidateCVs(cvArray);
-
-        if (cvArray.length > 0) {
-          resumeIdToUse = cvArray[0]._id; // CV mới nhất
-          setSelectedCV(cvArray[0]._id);
-        }
-      }
-
-      const body = { email: user.email };
-      if (resumeIdToUse) body.resumeId = resumeIdToUse;
-
-      await client.patch(
-        `/api/post-job/applyJob?jobId=${jobId}`,
-        body
-      );
+      await client.patch(`/api/post-job/applyJob?jobId=${jobId}`, body);
 
       setIsSuccess(true);
     } catch (err) {
@@ -189,9 +122,7 @@ export default function ApplicationPage() {
             <CheckCircle className="apply-success-icon" />
           </div>
 
-          <h2 className="apply-success-title">
-            Application Submitted!
-          </h2>
+          <h2 className="apply-success-title">Application Submitted!</h2>
           <p className="apply-success-desc">
             Your application has been received and is under review.
           </p>
@@ -248,13 +179,14 @@ export default function ApplicationPage() {
           <div className="apply-card-header">
             <h1 className="apply-card-title">Select Your Resume</h1>
             <p className="apply-card-sub">
-              Choose an existing resume or upload a new one.
+              Choose one of your saved resumes to apply.
             </p>
           </div>
 
           <div className="apply-card-body">
-            {/* EXISTING CV LIST */}
-            {candidateCVs.length > 0 && (
+            {loadingCVs ? (
+              <p className="apply-loading-text">Loading your resumes...</p>
+            ) : candidateCVs.length > 0 ? (
               <div>
                 <h2 className="apply-section-label">Your Resumes</h2>
 
@@ -299,56 +231,13 @@ export default function ApplicationPage() {
                   ))}
                 </div>
               </div>
-            )}
-
-            {/* SEPARATOR */}
-            {candidateCVs.length > 0 && (
-              <div className="apply-divider">OR UPLOAD NEW</div>
-            )}
-
-            {/* UPLOAD BOX */}
-            {!uploadedFile ? (
-              <div
-                onClick={() =>
-                  document.getElementById("uploadCV").click()
-                }
-                className="apply-upload-box"
-              >
-                <div className="apply-upload-icon-wrap">
-                  <UploadCloud className="apply-upload-icon" />
-                </div>
-                <p className="apply-upload-title">
-                  Click to upload resume
-                </p>
-                <p className="apply-upload-sub">
-                  PDF, DOC, DOCX (max 5MB)
-                </p>
-                <input
-                  id="uploadCV"
-                  type="file"
-                  className="hidden"
-                  accept=".pdf,.doc,.docx"
-                  onChange={handleFileChange}
-                />
-              </div>
             ) : (
-              <div className="apply-uploaded-file">
-                <div className="apply-uploaded-icon">
-                  <FileText size={20} />
-                </div>
-                <div className="apply-uploaded-info">
-                  <p>{uploadedFile.name}</p>
-                  <span>
-                    {(uploadedFile.size / 1024 / 1024).toFixed(2)}MB
-                  </span>
-                </div>
-
-                <button
-                  onClick={handleRemoveUploadedFile}
-                  className="apply-upload-remove"
-                >
-                  <X size={20} />
-                </button>
+              <div className="apply-empty-cv">
+                <p>You don't have any saved resumes yet.</p>
+                <p>
+                  Please upload your CV in the <strong>My CV</strong> page
+                  before applying.
+                </p>
               </div>
             )}
           </div>
@@ -363,7 +252,7 @@ export default function ApplicationPage() {
 
             <button
               onClick={handleSubmit}
-              disabled={loading}
+              disabled={loading || candidateCVs.length === 0}
               className="apply-btn-primary"
             >
               {loading ? "Submitting..." : "Submit Application"}

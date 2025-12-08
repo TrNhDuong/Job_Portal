@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from "react";
+import React, { useState, useRef, useMemo, useEffect } from "react";
 import "../styles/employerManagePosts.css";
 // Import thêm các icon đẹp mắt
 import { HiDotsHorizontal, HiLocationMarker, HiCurrencyDollar, HiBriefcase, HiClock, HiEye, HiUserGroup } from "react-icons/hi";
@@ -81,6 +81,23 @@ export default function EmployerManagePosts({
      if(!dateString) return "Mới đăng";
      return new Date(dateString).toLocaleDateString('vi-VN');
   }
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Nếu menu đang mở và click không nằm trong menu đó
+      if (menuOpenId && !event.target.closest('.menu-wrapper')) {
+        setMenuOpenId(null);
+      }
+    };
+
+    // Đăng ký sự kiện khi component được mount
+    document.addEventListener("mousedown", handleClickOutside);
+    
+    // Hủy đăng ký khi component bị unmount (để tránh rò rỉ bộ nhớ)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuOpenId]);
 
   return (
     <div className="manage-posts-wrapper">

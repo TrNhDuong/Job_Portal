@@ -45,7 +45,7 @@ export default function LoginForm() {
         type: "success",
         text: res?.data?.message || "Đăng nhập thành công",
       });
-
+      console.log("Login successful:", userData);
       navigate("/");
     } catch (err) {
       const text =

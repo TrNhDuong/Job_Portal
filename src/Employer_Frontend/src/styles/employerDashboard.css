@@ -2,7 +2,7 @@
   padding: 24px;
   background-color: #f8f9fa;
   min-height: 100vh;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Be Vietnam Pro', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   width: 100%;
   margin-top: -40px;
   box-sizing: border-box;
@@ -22,14 +22,45 @@
 }
 
 .filter-row { display: flex; gap: 12px; flex-wrap: wrap; }
-.filter-input, .filter-select {
+.filter-input {
   padding: 10px 14px;
   border: 1px solid #d0d5dd;
   border-radius: 8px;
   outline: none;
   font-size: 14px;
   min-width: 220px;
+  font-family: 'Be Vietnam Pro', sans-serif; /* Fix lỗi mất font */
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
+
+/* 2. Ô Select Địa điểm (Custom Mũi tên) */
+.filter-select {
+  /* Reset mặc định */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  padding: 10px 14px;
+  padding-right: 40px; /* Chừa chỗ cho mũi tên */
+  
+  border: 1px solid #d0d5dd;
+  border-radius: 8px;
+  outline: none;
+  font-size: 14px;
+  min-width: 220px;
+  font-family: 'Be Vietnam Pro', sans-serif; /* Fix lỗi mất font */
+  cursor: pointer;
+  background-color: #fff;
+  color: #344054;
+
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23667085' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 14px center; /* Căn giữa dọc, cách phải 14px */
+  background-size: 16px;
+  
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
 .filter-input:focus, .filter-select:focus { border-color: #2196f3; box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1); }
 
 /* --- Job Card --- */
