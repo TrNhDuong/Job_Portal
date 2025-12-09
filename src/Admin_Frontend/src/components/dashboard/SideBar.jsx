@@ -1,6 +1,6 @@
 import React from 'react';
 import { FaChartLine, FaDatabase, FaSignOutAlt } from "react-icons/fa";
-import logo from '../../../public/logo.png';
+import logo from '../../assets/logo.png';
 import '../../styles/dashboard/SideBar.css';
 
 const Sidebar = ({ onMenuSelect, selectedMenu }) => {

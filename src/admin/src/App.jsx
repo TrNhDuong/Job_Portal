@@ -2,9 +2,8 @@ import React, { useContext } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthContext } from './context/AuthContext.jsx';
 
-// import Homepage from './pages/Homepage.jsx';
-import LoginPage from './pages/Login.jsx';     
-// import RegisterPage from './pages/employerRegister.jsx'; 
+import Homepage from './pages/Homepage.jsx';
+import LoginPage from './pages/AdminLogin.jsx';     
 
 import { Toaster } from 'react-hot-toast';
 
@@ -29,23 +28,19 @@ export default function App() {
       />
     <Routes>
 
-      <Route path="/" element={<Navigate to="/login" />} />
+      <Route path="/" element={<Navigate to="/homepage" />} />
 
       <Route 
         path="/login" 
         element={<LoginPage />} 
       />
 
-      {/* <Route 
-        path="/register" 
-        element={<RegisterPage />} 
-      />
-
       <Route
         path="/homepage"
         element={
             <Homepage />
-        } */}
+        }
+      />
 
     </Routes>
     </>
