@@ -1,0 +1,425 @@
+.employer-manage-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: #f9fafb;
+  position: relative; /* quan trọng nè bé */
+}
+
+/* Filter Bar */
+.filter-bar {
+  top: 64px;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  z-index: 998;
+  transition: left 0.3s ease, width 0.3s ease;
+}
+
+
+.filter-row-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.filter-input {
+  flex: 1;
+  min-width: 220px;
+  max-width: 400px;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.filter-row-bottom {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.filter-options select {
+  padding: 8px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #f9fafb;
+  font-size: 0.95rem;
+  cursor: pointer;
+  flex: 1;
+  min-width: 160px;
+}
+
+.filter-row-bottom button {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.filter-row-bottom button:hover {
+  background: #1e40af;
+}
+
+/* CV List Section */
+.cv-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: calc(104px + 48px) 20px 20px; /* top padding = filter bar height + extra margin */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  box-sizing: border-box; /* ensures padding is included in height */
+}
+
+
+.cv-card {
+  background: white;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+}
+
+.cv-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.cv-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px; /* Consistent spacing between all info fields */
+}
+
+.cv-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.cv-position {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #6b7280;
+}
+
+.cv-location,
+.cv-date {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #9ca3af;
+}
+
+.view-btn {
+  margin-top: 12px; /* keeps button separate from info */
+  padding: 8px 12px;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+
+  align-self: flex-end;
+}
+
+.view-btn:hover {
+  background-color: #1e40af;
+}
+
+.no-results {
+  text-align: center;
+  color: #6b7280;
+  font-size: 1rem;
+  margin-top: 40px;
+}
+
+.cv-priority-flag {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  position: absolute;
+  top: 8px;
+  left: 8px;
+}
+
+.cv-priority-high {
+  background-color: red;
+}
+
+.cv-priority-low {
+  background-color: green;
+}
+
+/* ✅ Back button fix trong white box */
+.back-btn {
+  padding: 8px 14px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s ease;
+
+  /* Sửa layout cho cân đối */
+  align-self: flex-start; /* Nút tự co lại đúng kích thước */
+  margin-bottom: 9px;  /* Tạo khoảng cách với tiêu đề "CVs for..." */
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.back-btn:hover {
+  background: #1e40af;
+}
+
+/* --- THÊM MỚI: Style cho Tag (Nhãn) Trạng thái --- */
+/* Dùng position: absolute để đặt nó ở góc trên bên phải */
+.cv-status-tag {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: white;
+  z-index: 5; /* Nằm trên cờ ưu tiên nếu có */
+}
+
+.cv-status-tag.dau {
+  background-color: #16a34a; /* Màu xanh lá (Đậu) */
+}
+
+.cv-status-tag.tu-choi {
+  background-color: #dc2626; /* Màu đỏ (Từ chối) */
+}
+/* ------------------------------------------------ */
+
+/* --- THÊM MỚI: Style làm mờ thẻ CV --- */
+/* Áp dụng cho thẻ CV không còn ở trạng thái "chua_xem" */
+.cv-card.faded {
+  opacity: 0.65;
+  background-color: #f9fafb; /* Nền hơi xám đi */
+}
+
+/* Khi di chuột vào thẻ đã mờ, nó sẽ sáng rõ trở lại */
+.cv-card.faded:hover {
+  opacity: 1; 
+  background-color: #ffffff;
+}
+
+/* --- THÊM MỚI: Style cho Checkbox trên thẻ CV --- */
+.cv-card-checkbox {
+  position: absolute;
+  bottom: 10px;
+  left: 10px; /* Đặt ở góc trên bên trái */
+  z-index: 5;
+  transform: scale(1.2); /* Làm cho checkbox to hơn một chút */
+  cursor: pointer;
+}
+
+/* --- THÊM MỚI: Thanh Hành động hàng loạt (Batch Action) --- */
+.batch-action-bar {
+  position: fixed;
+  bottom: 24px; /* <--- THAY ĐỔI 1: ĐẶT Ở DƯỚI CÙNG */
+  /* left/right vẫn được set bằng inline style trong JSX */
+  z-index: 999;
+  
+  background-color: #1e40af;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  
+  /* THAY ĐỔI 2: Hiệu ứng trượt LÊN (bắt đầu từ ngoài màn hình) */
+  transform: translateY(100px); 
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.batch-action-bar.visible {
+  transform: translateY(0); /* <--- Trượt về vị trí (bottom: 24px) */
+  opacity: 1;
+  pointer-events: all;
+}
+
+.batch-action-info {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.batch-action-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.batch-action-bar button {
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Nút "Đã xem" */
+.btn-batch-action {
+  background-color: #ffffff; /* Nút trắng */
+  color: #1e40af; /* Chữ xanh */
+}
+.btn-batch-action:hover {
+  background-color: #e0e7ff; /* Xanh nhạt */
+}
+
+/* Nút "Từ chối" */
+.btn-batch-reject {
+  background-color: #dc2626; /* Nút đỏ */
+  color: white;
+}
+.btn-batch-reject:hover {
+  background-color: #b91c1c; /* Đỏ đậm */
+}
+
+/* Nút "Hủy" */
+.btn-batch-cancel {
+  background-color: transparent;
+  color: white;
+  border: 1px solid white;
+}
+.btn-batch-cancel:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* --- THÊM MỚI: Style cho Thống kê nhanh --- */
+.cv-quick-stats {
+  font-size: 0.95rem;
+  color: #374151; /* Màu chữ xám đậm */
+  font-weight: 500;
+  margin-bottom: 5px; /* Khoảng cách với bộ lọc bên dưới */
+  margin-top: -6px; /* Gần tiêu đề h2 hơn */
+  padding-left: 2px; /* Thẳng hàng với tiêu đề (nếu có) */
+}
+
+/* Làm cho số liệu nổi bật hơn */
+.cv-quick-stats strong {
+  color: #1a202c; /* Màu đen */
+  font-weight: 600;
+}
+
+/* Màu cho thống kê Đậu CV (giống nhãn) */
+.stat-dau {
+  color: #16a34a; /* Màu xanh lá */
+  font-weight: 600;
+}
+
+/* Màu cho thống kê Từ chối (giống nhãn) */
+.stat-tu-choi {
+  color: #dc2626; /* Màu đỏ */
+  font-weight: 600;
+}
+
+/* Màu cho thống kê Đã xem */
+.stat-da-xem {
+  color: #4c80f1; /* Màu xanh dương (màu nút "Xem CV") */
+  font-weight: 600;
+}
+
+/* Màu cho thống kê Chưa xem */
+.stat-chua-xem {
+  color: #6b7280; /* Màu xám (màu chữ phụ) */
+  font-weight: 600;
+}
+
+.stat-dau strong { color: #16a34a; }
+.stat-tu-choi strong { color: #dc2626; }
+.stat-da-xem strong { color: #4c80f1; }
+.stat-chua-xem strong { color: #6b7280; }
+
+.job-post-metrics {
+  display: flex;
+  justify-content: space-between; /* Chia đều khoảng cách */
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid #f1f5f9; /* Đường kẻ ngang ngăn cách */
+}
+
+.metric-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1; /* Chia đều chiều rộng */
+  position: relative;
+}
+
+/* Đường kẻ dọc ngăn cách giữa các metrics (trừ thằng cuối cùng) */
+.metric-item:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  height: 70%;
+  width: 1px;
+  background-color: #e2e8f0;
+}
+
+.metric-count {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.metric-label {
+  font-size: 0.75rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+/* --- COLOR CODING (MÃ HÓA MÀU) --- */
+
+/* 1. Mới (Quan trọng nhất - Màu đỏ/cam) */
+.count-new .metric-count {
+  color: #ef4444; /* Red 500 */
+}
+/* Hiệu ứng nền nhẹ khi hover vào số (Optional) */
+.count-new:hover .metric-count {
+  text-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+}
+
+/* 2. Tiềm năng (Màu xanh lá - Positive) */
+.count-potential .metric-count {
+  color: #10b981; /* Emerald 500 */
+}
+
+/* 3. Phỏng vấn (Màu xanh dương - Process) */
+.count-interviewed .metric-count {
+  color: #3b82f6; /* Blue 500 */
+}
