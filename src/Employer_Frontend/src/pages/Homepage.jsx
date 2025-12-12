@@ -178,6 +178,14 @@ export default function Homepage() {
     }
   };
 
+  const updateJobLocal = (jobUpdated) => {
+      setJobPosts(prev =>
+          prev.map(job =>
+              job._id === jobUpdated._id ? { ...job, ...jobUpdated } : job
+          )
+      );
+  };
+
   // Hàm Update bài đăng (Logic cũ, không trừ tiền khi edit thông tin)
   const handleUpdatePost = async (updatedData) => {
     setIsLoading(true);
@@ -387,6 +395,7 @@ export default function Homepage() {
                   <EmployerJobRenewal
                     onNavigateToDeposit={() => setActiveSetting("Donate")}
                     jobPosts={jobPosts}
+                    updateJobLocal={updateJobLocal}
                   />
                 </div>
               )}
