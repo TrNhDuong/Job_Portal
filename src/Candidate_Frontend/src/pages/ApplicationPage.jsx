@@ -15,6 +15,7 @@ export default function ApplicationPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
+  const [candidate, setCandidate] = useState(null);   
   const [candidateCVs, setCandidateCVs] = useState([]);
   const [loadingCVs, setLoadingCVs] = useState(true);
 
@@ -38,6 +39,7 @@ export default function ApplicationPage() {
 
   const fetchCandidateCVs = async (email) => {
     if (!email) {
+      setCandidate(null);
       setCandidateCVs([]);
       setLoadingCVs(false);
       return;
@@ -46,18 +48,23 @@ export default function ApplicationPage() {
     setLoadingCVs(true);
     try {
       const res = await client.get(`/api/candidate?email=${email}`);
-      const candidate =
+
+      const candidateData =
         res.data?.success && res.data.data ? res.data.data : res.data;
 
-      const cvArray = normalizeCVArray(candidate?.CV);
+      setCandidate(candidateData || null);
+
+      const cvArray = normalizeCVArray(candidateData?.CV);
       setCandidateCVs(cvArray);
 
-      // tự chọn CV mới nhất
       if (cvArray.length > 0) {
         setSelectedCV(cvArray[0]._id);
+      } else {
+        setSelectedCV(null);
       }
     } catch (err) {
       console.error(err);
+      setCandidate(null);
       setCandidateCVs([]);
     } finally {
       setLoadingCVs(false);
@@ -85,8 +92,19 @@ export default function ApplicationPage() {
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
+
     if (!user?.email) {
       setError("You must be logged in to apply.");
+      return;
+    }
+
+    if (!candidate?._id) {
+      setError("Candidate profile not found. Please complete your profile first.");
+      return;
+    }
+
+    if (!jobId) {
+      setError("Job information is missing.");
       return;
     }
 
@@ -95,11 +113,12 @@ export default function ApplicationPage() {
 
     try {
       const body = {
-        email: user.email,
-        resumeId: selectedCV,
+        candidateId: candidate._id,  
+        jobId: jobId,                
+        resumeId: selectedCV,    
       };
 
-      await client.patch(`/api/post-job/applyJob?jobId=${jobId}`, body);
+      await client.post("/api/application", body);
 
       setIsSuccess(true);
     } catch (err) {
@@ -130,7 +149,7 @@ export default function ApplicationPage() {
           <div className="apply-success-meta">
             <div>
               <span className="apply-meta-label">Email</span>
-              <p className="apply-meta-value">{user.email}</p>
+              <p className="apply-meta-value">{user?.email}</p>
             </div>
             <div>
               <span className="apply-meta-label">Job ID</span>
@@ -217,9 +236,7 @@ export default function ApplicationPage() {
                         <p className="apply-cv-meta">
                           Uploaded{" "}
                           {cv.uploadedAt
-                            ? new Date(
-                                cv.uploadedAt
-                              ).toLocaleDateString()
+                            ? new Date(cv.uploadedAt).toLocaleDateString()
                             : "N/A"}
                         </p>
                       </div>

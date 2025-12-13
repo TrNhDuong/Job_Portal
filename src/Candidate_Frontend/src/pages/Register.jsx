@@ -57,20 +57,68 @@ export default function Register() {
 
   const [show1, setShow1] = useState(false);
   const [show2, setShow2] = useState(false);
+
+  // msg: thông báo chung (submit)
   const [msg, setMsg] = useState(null);
+
   const [loading, setLoading] = useState(false);
 
   // null | "terms" | "privacy"
   const [policy, setPolicy] = useState(null);
 
+  // ✅ trạng thái email (check khi blur)
+  // null | "checking" | "exists" | "available" | "invalid"
+  const [emailStatus, setEmailStatus] = useState(null);
+
   const navigate = useNavigate();
 
   const onChange = (e) => {
     const { name, value, type, checked } = e.target;
+
     setForm((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
+
+    // nếu người dùng đang sửa email thì reset trạng thái email để tránh báo sai
+    if (name === "email") {
+      setEmailStatus(null);
+    }
+  };
+
+  const checkEmailExists = async (rawEmail) => {
+    const email = (rawEmail || "").trim();
+
+    if (!email) {
+      setEmailStatus(null);
+      return;
+    }
+
+    // check format email cơ bản trước
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setEmailStatus("invalid");
+      return;
+    }
+
+    setEmailStatus("checking");
+
+    try {
+      // ✅ chỉ dùng getCandidate
+      // 200 => tồn tại
+      await client.get(`/api/candidate?email=${encodeURIComponent(email)}`);
+      setEmailStatus("exists");
+    } catch (err) {
+      const status = err?.response?.status;
+
+      // 404 => chưa tồn tại => ok
+      if (status === 404) {
+        setEmailStatus("available");
+      } else {
+        // lỗi khác: network/500... => không kết luận
+        setEmailStatus(null);
+      }
+    }
   };
 
   const onSubmit = async (e) => {
@@ -78,17 +126,27 @@ export default function Register() {
     setMsg(null);
 
     if (!form.name || !form.email || !form.password || !form.confirm) {
+      return setMsg({ type: "error", text: "Vui lòng điền đầy đủ thông tin." });
+    }
+
+    // nếu email chưa check thì check luôn (để tránh user chưa blur)
+    if (emailStatus === null) {
+      await checkEmailExists(form.email);
+    }
+
+    if (emailStatus === "invalid") {
+      return setMsg({ type: "error", text: "Email không đúng định dạng." });
+    }
+
+    if (emailStatus === "exists") {
       return setMsg({
         type: "error",
-        text: "Vui lòng điền đầy đủ thông tin.",
+        text: "Email này đã được đăng ký. Vui lòng dùng email khác hoặc đăng nhập.",
       });
     }
 
     if (form.password !== form.confirm) {
-      return setMsg({
-        type: "error",
-        text: "Mật khẩu xác nhận không khớp.",
-      });
+      return setMsg({ type: "error", text: "Mật khẩu xác nhận không khớp." });
     }
 
     const passwordRegex =
@@ -111,6 +169,7 @@ export default function Register() {
     try {
       setLoading(true);
 
+      // ✅ gửi OTP (email đã được check là available)
       await client.post("/api/send-otp", { email: form.email });
 
       sessionStorage.setItem(
@@ -193,8 +252,31 @@ export default function Register() {
                   placeholder="Nhập email đăng ký"
                   value={form.email}
                   onChange={onChange}
+                  onBlur={() => checkEmailExists(form.email)} // ✅ check khi nhập xong
                 />
               </div>
+
+              {/* ✅ trạng thái check email */}
+              {emailStatus === "checking" && (
+                <div className="register-message register-message-info">
+                  Đang kiểm tra email...
+                </div>
+              )}
+              {emailStatus === "invalid" && (
+                <div className="register-message register-message-error">
+                  Email không đúng định dạng.
+                </div>
+              )}
+              {emailStatus === "exists" && (
+                <div className="register-message register-message-error">
+                  Email này đã được đăng ký. Vui lòng dùng email khác hoặc đăng nhập.
+                </div>
+              )}
+              {emailStatus === "available" && (
+                <div className="register-message register-message-success">
+                  Email hợp lệ và chưa đăng ký ✔
+                </div>
+              )}
             </div>
 
             {/* Mật khẩu */}
@@ -293,7 +375,7 @@ export default function Register() {
               </label>
             </div>
 
-            {/* Thông báo */}
+            {/* Thông báo submit */}
             {msg && (
               <div
                 className={
@@ -309,7 +391,7 @@ export default function Register() {
             {/* Nút đăng ký */}
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || emailStatus === "exists" || emailStatus === "checking"}
               className="register-submit-btn"
             >
               {loading ? "Đang xử lý..." : "Đăng ký ứng viên"}
@@ -328,9 +410,7 @@ export default function Register() {
       {/* Modal điều khoản / chính sách */}
       <PolicyModal
         open={policy !== null}
-        title={
-          policy === "terms" ? "Điều khoản dịch vụ" : "Chính sách bảo mật"
-        }
+        title={policy === "terms" ? "Điều khoản dịch vụ" : "Chính sách bảo mật"}
         onClose={() => setPolicy(null)}
       >
         {policy === "terms" ? TERMS_CONTENT : PRIVACY_CONTENT}

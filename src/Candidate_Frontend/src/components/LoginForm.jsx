@@ -153,6 +153,15 @@ export default function LoginForm() {
               Đăng ký ngay
             </button>
           </div>
+          <div className="login-forgot-row">
+            <button
+              type="button"
+              className="login-forgot-link"
+              onClick={() => navigate("/forgot-password")}
+            >
+              Quên mật khẩu?
+            </button>
+          </div>
         </div>
       </div>
     </div>

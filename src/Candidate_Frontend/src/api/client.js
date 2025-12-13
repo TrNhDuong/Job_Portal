@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const client = axios.create({
-  baseURL: "https://jobportal-server-6g2n.onrender.com",
+  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:8080" ,
   headers: { "Content-Type": "application/json" },
   withCredentials: false,
 });
