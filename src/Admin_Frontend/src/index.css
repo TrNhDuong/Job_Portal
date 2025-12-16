@@ -50,3 +50,32 @@ body {
     transform: translateY(0);
   }
 }
+
+/* --- GLOBAL LOADING SPINNER --- */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  width: 100%;
+}
+
+.spinner {
+  border: 4px solid #f3f3f3; /* Màu nền xám nhạt */
+  border-top: 4px solid #0061ff; /* Màu xanh Brand */
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* --- TOASTIFY CUSTOM (Tùy chọn cho đẹp hơn) --- */
+.Toastify__toast-body {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 0.95rem;
+}

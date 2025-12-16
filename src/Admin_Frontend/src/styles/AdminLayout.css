@@ -2,18 +2,23 @@
 .admin-layout {
   display: flex;
   height: 100vh;
-  background-color: #f3f4f6;
+  /* Sử dụng biến nền body */
+  background-color: var(--bg-body); 
   font-family: 'Be Vietnam Pro', sans-serif;
+  transition: background-color 0.3s ease;
 }
 
-/* Sidebar tối màu */
+/* --- SIDEBAR --- */
 .admin-sidebar {
   width: 260px;
-  background: #111827; /* Màu đen xanh đậm */
-  color: #fff;
+  /* 👇 QUAN TRỌNG: Dùng biến thay vì màu #111827 cứng */
+  background: var(--bg-sidebar); 
+  border-right: 1px solid var(--border-color);
+  
+  color: var(--text-primary); /* Đổi màu chữ theo theme */
   display: flex;
   flex-direction: column;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
   flex-shrink: 0;
 }
 
@@ -22,52 +27,62 @@
   display: flex;
   align-items: center;
   padding: 0 24px;
-  border-bottom: 1px solid #1f2937;
+  border-bottom: 1px solid var(--border-color); /* Dùng biến */
   gap: 12px;
 }
 
-.sidebar-logo { width: 32px; height: 32px; }
-.sidebar-brand { font-size: 1.2rem; font-weight: 700; color: #fff; }
+.sidebar-logo { width: 32px; height: 32px; object-fit: contain;}
+.sidebar-brand { font-size: 1.2rem; font-weight: 700; color: var(--primary-color); }
 
 .sidebar-nav { flex: 1; padding: 20px 12px; display: flex; flex-direction: column; gap: 8px; }
 
+/* Item Menu */
 .nav-item {
   display: flex;
   align-items: center;
   padding: 12px 16px;
   border-radius: 8px;
   cursor: pointer;
-  color: #9ca3af;
+  color: var(--text-secondary); /* Dùng biến */
   transition: all 0.2s;
   font-weight: 500;
 }
 
-.nav-item:hover { background: #1f2937; color: #fff; }
-.nav-item.active { background: #0061ff; color: #fff; } /* Active màu xanh Brand */
+.nav-item:hover { 
+  background: var(--bg-body); /* Dùng biến */
+  color: var(--primary-color); 
+}
+
+.nav-item.active { 
+  background: var(--primary-color); 
+  color: #fff !important; /* Luôn là trắng khi active */
+}
 
 .nav-icon { font-size: 1.3rem; margin-right: 12px; display: flex; }
 .nav-label { font-size: 0.95rem; }
 
-.sidebar-footer { padding: 20px; border-top: 1px solid #1f2937; }
+.sidebar-footer { padding: 20px; border-top: 1px solid var(--border-color); }
 .nav-item.logout:hover { background: #ef4444; color: white; }
 
-/* Main Area */
+/* --- MAIN CONTENT --- */
 .admin-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 
 .admin-header {
   height: 70px;
-  background: #fff;
-  border-bottom: 1px solid #e5e7eb;
+  /* 👇 Dùng biến nền phần tử */
+  background: var(--bg-element); 
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 30px;
+  transition: background 0.3s ease;
 }
 
-.page-title { font-size: 1.25rem; font-weight: 700; color: #111827; margin: 0; }
+.page-title { font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin: 0; }
 
 .admin-profile { display: flex; align-items: center; gap: 10px; }
-.admin-name { font-weight: 600; color: #374151; font-size: 0.9rem; }
+.admin-name { font-weight: 600; color: var(--text-primary); font-size: 0.9rem; }
 .admin-avatar {
   width: 40px; height: 40px; background: #e0e7ff; color: #0061ff;
   border-radius: 50%; display: flex; align-items: center; justify-content: center;

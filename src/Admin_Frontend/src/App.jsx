@@ -1,7 +1,8 @@
 import React from 'react';
 import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-// Import các trang
 import AdminLogin from './pages/AdminLogin';
 import AdminLayout from './layouts/AdminLayout';
 import Dashboard from './pages/Dashboard';
@@ -20,6 +21,7 @@ const SimpleAuthGuard = () => {
 
 function App() {
   return (
+    <>
     <Routes>
       {/* Route Login */}
       <Route path="/login" element={<AdminLogin />} />
@@ -42,6 +44,8 @@ function App() {
       {/* Route lạ -> Login */}
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
+    <ToastContainer position="top-right" autoClose={3000} />
+    </>
   );
 }
 

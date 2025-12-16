@@ -5,12 +5,12 @@ import { AuthContext } from './context/AuthContext.jsx';
 import Homepage from './pages/Homepage.jsx';
 import LoginPage from './pages/employerLogin.jsx';     
 import RegisterPage from './pages/employerRegister.jsx'; 
-
+import EmployerOTP from './pages/employerOTP.jsx';
 import { Toaster } from 'react-hot-toast';
 
 
 export default function App() {
-  const { auth } = useContext(AuthContext);
+  // const { auth } = useContext(AuthContext);
 
   return (
     <>
@@ -39,6 +39,11 @@ export default function App() {
       <Route 
         path="/register" 
         element={<RegisterPage />} 
+      />
+
+      <Route
+        path='/otp'
+        element={<EmployerOTP />}
       />
 
       <Route

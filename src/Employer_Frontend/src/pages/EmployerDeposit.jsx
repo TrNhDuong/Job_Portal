@@ -98,7 +98,7 @@ const EmployerDeposit = () => {
 
   return (
     <div className="deposit-page">
-      <PointDisplay points={auth.points} />
+      <PointDisplay points={auth.employerData.data.point} />
 
       <div className="deposit-container">
         <div className="deposit-header">

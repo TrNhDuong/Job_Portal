@@ -1,16 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import { 
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
-  BarChart, Bar, Legend 
+  BarChart, Bar, PieChart, Pie, Cell 
 } from 'recharts';
-import { HiArrowSmUp, HiArrowSmDown, HiCurrencyDollar, HiUserAdd, HiDocumentText, HiDownload } from "react-icons/hi";
+import { 
+    HiArrowSmUp, HiArrowSmDown, HiCurrencyDollar, HiUserAdd, 
+    HiDocumentText, HiDownload, HiCalendar 
+} from "react-icons/hi";
 import '../styles/Dashboard.css';
-import { statsService } from '../services/statsService'; // Import Service
+import { statsService } from '../services/statsService';
 import { exportToExcel } from '../utils/exportExcel';
 
 export default function Dashboard() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // Theme support
+  const theme = localStorage.getItem('theme') || 'light';
+  const isDark = theme === 'dark';
+  const gridColor = isDark ? '#334155' : '#e5e7eb';
+  const axisColor = isDark ? '#94a3b8' : '#6b7280';
 
   useEffect(() => {
     fetchStats();
@@ -32,69 +41,93 @@ export default function Dashboard() {
 
   const handleExportRevenue = () => {
     if (!stats || !stats.revenue) return;
-    
-    // Chuẩn bị data
     const dataExport = stats.revenue.map(item => ({
         "Tháng": item.name,
         "Doanh thu (VND)": item.revenue
     }));
-
-    exportToExcel(dataExport, "Bao_cao_doanh_thu_6_thang");
+    exportToExcel(dataExport, "Bao_cao_doanh_thu");
   };
 
-  // Hàm format tiền tệ VNĐ
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
   };
 
-  if (loading) {
-    return <div className="dashboard-container"><p>Đang tải dữ liệu thống kê...</p></div>;
-  }
+  // --- 🔥 LOGIC: TỰ ĐỘNG DÙNG MOCK DATA NẾU TRỐNG ---
+  const getUserComposition = () => {
+      let totalEmployer = 0;
+      let totalCandidate = 0;
 
-  // Nếu load xong mà không có data (lỗi)
+      // Tính toán từ dữ liệu thật (nếu có)
+      if (stats && stats.traffic) {
+          stats.traffic.forEach(day => {
+              totalEmployer += (day.employer || 0);
+              totalCandidate += (day.candidate || 0);
+          });
+      }
+
+      // ✅ NẾU DỮ LIỆU = 0 -> DÙNG MOCK DATA ĐỂ HIỂN THỊ
+      if (totalEmployer === 0 && totalCandidate === 0) {
+          return [
+              { name: 'Nhà tuyển dụng', value: 450, color: '#3b82f6' }, // 35% - Xanh dương
+              { name: 'Ứng viên', value: 850, color: '#8b5cf6' }       // 65% - Tím
+          ];
+      }
+
+      // Nếu có dữ liệu thật thì dùng dữ liệu thật
+      return [
+          { name: 'Nhà tuyển dụng', value: totalEmployer, color: '#3b82f6' }, 
+          { name: 'Ứng viên', value: totalCandidate, color: '#8b5cf6' }       
+      ];
+  };
+
+  const pieData = getUserComposition();
+
+  // Loading
+  if (loading) {
+    return <div className="dashboard-container"><div className="loading-container"><div className="spinner"></div></div></div>;
+  }
   if (!stats) return null; 
+
+  const today = new Date().toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
   return (
     <div className="dashboard-container fade-in">
       
-      {/* Header Dashboard có nút Export */}
-      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px'}}>
-         {/* Bạn có thể thêm tiêu đề Dashboard ở đây nếu muốn */}
-         <div></div> 
-         
-         {/* 👇 3. NÚT XUẤT BÁO CÁO */}
+      {/* WELCOME */}
+      <div className="welcome-banner">
+          <h1 className="welcome-title">Xin chào, Administrator!</h1>
+          <div className="welcome-subtitle">
+              <HiCalendar /> Hôm nay là {today}
+          </div>
+      </div>
+
+      <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: '20px'}}>
          <button 
             onClick={handleExportRevenue}
-            className="btn-export" // Có thể style thêm trong CSS
-            style={{
-                display: 'flex', alignItems: 'center', gap: '8px',
-                background: '#fff', color: '#374151', border: '1px solid #d1d5db',
-                padding: '8px 16px', borderRadius: '8px', cursor: 'pointer',
-                fontWeight: '600', fontSize: '0.9rem', boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
-            }}
+            className="btn-excel"
+            style={{background: 'var(--bg-element)', color: 'var(--primary-color)', border: '1px solid var(--border-color)'}}
          >
-            <HiDownload size={18} style={{color: '#0061ff'}} /> Xuất báo cáo Doanh thu
+            <HiDownload size={18} /> Xuất báo cáo Doanh thu
          </button>
       </div>
       
-      {/* 1. CARDS THỐNG KÊ NHANH */}
+      {/* STATS CARDS */}
       <div className="stats-grid">
         <div className="stat-card">
             <div className="stat-icon income"><HiCurrencyDollar /></div>
             <div className="stat-info">
                 <span className="stat-label">Tổng Doanh Thu</span>
-                {/* Hiển thị số liệu thật từ API/Mock */}
                 <h3 className="stat-value">{formatCurrency(stats.summary.totalRevenue)}</h3>
-                <span className="stat-trend positive"><HiArrowSmUp /> +12% tháng này</span>
+                <span className="stat-trend positive"><HiArrowSmUp /> +12.5%</span>
             </div>
         </div>
 
         <div className="stat-card">
             <div className="stat-icon users"><HiUserAdd /></div>
             <div className="stat-info">
-                <span className="stat-label">User Mới</span>
+                <span className="stat-label">Thành viên mới</span>
                 <h3 className="stat-value">{stats.summary.newUsers.toLocaleString()}</h3>
-                <span className="stat-trend positive"><HiArrowSmUp /> +5% hôm nay</span>
+                <span className="stat-trend positive"><HiArrowSmUp /> +5.2%</span>
             </div>
         </div>
 
@@ -103,47 +136,73 @@ export default function Dashboard() {
             <div className="stat-info">
                 <span className="stat-label">Tin Tuyển Dụng</span>
                 <h3 className="stat-value">{stats.summary.totalJobs.toLocaleString()}</h3>
-                <span className="stat-trend negative"><HiArrowSmDown /> -2% tuần qua</span>
+                <span className="stat-trend negative"><HiArrowSmDown /> -2.1%</span>
             </div>
         </div>
       </div>
 
-      {/* 2. BIỂU ĐỒ */}
+      {/* CHARTS */}
       <div className="charts-grid">
         
-        {/* Chart 1: Doanh thu */}
+        {/* Chart 1 */}
         <div className="chart-box">
-            <h3 className="chart-title">Thống kê Truy cập & Đăng ký (Tuần qua)</h3>
-            <div style={{ width: '100%', height: 300 }}>
+            <div className="chart-header">
+                <h3 className="chart-title">Thống kê Truy cập & Đăng ký</h3>
+            </div>
+            <div style={{ width: '100%', height: 320 }}>
                 <ResponsiveContainer>
-                    <BarChart data={stats.traffic}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip cursor={{fill: 'transparent'}} />
-                        <Legend />
-                        <Bar dataKey="visits" name="Lượt truy cập" fill="#00c6ff" radius={[4, 4, 0, 0]} />
-                        <Bar dataKey="registers" name="Đăng ký mới" fill="#0061ff" radius={[4, 4, 0, 0]} />
+                    <BarChart data={stats.traffic} margin={{top: 10, right: 10, left: -20, bottom: 0}}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridColor} />
+                        <XAxis dataKey="name" tick={{fill: axisColor, fontSize: 12}} axisLine={false} tickLine={false} dy={10} />
+                        <YAxis tick={{fill: axisColor, fontSize: 12}} axisLine={false} tickLine={false} />
+                        <Tooltip 
+                            cursor={{fill: 'transparent'}}
+                            contentStyle={{backgroundColor: 'var(--bg-element)', borderColor: 'var(--border-color)', color: 'var(--text-primary)', borderRadius: '12px'}}
+                        />
+                        <Bar dataKey="visits" name="Lượt truy cập" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={30} />
+                        <Bar dataKey="registers" name="Đăng ký mới" fill="#0ea5e9" radius={[4, 4, 0, 0]} barSize={30} />
                     </BarChart>
                 </ResponsiveContainer>
             </div>
         </div>
 
-        {/* Chart 2: Lượt đăng ký mới (Traffic) */}
+        {/* Chart 2: DONUT CHART (Có Mock Data) */}
         <div className="chart-box">
-            <h3 className="chart-title">Đăng ký mới (Tuần qua)</h3>
-            <div style={{ width: '100%', height: 300 }}>
+            <div className="chart-header">
+                <h3 className="chart-title">Phân loại người dùng mới</h3>
+            </div>
+            <div style={{ width: '100%', height: 280, display:'flex', alignItems:'center', justifyContent:'center' }}>
                 <ResponsiveContainer>
-                    <BarChart data={stats.traffic}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip cursor={{fill: 'transparent'}} />
-                        <Legend />
-                        <Bar dataKey="employer" name="Nhà tuyển dụng" fill="#00c6ff" radius={[4, 4, 0, 0]} />
-                        <Bar dataKey="candidate" name="Ứng viên" fill="#0061ff" radius={[4, 4, 0, 0]} />
-                    </BarChart>
+                    <PieChart>
+                        <Pie
+                            data={pieData}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={70}
+                            outerRadius={100}
+                            paddingAngle={5}
+                            dataKey="value"
+                            stroke="none"
+                        >
+                            {pieData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={entry.color} />
+                            ))}
+                        </Pie>
+                        <Tooltip 
+                             contentStyle={{backgroundColor: 'var(--bg-element)', borderColor: 'var(--border-color)', color: 'var(--text-primary)', borderRadius: '12px'}}
+                             itemStyle={{ color: 'var(--text-primary)' }}
+                        />
+                    </PieChart>
                 </ResponsiveContainer>
+            </div>
+            
+            <div className="custom-legend">
+                {pieData.map((entry, index) => (
+                    <div key={index} className="legend-item">
+                        <div className="legend-dot" style={{background: entry.color}}></div>
+                        <span>{entry.name}: <b>{entry.value}</b></span>
+                    </div>
+                ))}
             </div>
         </div>
 

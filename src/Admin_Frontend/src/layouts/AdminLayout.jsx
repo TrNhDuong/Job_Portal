@@ -30,7 +30,7 @@ export default function AdminLayout() {
       <aside className="admin-sidebar">
         <div className="sidebar-header">
           <img src={logoImage} alt="Logo" className="sidebar-logo" />
-          <span className="sidebar-brand">InspireAdmin</span>
+          <span className="sidebar-brand">InspireLeader</span>
         </div>
 
         <nav className="sidebar-nav">
