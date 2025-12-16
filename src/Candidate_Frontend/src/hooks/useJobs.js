@@ -1,37 +1,66 @@
 // src/hooks/useJobs.js
-import { useEffect, useState } from "react";
-import { fetchJobs } from "../Home/services/home-api";
+import { useEffect, useMemo, useState } from "react";
+import client from "../api/client";
+
+function buildQuery(filters) {
+  const params = new URLSearchParams();
+
+  const safe = { limit: 10, page: 1, ...(filters || {}) }; 
+
+  Object.entries(safe).forEach(([k, v]) => {
+    if (v === undefined || v === null) return;
+    if (typeof v === "string" && v.trim() === "") return;
+    params.set(k, String(v));
+  });
+
+  return params.toString();
+}
 
 export default function useJobs(filters) {
   const [jobs, setJobs] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  // Thêm state cho phân trang (từ Backend)
-  const [totalPages, setTotalPages] = useState(1);
-  
+
+  const queryString = useMemo(() => buildQuery(filters), [filters]);
+
   useEffect(() => {
     let mounted = true;
-    async function run() {
+
+    (async () => {
       try {
         setLoading(true);
-        // Gọi API với filters
-      	const res = await fetchJobs(filters); // Sửa: gọi fetchJobs
-      	if (mounted) {
-          // Lấy 'data' và 'totalPages' từ API
-          setJobs(res.data.data || []); // (data nằm trong res.data.data)
-          setTotalPages(res.data.totalPages || 1);
-        }
-      } catch (e) {
-      	if (mounted) setError(e?.response?.data?.message || "Lỗi tải Job");
+        setError("");
+
+        const res = await client.get(`/api/post-job/filter?${queryString}`);
+
+        const data = res?.data?.data;
+
+        const list = Array.isArray(data) ? data : (data?.jobs || []);
+        const tp = Array.isArray(data) ? 1 : (data?.totalPages || 1);
+        const tt = Array.isArray(data) ? list.length : (data?.total || list.length);
+
+        if (!mounted) return;
+
+        setJobs(list);
+        setTotalPages(tp);
+        setTotal(tt);
+      } catch (err) {
+        if (!mounted) return;
+        setError(err?.response?.data?.message || err?.message || "Lỗi tải jobs");
+        setJobs([]);
+        setTotalPages(1);
+        setTotal(0);
       } finally {
         if (mounted) setLoading(false);
       }
-  	}
-    
-  	run();
-  	return () => (mounted = false);
-    // Chạy lại mỗi khi 'filters' thay đổi
-  }, [JSON.stringify(filters)]); // Dùng JSON.stringify để so sánh object
+    })();
 
-  return { jobs, loading, error, totalPages };
+    return () => {
+      mounted = false;
+    };
+  }, [queryString]);
+
+  return { jobs, totalPages, total, loading, error };
 }

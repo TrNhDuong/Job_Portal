@@ -60,28 +60,37 @@ export const removeCandidateCV = async (req, res) => {
 
     const candidate = candidateData.data;
 
-    // Chuẩn hóa về mảng
+    // FIX FILTER
     let cvList = candidate.CV || [];
-    cvList = cvList.filter(cv => cv.public_id !== cvPublicId)
-    // Xóa trên Cloudinary CHỈ 1 LẦN
+    const newCvList = cvList.filter(cv => cv.public_id !== cvPublicId);
+
+    // Kiểm tra có tồn tại không
+    if (newCvList.length === cvList.length) {
+      return res.status(400).json({
+        success: false,
+        message: "CV not found in candidate list",
+      });
+    }
+
+    // Update database first
+    const updateResult = await CandidateRepository.updateCandidate(email, {
+      CV: newCvList,
+    });
+
+    if (!updateResult.success) {
+      return res.status(500).json({
+        success: false,
+        message: "Failed to update CV list",
+      });
+    }
+
+    // Remove from cloud
     const result = await destroyCloudData(cvPublicId);
 
     if (!result) {
       return res.status(400).json({
         success: false,
         message: "Failed to remove CV from cloud",
-      });
-    }
-
-    // Cập nhật lên DB
-    const updateResult = await CandidateRepository.updateCandidate(email, {
-      rmCV: cvList,
-    });
-
-    if (!updateResult.success) {
-      return res.status(500).json({
-        success: false,
-        message: "Failed to update candidate CV list",
       });
     }
 

@@ -81,7 +81,17 @@ export default function JobDetailPanel({ job, onClose }) {
       <div className="job-detail-header">
         <div className="job-detail-header-main">
           <h2 className="job-detail-title">{job.title}</h2>
-          <p className="job-detail-company">{job.company}</p>
+          <button
+            type="button"
+            className="job-detail-company-link"
+            onClick={() =>
+              navigate(`/company/${encodeURIComponent(job.company || "")}`, {
+                state: { companyName: job.company },
+              })
+            }
+          >
+            {job.company}
+          </button>
         </div>
 
         <button

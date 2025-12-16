@@ -290,16 +290,13 @@ export default function MyCV() {
   };
 
   useEffect(() => {
-    if (user?.CV) {
-      const cvArray = normalizeCVArray(user.CV);
-      setMyResumes(cvArray);
-      setLoadingResumes(false);
-    } else if (user?.email) {
-      fetchResumes();
-    } else {
-      setLoadingResumes(false);
-    }
-  }, [user]);
+  if (!user?.email) {
+    setLoadingResumes(false);
+    return;
+  }
+
+  fetchResumes();
+}, [user?.email]);
 
   const handleFileSelect = (selectedFile) => {
     setFile(selectedFile);
@@ -342,9 +339,7 @@ export default function MyCV() {
     if (!window.confirm(`Xóa vĩnh viễn CV "${cv.name}"?`)) return;
     try {
       await client.patch(
-        `/api/upload/candidate/cv?email=${encodeURIComponent(
-          user.email
-        )}&public_id=${encodeURIComponent(cv.public_id)}`
+        `/api/upload/candidate/cv?email=${user.email}&public_id=${cv.public_id}`
       );  
       fetchResumes();
     } catch (err) {

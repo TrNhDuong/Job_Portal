@@ -2,41 +2,30 @@
 import React from "react";
 import useJobs from "../hooks/useJobs";
 import { Bookmark, MapPin, DollarSign, Briefcase } from "lucide-react";
-import "../styles/job-search.css";
 
-// HÀM FORMAT LƯƠNG – giống các file khác
 function formatSalary(salary) {
   if (!salary) return "Thỏa thuận";
-
   if (typeof salary === "string") return salary;
-
   if (typeof salary === "number") return salary.toString();
 
   if (typeof salary === "object") {
     const { minSalary, maxSalary, currency } = salary || {};
     const curr = currency || "";
 
-    if (minSalary && maxSalary) {
-      return `${minSalary} - ${maxSalary} ${curr}`.trim();
-    }
-    if (minSalary) {
-      return `Từ ${minSalary} ${curr}`.trim();
-    }
-    if (maxSalary) {
-      return `Tối đa ${maxSalary} ${curr}`.trim();
-    }
+    if (minSalary && maxSalary) return `${minSalary} - ${maxSalary} ${curr}`.trim();
+    if (minSalary) return `Từ ${minSalary} ${curr}`.trim();
+    if (maxSalary) return `Tối đa ${maxSalary} ${curr}`.trim();
   }
-
   return "Thỏa thuận";
 }
 
-// ----- CARD 1 JOB -----
 function JobCard({ job, onSelectJob, isSelected }) {
   const companyInitial = (job.company && job.company.charAt(0)) || "?";
   const placeholderLogo = `https://ui-avatars.com/api/?name=${companyInitial}&background=random&color=fff`;
 
   const handleBookmark = (e) => {
     e.stopPropagation();
+    // TODO: gọi API saveJob nếu bạn muốn
     console.log("Đã lưu job:", job._id);
   };
 
@@ -50,19 +39,15 @@ function JobCard({ job, onSelectJob, isSelected }) {
       <div className="job-card-inner">
         <div className="job-card-logo-wrap">
           <img
-            src={job.logoUrl || placeholderLogo}
+            src={job?.logo?.url || job.logoUrl || placeholderLogo}
             alt={job.company || "Company Logo"}
             className="job-card-logo"
           />
         </div>
 
         <div className="job-card-main">
-          <h3 className="job-card-title">
-            {job.title || "Không có tiêu đề"}
-          </h3>
-          <p className="job-card-company">
-            {job.company || "Không rõ công ty"}
-          </p>
+          <h3 className="job-card-title">{job.title || "Không có tiêu đề"}</h3>
+          <p className="job-card-company">{job.company || "Không rõ công ty"}</p>
 
           <div className="job-card-meta-row">
             <div className="job-card-meta">
@@ -76,9 +61,7 @@ function JobCard({ job, onSelectJob, isSelected }) {
           </div>
 
           <div className="job-card-pill-row">
-            <span className="job-card-pill">
-              {job.jobType || "N/A"}
-            </span>
+            <span className="job-card-pill">{job.jobType || "N/A"}</span>
             <span className="job-card-pill job-card-pill--outline">
               {job.major || "N/A"}
             </span>
@@ -98,28 +81,81 @@ function JobCard({ job, onSelectJob, isSelected }) {
   );
 }
 
-// ----- DANH SÁCH JOB -----
-export default function JobListings({
-  selectedJob,
-  onSelectJob,
-  filters,
-  setFilters,
-}) {
-  const { jobs, loading, error, totalPages } = useJobs(filters);
+export default function JobListings({ selectedJob, onSelectJob, filters, setFilters }) {
+  // ✅ Luôn ép limit = 10 (không phụ thuộc nơi khác)
+  const effectiveFilters = React.useMemo(() => {
+    return {
+      ...filters,
+      page: Number(filters?.page || 1),
+      limit: 10,
+    };
+  }, [filters]);
 
-  const filteredJobs = jobs.filter((job) => {
-    if (!filters.keyword) return true;
-    const kw = filters.keyword.toLowerCase();
-    return (
-      (job.title && job.title.toLowerCase().includes(kw)) ||
-      (job.company && job.company.toLowerCase().includes(kw))
-    );
-  });
+  const { jobs, loading, error, totalPages, total } = useJobs(effectiveFilters);
+
+  const currentPage = Number(effectiveFilters.page || 1);
+  const maxPage = Number(totalPages || 1);
 
   const handlePageChange = (newPage) => {
-    if (newPage >= 1 && newPage <= totalPages) {
-      setFilters({ ...filters, page: newPage });
+    const next = Math.max(1, Math.min(maxPage, Number(newPage || 1)));
+    if (next === currentPage) return;
+
+    // ✅ luôn giữ limit=10 khi đổi trang
+    setFilters({ ...filters, page: next, limit: 10 });
+  };
+
+  // ✅ input riêng để người dùng gõ số trang
+  const [pageInput, setPageInput] = React.useState(String(currentPage));
+
+  React.useEffect(() => {
+    setPageInput(String(currentPage));
+  }, [currentPage]);
+
+  const handlePageInputChange = (e) => {
+    // ✅ chỉ cho số, cho phép rỗng để xoá rồi nhập lại
+    const onlyDigits = e.target.value.replace(/[^\d]/g, "");
+    setPageInput(onlyDigits);
+  };
+
+  const commitGoToPage = () => {
+    if (!pageInput) return;
+
+    const num = Number(pageInput);
+    if (!Number.isFinite(num)) return;
+
+    // ✅ nếu vượt quá tổng trang -> không cho đi, reset input về trang hiện tại
+    if (num < 1 || num > maxPage) {
+      setPageInput(String(currentPage));
+      return;
     }
+
+    handlePageChange(num);
+  };
+
+  const handleKeyDown = (e) => {
+    const allowed = [
+      "Backspace",
+      "Delete",
+      "ArrowLeft",
+      "ArrowRight",
+      "Home",
+      "End",
+      "Tab",
+      "Enter",
+    ];
+
+    if (allowed.includes(e.key)) {
+      if (e.key === "Enter") commitGoToPage();
+      return;
+    }
+
+    // ✅ chặn mọi ký tự không phải số
+    if (!/^\d$/.test(e.key)) e.preventDefault();
+  };
+
+  const handlePaste = (e) => {
+    const text = e.clipboardData.getData("text");
+    if (!/^\d+$/.test(text)) e.preventDefault();
   };
 
   return (
@@ -128,13 +164,11 @@ export default function JobListings({
       <div className="job-listings-header">
         <h2 className="job-listings-title">
           Việc làm
-          <span className="job-listings-count">
-            ({filteredJobs.length})
-          </span>
+          <span className="job-listings-count">({total || jobs.length})</span>
         </h2>
       </div>
 
-      {/* Danh sách */}
+      {/* Body */}
       <div className="job-listings-body">
         {loading && (
           <div className="job-listings-skeleton">
@@ -144,25 +178,21 @@ export default function JobListings({
           </div>
         )}
 
-        {!loading && error && (
-          <div className="job-listings-error">{error}</div>
-        )}
+        {!loading && error && <div className="job-listings-error">{error}</div>}
 
-        {!loading && !error && filteredJobs.length === 0 && (
+        {!loading && !error && jobs.length === 0 && (
           <div className="job-listings-empty">
             <Briefcase className="job-empty-icon" />
-            <p className="job-empty-title">
-              Không tìm thấy công việc phù hợp
-            </p>
+            <p className="job-empty-title">Không tìm thấy công việc phù hợp</p>
             <p className="job-empty-subtitle">
               Hãy thử thay đổi từ khóa hoặc bộ lọc tìm kiếm.
             </p>
           </div>
         )}
 
-        {!loading && !error && filteredJobs.length > 0 && (
+        {!loading && !error && jobs.length > 0 && (
           <div className="job-list">
-            {filteredJobs.map((job) => (
+            {jobs.map((job) => (
               <JobCard
                 key={job._id}
                 job={job}
@@ -176,24 +206,54 @@ export default function JobListings({
 
       {/* Pagination */}
       <div className="job-listings-footer">
-        <div className="job-pagination">
+        <div className="job-pagination job-pagination--single-row">
+          {/* Trang trước */}
           <button
             type="button"
-            onClick={() => handlePageChange(filters.page - 1)}
-            disabled={filters.page <= 1}
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage <= 1}
             className="job-page-btn"
           >
             Trang trước
           </button>
 
-          <span className="job-page-info">
-            Trang {filters.page} / {totalPages || 1}
-          </span>
+          {/* Đi tới trang (ở GIỮA) */}
+          <div className="job-page-jump">
+            <span className="job-page-info">Đi tới trang</span>
 
+            <input
+              value={pageInput}
+              onChange={handlePageInputChange}
+              onKeyDown={handleKeyDown}
+              onPaste={handlePaste}
+              inputMode="numeric"
+              pattern="[0-9]*"
+              className="job-page-input"
+            />
+
+            <span className="job-page-info">
+              / {maxPage}
+            </span>
+
+            <button
+              type="button"
+              className="job-page-btn"
+              onClick={commitGoToPage}
+              disabled={
+                !pageInput ||
+                Number(pageInput) < 1 ||
+                Number(pageInput) > maxPage
+              }
+            >
+              Đi
+            </button>
+          </div>
+
+          {/* Trang sau */}
           <button
             type="button"
-            onClick={() => handlePageChange(filters.page + 1)}
-            disabled={filters.page >= totalPages}
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage >= maxPage}
             className="job-page-btn"
           >
             Trang sau

@@ -106,7 +106,12 @@ const topSectorsTitle = (
     <div className="home-sectors-title-icon">
       <TrendingUp />
     </div>
-    <div className="home-sectors-title-text">Top ngành nổi bật</div>
+    <div>
+      <div className="home-featured-title-text">Top ngành nổi bật</div>
+      <div className="home-sectors-subtitle">
+        Nhóm lĩnh vực đang có nhiều cơ hội việc làm
+      </div>
+    </div>
   </div>
 );
 

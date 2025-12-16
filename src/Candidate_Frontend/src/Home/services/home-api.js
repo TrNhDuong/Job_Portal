@@ -1,14 +1,10 @@
 import axios from "axios";
+import client from "../../api/client";
 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8080",
-  withCredentials: false,
-});
-
-export const fetchFeaturedJobs = () => api.get("/api/post-job/filter");
-export const fetchFeaturedBrands = () => api.get("/api/employer/feature");
+export const fetchFeaturedJobs = () => client.get("/api/post-job/filter");
+export const fetchFeaturedBrands = () => client.get("/api/employer/feature");
 
 export const fetchJobs = (filters) => {
   const params = new URLSearchParams(filters);
-  return api.get(`/api/post-job/filter?${params.toString()}`);
+  return client.get(`/api/post-job/filter?${params.toString()}`);
 };

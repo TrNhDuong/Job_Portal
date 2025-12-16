@@ -20,14 +20,14 @@ const BulkOptionModal = ({ stats, onClose, onSelectGroup }) => {
                 <button 
                     className="btn" 
                     style={{justifyContent: 'space-between', padding: '15px', border: '1px solid #e0e0e0', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center'}}
-                    onClick={() => onSelectGroup('pass')}
-                    disabled={stats.pass === 0}
+                    onClick={() => onSelectGroup('hired')}
+                    disabled={stats.hired === 0}
                 >
                     <div style={{display:'flex', alignItems:'center', gap: '10px'}}>
                         <span style={{width:'10px', height:'10px', borderRadius:'50%', background:'#28a745'}}></span>
                         <span>Gửi Offer (Nhóm Đậu)</span>
                     </div>
-                    <strong>{stats.pass} người</strong>
+                    <strong>{stats.hired} người</strong>
                 </button>
 
                 {/* Nút gửi cho nhóm Từ chối */}
@@ -48,14 +48,14 @@ const BulkOptionModal = ({ stats, onClose, onSelectGroup }) => {
                  <button 
                     className="btn" 
                     style={{justifyContent: 'space-between', padding: '15px', border: '1px solid #e0e0e0', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center'}}
-                    onClick={() => onSelectGroup('viewed')}
-                    disabled={stats.viewed === 0}
+                    onClick={() => onSelectGroup('interviewing')}
+                    disabled={stats.interviewing === 0}
                 >
                      <div style={{display:'flex', alignItems:'center', gap: '10px'}}>
                         <span style={{width:'10px', height:'10px', borderRadius:'50%', background:'#ffc107'}}></span>
                         <span>Mời Phỏng Vấn (Nhóm Đang xem)</span>
                     </div>
-                    <strong>{stats.viewed} người</strong>
+                    <strong>{stats.interviewing} người</strong>
                 </button>
             </div>
         </div>
@@ -73,13 +73,13 @@ const EmailComposeModal = ({ recipients, statusType, onClose, onSend }) => {
 
   // Logic tự động điền mẫu (Template)
   useEffect(() => {
-    if (statusType === 'pass') {
+    if (statusType === 'hired') {
         setSubject("THÔNG BÁO TRÚNG TUYỂN & MỜI NHẬN VIỆC");
         setContent(`Chào bạn,\n\nChúng tôi rất vui mừng thông báo bạn đã trúng tuyển...\n\nTrân trọng,`);
     } else if (statusType === 'rejected') {
         setSubject("THƯ CẢM ƠN VÀ THÔNG BÁO KẾT QUẢ");
         setContent(`Chào bạn,\n\nCảm ơn bạn đã dành thời gian tham gia phỏng vấn. Tuy nhiên...\n\nTrân trọng,`);
-    } else if (statusType === 'viewed') {
+    } else if (statusType === 'interviewing') {
         setSubject("THƯ MỜI PHỎNG VẤN");
         setContent(`Chào bạn,\n\nChúng tôi rất ấn tượng với hồ sơ của bạn và muốn mời bạn tham gia phỏng vấn...\n\nTrân trọng,`);
     }
@@ -209,20 +209,20 @@ const JobListView = ({ jobs, onSelectJob }) => {
 
               <div 
                 className="metric-box potential"
-                onClick={(e) => { e.stopPropagation(); onSelectJob(job, 'pass'); }}
+                onClick={(e) => { e.stopPropagation(); onSelectJob(job, 'hired'); }}
               >
-                <span className={`metric-number ${(job.metric.pass || 0) === 0 ? 'zero' : ''}`}>
-                  {job.metric.pass || 0}
+                <span className={`metric-number ${(job.metric.hired || 0) === 0 ? 'zero' : ''}`}>
+                  {job.metric.hired || 0}
                 </span>
                 <span className="metric-label">Tiềm năng</span>
               </div>
 
               <div 
                 className="metric-box interview"
-                onClick={(e) => { e.stopPropagation(); onSelectJob(job, 'viewed'); }}
+                onClick={(e) => { e.stopPropagation(); onSelectJob(job, 'interviewing'); }}
               >
-                 <span className={`metric-number ${(job.metric.interviewed || 0) === 0 ? 'zero' : ''}`}>
-                  {job.metric.interviewed || 0}
+                 <span className={`metric-number ${(job.metric.interinterviewing || 0) === 0 ? 'zero' : ''}`}>
+                  {job.metric.interinterviewing || 0}
                 </span>
                 <span className="metric-label">Đã xem</span>
               </div>
@@ -246,34 +246,37 @@ const CVManager = ({ job, initialStatus, onBack }) => {
   // --- [NEW STATE] Quản lý Modal gửi mail ---
   const [showOptionModal, setShowOptionModal] = useState(false);
   const [showEmailModal, setShowEmailModal] = useState(false);
-  const [targetGroup, setTargetGroup] = useState(null); // 'pass', 'rejected', 'viewed'
+  const [targetGroup, setTargetGroup] = useState(null); // 'hired', 'rejected', 'interviewing'
   const [targetRecipients, setTargetRecipients] = useState([]);
 
   useEffect(() => {
     setLoading(true);
-    const mockFetchCVs = () => {
-      const dummyData = [
-        { id: 1, name: "Nguyễn Văn A", position: job.position, status: "new", date: "2025-11-28", location: "Hồ Chí Minh", priority: "high" },
-        { id: 2, name: "Trần Thị B", position: job.position, status: "viewed", date: "2025-11-27", location: "Hà Nội", priority: "low" },
-        { id: 3, name: "Lê Văn C", position: job.position, status: "pass", date: "2025-11-25", location: "Đà Nẵng", priority: "high" },
-        { id: 4, name: "Phạm Văn D", position: job.position, status: "rejected", date: "2025-11-20", location: "Hồ Chí Minh" },
-        { id: 5, name: "Hoàng E", position: job.position, status: "new", date: "2025-11-28", location: "Hồ Chí Minh" },
-        // Thêm dữ liệu giả để test gửi mail
-        { id: 6, name: "Vũ Văn F", position: job.position, status: "pass", date: "2025-11-29", location: "Hồ Chí Minh" },
-      ];
-      setCvList(dummyData);
-      setLoading(false);
-    };
-    setTimeout(mockFetchCVs, 500); 
+    // const mockFetchCVs = () => {
+    //   const dummyData = [
+    //     { id: 1, name: "Nguyễn Văn A", position: job.position, status: "new", date: "2025-11-28", location: "Hồ Chí Minh", priority: "high" },
+    //     { id: 2, name: "Trần Thị B", position: job.position, status: "interviewing", date: "2025-11-27", location: "Hà Nội", priority: "low" },
+    //     { id: 3, name: "Lê Văn C", position: job.position, status: "hired", date: "2025-11-25", location: "Đà Nẵng", priority: "high" },
+    //     { id: 4, name: "Phạm Văn D", position: job.position, status: "rejected", date: "2025-11-20", location: "Hồ Chí Minh" },
+    //     { id: 5, name: "Hoàng E", position: job.position, status: "new", date: "2025-11-28", location: "Hồ Chí Minh" },
+    //     // Thêm dữ liệu giả để test gửi mail
+    //     { id: 6, name: "Vũ Văn F", position: job.position, status: "hired", date: "2025-11-29", location: "Hồ Chí Minh" },
+    //   ];
+    //   setCvList(dummyData);
+    //   setLoading(false);
+    // };
+    // setTimeout(mockFetchCVs, 500); 
+    const applicantList = job.applicants || []; // Giả sử job có trường applicants
+    setCvList(applicantList);
+    setLoading(false);
   }, [job]);
 
   const stats = useMemo(() => {
     return {
       all: cvList.length,
-      new: cvList.filter(c => c.status === 'new').length,
-      viewed: cvList.filter(c => c.status === 'viewed').length,
-      pass: cvList.filter(c => c.status === 'pass').length,
-      rejected: cvList.filter(c => c.status === 'rejected').length
+      new: cvList.filter(c => c.label === 'New').length,
+      interviewing: cvList.filter(c => c.label === 'Interviewing').length,
+      hired: cvList.filter(c => c.label === 'Hired').length,
+      rejected: cvList.filter(c => c.label === 'Rejected').length
     };
   }, [cvList]);
 
@@ -285,7 +288,7 @@ const CVManager = ({ job, initialStatus, onBack }) => {
   const handleViewCv = (cv) => {
     setSelectedCv(cv);
     if(cv.status === 'new') {
-        setCvList(prev => prev.map(p => p.id === cv.id ? {...p, status: 'viewed'} : p));
+        setCvList(prev => prev.map(p => p.id === cv.id ? {...p, status: 'interviewing'} : p));
     }
   };
 
@@ -341,11 +344,11 @@ const CVManager = ({ job, initialStatus, onBack }) => {
         <button className={`pipeline-tab ${activeTab === 'new' ? 'active' : ''}`} onClick={() => setActiveTab('new')}>
           Mới <span className="count-badge">{stats.new}</span>
         </button>
-        <button className={`pipeline-tab ${activeTab === 'viewed' ? 'active' : ''}`} onClick={() => setActiveTab('viewed')}>
-          Đang xem xét <span className="count-badge">{stats.viewed}</span>
+        <button className={`pipeline-tab ${activeTab === 'interviewing' ? 'active' : ''}`} onClick={() => setActiveTab('interviewing')}>
+          Đang xem xét <span className="count-badge">{stats.interviewing}</span>
         </button>
-        <button className={`pipeline-tab dau ${activeTab === 'pass' ? 'active' : ''}`} onClick={() => setActiveTab('pass')}>
-          Đậu <span className="count-badge">{stats.pass}</span>
+        <button className={`pipeline-tab dau ${activeTab === 'hired' ? 'active' : ''}`} onClick={() => setActiveTab('hired')}>
+          Đậu <span className="count-badge">{stats.hired}</span>
         </button>
         <button className={`pipeline-tab rot ${activeTab === 'rejected' ? 'active' : ''}`} onClick={() => setActiveTab('rejected')}>
           Từ chối <span className="count-badge">{stats.rejected}</span>
@@ -368,9 +371,9 @@ const CVManager = ({ job, initialStatus, onBack }) => {
                         <span title="Ứng viên tiềm năng/Gấp"><Flame className="priority-icon" /></span>
                     )}
 
-                    {cv.status === 'pass' && <span className="status-pill pass">Đậu</span>}
+                    {cv.status === 'hired' && <span className="status-pill hired">Đậu</span>}
                     {cv.status === 'rejected' && <span className="status-pill rejected">Từ chối</span>}
-                    {cv.status === 'viewed' && <span className="status-pill viewed">Đang xem</span>}
+                    {cv.status === 'interviewing' && <span className="status-pill interviewing">Đang xem</span>}
                     {cv.status === 'new' && <span className="status-pill new">Mới</span>}
                 </div>
                 
@@ -434,14 +437,14 @@ export default function EmployerDashboard({ jobPosts = [] }) { // Default props
       title: "Senior React Developer", 
       position: "Developer", 
       location: "Hồ Chí Minh", 
-      metric: { newed: 2, pass: 1, interviewed: 3 } 
+      metric: { newed: 2, hired: 1, interinterviewing: 3 } 
     },
     { 
       _id: 2, 
       title: "Marketing Manager", 
       position: "Marketing", 
       location: "Hà Nội", 
-      metric: { newed: 0, pass: 0, interviewed: 1 } 
+      metric: { newed: 0, hired: 0, interinterviewing: 1 } 
     }
   ];
 
