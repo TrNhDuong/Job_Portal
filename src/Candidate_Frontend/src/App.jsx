@@ -18,10 +18,11 @@ import ProfileSettings from "./pages/settings/ProfileSettings.jsx";
 import PasswordSettings from "./pages/settings/PasswordSettings.jsx";
 import SecuritySettings from "./pages/settings/SecuritySettings.jsx";
 import MyJobsPage from "./pages/MyJobsPage.jsx";
-import ForgotPasswordCandidate from "./pages/ForgotPasswordCandidate";
+import ForgotPasswordCandidate from "./pages/ForgotPassword";
+import ResetPasswordPage from "./pages/ResetPasswordPage.jsx";
 function App() {
   const location = useLocation();
-  const hideNavbarRoutes = ["/register", "/login", "/verify-otp", "/forgot-password"];
+  const hideNavbarRoutes = ["/register", "/login", "/verify-otp", "/forgot-password", "/reset-password"];
   const shouldHideNavbar = hideNavbarRoutes.includes(location.pathname);
 
   return (
@@ -42,6 +43,7 @@ function App() {
             <Route path="/verify-otp" element={<VerifyOtpPage />} />
             <Route path="/login-page" element={<Login />} />
             <Route path="/forgot-password" element={<ForgotPasswordCandidate />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/jobs/:id/apply" element={<ApplicationPage />} />
             <Route path="/jobs/:id/status" element={<ApplicationStatusPage />} />
             <Route path="/apply/:id" element={<ApplicationPage />} />

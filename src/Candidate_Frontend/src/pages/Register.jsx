@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import client from "../api/client";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, ShieldCheck } from "lucide-react";
 
 import PolicyModal from "../components/PolicyModal";
 import { TERMS_CONTENT, PRIVACY_CONTENT } from "../components/Policies";
@@ -58,16 +58,9 @@ export default function Register() {
   const [show1, setShow1] = useState(false);
   const [show2, setShow2] = useState(false);
 
-  // msg: thông báo chung (submit)
   const [msg, setMsg] = useState(null);
-
   const [loading, setLoading] = useState(false);
-
-  // null | "terms" | "privacy"
   const [policy, setPolicy] = useState(null);
-
-  // ✅ trạng thái email (check khi blur)
-  // null | "checking" | "exists" | "available" | "invalid"
   const [emailStatus, setEmailStatus] = useState(null);
 
   const navigate = useNavigate();
@@ -80,21 +73,16 @@ export default function Register() {
       [name]: type === "checkbox" ? checked : value,
     }));
 
-    // nếu người dùng đang sửa email thì reset trạng thái email để tránh báo sai
-    if (name === "email") {
-      setEmailStatus(null);
-    }
+    if (name === "email") setEmailStatus(null);
   };
 
   const checkEmailExists = async (rawEmail) => {
     const email = (rawEmail || "").trim();
-
     if (!email) {
       setEmailStatus(null);
       return;
     }
 
-    // check format email cơ bản trước
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setEmailStatus("invalid");
@@ -102,22 +90,13 @@ export default function Register() {
     }
 
     setEmailStatus("checking");
-
     try {
-      // ✅ chỉ dùng getCandidate
-      // 200 => tồn tại
       await client.get(`/api/candidate?email=${encodeURIComponent(email)}`);
       setEmailStatus("exists");
     } catch (err) {
       const status = err?.response?.status;
-
-      // 404 => chưa tồn tại => ok
-      if (status === 404) {
-        setEmailStatus("available");
-      } else {
-        // lỗi khác: network/500... => không kết luận
-        setEmailStatus(null);
-      }
+      if (status === 404) setEmailStatus("available");
+      else setEmailStatus(null);
     }
   };
 
@@ -129,7 +108,6 @@ export default function Register() {
       return setMsg({ type: "error", text: "Vui lòng điền đầy đủ thông tin." });
     }
 
-    // nếu email chưa check thì check luôn (để tránh user chưa blur)
     if (emailStatus === null) {
       await checkEmailExists(form.email);
     }
@@ -169,7 +147,6 @@ export default function Register() {
     try {
       setLoading(true);
 
-      // ✅ gửi OTP (email đã được check là available)
       await client.post("/api/send-otp", { email: form.email });
 
       sessionStorage.setItem(
@@ -200,23 +177,46 @@ export default function Register() {
           <span>JOB PORTAL • ĐĂNG KÝ ỨNG VIÊN</span>
         </div>
 
-        <div className="register-card">
+        <div className="register-card register-card-premium">
           <div className="register-back-btn-wrapper">
             <button
               type="button"
               className="register-back-btn"
               onClick={() => navigate("/")}
+              disabled={loading}
             >
               ← Quay lại trang chủ
             </button>
           </div>
 
+          {/* Header giống login */}
           <div className="register-header">
+            <div className="register-title-icon">
+              <ShieldCheck className="register-title-icon-svg" />
+            </div>
+
             <h1 className="register-title">
-              Chào mừng đến với{" "}
+              Tạo tài khoản{" "}
               <span className="register-title-gradient">CDH Job Portal</span>
             </h1>
+
+            <p className="register-subtitle">
+              Đăng ký để tạo hồ sơ ứng viên, lưu việc và theo dõi ứng tuyển.
+            </p>
           </div>
+
+          {/* Message submit */}
+          {msg && (
+            <div
+              className={
+                msg.type === "error"
+                  ? "register-message register-message-error"
+                  : "register-message register-message-success"
+              }
+            >
+              {msg.text}
+            </div>
+          )}
 
           <form className="register-form" onSubmit={onSubmit}>
             {/* Họ tên */}
@@ -252,11 +252,11 @@ export default function Register() {
                   placeholder="Nhập email đăng ký"
                   value={form.email}
                   onChange={onChange}
-                  onBlur={() => checkEmailExists(form.email)} // ✅ check khi nhập xong
+                  onBlur={() => checkEmailExists(form.email)}
                 />
               </div>
 
-              {/* ✅ trạng thái check email */}
+              {/* trạng thái check email */}
               {emailStatus === "checking" && (
                 <div className="register-message register-message-info">
                   Đang kiểm tra email...
@@ -286,9 +286,10 @@ export default function Register() {
                   Mật khẩu
                 </label>
                 <span className="register-hint">
-                  Tối thiểu 8 kí tự, có chữ hoa, chữ thường, số & kí tự đặc biệt
+                  Tối thiểu 8 kí tự • Hoa • Thường • Số • Kí tự đặc biệt
                 </span>
               </div>
+
               <div className="register-input-row">
                 <LockIcon />
                 <input
@@ -304,6 +305,7 @@ export default function Register() {
                   type="button"
                   onClick={() => setShow1((s) => !s)}
                   className="register-eye-btn"
+                  aria-label={show1 ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
                 >
                   {show1 ? (
                     <EyeOff className="register-eye-icon" />
@@ -334,6 +336,7 @@ export default function Register() {
                   type="button"
                   onClick={() => setShow2((s) => !s)}
                   className="register-eye-btn"
+                  aria-label={show2 ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
                 >
                   {show2 ? (
                     <EyeOff className="register-eye-icon" />
@@ -375,39 +378,28 @@ export default function Register() {
               </label>
             </div>
 
-            {/* Thông báo submit */}
-            {msg && (
-              <div
-                className={
-                  msg.type === "error"
-                    ? "register-message register-message-error"
-                    : "register-message register-message-success"
-                }
-              >
-                {msg.text}
-              </div>
-            )}
-
-            {/* Nút đăng ký */}
             <button
               type="submit"
-              disabled={loading || emailStatus === "exists" || emailStatus === "checking"}
+              disabled={
+                loading ||
+                emailStatus === "exists" ||
+                emailStatus === "checking"
+              }
               className="register-submit-btn"
             >
               {loading ? "Đang xử lý..." : "Đăng ký ứng viên"}
             </button>
-          </form>
 
-          <div className="register-footer">
-            Bạn đã có tài khoản?{" "}
-            <Link to="/login" className="register-footer-link">
-              Đăng nhập ngay
-            </Link>
-          </div>
+            <div className="register-footer">
+              Bạn đã có tài khoản?{" "}
+              <Link to="/login" className="register-footer-link">
+                Đăng nhập ngay
+              </Link>
+            </div>
+          </form>
         </div>
       </div>
 
-      {/* Modal điều khoản / chính sách */}
       <PolicyModal
         open={policy !== null}
         title={policy === "terms" ? "Điều khoản dịch vụ" : "Chính sách bảo mật"}
