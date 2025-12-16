@@ -20,6 +20,7 @@ import SecuritySettings from "./pages/settings/SecuritySettings.jsx";
 import MyJobsPage from "./pages/MyJobsPage.jsx";
 import ForgotPasswordCandidate from "./pages/ForgotPassword";
 import ResetPasswordPage from "./pages/ResetPasswordPage.jsx";
+import EmployerProfilePage from "./pages/EmployerProfile.jsx";
 function App() {
   const location = useLocation();
   const hideNavbarRoutes = ["/register", "/login", "/verify-otp", "/forgot-password", "/reset-password"];
@@ -47,6 +48,7 @@ function App() {
             <Route path="/jobs/:id/apply" element={<ApplicationPage />} />
             <Route path="/jobs/:id/status" element={<ApplicationStatusPage />} />
             <Route path="/apply/:id" element={<ApplicationPage />} />
+            <Route path="/employer/:email" element={<EmployerProfilePage />} />
             <Route path="/dashboard" element={<CandidateDashboard />}>
               <Route index element={<MyJobsPage />} />
               <Route path="notifications" element={<NotificationSettings />} />

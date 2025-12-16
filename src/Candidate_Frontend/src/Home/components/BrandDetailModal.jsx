@@ -109,7 +109,7 @@ export default function BrandDetailModal({ brand, onClose }) {
 
           <div className="home-brand-modal-footer-actions">
             <Link
-              to={`/company/${safeBrand._id}`}
+              to={`/employer/${encodeURIComponent(safeBrand.email)}`}
               className="home-job-modal-btn primary"
             >
               Xem tất cả việc làm ({jobsCount})
