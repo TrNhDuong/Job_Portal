@@ -114,6 +114,7 @@ export default function Homepage() {
         alert("Vui lòng cập nhật tên công ty trong hồ sơ trước khi đăng tin.");
         return;
     }
+    postData.companyEmail = localStorage.getItem("email");
     setPendingPostData(postData); // Lưu tạm
     setPostDuration(7); // Reset về mặc định
     setShowPaymentModal(true); // Mở Modal
