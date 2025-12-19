@@ -77,6 +77,10 @@ export class CandidateRepository {
             candidate.data.CV.push(updatesCandidate["CV"]);
         }
 
+        if (updatesCandidate["rmCV"]){
+            candidate.data.CV = updatesCandidate["rmCV"]
+        }
+
         for (const attribute of candidateAttributes) {
             candidate.data[attribute] = updatesCandidate[attribute] || candidate.data[attribute];
         }

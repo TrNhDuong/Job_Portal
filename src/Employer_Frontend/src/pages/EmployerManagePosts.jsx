@@ -136,7 +136,8 @@ export default function EmployerManagePosts({
           filteredPosts.map((post) => {
             const isClosed = post.state === 'Closed';
 
-            return (
+            return  (
+              post.state !== 'Pending' && 
               <div
                 key={post._id}
                 className={`modern-card ${isClosed ? 'is-closed' : ''}`}

@@ -18,8 +18,8 @@ const EmployerProfile = () => {
     const data = auth.employerData?.data || {};
 
     // Logic hiển thị ảnh bìa: Nếu chưa có trong DB thì dùng MOCK_BANNER mới
-    const currentBanner = data.wallpaper.url || MOCK_BANNER;
-    const companyScale = data.scale || "100-499 nhân viên";
+    const currentBanner = data.wallpaper?.url || MOCK_BANNER;
+    const companyScale = data?.scale || "Chưa cập nhật";
 
     // --- MODE: EDIT ---
     if (mode === 'edit') {

@@ -114,6 +114,7 @@ export default function Homepage() {
         alert("Vui lòng cập nhật tên công ty trong hồ sơ trước khi đăng tin.");
         return;
     }
+    postData.companyEmail = localStorage.getItem("email");
     setPendingPostData(postData); // Lưu tạm
     setPostDuration(7); // Reset về mặc định
     setShowPaymentModal(true); // Mở Modal
@@ -176,6 +177,14 @@ export default function Homepage() {
         setIsLoading(false);
         setPendingPostData(null);
     }
+  };
+
+  const updateJobLocal = (jobUpdated) => {
+      setJobPosts(prev =>
+          prev.map(job =>
+              job._id === jobUpdated._id ? { ...job, ...jobUpdated } : job
+          )
+      );
   };
 
   // Hàm Update bài đăng (Logic cũ, không trừ tiền khi edit thông tin)
@@ -387,6 +396,7 @@ export default function Homepage() {
                   <EmployerJobRenewal
                     onNavigateToDeposit={() => setActiveSetting("Donate")}
                     jobPosts={jobPosts}
+                    updateJobLocal={updateJobLocal}
                   />
                 </div>
               )}

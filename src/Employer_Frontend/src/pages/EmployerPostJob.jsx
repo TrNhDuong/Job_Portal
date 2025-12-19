@@ -51,6 +51,7 @@ const EmployerPostJob = ({ onSubmit, initialData }) => {
     const flattenedData = {
       id: initialData._id, 
       title: initialData.title || "",
+      companyEmail: initialData.companyEmail || "",
       position: initialData.position || "",
       location: initialData.location || "",
       detailedAddress: initialData.detailedAddress || "", // Giả sử API trả về cái này
