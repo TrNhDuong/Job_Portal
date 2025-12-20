@@ -1,12 +1,12 @@
+import React from "react";
 
 export default function Hero() {
   return (
     <section className="home-hero">
       <div className="home-hero-content">
-        {/* Tiêu đề + mô tả */}
         <h1 className="home-hero-title">
-          Khởi đầu sự nghiệp mơ ước với{" "}
-          <span className="home-hero-gradient">CDH Job Portal</span>
+          Khởi đầu sự nghiệp mơ ước với
+          <span className="home-hero-gradient-text">CDH Job Portal</span>
         </h1>
 
         <p className="home-hero-subtitle">
@@ -14,21 +14,23 @@ export default function Hero() {
           nhân hoá theo kỹ năng và đam mê của bạn.
         </p>
 
-        {/* Metrics ngay dưới hero */}
         <div className="home-hero-metrics">
+          {/* Card 1 */}
           <div className="home-hero-metric-item">
             <div className="home-hero-metric-big">100k+</div>
             <div className="home-hero-metric-small">Việc làm đang tuyển</div>
           </div>
 
+          {/* Card 2 */}
           <div className="home-hero-metric-item">
             <div className="home-hero-metric-big">10k+</div>
             <div className="home-hero-metric-small">Doanh nghiệp tin dùng</div>
           </div>
 
+          {/* Card 3 - MỚI THÊM */}
           <div className="home-hero-metric-item">
-            <div className="home-hero-metric-big">500+</div>
-            <div className="home-hero-metric-small">Mẫu CV chuyên nghiệp</div>
+            <div className="home-hero-metric-big">24/7</div>
+            <div className="home-hero-metric-small">Hỗ trợ trực tuyến</div>
           </div>
         </div>
       </div>

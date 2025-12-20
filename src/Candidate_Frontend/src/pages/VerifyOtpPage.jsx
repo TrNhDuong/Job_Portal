@@ -162,23 +162,22 @@ export default function VerifyOtpPage() {
 
         sessionStorage.removeItem("updateProfileData");
         setMsg({ type: "success", text: "Cập nhật thông tin thành công!" });
-        setTimeout(() => navigate("/dashboard/settings/profile"), 900);
+        setTimeout(() => navigate("/dashboard/settings/profile"), 2000);
         return;
       }
 
       if (action === "update-password") {
         if (!data) throw new Error("Không tìm thấy dữ liệu đổi mật khẩu");
 
-        // NOTE FIX 3: backend /api/password/candidate cần old password + newpassword
         await client.post("/api/password/candidate", {
           email: data.email,
-          password: data.oldPassword,     // ✅ bắt buộc nếu backend giữ logic hiện tại
-          newpassword: data.newPassword,  // ✅ đúng field name
+          password: data.oldPassword,     
+          newpassword: data.newPassword,  
         });
 
         sessionStorage.removeItem("updatePasswordData");
         setMsg({ type: "success", text: "Đổi mật khẩu thành công!" });
-        setTimeout(() => navigate("/login"), 1200);
+        setTimeout(() => navigate("/login"), 2000);
         return;
       }
 
@@ -193,7 +192,7 @@ export default function VerifyOtpPage() {
         );
 
         sessionStorage.removeItem("forgotPasswordData");
-        navigate("/reset-password");
+        setTimeout(() => navigate("/reset-password"), 2000);
         return;
       }
 
@@ -208,7 +207,7 @@ export default function VerifyOtpPage() {
 
       sessionStorage.removeItem("registrationData");
       setMsg({ type: "success", text: "Đăng ký thành công! Hãy đăng nhập." });
-      setTimeout(() => navigate("/login"), 900);
+      setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
       setMsg({
         type: "error",

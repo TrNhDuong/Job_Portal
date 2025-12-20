@@ -1,498 +1,404 @@
-/* Page background giống vibe ApplyPage */
-.emp-page{
+/* src/styles/employer-profile.css */
+
+/* =============== PAGE BACKGROUND (Clean & Flat) =============== */
+.empfb-page {
   min-height: 100vh;
   padding-bottom: 40px;
-  background:
-    radial-gradient(900px 420px at 18% 10%, rgba(37,99,235,.18), transparent 65%),
-    radial-gradient(700px 360px at 82% 18%, rgba(79,70,229,.16), transparent 60%),
-    linear-gradient(180deg, #f6f7fb, #eef2f7);
+  background: #f8fafc; /* Nền xám nhạt phẳng */
   color: #0f172a;
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+  font-family: inherit;
 }
 
-.container{
-  max-width: 1140px;
+.empfb-container {
+  max-width: 1100px;
   margin: 0 auto;
   padding: 0 16px;
 }
 
-.emp-loading{
+.empfb-loading {
   min-height: 60vh;
   display: grid;
   place-items: center;
-  font-weight: 700;
-  color: #475569;
+  color: #64748b;
+  font-weight: 500;
 }
 
-/* HERO */
-.emp-hero{
+/* =============== COVER =============== */
+.empfb-cover {
   position: relative;
-  height: 300px;
-  overflow: hidden;
-  background: #e2e8f0;
+  height: 280px; /* Giảm chiều cao chút */
+  background: #cbd5e1;
 }
 
-.emp-hero-bg{
+.empfb-cover-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: scale(1.02);
 }
 
-.emp-hero-overlay{
+.empfb-cover-overlay {
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(180deg, rgba(2,6,23,.25), rgba(2,6,23,.55));
+  background: linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.4));
 }
 
-.emp-hero-inner{
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: flex-end;
-  padding-bottom: 18px;
+/* =============== HEADER CARD (Sửa bo góc) =============== */
+.empfb-header {
+  margin-top: -60px;
+  position: relative;
+  z-index: 2;
 }
 
-.emp-hero-card{
-  width: 100%;
+.empfb-header-card {
   display: grid;
-  grid-template-columns: 88px 1fr auto;
-  gap: 16px;
+  grid-template-columns: 100px 1fr auto;
+  gap: 20px;
+  align-items: end; /* Avatar nằm dưới cùng hàng với tên */
+  
+  padding: 20px;
+  /* GIẢM BO GÓC */
+  border-radius: 12px; 
+  
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); /* Bóng nhẹ phẳng */
+}
+
+.empfb-avatar {
+  width: 100px;
+  height: 100px;
+  /* GIẢM BO GÓC AVATAR */
+  border-radius: 12px;
+  background: #ffffff;
+  border: 4px solid #ffffff; /* Viền trắng tách biệt */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  overflow: hidden;
+  position: relative;
+  top: -10px; /* Đẩy lên chút */
+}
+
+.empfb-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.empfb-header-main {
+  padding-bottom: 4px;
+}
+
+.empfb-title-row {
+  display: flex;
   align-items: center;
-
-  padding: 16px 16px;
-  border-radius: 18px;
-  background: rgba(255,255,255,.88);
-  border: 1px solid rgba(15,23,42,.10);
-  backdrop-filter: blur(12px);
-
-  box-shadow:
-    0 18px 60px rgba(2,6,23,.22),
-    0 2px 10px rgba(2,6,23,.10);
-}
-
-.emp-logo{
-  width: 88px;
-  height: 88px;
-  border-radius: 16px;
-  background: rgba(255,255,255,.95);
-  border: 1px solid rgba(15,23,42,.12);
-  box-shadow: 0 10px 22px rgba(2,6,23,.12);
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-}
-
-.emp-logo img{
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.emp-title-row{
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
   gap: 12px;
+  margin-bottom: 8px;
 }
 
-.emp-name{
+.empfb-name {
   margin: 0;
-  font-size: 1.55rem;
-  font-weight: 900;
-  letter-spacing: -0.02em;
-}
-
-.emp-badges{
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-.emp-badge{
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(15,23,42,.10);
-  background: rgba(255,255,255,.75);
-  font-size: 13px;
-  font-weight: 800;
+  font-size: 24px;
+  font-weight: 700;
   color: #0f172a;
 }
 
-.emp-badge.subtle{
-  color: #334155;
-  font-weight: 700;
-}
-
-.emp-meta{
-  margin-top: 10px;
+.empfb-badges {
   display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  color: #475569;
-  font-weight: 650;
-  font-size: 0.95rem;
+  gap: 8px;
 }
 
-.emp-meta-item{
+.empfb-badge {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 10px;
-  border-radius: 12px;
-  border: 1px solid rgba(15,23,42,.08);
-  background: rgba(255,255,255,.65);
+  gap: 6px;
+  padding: 4px 8px;
+  /* GIẢM BO GÓC */
+  border-radius: 6px;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 600;
 }
 
-.emp-meta-item.link{
+.empfb-subrow {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.empfb-subitem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.empfb-link {
+  color: #2563eb;
   text-decoration: none;
-  color: #1e40af;
+  font-weight: 500;
 }
-.emp-meta-item.link:hover{
-  text-decoration: underline;
-  text-underline-offset: 3px;
+.empfb-link:hover { text-decoration: underline; }
+
+.empfb-truncate {
+  max-width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.emp-hero-actions{
+.empfb-actions {
   display: flex;
   gap: 10px;
+  padding-bottom: 4px;
 }
 
-/* Buttons */
-.emp-btn{
-  border: 0;
+/* BUTTONS (Sửa bo góc) */
+.empfb-btn {
+  border: none;
   cursor: pointer;
-  font-weight: 800;
-  border-radius: 12px;
-  padding: 10px 14px;
+  font-weight: 600;
+  /* GIẢM BO GÓC BUTTON */
+  border-radius: 8px;
+  padding: 10px 16px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  transition: transform .18s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease;
-  user-select: none;
-  text-decoration: none;
+  font-size: 14px;
+  transition: all 0.2s;
 }
 
-.emp-btn.small{
-  padding: 9px 12px;
-  border-radius: 12px;
-}
-
-.emp-btn-primary{
-  background: linear-gradient(135deg, #2563eb, #4f46e5);
+.empfb-btn-primary {
+  background: #2563eb;
   color: #fff;
-  box-shadow: 0 12px 26px rgba(79,70,229,.35);
 }
-.emp-btn-primary:hover{
-  transform: translateY(-1px);
-  box-shadow: 0 18px 34px rgba(79,70,229,.42);
+.empfb-btn-primary:hover { background: #1d4ed8; }
+
+.empfb-btn-ghost {
+  background: #f1f5f9;
+  color: #475569;
+}
+.empfb-btn-ghost:hover { background: #e2e8f0; }
+
+/* TABS (Sửa bo góc) */
+.empfb-tabs {
+  margin-top: 16px;
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid #e2e8f0;
 }
 
-.emp-btn-outline{
-  background: rgba(255,255,255,.75);
-  color: #1d4ed8;
-  border: 1px solid rgba(29,78,216,.35);
-}
-.emp-btn-outline:hover{
-  background: rgba(239,246,255,.95);
-  transform: translateY(-1px);
+.empfb-tab {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  font-weight: 600;
+  padding: 10px 16px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  /* Tab chữ nhật, chỉ bo góc trên */
+  border-radius: 8px 8px 0 0;
+  border-bottom: 2px solid transparent;
 }
 
-/* Grid layout */
-.emp-grid{
-  margin-top: 18px;
+.empfb-tab:hover { color: #0f172a; background: #f8fafc; }
+
+.empfb-tab.is-active {
+  color: #2563eb;
+  border-bottom-color: #2563eb;
+  background: #ffffff;
+}
+
+/* =============== BODY =============== */
+.empfb-body { margin-top: 24px; }
+
+.empfb-grid {
   display: grid;
-  grid-template-columns: 2.2fr 1fr;
-  gap: 18px;
+  grid-template-columns: 2fr 1fr; /* Cột chính rộng gấp đôi cột phụ */
+  gap: 24px;
   align-items: start;
 }
 
-.emp-card{
-  background: rgba(255,255,255,.86);
-  border: 1px solid rgba(15,23,42,.10);
-  border-radius: 18px;
+/* CARD (Sửa bo góc) */
+.empfb-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  /* GIẢM BO GÓC CARD */
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow:
-    0 12px 36px rgba(2,6,23,.08),
-    0 2px 10px rgba(2,6,23,.05);
+  margin-bottom: 24px;
 }
 
-.emp-card-header{
-  padding: 14px 18px;
+.empfb-card-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #e2e8f0;
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 10px;
-
-  background: rgba(255,255,255,.55);
-  border-bottom: 1px solid rgba(15,23,42,.08);
+  align-items: center;
 }
 
-.emp-card-header.highlight{
-  background: linear-gradient(135deg, rgba(37,99,235,.14), rgba(79,70,229,.12));
-}
-
-.emp-card h2{
-  margin: 0;
-  font-size: 1.05rem;
-  font-weight: 900;
-  letter-spacing: .06em;
-  text-transform: uppercase;
+.empfb-card-header h2 {
+  font-size: 16px;
+  font-weight: 700;
   color: #0f172a;
-}
-
-.emp-card-chip{
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(15,23,42,.10);
-  background: rgba(255,255,255,.75);
-  font-weight: 800;
-  font-size: 13px;
-  color: #334155;
-}
-
-.emp-card-body{
-  padding: 16px 18px;
-}
-
-.emp-desc{
   margin: 0;
-  line-height: 1.75;
-  color: #334155;
-  white-space: pre-line;
 }
 
-/* Jobs list */
-.emp-jobs{
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.emp-job{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  padding: 14px;
-  border-radius: 16px;
-  border: 1px solid rgba(15,23,42,.08);
-  background: rgba(255,255,255,.70);
-  transition: box-shadow .18s ease, transform .18s ease, border-color .18s ease;
-}
-
-.emp-job:hover{
-  transform: translateY(-1px);
-  border-color: rgba(37,99,235,.35);
-  box-shadow: 0 18px 34px rgba(2,6,23,.10);
-}
-
-.emp-job-left{
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-}
-
-.emp-job-logo{
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
-  border: 1px solid rgba(15,23,42,.10);
-  background: rgba(255,255,255,.90);
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-.emp-job-logo img{
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.emp-job-info{
-  min-width: 0;
-}
-
-.emp-job-title{
-  margin: 0;
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.emp-job-title-main{
-  font-weight: 900;
-  color: #0f172a;
-}
-
-.emp-job-id{
-  font-size: 12px;
-  font-weight: 900;
-  color: #1d4ed8;
-  background: rgba(239,246,255,.9);
-  border: 1px solid rgba(29,78,216,.18);
+.empfb-chip {
+  background: #f1f5f9;
   padding: 4px 10px;
-  border-radius: 999px;
-}
-
-.emp-job-sub{
-  margin-top: 6px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+  border-radius: 20px; /* Chip vẫn bo tròn để phân biệt */
+  font-size: 12px;
+  font-weight: 600;
   color: #475569;
-  font-weight: 650;
-  font-size: 0.92rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.emp-empty{
-  padding: 12px 4px;
-  color: #64748b;
-  font-weight: 650;
-}
+.empfb-card-body { padding: 20px; }
 
-/* Contact */
-.emp-contact{
+/* DESCRIPTION (Hyper Text Styles) */
+.empfb-desc-html {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #334155;
+}
+.empfb-desc-html p { margin-bottom: 12px; }
+.empfb-desc-html ul, .empfb-desc-html ol {
+  padding-left: 20px; margin-bottom: 12px;
+}
+.empfb-desc-html ul { list-style: disc; }
+.empfb-desc-html strong { color: #0f172a; font-weight: 600; }
+
+.empfb-readmore {
+  margin-top: 12px;
+  background: transparent;
+  border: none;
+  color: #2563eb;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+}
+.empfb-readmore:hover { text-decoration: underline; }
+
+/* JOBS LIST (Sửa bo góc) */
+.empfb-jobs {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
-.emp-contact-item{
+.empfb-job {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border: 1px solid #e2e8f0;
+  /* GIẢM BO GÓC JOB CARD */
+  border-radius: 8px;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.empfb-job:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+}
+
+.empfb-job-left {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.empfb-job-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  padding: 2px;
+  background: #fff;
+}
+.empfb-job-logo img { width: 100%; height: 100%; object-fit: contain; border-radius: 4px; }
+
+.empfb-job-info h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0 0 4px 0;
+}
+
+.empfb-job-sub {
+  font-size: 13px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.empfb-dot { font-size: 8px; color: #cbd5e1; }
+
+.empfb-savebtn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.empfb-savebtn:hover { border-color: #cbd5e1; color: #0f172a; }
+.empfb-savebtn.is-saved { color: #ef4444; border-color: #fecaca; background: #fef2f2; }
+
+/* INTRO (Right Sidebar) */
+.empfb-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.empfb-intro-item {
   display: flex;
   gap: 12px;
-  align-items: flex-start;
+  font-size: 14px;
 }
+.empfb-intro-icon { color: #94a3b8; flex-shrink: 0; margin-top: 2px; }
+.empfb-intro-label { font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 600; }
+.empfb-intro-value { color: #0f172a; font-weight: 500; word-break: break-all; }
 
-.emp-icon{
-  color: #2563eb;
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-.emp-contact-label{
-  font-size: 12px;
-  font-weight: 900;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  color: #64748b;
-  margin-bottom: 2px;
-}
-
-.emp-contact-value{
-  font-weight: 750;
-  color: #0f172a;
-  line-height: 1.4;
-  word-break: break-word;
-}
-
-.emp-contact-cta{
-  margin-top: 6px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  text-decoration: none;
-  font-weight: 850;
-  color: #1d4ed8;
-  border: 1px solid rgba(29,78,216,.22);
-  background: rgba(239,246,255,.75);
-}
-.emp-contact-cta:hover{
-  background: rgba(239,246,255,.95);
-}
-
-/* Share */
-.emp-share{
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.emp-share-label{
-  font-size: 12px;
-  font-weight: 900;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  color: #64748b;
-}
-
-.emp-copybox{
+/* =============== MODAL (Cho JobDetailPanel) =============== */
+.empfb-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5); /* Nền tối mờ */
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.empfb-modal-dialog {
+  /* Quan trọng: Để JobDetailPanel tự quyết định layout bên trong */
+  background: transparent; 
+  width: auto;
+  max-width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
   border-radius: 12px;
-  border: 1px solid rgba(15,23,42,.10);
-  background: rgba(255,255,255,.70);
-  padding: 10px 10px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
-.emp-copybox input{
-  border: 0;
-  outline: none;
-  background: transparent;
-  flex: 1;
-  color: #334155;
-  font-weight: 650;
-  font-size: 13px;
-  min-width: 0;
-}
-
-.emp-copybtn{
-  width: 38px;
-  height: 38px;
-  border-radius: 12px;
-  border: 1px solid rgba(15,23,42,.10);
-  background: rgba(255,255,255,.85);
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-  transition: transform .18s ease, box-shadow .18s ease;
-}
-.emp-copybtn:hover{
-  transform: translateY(-1px);
-  box-shadow: 0 14px 28px rgba(2,6,23,.10);
-}
-
-.emp-share-hint{
-  color: #64748b;
-  font-weight: 650;
-  font-size: 0.92rem;
-  line-height: 1.5;
-}
-
-/* Responsive */
-@media (max-width: 900px){
-  .emp-grid{
-    grid-template-columns: 1fr;
-  }
-  .emp-hero{
-    height: 320px;
-  }
-  .emp-hero-card{
-    grid-template-columns: 72px 1fr;
-    grid-template-areas:
-      "logo main"
-      "actions actions";
-  }
-  .emp-logo{ width: 72px; height: 72px; border-radius: 14px; }
-  .emp-hero-actions{
-    grid-column: 1 / -1;
-    justify-content: stretch;
-  }
-  .emp-btn{
-    flex: 1;
-    justify-content: center;
-  }
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .empfb-header-card { grid-template-columns: 1fr; text-align: center; justify-items: center; }
+  .empfb-avatar { width: 80px; height: 80px; }
+  .empfb-grid { grid-template-columns: 1fr; }
+  .empfb-actions { justify-content: center; width: 100%; }
+  .empfb-btn { flex: 1; justify-content: center; }
 }

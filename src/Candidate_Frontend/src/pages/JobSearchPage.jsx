@@ -6,6 +6,7 @@ import JobDetailPanel from "../components/JobDetailPanel";
 
 import { useAuth } from "../context/AuthContext";
 import client from "../api/client";
+import "../styles/job-search.css"; // Đảm bảo đã import file CSS
 
 export default function JobSearchPage() {
   const [selectedJob, setSelectedJob] = useState(null);
@@ -23,39 +24,30 @@ export default function JobSearchPage() {
 
   const { user, login } = useAuth();
 
-  // 🔄 Mỗi lần vào trang JobSearchPage, đồng bộ lại dữ liệu candidate
   useEffect(() => {
     const fetchCandidate = async () => {
       if (!user?.email) return;
-
       try {
         const res = await client.get(`/api/candidate?email=${user.email}`);
-        const candidate = res.data;
-
-        if (candidate) {
-          // ghi đè lại user trong AuthContext bằng dữ liệu candidate mới nhất
-          login(candidate);
-        } else {
-          console.warn("Không tìm thấy candidate cho email", user.email);
-        }
+        if (res.data) login(res.data);
       } catch (err) {
-        console.error("Lỗi khi lấy dữ liệu user (JobSearchPage):", err);
+        console.error("Lỗi user:", err);
       }
     };
-
     fetchCandidate();
-    // chỉ re-run khi email thay đổi (khi login user khác)
   }, [user?.email, login]);
 
   return (
-    <main className="flex h-full bg-background">
-      {/* Cột trái: bộ lọc */}
-      <aside className="w-full md:w-80 bg-sidebar text-sidebar-foreground border-r border-sidebar-border overflow-y-auto p-4">
+    // Container chính dùng layout Flex + Gap
+    <main className="job-search-layout">
+      
+      {/* Cột trái: Bộ lọc */}
+      <aside className="job-search-col job-search-sidebar">
         <SearchFilters filters={filters} setFilters={setFilters} />
       </aside>
 
-      {/* Cột giữa: danh sách job */}
-      <div className="flex-1 border-r border-border overflow-y-auto">
+      {/* Cột giữa: Danh sách */}
+      <div className="job-search-col job-search-main">
         <JobListings
           selectedJob={selectedJob}
           onSelectJob={setSelectedJob}
@@ -64,9 +56,9 @@ export default function JobSearchPage() {
         />
       </div>
 
-      {/* Cột phải: panel chi tiết */}
+      {/* Cột phải: Chi tiết (Chỉ hiện khi chọn job) */}
       {selectedJob && (
-        <div className="hidden lg:block w-96 bg-card border-l border-border overflow-y-auto">
+        <div className="job-search-col job-search-detail-panel">
           <JobDetailPanel job={selectedJob} onClose={() => setSelectedJob(null)} />
         </div>
       )}

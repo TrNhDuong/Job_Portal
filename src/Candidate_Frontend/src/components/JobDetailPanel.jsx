@@ -1,7 +1,15 @@
 // src/components/JobDetailPanel.jsx
-import React, { useState, useEffect } from "react";
-import { X, MapPin, DollarSign, Briefcase, Clock, Heart } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import {
+  X,
+  MapPin,
+  DollarSign,
+  Briefcase,
+  Heart,
+  Building2,
+  ExternalLink,
+} from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
 import "../styles/job-search.css";
 
 import { useAuth } from "../context/AuthContext";
@@ -10,10 +18,12 @@ import {
   removeSaveJob as apiRemoveSaveJob,
 } from "../api/candidate";
 
+// Hàm format lương
 function formatSalary(salary) {
   if (!salary) return "Thỏa thuận";
   if (typeof salary === "string") return salary;
   if (typeof salary === "number") return salary.toString();
+
   if (typeof salary === "object") {
     const { minSalary, maxSalary, currency } = salary || {};
     const curr = currency || "";
@@ -21,25 +31,47 @@ function formatSalary(salary) {
     if (minSalary) return `Từ ${minSalary} ${curr}`.trim();
     if (maxSalary) return `Tối đa ${maxSalary} ${curr}`.trim();
   }
+
   return "Thỏa thuận";
 }
 
 export default function JobDetailPanel({ job, onClose }) {
-  const postedDate = "2 ngày trước"; // placeholder
-
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const jobId = String(job._id);
   const [isSaved, setIsSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-  // lấy trạng thái đã lưu ban đầu từ user.listSaveJobs (giống FeaturedJobs)
+  const jobId = useMemo(() => String(job?._id || ""), [job?._id]);
+
+  // --- LOGIC LOGO ---
+  const companyInitial = (job?.company && job.company.charAt(0)) || "?";
+  const placeholderLogo = useMemo(
+    () =>
+      `https://ui-avatars.com/api/?name=${encodeURIComponent(
+        companyInitial
+      )}&background=random&color=fff`,
+    [companyInitial]
+  );
+
+  const placeholderRef = useRef(placeholderLogo);
   useEffect(() => {
-    if (user && Array.isArray(user.listSaveJobs)) {
-      const hasSaved = user.listSaveJobs
-        .map(String)
-        .includes(jobId);
-      setIsSaved(hasSaved);
+    placeholderRef.current = placeholderLogo;
+  }, [placeholderLogo]);
+
+  const logoSrc = (job?.logo && job.logo.url) || job?.logoUrl || placeholderLogo;
+
+  // --- LOGIC LINK CÔNG TY ---
+  const companyIdentifier = job?.companyEmail || job?.company || "";
+  const companyLink = useMemo(
+    () => `/employer/${encodeURIComponent(companyIdentifier)}`,
+    [companyIdentifier]
+  );
+
+  // Đồng bộ trạng thái saved từ user.listSaveJobs
+  useEffect(() => {
+    if (user && Array.isArray(user.listSaveJobs) && jobId) {
+      setIsSaved(user.listSaveJobs.map(String).includes(jobId));
     } else {
       setIsSaved(false);
     }
@@ -47,21 +79,21 @@ export default function JobDetailPanel({ job, onClose }) {
 
   const handleApply = () => {
     if (!user) {
-      alert("Bạn cần đăng nhập để ứng tuyển công việc này.");
+      alert("Bạn cần đăng nhập để ứng tuyển.");
       navigate("/login");
       return;
     }
     navigate(`/jobs/${job._id}/apply`);
   };
 
+  // Lưu / Bỏ lưu job
   const handleSaveJob = async () => {
-    if (!user) {
-      alert("Bạn cần đăng nhập để lưu job.");
-      navigate("/login");
-      return;
-    }
+    if (!user) return navigate("/login");
+    if (!jobId) return;
 
     try {
+      setSaving(true);
+
       if (isSaved) {
         await apiRemoveSaveJob(user.email, jobId);
         setIsSaved(false);
@@ -70,99 +102,102 @@ export default function JobDetailPanel({ job, onClose }) {
         setIsSaved(true);
       }
     } catch (err) {
-      console.error("Error (save job):", err);
-      alert(err?.response?.data?.message || "Không thể lưu job");
+      console.error(err);
+      // optional: alert("Không thể lưu công việc. Vui lòng thử lại.");
+    } finally {
+      setSaving(false);
     }
   };
 
+  // Render description (Hyper text/HTML)
+  const renderDescription = () => {
+    const content = job?.description || "Chưa có mô tả chi tiết.";
+    const hasHtml = /<[a-z][\s\S]*>/i.test(content);
+    const htmlContent = hasHtml ? content : content.replace(/\n/g, "<br/>");
+    return { __html: htmlContent };
+  };
+
+  if (!job) return null;
+
   return (
     <div className="job-detail">
-      {/* Header */}
+      {/* --- HEADER --- */}
       <div className="job-detail-header">
-        <div className="job-detail-header-main">
-          <h2 className="job-detail-title">{job.title}</h2>
-          <button
-            type="button"
-            className="job-detail-company-link"
-            onClick={() =>
-              navigate(`/company/${encodeURIComponent(job.company || "")}`, {
-                state: { companyName: job.company },
-              })
-            }
-          >
-            {job.company}
-          </button>
-        </div>
-
+        {/* Nút đóng */}
         <button
           type="button"
           onClick={onClose}
           className="job-detail-close"
+          aria-label="Đóng"
         >
-          <X className="job-detail-close-icon" />
+          <X size={20} />
         </button>
+
+        <div className="flex flex-col gap-4">
+          <div>
+            <h2 className="job-detail-title">{job.title}</h2>
+
+            {/* Link tới trang công ty */}
+            <Link to={companyLink} className="job-detail-company-link">
+              <Building2 size={16} />
+              {job.company}
+              <ExternalLink size={12} className="opacity-50 ml-0.5" />
+            </Link>
+          </div>
+        </div>
       </div>
 
-      {/* Content */}
+      {/* --- BODY --- */}
       <div className="job-detail-body">
+        {/* Grid thông tin nhanh */}
         <div className="job-detail-grid">
           <div className="job-detail-info-card">
-            <div className="job-detail-info-label">
-              <MapPin className="job-detail-info-icon" />
-              <span>Địa điểm</span>
-            </div>
-            <p className="job-detail-info-value">
-              {job.location || "N/A"}
-            </p>
-          </div>
-
-          <div className="job-detail-info-card">
-            <div className="job-detail-info-label">
-              <DollarSign className="job-detail-info-icon" />
-              <span>Mức lương</span>
-            </div>
-            <p className="job-detail-info-value">
+            <span className="label">
+              <DollarSign size={14} /> Mức lương
+            </span>
+            <span className="value" >
               {formatSalary(job.salary)}
-            </p>
+            </span>
           </div>
 
           <div className="job-detail-info-card">
-            <div className="job-detail-info-label">
-              <Briefcase className="job-detail-info-icon" />
-              <span>Hình thức</span>
-            </div>
-            <p className="job-detail-info-value">
-              {job.jobType || "N/A"}
-            </p>
+            <span className="label">
+              <MapPin size={14} /> Địa điểm
+            </span>
+            <span className="value" title={job.location || "N/A"}>
+              {job.location || "N/A"}
+            </span>
           </div>
 
           <div className="job-detail-info-card">
-            <div className="job-detail-info-label">
-              <Clock className="job-detail-info-icon" />
-              <span>Ngày đăng</span>
-            </div>
-            <p className="job-detail-info-value">{postedDate}</p>
+            <span className="label">
+              <Briefcase size={14} /> Hình thức
+            </span>
+            <span className="value">{job.jobType || "Toàn thời gian"}</span>
+          </div>
+
+          {/* ✅ Thay vì "Ngày đăng" -> Hiển thị ngành nghề */}
+          <div className="job-detail-info-card">
+            <span className="label">
+              <Briefcase size={14} /> Ngành nghề
+            </span>
+            <span className="value" title={job.major || "Chưa cập nhật"}>
+              {job.major || "Chưa cập nhật"}
+            </span>
           </div>
         </div>
 
-        {/* Description */}
+        {/* Mô tả công việc */}
         <section className="job-detail-section">
           <h3 className="job-detail-section-title">Mô tả công việc</h3>
-          <p className="job-detail-section-text">
-            {job.description || "Chưa có mô tả chi tiết cho công việc này."}
-          </p>
-        </section>
-
-        {/* Category */}
-        <section className="job-detail-section">
-          <h3 className="job-detail-section-title">Ngành nghề</h3>
-          <span className="job-detail-chip">
-            {job.major || "General"}
-          </span>
+          <div
+            className="job-detail-html-content"
+            dangerouslySetInnerHTML={renderDescription()}
+          />
         </section>
       </div>
 
-      {/* Footer */}
+      {/* --- FOOTER --- */}
       <div className="job-detail-footer">
         <button
           type="button"
@@ -171,17 +206,23 @@ export default function JobDetailPanel({ job, onClose }) {
         >
           Ứng tuyển ngay
         </button>
-
         <button
           type="button"
           onClick={handleSaveJob}
-          className="job-detail-save-btn"
+          disabled={saving}
+          className={`job-detail-save-btn ${isSaved ? "is-saved" : ""}`}
+          title={isSaved ? "Bỏ lưu" : "Lưu công việc"}
         >
-          <Heart
-            className="job-detail-save-icon"
-            fill={isSaved ? "currentColor" : "none"}
-          />
-          {isSaved ? "Đã lưu công việc" : "Lưu công việc"}
+          <Heart size={18} fill={isSaved ? "currentColor" : "none"} />
+          <span className="job-detail-save-text">
+            {saving
+              ? isSaved
+                ? "Đang bỏ lưu..."
+                : "Đang lưu..."
+              : isSaved
+              ? "Đã lưu"
+              : "Lưu job"}
+          </span>
         </button>
       </div>
     </div>
