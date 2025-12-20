@@ -1,116 +1,127 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { ArrowLeft, Flame, X, Check, Mail, Send, Users } from "lucide-react"; // Đã thêm icon Send, Users
 import "../styles/employerDashboard.css"
-
+import client from "../api/client";
+import { ArrowLeft, User, FileWarning, ExternalLink, Ban, Check, Mail, Flame, X, Send, FileText, Clock, AlertTriangle } from 'lucide-react';
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css'; // Import style của bản new
+import {Paperclip, Minimize2, Maximize2, Trash2 } from 'lucide-react';
+import "../styles/emailModal.css"; // File CSS ở bước 2
 // ==========================================
-// [NEW] COMPONENT: MODAL CHỌN NHÓM ĐỐI TƯỢNG
+// 1. EmailComposeModal (Giữ nguyên)
 // ==========================================
-const BulkOptionModal = ({ stats, onClose, onSelectGroup }) => {
-  return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={e => e.stopPropagation()} style={{maxWidth: '450px'}}>
-        <div className="modal-header">
-          <h3 className="modal-title">Chọn nhóm nhận email</h3>
-          <button className="close-btn" onClick={onClose}><X size={20}/></button>
-        </div>
-        <div className="modal-body">
-            <p style={{marginBottom: '15px', color: '#555'}}>Bạn muốn gửi thông báo cho nhóm nào?</p>
-            <div style={{display: 'flex', flexDirection: 'column', gap: '10px'}}>
-                {/* Nút gửi cho nhóm Đậu */}
-                <button 
-                    className="btn" 
-                    style={{justifyContent: 'space-between', padding: '15px', border: '1px solid #e0e0e0', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center'}}
-                    onClick={() => onSelectGroup('pass')}
-                    disabled={stats.pass === 0}
-                >
-                    <div style={{display:'flex', alignItems:'center', gap: '10px'}}>
-                        <span style={{width:'10px', height:'10px', borderRadius:'50%', background:'#28a745'}}></span>
-                        <span>Gửi Offer (Nhóm Đậu)</span>
-                    </div>
-                    <strong>{stats.pass} người</strong>
-                </button>
-
-                {/* Nút gửi cho nhóm Từ chối */}
-                <button 
-                    className="btn" 
-                    style={{justifyContent: 'space-between', padding: '15px', border: '1px solid #e0e0e0', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center'}}
-                    onClick={() => onSelectGroup('rejected')}
-                    disabled={stats.rejected === 0}
-                >
-                     <div style={{display:'flex', alignItems:'center', gap: '10px'}}>
-                        <span style={{width:'10px', height:'10px', borderRadius:'50%', background:'#dc3545'}}></span>
-                        <span>Gửi thư Cảm ơn (Nhóm Từ chối)</span>
-                    </div>
-                    <strong>{stats.rejected} người</strong>
-                </button>
-
-                 {/* Nút gửi cho nhóm Đang xem/Phỏng vấn */}
-                 <button 
-                    className="btn" 
-                    style={{justifyContent: 'space-between', padding: '15px', border: '1px solid #e0e0e0', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center'}}
-                    onClick={() => onSelectGroup('viewed')}
-                    disabled={stats.viewed === 0}
-                >
-                     <div style={{display:'flex', alignItems:'center', gap: '10px'}}>
-                        <span style={{width:'10px', height:'10px', borderRadius:'50%', background:'#ffc107'}}></span>
-                        <span>Mời Phỏng Vấn (Nhóm Đang xem)</span>
-                    </div>
-                    <strong>{stats.viewed} người</strong>
-                </button>
-            </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// ==========================================
-// [NEW] COMPONENT: MODAL SOẠN EMAIL
-// ==========================================
-const EmailComposeModal = ({ recipients, statusType, onClose, onSend }) => {
+const EmailComposeModal = ({ recipients, labelType, onClose, onSend }) => {
   const [subject, setSubject] = useState("");
   const [content, setContent] = useState("");
+  const [isExpanded, setIsExpanded] = useState(false); // Chế độ toàn màn hình
 
-  // Logic tự động điền mẫu (Template)
+  // Cấu hình Toolbar cho Editor (Gọn gàng, đủ dùng)
+  const modules = {
+    toolbar: [
+      [{ 'header': [1, 2, false] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{'list': 'ordered'}, {'list': 'bullet'}],
+      ['link', 'clean']
+    ],
+  };
+
+  const formats = [
+    'header',
+    'bold', 'italic', 'underline', 'strike',
+    'list', 'bullet',
+    'link'
+  ];
+
+  // Load mẫu email thông minh (HTML)
   useEffect(() => {
-    if (statusType === 'pass') {
+    if (labelType === 'Hired') {
         setSubject("THÔNG BÁO TRÚNG TUYỂN & MỜI NHẬN VIỆC");
-        setContent(`Chào bạn,\n\nChúng tôi rất vui mừng thông báo bạn đã trúng tuyển...\n\nTrân trọng,`);
-    } else if (statusType === 'rejected') {
+        setContent(`<p>Chào bạn,</p><p>Chúng tôi rất vui mừng thông báo bạn đã <strong>trúng tuyển</strong> vào vị trí...</p><p>Mời bạn phản hồi email này để xác nhận.</p><p><br></p><p>Trân trọng,</p>`);
+    } else if (labelType === 'Rejected') {
         setSubject("THƯ CẢM ƠN VÀ THÔNG BÁO KẾT QUẢ");
-        setContent(`Chào bạn,\n\nCảm ơn bạn đã dành thời gian tham gia phỏng vấn. Tuy nhiên...\n\nTrân trọng,`);
-    } else if (statusType === 'viewed') {
+        setContent(`<p>Chào bạn,</p><p>Cảm ơn bạn đã dành thời gian tham gia phỏng vấn. Tuy nhiên, sau khi cân nhắc kỹ lưỡng...</p><p>Chúc bạn sớm tìm được công việc phù hợp.</p><p><br></p><p>Trân trọng,</p>`);
+    } else if (labelType === 'Interviewing') {
         setSubject("THƯ MỜI PHỎNG VẤN");
-        setContent(`Chào bạn,\n\nChúng tôi rất ấn tượng với hồ sơ của bạn và muốn mời bạn tham gia phỏng vấn...\n\nTrân trọng,`);
+        setContent(`<p>Chào bạn,</p><p>Chúng tôi rất ấn tượng với hồ sơ của bạn và muốn mời bạn tham gia <strong>phỏng vấn</strong> trao đổi chi tiết...</p><p>Vui lòng xác nhận thời gian tham gia.</p><p><br></p><p>Trân trọng,</p>`);
     }
-  }, [statusType]);
+  }, [labelType]);
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={e => e.stopPropagation()} style={{maxWidth: '600px'}}>
-        <div className="modal-header">
-            <h3 className="modal-title">Soạn Email Gửi Hàng Loạt</h3>
-            <button className="close-btn" onClick={onClose}><X size={20}/></button>
+    <div className="email-modal-overlay" onClick={onClose}>
+      <div 
+        className={`email-modal-container ${isExpanded ? 'expanded' : ''} animate-pop`} 
+        onClick={e => e.stopPropagation()}
+      >
+        {/* --- 1. HEADER --- */}
+        <div className="email-header">
+            <h3 className="email-title">
+               {labelType ? `Soạn thư: ${labelType}` : 'Thư mới'}
+            </h3>
+            <div className="window-controls">
+                <button className="control-btn" onClick={() => setIsExpanded(!isExpanded)} title={isExpanded ? "Thu nhỏ" : "Phóng to"}>
+                    {isExpanded ? <Minimize2 size={16}/> : <Maximize2 size={16}/>}
+                </button>
+                <button className="control-btn close" onClick={onClose} title="Đóng">
+                    <X size={18}/>
+                </button>
+            </div>
         </div>
-        <div className="modal-body">
-            <div style={{background: '#f8f9fa', padding: '10px', borderRadius: '5px', marginBottom: '15px', fontSize: '13px'}}>
-                <strong>Gửi đến ({recipients.length} người): </strong> 
-                {recipients.map(r => r.name).join(", ")}
+
+        {/* --- 2. BODY (Inputs & Editor) --- */}
+        <div className="email-body">
+            {/* Dòng người nhận (Hiển thị dạng Tag đẹp mắt) */}
+            <div className="field-row recipients-row">
+                <span className="field-label">Đến:</span>
+                <div className="tags-container">
+                    {recipients.map((r, index) => (
+                        <div key={index} className="recipient-tag">
+                            <span className="tag-name">{r.name}</span>
+                            <span className="tag-email">&lt;{r.email}&gt;</span>
+                        </div>
+                    ))}
+                </div>
             </div>
-            <div style={{marginBottom: '10px'}}>
-                <label style={{display:'block', marginBottom:'5px', fontWeight:'500'}}>Tiêu đề:</label>
-                <input type="text" className="filter-input" style={{width:'100%'}} value={subject} onChange={e => setSubject(e.target.value)} />
+
+            {/* Dòng tiêu đề */}
+            <div className="field-row">
+                <input 
+                    type="text" 
+                    className="subject-input" 
+                    placeholder="Chủ đề" 
+                    value={subject} 
+                    onChange={e => setSubject(e.target.value)} 
+                />
             </div>
-            <div>
-                <label style={{display:'block', marginBottom:'5px', fontWeight:'500'}}>Nội dung:</label>
-                <textarea className="filter-input" rows={8} style={{width:'100%'}} value={content} onChange={e => setContent(e.target.value)} />
+
+            {/* Rich Text Editor */}
+            <div className="editor-container">
+                <ReactQuill 
+                    theme="snow" 
+                    value={content} 
+                    onChange={setContent} 
+                    modules={modules}
+                    formats={formats}
+                    placeholder="Soạn nội dung tại đây..."
+                    className="custom-quill"
+                />
             </div>
         </div>
-        <div className="modal-actions">
-           <button className="btn btn-secondary" onClick={onClose}>Hủy</button>
-           <button className="btn btn-primary" onClick={() => onSend(subject, content)}>
-               <Send size={16} style={{marginRight: '5px'}}/> Gửi ngay
-           </button>
+
+        {/* --- 3. FOOTER --- */}
+        <div className="email-footer">
+            <div className="footer-left">
+                <button className="btn-send" onClick={() => onSend(subject, content)}>
+                   Gửi <Send size={14} style={{marginLeft: '6px'}}/> 
+                </button>
+                <button className="btn-icon" title="Đính kèm file">
+                    <Paperclip size={18} />
+                </button>
+            </div>
+            
+            <div className="footer-right">
+               <button className="btn-icon delete" onClick={onClose} title="Hủy bỏ">
+                   <Trash2 size={16} />
+               </button>
+            </div>
         </div>
       </div>
     </div>
@@ -118,36 +129,201 @@ const EmailComposeModal = ({ recipients, statusType, onClose, onSend }) => {
 };
 
 // ==========================================
-// EXISTING COMPONENT: CV DETAIL MODAL (Giữ nguyên)
+// 2. CVDetailModal (Giữ nguyên logic Confirm & Loading)
 // ==========================================
-const CVDetailModal = ({ cv, onClose }) => {
+const CVDetailModal = ({ cv, onClose, onStatusUpdate }) => {
   if (!cv) return null;
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState({
+    show: false,
+    type: '', // 'reject' | 'next'
+    targetStatus: '',
+    title: '',
+    message: ''
+  });
+
+  const statusLabel = cv.application?.label;
+  const fileUrl = cv.application?.CV_url;
+  const candidateName = cv.candidate?.name;
+  const avatarUrl = cv.candidate?.avata?.url;
+
+  const getPreviewUrl = (url) => {
+    if (!url) return null;
+    return `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`;
+  };
+
+  const getNextStepInfo = (status) => {
+    switch (status) {
+      case 'New':
+      case 'Viewed': return { text: 'Duyệt hồ sơ', next: 'Shortlisted' };
+      case 'Shortlisted': return { text: 'Mời phỏng vấn', next: 'Interviewing' };
+      case 'Interviewing': return { text: 'Gửi Offer', next: 'Offered' };
+      case 'Offered': return { text: 'Xác nhận thuê', next: 'Hired' };
+      default: return { text: 'Hoàn tất', next: null };
+    }
+  };
+
+  const nextStep = getNextStepInfo(statusLabel);
+  const isFinalStatus = ['Rejected', 'Hired'].includes(statusLabel);
+
+  const initiateAction = (type, targetStatus) => {
+    if (type === 'reject') {
+        setConfirmDialog({
+            show: true,
+            type: 'reject',
+            targetStatus: 'Rejected',
+            title: 'Từ chối ứng viên?',
+            message: `Bạn có chắc chắn muốn từ chối hồ sơ của ${candidateName}?`
+        });
+    } else {
+        setConfirmDialog({
+            show: true,
+            type: 'next',
+            targetStatus: targetStatus,
+            title: `Xác nhận: ${nextStep.text}?`,
+            message: `Chuyển trạng thái hồ sơ sang "${targetStatus}"?`
+        });
+    }
+  };
+
+  const handleConfirmAction = async () => {
+    setIsLoading(true);
+    const success = await onStatusUpdate(cv.application._id, confirmDialog.targetStatus);
+    setIsLoading(false);
+
+    if (success) {
+        setConfirmDialog({ ...confirmDialog, show: false });
+    }
+  };
+
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={e => e.stopPropagation()}>
+      <div className="modal-content-premium" onClick={e => e.stopPropagation()}>
+        
+        {/* Header */}
         <div className="modal-header">
-          <h3 className="modal-title">Hồ sơ ứng viên</h3>
-          <button className="close-btn" onClick={onClose}><X size={20}/></button>
+          <div className="header-identity">
+            <div className="avatar-large">
+              {avatarUrl ? (
+                <img src={avatarUrl} alt={candidateName} />
+              ) : (
+                <div className="avatar-placeholder-large"><User size={20} /></div>
+              )}
+            </div>
+            <div className="identity-text">
+              <h3 className="modal-title">{candidateName}</h3>
+            </div>
+          </div>
+          
+          <div className="header-actions">
+            {fileUrl && (
+              <a href={fileUrl} target="_blank" rel="noreferrer" className="btn-icon-text">
+                <ExternalLink size={16} /> <span>Tải xuống bản gốc</span>
+              </a>
+            )}
+            <button className="close-btn" onClick={onClose}><X size={24}/></button>
+          </div>
         </div>
-        <div className="modal-body">
-          <p><strong>Họ tên:</strong> {cv.name}</p>
-          <p><strong>Vị trí:</strong> {cv.position}</p>
-          <p><strong>Email:</strong> example@email.com (Mock Data)</p>
-          <p><strong>Kinh nghiệm:</strong> 3 năm kinh nghiệm làm việc với ReactJS, NodeJS...</p>
-          <p><strong>Giới thiệu:</strong> Ứng viên này rất tiềm năng, có thái độ tốt và kỹ năng phù hợp.</p>
+
+        {/* Body Viewer */}
+        <div className="modal-body-viewer">
+          {fileUrl ? (
+            <iframe 
+              src={getPreviewUrl(fileUrl)} 
+              className="pdf-frame" 
+              title="CV Viewer" 
+              width="100%" 
+              height="100%" 
+              frameBorder="0"
+            />
+          ) : (
+            <div className="empty-cv-state">
+              <FileWarning size={64} strokeWidth={1} />
+              <h4>Chưa có tài liệu CV</h4>
+              <p>Ứng viên chưa tải lên tài liệu hoặc tệp tin bị lỗi.</p>
+            </div>
+          )}
         </div>
-        <div className="modal-actions">
-           <button className="btn btn-danger">Từ chối</button>
-           <button className="btn btn-primary">Mời phỏng vấn</button>
-           <button className="btn btn-secondary" onClick={onClose}>Đóng</button>
+        
+        {/* Footer Actions */}
+        <div className="modal-footer">
+          <div className="footer-right-group">
+            <div className="status-badge-group">
+              <span className="text-muted">Trạng thái:</span>
+              <span className={`premium-badge ${statusLabel?.toLowerCase()}`}>{statusLabel}</span>
+            </div>
+
+            <div className="action-divider"></div>
+
+            <div className="footer-actions">
+              {!isFinalStatus && (
+                <button 
+                  className="btn btn-outline-danger" 
+                  onClick={() => initiateAction('reject')}
+                  disabled={isLoading}
+                >
+                  <Ban size={18} /> Từ chối
+                </button>
+              )}
+
+              {nextStep.next && (
+                <button 
+                  className="btn btn-primary" 
+                  onClick={() => initiateAction('next', nextStep.next)}
+                  disabled={isLoading}
+                >
+                  <Check size={18} /> {nextStep.text}
+                </button>
+              )}
+            </div>
+          </div>
         </div>
+
+        {/* --- CONFIRMATION OVERLAY --- */}
+        {confirmDialog.show && (
+            <div className="confirmation-overlay" style={{
+                position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(2px)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, borderRadius: '12px'
+            }}>
+                <div className="confirmation-box animate-pop-in" style={{
+                    background: 'white', padding: '25px', borderRadius: '12px',
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.15)', width: '320px', textAlign: 'center', border: '1px solid #eee'
+                }}>
+                    <div style={{marginBottom: '15px', display: 'inline-flex', padding: '12px', borderRadius: '50%', background: confirmDialog.type === 'reject' ? '#ffebeb' : '#e6fffa'}}>
+                        {confirmDialog.type === 'reject' ? <AlertTriangle size={32} color="#dc3545"/> : <Check size={32} color="#00b894"/>}
+                    </div>
+                    <h4 style={{margin: '0 0 10px 0', color: '#333'}}>{confirmDialog.title}</h4>
+                    <p style={{color: '#666', fontSize: '14px', marginBottom: '20px', lineHeight: '1.5'}}>{confirmDialog.message}</p>
+                    
+                    <div style={{display: 'flex', gap: '10px', justifyContent: 'center'}}>
+                        <button 
+                            className="btn btn-secondary btn-sm" 
+                            onClick={() => setConfirmDialog({...confirmDialog, show: false})}
+                            disabled={isLoading}
+                        >
+                            Hủy bỏ
+                        </button>
+                        <button 
+                            className={`btn btn-sm ${confirmDialog.type === 'reject' ? 'btn-danger' : 'btn-primary'}`}
+                            onClick={handleConfirmAction}
+                            disabled={isLoading}
+                        >
+                            {isLoading ? 'Đang xử lý...' : 'Xác nhận'}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )}
+
       </div>
     </div>
   );
 };
 
 // ==========================================
-// EXISTING COMPONENT: JOB LIST VIEW (Giữ nguyên)
+// 3. JobListView (Giữ nguyên)
 // ==========================================
 const JobListView = ({ jobs, onSelectJob }) => {
   const [filterText, setFilterText] = useState("");
@@ -192,7 +368,7 @@ const JobListView = ({ jobs, onSelectJob }) => {
               </div>
 
               <div className="job-right">
-                <p className="job-status">{job.status}</p>
+                <p className="job-label">{job.label}</p>
               </div>
             </div>
             
@@ -201,8 +377,8 @@ const JobListView = ({ jobs, onSelectJob }) => {
                 className="metric-box new" 
                 onClick={(e) => { e.stopPropagation(); onSelectJob(job, 'new'); }}
               >
-                <span className={`metric-number ${(job.metric?.newed || 0) === 0 ? 'zero' : ''}`}>
-                  {job.metric?.newed || 0}
+                <span className={`metric-number ${(job.metric?.new || 0) === 0 ? 'zero' : ''}`}>
+                  {job.metric?.new || 0}
                 </span>
                 <span className="metric-label">Mới</span>
               </div>
@@ -211,20 +387,20 @@ const JobListView = ({ jobs, onSelectJob }) => {
                 className="metric-box potential"
                 onClick={(e) => { e.stopPropagation(); onSelectJob(job, 'pass'); }}
               >
-                <span className={`metric-number ${(job.metric.pass || 0) === 0 ? 'zero' : ''}`}>
-                  {job.metric.pass || 0}
+                <span className={`metric-number ${(job.metric?.interviewing || 0) === 0 ? 'zero' : ''}`}>
+                  {job.metric?.interviewing || 0}
                 </span>
-                <span className="metric-label">Tiềm năng</span>
+                <span className="metric-label">Phỏng vấn</span>
               </div>
 
               <div 
                 className="metric-box interview"
-                onClick={(e) => { e.stopPropagation(); onSelectJob(job, 'viewed'); }}
+                onClick={(e) => { e.stopPropagation(); onSelectJob(job, 'interviewing'); }}
               >
-                 <span className={`metric-number ${(job.metric.interviewed || 0) === 0 ? 'zero' : ''}`}>
-                  {job.metric.interviewed || 0}
+                 <span className={`metric-number ${(job.metric?.hired || job.metric?.interviewing || 0) === 0 ? 'zero' : ''}`}>
+                  {job.metric?.hired || 0}
                 </span>
-                <span className="metric-label">Đã xem</span>
+                <span className="metric-label">Tuyển</span>
               </div>
             </div>
           </div>
@@ -234,58 +410,81 @@ const JobListView = ({ jobs, onSelectJob }) => {
   );
 };
 
+
 // ==========================================
-// COMPONENT 2: CV MANAGER (UPDATE: THÊM NÚT GỬI MAIL VÀ LOGIC MODAL)
+// 4. CVManager (CẬP NHẬT LOGIC EMAIL)
 // ==========================================
-const CVManager = ({ job, initialStatus, onBack }) => {
+const CVManager = ({ job, initiallabel, onBack }) => {
   const [cvList, setCvList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState(initialStatus || 'all');
+  const [activeTab, setActiveTab] = useState(initiallabel || 'all');
   const [selectedCv, setSelectedCv] = useState(null);
 
-  // --- [NEW STATE] Quản lý Modal gửi mail ---
+  // Modal Email state
   const [showOptionModal, setShowOptionModal] = useState(false);
   const [showEmailModal, setShowEmailModal] = useState(false);
-  const [targetGroup, setTargetGroup] = useState(null); // 'pass', 'rejected', 'viewed'
+  const [targetGroup, setTargetGroup] = useState(null);
   const [targetRecipients, setTargetRecipients] = useState([]);
 
   useEffect(() => {
-    setLoading(true);
-    const mockFetchCVs = () => {
-      const dummyData = [
-        { id: 1, name: "Nguyễn Văn A", position: job.position, status: "new", date: "2025-11-28", location: "Hồ Chí Minh", priority: "high" },
-        { id: 2, name: "Trần Thị B", position: job.position, status: "viewed", date: "2025-11-27", location: "Hà Nội", priority: "low" },
-        { id: 3, name: "Lê Văn C", position: job.position, status: "pass", date: "2025-11-25", location: "Đà Nẵng", priority: "high" },
-        { id: 4, name: "Phạm Văn D", position: job.position, status: "rejected", date: "2025-11-20", location: "Hồ Chí Minh" },
-        { id: 5, name: "Hoàng E", position: job.position, status: "new", date: "2025-11-28", location: "Hồ Chí Minh" },
-        // Thêm dữ liệu giả để test gửi mail
-        { id: 6, name: "Vũ Văn F", position: job.position, status: "pass", date: "2025-11-29", location: "Hồ Chí Minh" },
-      ];
-      setCvList(dummyData);
-      setLoading(false);
+    let isMounted = true;
+    
+    const fetchApplicants = async () => {
+        setLoading(true);
+        try {
+            const response = await client.get(`api/application/applicantinfo?jobId=${job._id}`);
+            if (response.data.success) {
+              const applicantsInfo = response.data.data;
+              if (isMounted) {
+                setCvList(applicantsInfo);
+            }
+            }
+        } catch (error) {
+            console.error("Failed to fetch applicants", error);
+        } finally {
+            if (isMounted) setLoading(false);
+        }
     };
-    setTimeout(mockFetchCVs, 500); 
+
+    if (job) {
+        fetchApplicants();
+    }
+
+    return () => { isMounted = false; };
   }, [job]);
 
   const stats = useMemo(() => {
     return {
       all: cvList.length,
-      new: cvList.filter(c => c.status === 'new').length,
-      viewed: cvList.filter(c => c.status === 'viewed').length,
-      pass: cvList.filter(c => c.status === 'pass').length,
-      rejected: cvList.filter(c => c.status === 'rejected').length
+      new: (cvList.filter(c => c.application.label === 'New')).length,
+      viewed: cvList.filter(c => c.application.label === 'Viewed').length,
+      shortlisted: cvList.filter(c => c.application.label === 'Shortlisted').length,
+      interviewing: cvList.filter(c => c.application.label === 'Interviewing').length,
+      offered: cvList.filter(c => c.application.label === 'Offered').length,
+      hired: cvList.filter(c => c.application.label === 'Hired').length,
+      rejected: cvList.filter(c => c.application.label === 'Rejected').length
     };
   }, [cvList]);
 
   const displayedCVs = useMemo(() => {
     if (activeTab === 'all') return cvList;
-    return cvList.filter(cv => cv.status === activeTab);
+    return cvList.filter(cv => cv.application.label === activeTab);
   }, [cvList, activeTab]);
 
   const handleViewCv = (cv) => {
     setSelectedCv(cv);
-    if(cv.status === 'new') {
-        setCvList(prev => prev.map(p => p.id === cv.id ? {...p, status: 'viewed'} : p));
+    // Tự động mark 'Viewed' nếu là 'New'
+    if(cv.application.label === 'New') {
+        setCvList(prev => prev.map(p => p.application._id === cv.application._id ? {...p, application: {...p.application, label: 'Viewed'}} : p));
+        client.patch(`api/application/label`, 
+          { 
+            applicationId: cv.application._id,
+            jobId: job._id,
+            label: 'Viewed'
+          }
+        ).then(res => {
+            if(res.data.success) console.log("Auto-marked as Viewed");
+        });
     }
   };
 
@@ -295,20 +494,49 @@ const CVManager = ({ job, initialStatus, onBack }) => {
     return date.toLocaleDateString('vi-VN');
   };
 
-  // --- [NEW HANDLERS] Logic xử lý nút gửi mail ---
-  
-  // 1. Khi chọn nhóm từ modal option
-  const handleSelectGroup = (group) => {
-      const recipients = cvList.filter(c => c.status === group);
-      setTargetGroup(group);
-      setTargetRecipients(recipients);
-      setShowOptionModal(false); // Đóng modal chọn
-      setShowEmailModal(true);   // Mở modal soạn mail
+  // --- HÀM MỚI: Xử lý khi click vào icon Email ---
+  const handleSingleEmail = (cv) => {
+    if (!cv.candidate) return;
+    setTargetRecipients([cv.candidate]); // Gửi cho 1 người
+    setTargetGroup(cv.application.label); // Để lấy template tương ứng
+    setShowEmailModal(true);
   };
 
-  // 2. Khi ấn nút Gửi trong form
+  const handleStatusUpdateApi = async (applicationId, newStatus) => {
+    try {
+        const response = await client.patch(`api/application/label`, {
+            applicationId: applicationId,
+            jobId: job._id,
+            label: newStatus
+        });
+
+        if (response.data.success) {
+            setCvList(prevList => 
+                prevList.map(item => 
+                    item.application._id === applicationId 
+                    ? { ...item, application: { ...item.application, label: newStatus } }
+                    : item
+                )
+            );
+            if (selectedCv && selectedCv.application._id === applicationId) {
+                setSelectedCv(prev => ({
+                    ...prev,
+                    application: { ...prev.application, label: newStatus }
+                }));
+            }
+            return true;
+        } else {
+            alert("Không thể cập nhật: " + response.data.message);
+            return false;
+        }
+    } catch (error) {
+        console.error("API Update Error:", error);
+        alert("Lỗi kết nối Server!");
+        return false;
+    }
+  };
+
   const handleSendEmail = (subject, content) => {
-      // API Call giả lập
       alert(`Đã gửi email thành công tới ${targetRecipients.length} ứng viên!`);
       setShowEmailModal(false);
   };
@@ -316,145 +544,139 @@ const CVManager = ({ job, initialStatus, onBack }) => {
   return (
     <div className="animate-slide-in">
       
-      {/* [UPDATE] Sửa header để chứa cả nút Back và nút Gửi Mail */}
+      {/* Header Row */}
       <div className="back-btn-row" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
         <button onClick={onBack} className="btn-back">
           <ArrowLeft size={16} /> Quay lại danh sách tin
         </button>
-
-        {/* [NEW BUTTON] Nút kích hoạt gửi mail */}
-        <button 
-            className="btn btn-primary" 
-            style={{display:'flex', alignItems:'center', gap:'8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)'}}
-            onClick={() => setShowOptionModal(true)}
-        >
-            <Mail size={16} /> Gửi Email Thông Báo
-        </button>
       </div>
-
+  
       <h2 style={{ marginBottom: "20px" }}>Ứng viên cho: {job.title}</h2>
-
+  
+      {/* Pipeline Tabs */}
       <div className="pipeline-tabs">
-        <button className={`pipeline-tab ${activeTab === 'all' ? 'active' : ''}`} onClick={() => setActiveTab('all')}>
-          Tất cả <span className="count-badge">{stats.all}</span>
-        </button>
-        <button className={`pipeline-tab ${activeTab === 'new' ? 'active' : ''}`} onClick={() => setActiveTab('new')}>
-          Mới <span className="count-badge">{stats.new}</span>
-        </button>
-        <button className={`pipeline-tab ${activeTab === 'viewed' ? 'active' : ''}`} onClick={() => setActiveTab('viewed')}>
-          Đang xem xét <span className="count-badge">{stats.viewed}</span>
-        </button>
-        <button className={`pipeline-tab dau ${activeTab === 'pass' ? 'active' : ''}`} onClick={() => setActiveTab('pass')}>
-          Đậu <span className="count-badge">{stats.pass}</span>
-        </button>
-        <button className={`pipeline-tab rot ${activeTab === 'rejected' ? 'active' : ''}`} onClick={() => setActiveTab('rejected')}>
-          Từ chối <span className="count-badge">{stats.rejected}</span>
-        </button>
+        {['all', 'New', 'Viewed', 'Shortlisted', 'Interviewing', 'Offered', 'Hired', 'Rejected'].map(tab => (
+           <button 
+             key={tab}
+             className={`pipeline-tab ${activeTab === tab ? 'active' : ''} ${tab === 'Hired' ? 'dau' : ''} ${tab === 'Rejected' ? 'rot' : ''}`} 
+             onClick={() => setActiveTab(tab)}
+           >
+             {tab === 'all' ? 'Tất cả' : tab} <span className="count-badge">{stats[tab.toLowerCase()] || 0}</span>
+           </button>
+        ))}
       </div>
-
+  
+      {/* Main Content */}
       {loading ? (
-        <div className="loading-state">Đang tải danh sách ứng viên...</div>
+        <div className="loading-state">
+          <div className="spinner"></div> Đang tải danh sách...
+        </div>
       ) : (
-        <div className="cv-list">
+        <div className="cv-list-container">
           {displayedCVs.length > 0 ? displayedCVs.map(cv => (
-            <div key={cv.id} className={`cv-item ${cv.status !== 'new' ? 'read-item' : ''}`}>
-              <input type="checkbox" className="cv-checkbox" />
-              
-              <div className="cv-main-info">
-                <div className="cv-header-row">
-                    <span className="cv-name">{cv.name}</span>
-                    
-                    {cv.priority === 'high' && (
-                        <span title="Ứng viên tiềm năng/Gấp"><Flame className="priority-icon" /></span>
-                    )}
-
-                    {cv.status === 'pass' && <span className="status-pill pass">Đậu</span>}
-                    {cv.status === 'rejected' && <span className="status-pill rejected">Từ chối</span>}
-                    {cv.status === 'viewed' && <span className="status-pill viewed">Đang xem</span>}
-                    {cv.status === 'new' && <span className="status-pill new">Mới</span>}
-                </div>
-                
-                <div className="cv-sub">
-                    {cv.position} • {cv.location} • Nộp ngày: {formatDate(cv.date)}
-                </div>
+            <div 
+              key={cv.id} 
+              className={`cv-card-premium ${cv.application?.label === 'New' ? 'is-unread' : ''}`}
+              onClick={() => handleViewCv(cv)}
+            >
+              <div className="card-left">
+                  <div className="avatar-group">
+                      <div className="avatar-box">
+                          {cv.candidate?.avata ? (
+                              <img src={cv.candidate.avata.url} alt="avatar" /> 
+                          ) : (
+                              <div className="avatar-placeholder">{(cv.candidate?.name || 'U').charAt(0)}</div>
+                          )}
+                          {cv.priority === 'high' && <div className="badge-flame"><Flame size={10} fill="white" /></div>}
+                      </div>
+                      
+                      <div className="info-stack">
+                          <div className="primary-row">
+                              <span className="candidate-name">{cv.candidate?.name}</span>
+                              <span className={`status-tag ${cv.application?.label?.toLowerCase()}`}>{cv.application?.label}</span>
+                          </div>
+                          
+                          <div className="secondary-row">
+                              <span className="meta-item email" title={cv.candidate?.email}>
+                                  <Mail size={12} className="meta-icon"/> {cv.candidate?.email}
+                              </span>
+                              <span className="divider">•</span>
+                              <span className="meta-item date">
+                                  <Clock size={12} className="meta-icon"/> {formatDate(cv.application.appliedDate)}
+                              </span>
+                          </div>
+                      </div>
+                  </div>
               </div>
-              
-              <div className="cv-actions">
-                <button className="view-btn-outline" onClick={() => handleViewCv(cv)}>
-                    Xem chi tiết
-                </button>
+  
+              <div className="card-right" onClick={(e) => e.stopPropagation()}>
+                  <div className="action-group">
+                      {/* --- NÚT EMAIL ĐƯỢC CẬP NHẬT --- */}
+                      <button 
+                        className="action-btn" 
+                        title="Gửi Email"
+                        onClick={(e) => {
+                            e.stopPropagation(); // Ngăn mở modal CV
+                            handleSingleEmail(cv); // Mở modal Email
+                        }}
+                      >
+                        <Mail size={16} />
+                      </button>
+
+                      <button className="action-btn" title="Xem CV" onClick={() => handleViewCv(cv)}>
+                        <FileText size={16} />
+                      </button>
+                  </div>
+                  <div className="arrow-cue"></div>
               </div>
             </div>
           )) : (
-            <div className="no-results">Chưa có ứng viên nào ở trạng thái này.</div>
+            <div className="empty-state-premium">
+                <div className="empty-icon-box"></div>
+                <p>Chưa có ứng viên nào</p>
+            </div>
           )}
         </div>
       )}
-
+  
+      {/* Modals */}
       {selectedCv && (
          <CVDetailModal 
            cv={selectedCv}
            onClose={() => setSelectedCv(null)}
+           onStatusUpdate={handleStatusUpdateApi}
          />
       )}
-
-      {/* [NEW] RENDER MODALS */}
-      {showOptionModal && (
-          <BulkOptionModal 
-            stats={stats} 
-            onClose={() => setShowOptionModal(false)} 
-            onSelectGroup={handleSelectGroup}
-          />
-      )}
-
+  
       {showEmailModal && (
           <EmailComposeModal 
             recipients={targetRecipients}
-            statusType={targetGroup}
+            labelType={targetGroup}
             onClose={() => setShowEmailModal(false)}
             onSend={handleSendEmail}
           />
       )}
-
+  
     </div>
   );
 };
 
 // ==========================================
-// MAIN DASHBOARD (Giữ nguyên)
+// 5. Main Dashboard (Giữ nguyên)
 // ==========================================
-export default function EmployerDashboard({ jobPosts = [] }) { // Default props
+export default function EmployerDashboard({ jobPosts = [] }) { 
   const [selectedJob, setSelectedJob] = useState(null);
   const [initialTab, setInitialTab] = useState('all');
 
-  // Dummy data nếu không có props truyền vào (Để preview hoạt động)
-  const dummyJobs = [
-    { 
-      _id: 1, 
-      title: "Senior React Developer", 
-      position: "Developer", 
-      location: "Hồ Chí Minh", 
-      metric: { newed: 2, pass: 1, interviewed: 3 } 
-    },
-    { 
-      _id: 2, 
-      title: "Marketing Manager", 
-      position: "Marketing", 
-      location: "Hà Nội", 
-      metric: { newed: 0, pass: 0, interviewed: 1 } 
-    }
-  ];
+  const jobsData = jobPosts;
 
-  const jobsData = jobPosts.length > 0 ? jobPosts : dummyJobs;
-
-  const handleSelectJob = (job, statusFilter = 'all') => {
+  const handleSelectJob = (job, labelFilter = 'all') => {
     setSelectedJob(job);
-    setInitialTab(statusFilter); 
+    setInitialTab(labelFilter); 
   };
 
   return (
     <div className="dashboard-container">
-      {/* <style>{styles}</style> */}
       {!selectedJob ? (
         <JobListView 
           jobs={jobsData} 
@@ -463,7 +685,7 @@ export default function EmployerDashboard({ jobPosts = [] }) { // Default props
       ) : (
         <CVManager 
           job={selectedJob} 
-          initialStatus={initialTab}
+          initiallabel={initialTab}
           onBack={() => setSelectedJob(null)} 
         />
       )}

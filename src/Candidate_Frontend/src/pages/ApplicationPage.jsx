@@ -140,10 +140,10 @@ export default function ApplicationPage() {
     setError(null);
 
     try {
-      await client.patch(`/api/post-job/applyJob`, {
+      await client.patch(`/api/post-job/applyJob?jobId=${jobId}`, {
         candidateId: candidate._id,
-        jobId: jobId,
-        CV_url: selectedCV.url,
+        email: user.email,
+        cv_url: selectedCV.url,
       });
 
       setIsSuccess(true);

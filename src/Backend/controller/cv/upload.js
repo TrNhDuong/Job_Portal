@@ -61,6 +61,9 @@ export const removeCandidateCV = async (req, res) => {
     const candidate = candidateData.data;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 11cc5f79bcb2c8eccfb8e514009b8690f20590ea
     // FIX FILTER
     let cvList = candidate.CV || [];
     const newCvList = cvList.filter(cv => cv.public_id !== cvPublicId);
@@ -76,6 +79,7 @@ export const removeCandidateCV = async (req, res) => {
     // Update database first
     const updateResult = await CandidateRepository.updateCandidate(email, {
       CV: newCvList,
+<<<<<<< HEAD
 =======
     // Chuẩn hóa về mảng
     let cvList = candidate.CV || [];
@@ -94,12 +98,17 @@ export const removeCandidateCV = async (req, res) => {
     const updateResult = await CandidateRepository.updateCandidate(email, {
       rmCV: cvList,
 >>>>>>> 18506f42bf43e854b49acc17c296bc928c6c9b00
+=======
+>>>>>>> 11cc5f79bcb2c8eccfb8e514009b8690f20590ea
     });
 
     if (!updateResult.success) {
       return res.status(500).json({
         success: false,
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 11cc5f79bcb2c8eccfb8e514009b8690f20590ea
         message: "Failed to update CV list",
       });
     }
@@ -111,9 +120,12 @@ export const removeCandidateCV = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: "Failed to remove CV from cloud",
+<<<<<<< HEAD
 =======
         message: "Failed to update candidate CV list",
 >>>>>>> 18506f42bf43e854b49acc17c296bc928c6c9b00
+=======
+>>>>>>> 11cc5f79bcb2c8eccfb8e514009b8690f20590ea
       });
     }
 
@@ -129,7 +141,11 @@ export const removeCandidateCV = async (req, res) => {
     });
   }
 <<<<<<< HEAD
+<<<<<<< HEAD
 };
 =======
 };
 >>>>>>> 18506f42bf43e854b49acc17c296bc928c6c9b00
+=======
+};
+>>>>>>> 11cc5f79bcb2c8eccfb8e514009b8690f20590ea

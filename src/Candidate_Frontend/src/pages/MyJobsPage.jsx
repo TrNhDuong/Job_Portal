@@ -18,12 +18,49 @@ export default function MyJobsPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const [activeTab, setActiveTab] = useState("applied"); 
-  const [appliedJobs, setAppliedJobs] = useState([]);
-  const [savedJobs, setSavedJobs] = useState([]);
+  const [activeTab, setActiveTab] = useState("applied");
+  const [appliedJobs, setAppliedJobs] = useState([]); // [{ job, application }]
+  const [savedJobs, setSavedJobs] = useState([]); // [job]
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(null);
   const [error, setError] = useState(null);
+
+  /* ===================== HELPERS ===================== */
+
+  const getStatusInfo = (label) => {
+    const s = (label || "").toLowerCase();
+
+    if (!s || s === "new") return { text: "Chưa xem", variant: "pending" };
+    if (s === "viewed") return { text: "Đã xem", variant: "viewed" };
+    if (s === "shortlisted") return { text: "Qua vòng hồ sơ", variant: "processing" };
+    if (s === "interviewing") return { text: "Mời phỏng vấn", variant: "processing" };
+    if (s === "offered") return { text: "Đề nghị nhận việc", variant: "accepted" };
+    if (s === "hired") return { text: "Đã nhận việc", variant: "accepted" };
+    if (s === "rejected") return { text: "Bị loại", variant: "rejected" };
+
+    return { text: label, variant: "pending" };
+  };
+
+  const formatSalary = (salary) => {
+    if (!salary) return "Thỏa thuận";
+    if (typeof salary === "string") return salary;
+
+    const min = salary.minSalary ? salary.minSalary / 1_000_000 + "M" : null;
+    const max = salary.maxSalary ? salary.maxSalary / 1_000_000 + "M" : null;
+    const cur = salary.currency || "VND";
+
+    if (min && max) return `${min} - ${max} ${cur}`;
+    if (min) return `Từ ${min} ${cur}`;
+    if (max) return `Đến ${max} ${cur}`;
+    return "Thỏa thuận";
+  };
+
+  const formatDate = (d) => {
+    if (!d) return "Không rõ";
+    const date = new Date(d);
+    if (isNaN(date)) return "Không rõ";
+    return date.toLocaleDateString("vi-VN");
+  };
 
   /* ===================== FETCH DATA ===================== */
 
@@ -35,86 +72,61 @@ export default function MyJobsPage() {
       setError(null);
 
       try {
-        // ---- Lấy thông tin ứng viên ----
-        const res = await client.get(`/api/candidate?email=${user.email}`);
+        // 1) candidate
+        const res = await client.get(`/api/candidate?email=${encodeURIComponent(user.email)}`);
         const candidate = res.data?.data || res.data;
 
-        const listApply = candidate.appliedJobs || [];
-        const listSaveJob = candidate.listSaveJobs || [];
+        const candidateId = candidate?._id;
+        const appliedList = (candidate?.appliedJobs || []).map((x) => x.toString());
+        const savedList = (candidate?.listSaveJobs || []).map((x) => x.toString());
 
-        /* ===================== FETCH APPLIED JOBS ===================== */
+        // 2) applied: job + application(label)
         const applied = await Promise.all(
-          listApply.map(async (app) => {
-            const jobId = app.jobId || app.job || app.jobID || app;
-            const jobRes = await client.get(
-              `/api/post-job/id?jobId=${encodeURIComponent(jobId)}`
-            );
+          appliedList.map(async (jobId) => {
+            // job
+            const jobRes = await client.get(`/api/post-job/id?jobId=${encodeURIComponent(jobId)}`);
             const job = jobRes.data?.data || jobRes.data;
-            return { job, application: app };
+
+            // application (label)
+            let application = { label: "New" };
+            if (candidateId) {
+              try {
+                const appRes = await client.get(
+                  `/api/application/byCandidateJob?candidateId=${encodeURIComponent(
+                    candidateId
+                  )}&jobId=${encodeURIComponent(jobId)}`
+                );
+                application = appRes.data?.data || appRes.data || { label: "New" };
+              } catch (e) {
+                // nếu chưa có record application hoặc lỗi API -> fallback
+                application = { label: "New" };
+              }
+            }
+
+            return { job, application };
           })
         );
 
-        /* ===================== FETCH SAVED JOBS ===================== */
+        // 3) saved
         const saved = await Promise.all(
-          listSaveJob.map(async (item) => {
-            const jobId = item.toString(); 
-            const jobRes = await client.get(
-              `/api/post-job/id?jobId=${encodeURIComponent(jobId)}`
-            );
+          savedList.map(async (jobId) => {
+            const jobRes = await client.get(`/api/post-job/id?jobId=${encodeURIComponent(jobId)}`);
             return jobRes.data?.data || jobRes.data;
           })
         );
 
-        setAppliedJobs(applied.filter((x) => x.job));
+        setAppliedJobs(applied.filter((x) => x?.job));
         setSavedJobs(saved.filter(Boolean));
       } catch (err) {
         console.error(err);
-        setError(
-          err.response?.data?.message ||
-            "Không tải được danh sách việc làm của bạn."
-        );
+        setError(err.response?.data?.message || "Không tải được danh sách việc làm của bạn.");
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [user]);
-
-  /* ===================== HELPERS ===================== */
-
-  const getStatusInfo = (status) => {
-    const s = (status || "").toLowerCase();
-    if (s === "pending" || s === "unseen" || !s)
-      return { text: "Chưa xem", variant: "pending" };
-    if (s === "viewed" || s === "seen")
-      return { text: "Đã xem", variant: "viewed" };
-    if (["rejected", "failed", "deny"].includes(s))
-      return { text: "Bị loại", variant: "rejected" };
-    if (["accepted", "pass", "success"].includes(s))
-      return { text: "Chấp nhận", variant: "accepted" };
-    return { text: status, variant: "pending" };
-  };
-
-  const formatSalary = (salary) => {
-    if (!salary) return "Thỏa thuận";
-    if (typeof salary === "string") return salary;
-
-    const min = salary.minSalary ? salary.minSalary / 1_000_000 + "M" : null;
-    const max = salary.maxSalary ? salary.maxSalary / 1_000_000 + "M" : null;
-
-    if (min && max) return `${min} - ${max} ${salary.currency || "VND"}`;
-    if (min) return `Từ ${min} ${salary.currency || "VND"}`;
-    if (max) return `Đến ${max} ${salary.currency || "VND"}`;
-    return "Thỏa thuận";
-  };
-
-  const formatDate = (d) => {
-    if (!d) return "Không rõ";
-    const date = new Date(d);
-    if (isNaN(date)) return "Không rõ";
-    return date.toLocaleDateString("vi-VN");
-  };
+  }, [user?.email]);
 
   /* ===================== ACTIONS ===================== */
 
@@ -123,12 +135,13 @@ export default function MyJobsPage() {
     setActionLoading(jobId);
 
     try {
-      await client.patch(`/api/post-job/removeApplyJob?jobId=${jobId}`, {
+      await client.patch(`/api/post-job/removeApplyJob?jobId=${encodeURIComponent(jobId)}`, {
         email: user.email,
       });
 
-      setAppliedJobs((prev) => prev.filter((item) => item.job._id !== jobId));
+      setAppliedJobs((prev) => prev.filter((item) => item.job?._id !== jobId));
     } catch (err) {
+      console.error(err);
       alert("Không thể xóa đơn ứng tuyển.");
     } finally {
       setActionLoading(null);
@@ -140,34 +153,32 @@ export default function MyJobsPage() {
     setActionLoading(jobId);
 
     try {
-      await client.patch(`/api/post-job/removeSaveJob?jobId=${jobId}`, {
+      await client.patch(`/api/post-job/removeSaveJob?jobId=${encodeURIComponent(jobId)}`, {
         email: user.email,
       });
 
-      setSavedJobs((prev) => prev.filter((job) => job._id !== jobId));
+      setSavedJobs((prev) => prev.filter((job) => job?._id !== jobId));
     } catch (err) {
+      console.error(err);
       alert("Không thể bỏ lưu việc làm.");
     } finally {
       setActionLoading(null);
     }
   };
 
-  const handleApplyNow = (jobId) => {
-    navigate(`/apply/${jobId}`);
-  };
+  const handleApplyNow = (jobId) => navigate(`/apply/${jobId}`);
 
   /* ===================== UI RENDER ===================== */
 
   const renderAppliedCard = ({ job, application }) => {
-    const { text, variant } = getStatusInfo(application?.status);
     if (!job) return null;
+
+    const label = application?.label || "New";
+    const { text, variant } = getStatusInfo(label);
 
     return (
       <article key={job._id} className="myjobs-card">
-        <div
-          className="myjobs-card-main"
-          onClick={() => navigate(`/jobs/${job._id}`)}
-        >
+        <div className="myjobs-card-main" onClick={() => navigate(`/jobs/${job._id}`)}>
           <h3 className="myjobs-title">{job.title}</h3>
           <p className="myjobs-company">{job.company || "Không rõ công ty"}</p>
 
@@ -203,6 +214,7 @@ export default function MyJobsPage() {
             className="myjobs-btn-danger"
             disabled={actionLoading === job._id}
             onClick={() => handleRemoveApplication(job._id)}
+            type="button"
           >
             <Trash2 className="w-4 h-4" />
             {actionLoading === job._id ? "Đang xóa..." : "Xóa đơn ứng tuyển"}
@@ -217,17 +229,14 @@ export default function MyJobsPage() {
 
     return (
       <article key={job._id} className="myjobs-card">
-        <div
-          className="myjobs-card-main"
-          onClick={() => navigate(`/jobs/${job._id}`)}
-        >
+        <div className="myjobs-card-main" onClick={() => navigate(`/jobs/${job._id}`)}>
           <h3 className="myjobs-title">{job.title}</h3>
-          <p className="myjobs-company">{job.company}</p>
+          <p className="myjobs-company">{job.company || "Không rõ công ty"}</p>
 
           <div className="myjobs-meta-row">
             <div className="myjobs-meta-item">
               <MapPin className="myjobs-meta-icon" />
-              <span>{job.location}</span>
+              <span>{job.location || "Địa điểm linh hoạt"}</span>
             </div>
 
             <div className="myjobs-meta-item">
@@ -237,16 +246,13 @@ export default function MyJobsPage() {
 
             <div className="myjobs-meta-item">
               <Calendar className="myjobs-meta-icon" />
-              <span>Đăng ngày {formatDate(job.postedAt)}</span>
+              <span>Đăng ngày {formatDate(job.postedAt || job.createdAt)}</span>
             </div>
           </div>
         </div>
 
         <div className="myjobs-card-actions">
-          <button
-            className="myjobs-btn-primary"
-            onClick={() => handleApplyNow(job._id)}
-          >
+          <button className="myjobs-btn-primary" onClick={() => handleApplyNow(job._id)} type="button">
             Ứng tuyển ngay <ArrowRight className="w-4 h-4" />
           </button>
 
@@ -254,6 +260,7 @@ export default function MyJobsPage() {
             className="myjobs-btn-outline"
             disabled={actionLoading === job._id}
             onClick={() => handleUnsaveJob(job._id)}
+            type="button"
           >
             <BookmarkX className="w-4 h-4" />
             {actionLoading === job._id ? "Đang xử lý..." : "Bỏ lưu"}
@@ -269,11 +276,11 @@ export default function MyJobsPage() {
 
   return (
     <div className="myjobs-wrapper">
-      {/* Tabs */}
       <div className="myjobs-tabs">
         <button
           className={`myjobs-tab ${activeTab === "applied" ? "active" : ""}`}
           onClick={() => setActiveTab("applied")}
+          type="button"
         >
           Việc làm đã ứng tuyển
         </button>
@@ -281,6 +288,7 @@ export default function MyJobsPage() {
         <button
           className={`myjobs-tab ${activeTab === "saved" ? "active" : ""}`}
           onClick={() => setActiveTab("saved")}
+          type="button"
         >
           Việc làm đã lưu
         </button>
