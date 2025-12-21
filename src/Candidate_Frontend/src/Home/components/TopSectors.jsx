@@ -1,4 +1,3 @@
-// src/Home/components/TopSectors.jsx
 import Section from "./Section";
 import {
   Banknote,
@@ -10,6 +9,7 @@ import {
   Home as HomeIcon,
   Play,
   TrendingUp,
+  ArrowRight, // Import thêm icon mũi tên
 } from "lucide-react";
 
 import imgBank from "../../assets/bank.jpg";
@@ -22,85 +22,49 @@ import imgBDS from "../../assets/bds.jpg";
 import imgLogistic from "../../assets/Logistic.jpg";
 
 const SECTORS = [
-  {
-    id: 1,
-    name: "Tài Chính - Ngân Hàng",
-    jobs: "1,104 việc làm",
-    icon: <Banknote />,
-    img: imgBank,
-  },
-  {
-    id: 2,
-    name: "Marketing",
-    jobs: "1,253 việc làm",
-    icon: <Megaphone />,
-    img: imgMarketing,
-  },
-  {
-    id: 3,
-    name: "Chăm Sóc Khách Hàng",
-    jobs: "947 việc làm",
-    icon: <Headphones />,
-    img: imgService,
-  },
-  {
-    id: 4,
-    name: "Truyền Thông",
-    jobs: "921 việc làm",
-    icon: <Play />,
-    img: imgMedia,
-  },
-  {
-    id: 5,
-    name: "Công Nghệ Thông Tin",
-    jobs: "657 việc làm",
-    icon: <Laptop2 />,
-    img: imgIT,
-  },
-  {
-    id: 6,
-    name: "Thiết Kế Đồ Họa",
-    jobs: "869 việc làm",
-    icon: <PenTool />,
-    img: imgDesigner,
-  },
-  {
-    id: 7,
-    name: "Bất Động Sản",
-    jobs: "1,034 việc làm",
-    icon: <HomeIcon />,
-    img: imgBDS,
-  },
-  {
-    id: 8,
-    name: "Logistics",
-    jobs: "764 việc làm",
-    icon: <Globe2 />,
-    img: imgLogistic,
-  },
+  { id: 1, name: "Tài Chính - Ngân Hàng", jobs: 1104, icon: <Banknote />, img: imgBank },
+  { id: 2, name: "Marketing", jobs: 1253, icon: <Megaphone />, img: imgMarketing },
+  { id: 3, name: "CSKH", jobs: 947, icon: <Headphones />, img: imgService }, // Rút gọn tên cho đẹp UI
+  { id: 4, name: "Truyền Thông", jobs: 921, icon: <Play />, img: imgMedia },
+  { id: 5, name: "Công Nghệ (IT)", jobs: 657, icon: <Laptop2 />, img: imgIT },
+  { id: 6, name: "Thiết Kế", jobs: 869, icon: <PenTool />, img: imgDesigner },
+  { id: 7, name: "Bất Động Sản", jobs: 1034, icon: <HomeIcon />, img: imgBDS },
+  { id: 8, name: "Logistics", jobs: 764, icon: <Globe2 />, img: imgLogistic },
 ];
 
 function SectorCard({ item }) {
   return (
     <article className="home-sector-card">
-      {/* Ảnh nền */}
-      <img src={item.img} alt={item.name} className="home-sector-card-bg" />
-      {/* overlay màu */}
+      {/* Background Image with Zoom Effect */}
+      <div className="home-sector-card-bg-wrap">
+        <img src={item.img} alt={item.name} className="home-sector-card-bg" />
+      </div>
+
+      {/* Gradient Overlay để text dễ đọc */}
       <div className="home-sector-card-overlay" />
-      {/* nội dung */}
+
+      {/* Nội dung chính */}
       <div className="home-sector-card-content">
-        <div className="home-sector-card-icon-wrap">
-          <span className="home-sector-card-icon">{item.icon}</span>
+        <div className="home-sector-card-top">
+          <div className="home-sector-card-icon-wrap">
+            {item.icon}
+          </div>
+          {/* Mũi tên chỉ hiện khi hover */}
+          <div className="home-sector-card-arrow">
+            <ArrowRight size={18} />
+          </div>
         </div>
+
         <div className="home-sector-card-text">
-          <div className="home-sector-card-title">{item.name}</div>
-          <div className="home-sector-card-jobs">{item.jobs}</div>
+          <h3 className="home-sector-card-title">{item.name}</h3>
+          <span className="home-sector-card-jobs">{item.jobs.toLocaleString()} việc làm</span>
         </div>
       </div>
     </article>
   );
 }
 
+// Giữ nguyên Title
 const topSectorsTitle = (
   <div className="home-sectors-title">
     <div className="home-sectors-title-icon">

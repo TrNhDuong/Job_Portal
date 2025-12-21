@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import client from "../api/client";
 import { useAuth } from "../context/AuthContext";
-import { Eye, EyeOff, Mail, LockKeyhole, ShieldCheck } from "lucide-react";
+// THÊM: ArrowLeft
+import { Eye, EyeOff, Mail, LockKeyhole, ShieldCheck, ArrowLeft } from "lucide-react";
 
 export default function LoginForm() {
   const [identifier, setIdentifier] = useState("");
@@ -76,6 +77,7 @@ export default function LoginForm() {
   return (
     <div className="login-page">
       <div className="login-wrapper">
+        
         {/* Badge */}
         <div className="login-badge">
           <span className="login-badge-dot" />
@@ -83,6 +85,19 @@ export default function LoginForm() {
         </div>
 
         <div className="login-card login-card-premium">
+          
+          {/* Back Button - MỚI: Đồng bộ với Register */}
+          <div className="login-back-btn-wrapper">
+             <button 
+                type="button" 
+                className="login-back-btn"
+                onClick={() => navigate("/")}
+                disabled={loading}
+             >
+                <ArrowLeft size={16} /> Quay lại
+             </button>
+          </div>
+
           {/* Header */}
           <div className="login-header">
             <div className="login-title-icon">
@@ -127,7 +142,7 @@ export default function LoginForm() {
                   className="login-input-control"
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
-                  placeholder="Nhập email đăng nhập"
+                  placeholder="Nhập email của bạn"
                   autoComplete="email"
                   required
                 />
@@ -157,6 +172,7 @@ export default function LoginForm() {
                   className="login-eye-btn"
                   onClick={() => setShowPassword((s) => !s)}
                   aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+                  tabIndex="-1"
                 >
                   {showPassword ? (
                     <EyeOff className="login-eye-icon" />
@@ -167,7 +183,6 @@ export default function LoginForm() {
               </div>
 
               <div className="login-forgot-row">
-                {/* NOTE: route forgot password candidate cho đúng */}
                 <button
                   type="button"
                   className="login-forgot-link"
@@ -184,22 +199,20 @@ export default function LoginForm() {
               className="login-submit-btn"
               disabled={loading || !identifier.trim() || !password}
             >
-              {loading ? "Đang xử lý..." : "Đăng nhập"}
+              {loading ? "Đang xử lý..." : "Đăng nhập ngay"}
             </button>
           </form>
 
           <div className="login-footer">
-            <div className="login-footer-row">
-              Bạn chưa có tài khoản?{" "}
-              <button
-                type="button"
-                className="login-footer-link"
-                onClick={() => navigate("/register")}
-                disabled={loading}
-              >
-                Đăng ký ngay
-              </button>
-            </div>
+            Bạn chưa có tài khoản?{" "}
+            <button
+              type="button"
+              className="login-footer-link"
+              onClick={() => navigate("/register")}
+              disabled={loading}
+            >
+              Đăng ký ngay
+            </button>
           </div>
         </div>
 

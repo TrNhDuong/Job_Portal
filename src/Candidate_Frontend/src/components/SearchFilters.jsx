@@ -25,9 +25,6 @@ export default function SearchFilters({ filters, setFilters }) {
       {/* Header */}
       <div className="job-filters-header">
         <h2 className="job-filters-title">Tìm kiếm việc làm</h2>
-        <p className="job-filters-subtitle">
-          Lọc và khám phá các vị trí phù hợp với bạn
-        </p>
       </div>
 
       {/* Keyword */}
@@ -99,10 +96,6 @@ export default function SearchFilters({ filters, setFilters }) {
             <option value="CAD">CAD</option>
           </select>
         </div>
-
-        <p className="job-filters-hint">
-          Lọc theo: minSalary ≥ Min và maxSalary ≤ Max (có thể bỏ trống 1 vế).
-        </p>
       </div>
 
       {/* Major */}
