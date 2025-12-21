@@ -378,17 +378,7 @@ const EmployerPostJob = ({ onSubmit, initialData }) => {
                     <h3>Chế độ lương</h3>
                 </div>
                 <div className="card-body">
-                    <div className="form-group">
-                        <label>Đơn vị tiền tệ</label>
-                        <div className="currency-selector">
-                            {currencies.map(c => (
-                                <span key={c} 
-                                    className={`currency-tag ${form.currency === c ? 'active' : ''}`}
-                                    onClick={() => setForm(prev => ({...prev, currency: c}))}
-                                >{c}</span>
-                            ))}
-                        </div>
-                    </div>
+                    
                     
                     <div className="form-group">
                         <label>Tối thiểu <span className="req">*</span></label>
