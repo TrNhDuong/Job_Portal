@@ -21,6 +21,7 @@ import MyJobsPage from "./pages/MyJobsPage.jsx";
 import ForgotPasswordCandidate from "./pages/ForgotPassword";
 import ResetPasswordPage from "./pages/ResetPasswordPage.jsx";
 import EmployerProfilePage from "./pages/EmployerProfile.jsx";
+
 function App() {
   const location = useLocation();
   const hideNavbarRoutes = ["/register", "/login", "/verify-otp", "/forgot-password", "/reset-password"];
