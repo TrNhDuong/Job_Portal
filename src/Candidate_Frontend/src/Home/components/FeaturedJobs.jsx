@@ -73,7 +73,7 @@ export default function FeaturedJobs({ enableFetch = true }) {
             </div>
           ) : (
             <div className="home-featured-grid">
-              {jobs.map((j) => (
+              {jobs.slice(0, 9).map((j) => (
                 <JobCard
                   key={j._id}
                   job={j}

@@ -50,8 +50,15 @@ export default function JobCard({ job, onViewDetails, onApply, onSave, isSaved }
         </div>
         <div className="home-job-card-main">
           <h3 className="home-job-card-title">{job.title || "Không có tiêu đề"}</h3>
-          <p className="home-job-card-company">{job.company || "Không rõ công ty"}</p>
-
+          <button
+            className="home-job-card-company-link"
+            onClick={(e) => {
+              e.stopPropagation(); // Không mở modal
+              navigate(`/company/${job.companyId || job.company}`); 
+            }}
+          >
+            {job.company || "Không rõ công ty"}
+          </button>
           <div className="home-job-card-tags">
             {job.jobType && <span className="home-job-card-tag">{job.jobType}</span>}
             {job.level && (

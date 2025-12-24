@@ -64,18 +64,13 @@ export default function JobDetailModal({ job, onClose, onSave, isSaved }) {
         <header className="home-job-modal-header">
           <div className="home-job-modal-header-main">
             <h1 className="home-job-modal-title">{jobDetails.title}</h1>
-            <p className="home-job-modal-company">{jobDetails.company}</p>
+            <button
+              className="home-job-modal-company-link"
+              onClick={() => window.location.href = `/company/${safeJob.companyId || safeJob.company}`}
+            >
+              {jobDetails.company}
+            </button>
           </div>
-
-          <span
-            className={
-              jobDetails.state === "Open"
-                ? "home-job-modal-pill home-job-modal-pill-open"
-                : "home-job-modal-pill home-job-modal-pill-closed"
-            }
-          >
-            {jobDetails.state === "Open" ? "Đang tuyển" : "Đã đóng"}
-          </span>
         </header>
 
         {/* GRID INFO */}

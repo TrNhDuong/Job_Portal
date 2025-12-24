@@ -307,3 +307,525 @@
 .btn-primary { background: #2196f3; color: white; }
 .btn-danger { background: #fef2f2; color: #ef4444; }
 .btn-secondary { background: #f3f4f6; color: #374151; }
+/* =========================================
+   1. CONTAINER & LAYOUT
+   ========================================= */
+.cv-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* Khoảng cách chuẩn giữa các thẻ */
+  padding: 4px; 
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* =========================================
+   2. THE PREMIUM CARD
+   ======================================== */
+.cv-card-premium {
+  position: relative;
+  display: flex;
+  justify-content: space-between; /* Đẩy Left và Right ra 2 đầu */
+  align-items: center;
+  
+  background: #ffffff;
+  padding: 16px 20px;
+  border-radius: 16px; /* Bo góc lớn hiện đại */
+  
+  /* Đổ bóng siêu mượt (Layered Shadows) */
+  box-shadow: 
+    0 2px 4px rgba(0,0,0,0.02), 
+    0 1px 0 rgba(0,0,0,0.02);
+  border: 1px solid rgba(241, 245, 249, 1);
+  
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); /* Hiệu ứng vật lý */
+  cursor: pointer;
+}
+
+/* Hover Effect: Nổi lên & Bóng đậm */
+.cv-card-premium:hover {
+  transform: translateY(-2px) scale(1.002);
+  box-shadow: 
+    0 12px 24px -6px rgba(0, 0, 0, 0.08), 
+    0 4px 8px -2px rgba(0, 0, 0, 0.04);
+  border-color: rgba(226, 232, 240, 1);
+  z-index: 10;
+}
+
+/* Trạng thái chưa đọc */
+.cv-card-premium.is-unread {
+  background: #f8fafc; /* Nền hơi lạnh nhẹ */
+}
+.cv-card-premium.is-unread .candidate-name {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* Glowing Dot Animation */
+.glow-dot {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  background-color: #3b82f6;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.8);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+  70% { box-shadow: 0 0 0 6px rgba(59, 130, 246, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+}
+
+/* =========================================
+   3. LEFT SIDE: INFO & IDENTITY
+   ========================================= */
+.card-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1; /* Chiếm hết không gian bên trái */
+}
+
+/* Checkbox */
+.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  padding-left: 12px; /* Chừa chỗ cho glow dot */
+}
+.premium-checkbox {
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  accent-color: #0f172a;
+}
+
+/* Avatar Group */
+.avatar-group {
+  display: flex;
+  align-items: center;
+  margin-left: 30px;
+  gap: 16px;
+}
+
+.avatar-box {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+}
+.avatar-box img, .avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 14px; /* Squircle */
+  object-fit: cover;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05); /* Viền chìm */
+}
+.avatar-placeholder {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  color: #0284c7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 20px;
+}
+.badge-flame {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  background: #ef4444;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Info Stack (Tên & Meta) */
+.info-stack {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px; /* Khoảng cách siêu nhỏ giữa dòng tên và dòng email */
+}
+
+.primary-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1.2;
+}
+.candidate-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+  letter-spacing: -0.01em;
+}
+
+/* Status Tags (High-end Pills) */
+.status-tag {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+.status-tag.new { background: #eff6ff; color: #3b82f6; border: 1px solid #dbeafe; }
+.status-tag.success { background: #f0fdf4; color: #16a34a; border: 1px solid #dcfce7; }
+.status-tag.danger { background: #fef2f2; color: #dc2626; border: 1px solid #fee2e2; }
+.status-tag.warning { background: #fffbeb; color: #d97706; border: 1px solid #fef3c7; }
+
+/* Secondary Row (Email & Date) */
+.secondary-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+}
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: color 0.2s;
+}
+.meta-icon { opacity: 0.6; }
+.divider { color: #cbd5e1; font-size: 10px; }
+
+/* =========================================
+   4. RIGHT SIDE: ACTIONS
+   ========================================= */
+.card-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.action-group {
+  display: flex;
+  gap: 8px;
+  opacity: 0;
+  transform: translateX(10px);
+  transition: all 0.3s ease;
+}
+
+/* Hover thẻ -> Hiện nút */
+.cv-card-premium:hover .action-group {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.action-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: #f1f5f9;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.action-btn:hover {
+  background: #0f172a; /* Nút chuyển màu đen sang trọng */
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.arrow-cue {
+  color: #cbd5e1;
+  transition: transform 0.2s;
+}
+.cv-card-premium:hover .arrow-cue {
+  transform: translateX(3px);
+  color: #94a3b8;
+}
+
+/* =========================================
+   5. EMPTY STATE
+   ========================================= */
+.empty-state-premium {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 0;
+  color: #94a3b8;
+  border: 2px dashed #e2e8f0;
+  border-radius: 16px;
+  background: #f8fafc;
+}
+.empty-icon-box {
+  background: #fff;
+  padding: 16px;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  margin-bottom: 16px;
+  color: #cbd5e1;
+}
+
+/* --- Overlay & Main Content --- */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background-color: rgba(15, 23, 42, 0.6); /* Màu nền tối hiện đại */
+  backdrop-filter: blur(8px); /* Hiệu ứng mờ nền mạnh hơn */
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999;
+}
+
+.modal-content-premium {
+  background-color: #ffffff !important;
+  width: 90vw; height: 85vh; max-width: 1100px;
+  border-radius: 16px; /* Bo góc lớn hơn */
+  display: flex; flex-direction: column;
+  /* Đổ bóng 2 lớp tạo chiều sâu */
+  box-shadow: 
+      0 10px 15px -3px rgba(0, 0, 0, 0.1), 
+      0 4px 6px -2px rgba(0, 0, 0, 0.05),
+      0 0 0 1px rgba(0,0,0,0.05); /* Viền mờ tinh tế */
+  overflow: hidden;
+}
+
+/* --- Header Premium --- */
+.modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex; justify-content: space-between; align-items: center;
+}
+
+.header-identity {
+  display: flex; align-items: center; gap: 16px;
+}
+
+/* Avatar lớn trong modal */
+.avatar-large { width: 56px; height: 56px; flex-shrink: 0; }
+.avatar-large img, .avatar-placeholder-large {
+  width: 100%; height: 100%; border-radius: 14px; object-fit: cover;
+}
+.avatar-placeholder-large {
+  background: #f1f5f9; color: #94a3b8; display: flex; align-items: center; justify-content: center;
+}
+
+.identity-text .modal-title {
+  margin: 0 0 4px 0; font-size: 20px; font-weight: 700; color: #0f172a;
+}
+.identity-text .modal-subtitle { font-size: 14px; color: #64748b; }
+.header-actions { display: flex; align-items: center; gap: 12px; }
+
+/* --- Body: Empty State Premium --- */
+.modal-body-viewer {
+  flex-grow: 1; background: #f8fafc; /* Nền xám rất nhạt */
+  position: relative;
+}
+
+.empty-cv-state {
+  height: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: #64748b; text-align: center; padding: 32px;
+}
+
+.empty-illustration {
+  margin-bottom: 24px;
+  padding: 24px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05); /* Icon nổi lên */
+  color: #cbd5e1; /* Màu icon nhạt */
+}
+
+.empty-cv-state h4 {
+  font-size: 18px; font-weight: 600; color: #0f172a; margin: 0 0 8px 0;
+}
+.empty-cv-state p { max-width: 400px; margin-bottom: 24px; }
+
+/* --- Footer Premium --- */
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid #f1f5f9;
+  background: #fff;
+  display: flex; justify-content: flex-end; /* Căn toàn bộ sang phải */
+}
+
+.footer-right-group {
+    display: flex; align-items: center; gap: 16px;
+}
+
+.status-badge-group {
+    display: flex; align-items: center; gap: 8px; font-size: 13px;
+}
+
+/* Badge xịn */
+.premium-badge {
+    padding: 4px 12px; border-radius: 20px; font-weight: 600; font-size: 12px; text-transform: uppercase;
+}
+.premium-badge.warning { background: #fffbeb; color: #b45309; border: 1px solid #fcd34d; }
+
+.action-divider {
+    width: 1px; height: 24px; background: #e2e8f0; /* Đường kẻ dọc ngăn cách */
+}
+
+.footer-actions { display: flex; gap: 12px; }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px;
+  border-radius: 10px; font-weight: 600; font-size: 14px; transition: all 0.2s; cursor: pointer;
+}
+.btn-primary { background: #0f172a; color: white; border: 1px solid transparent;}
+.btn-primary:hover { background: #1e293b; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2); }
+.btn-outline-danger { background: white; color: #ef4444; border: 1px solid #fee2e2; }
+.btn-outline-danger:hover { background: #fef2f2; border-color: #ef4444; }
+.btn-sm { padding: 8px 16px; font-size: 13px;}
+.btn-outline-secondary { background: white; border: 1px solid #e2e8f0; color: #475569; }
+.btn-outline-secondary:hover { background: #f1f5f9; border-color: #cbd5e1; }
+
+.text-muted { color: #94a3b8; }
+.close-btn { border: none; background: transparent; color: #94a3b8; cursor: pointer; padding: 4px; }
+.close-btn:hover { color: #0f172a; }
+
+/* --- SPLIT VIEW LAYOUT (Chế độ xem chi tiết chia đôi) --- */
+.split-view-wrapper {
+  height: calc(100vh - 100px); /* Trừ header/padding trên dưới */
+  display: flex;
+  flex-direction: column;
+  animation: slideInRight 0.3s ease-out;
+}
+
+.split-view-header {
+  margin-bottom: 10px;
+}
+
+.btn-back-split {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  color: #555;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.btn-back-split:hover {
+  background: #f0f0f0;
+  color: #000;
+}
+
+.split-container {
+  display: flex;
+  gap: 20px;
+  flex: 1; /* Chiếm hết chiều cao còn lại */
+  overflow: hidden; /* Quan trọng để scroll nằm trong panel */
+}
+
+/* --- Panel Trái: Thông tin --- */
+.info-panel {
+  width: 360px;
+  min-width: 360px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  border: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.info-header {
+  padding: 24px;
+  text-align: center;
+  border-bottom: 1px solid #f0f0f0;
+  background: linear-gradient(to bottom, #fff, #fafafa);
+}
+
+.info-body {
+  padding: 24px;
+  flex: 1;
+}
+
+.info-footer {
+  padding: 20px;
+  background: #f8f9fa;
+  border-top: 1px solid #eee;
+}
+
+.detail-section-title {
+  font-size: 13px;
+  text-transform: uppercase;
+  color: #999;
+  font-weight: 700;
+  margin-bottom: 15px;
+  letter-spacing: 0.5px;
+}
+
+.detail-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 15px;
+  color: #444;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* --- Panel Phải: PDF Viewer --- */
+.cv-panel {
+  flex: 1;
+  background: #525659; /* Màu chuẩn PDF viewer */
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.cv-toolbar {
+  height: 48px;
+  background: white;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+.btn-download {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.pdf-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* --- Animation --- */
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Điều chỉnh lại z-index cho overlay confirm để đè lên split view */
+.confirmation-overlay {
+  z-index: 9999 !important; 
+}

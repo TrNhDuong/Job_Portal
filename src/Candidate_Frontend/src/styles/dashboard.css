@@ -1,11 +1,10 @@
 /* ============= DASHBOARD LAYOUT ============= */
 
 .dashboard-page {
-  max-width: 1120px;
-  margin: 0 auto;
-  padding: 2rem 1rem;
+  max-width: 1440px;    
+  padding: 2rem 2rem;   
   display: flex;
-  gap: 2rem;
+  gap: 1.25rem;       
 }
 
 .dashboard-sidebar-wrap {
