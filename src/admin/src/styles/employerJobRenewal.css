@@ -1,0 +1,259 @@
+.renewal-page {
+    background-color: #f4f6f8;
+    min-height: auto;
+    padding-bottom: 50px;
+}
+
+.renewal-container {
+    /*max-width: 900px;*/
+    max-width: 1350px;
+    margin: 0 auto;
+    margin-top: -50px; /* Đẩy lên đè vào phần xanh */
+    padding: 0 20px;
+    position: relative;
+    z-index: 10;
+}
+
+.renewal-header {
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.renewal-header h3 {
+    margin: 0 0 8px 0;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.icon-header {
+    color: #e74c3c;
+    font-size: 1.4rem;
+}
+
+.sub-text {
+    color: #666;
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+/* --- Job Grid Layout --- */
+.job-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+/* --- Job Card Styling --- */
+.job-card {
+    background: white;
+    border-radius: 12px;
+    padding: 15px; 
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border: 1px solid #eee;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    min-height: 220px; 
+    justify-content: space-between; /* Đẩy các phần nội dung ra xa nhau */
+}
+
+.job-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border-color: #0061ff;
+}
+
+/* Dải trạng thái Đã hết hạn */
+.status-strip {
+    font-size: 0.7rem;
+    color: #e74c3c;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 5px;
+}
+.status-strip::before {
+    content: ''; width: 6px; height: 6px; background: #e74c3c; border-radius: 50%;
+}
+
+.job-title {
+    margin: 0 0 10px 0; 
+    font-size: 0.95rem;
+    color: #2c3e50;
+    line-height: 1.3;
+    font-weight: 700;
+    flex-grow: 1;
+    display: -webkit-box; 
+    -webkit-line-clamp: 3; 
+    line-clamp: 3;
+    -webkit-box-orient: vertical; 
+    overflow: hidden;
+}
+
+/* --- Job Meta (Thông tin phụ) --- */
+.job-meta {
+    border-top: 1px solid #f0f0f0;
+    padding-top: 20px;
+    margin-bottom: 25px;
+    color: #555;
+    font-size: 0.8rem;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.meta-item.expire-info {
+    color: #e74c3c; 
+    font-weight: 600;
+}
+
+.meta-item svg {
+    font-size: 1.1rem; 
+}
+
+.meta-row {
+    display: flex;
+    gap: 25px;
+    margin-top: 10px;
+}
+
+
+/* Nút gia hạn */
+.btn-renew-action {
+    width: 100%;
+    padding: 10px;
+    background: #f0f7ff; 
+    color: #0061ff;
+    border: 1px solid #0061ff; 
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: auto;
+    box-shadow: 0 4px 10px rgba(0, 97, 255, 0.2);
+}
+
+.btn-renew-action:hover {
+    background: #0061ff; /* Hover thì đổi nền đậm */
+    color: white;
+    box-shadow: none;
+}
+
+
+/* Nếu không có bài đăng cần gia hạn */
+.empty-state {
+    background: white;
+    padding: 60px 40px; 
+    border-radius: 16px;
+    text-align: center;
+    grid-column: 1 / -1; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed #e0e0e0; 
+    color: #888;
+}
+
+/* --- MODAL STYLE (MỚI HOÀN TOÀN) --- */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6); z-index: 2000; /* Cao hơn Sidebar */
+    display: flex; justify-content: center; align-items: center;
+    backdrop-filter: blur(3px);
+}
+
+.renewal-modal {
+    background: white; padding: 25px; border-radius: 16px;
+    width: 90%; max-width: 400px;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.btn-close {
+    position: absolute; top: 15px; right: 15px;
+    background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #999;
+}
+
+.renewal-modal h4 { margin: 0 0 5px 0; color: #333; font-size: 1.2rem; }
+.job-name-modal { font-weight: 700; color: #0061ff; margin: 0 0 20px 0; font-size: 1rem; }
+
+.renewal-form label { display: block; margin-bottom: 8px; font-weight: 600; color: #555; }
+
+.input-row { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+.input-row input {
+    width: 80px; padding: 8px; border: 2px solid #eee; border-radius: 8px;
+    font-weight: 700; text-align: center; font-size: 1.1rem; outline: none;
+}
+.input-row input:focus { border-color: #0061ff; }
+.unit-text { font-weight: 600; color: #666; }
+
+.range-slider { width: 100%; margin-bottom: 20px; cursor: pointer; accent-color: #0061ff; }
+
+.cost-summary {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 1.1rem; border-top: 1px dashed #eee; padding-top: 15px;
+}
+.cost-value { color: #e74c3c; font-size: 1.4rem; }
+.rate-note { font-size: 0.8rem; color: #999; text-align: right; margin-top: 5px; }
+
+.btn-confirm-renew {
+    width: 100%; padding: 12px; margin-top: 20px;
+    background: linear-gradient(90deg, #0061ff, #00c6fb);
+    color: white; border: none; border-radius: 10px;
+    font-weight: 700; cursor: pointer; display: flex; justify-content: center; gap: 8px;
+}
+.btn-confirm-renew:hover { opacity: 0.9; transform: translateY(-2px); }
+
+/* --- Status Strip Colors --- */
+.status-strip {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 6px;
+    padding: 4px 0;
+}
+
+.status-strip::before {
+    content: ''; width: 8px; height: 8px; border-radius: 50%;
+}
+
+/* 🔴 Hết hạn */
+.status-strip.expired { color: #e74c3c; }
+.status-strip.expired::before { background: #e74c3c; }
+
+/* 🟠 Sắp hết hạn (Urgent) */
+.status-strip.urgent { color: #f39c12; }
+.status-strip.urgent::before { background: #f39c12; }
+
+/* 🟢 Còn hạn (Active) */
+.status-strip.active { color: #27ae60; }
+.status-strip.active::before { background: #27ae60; }
+
+/* --- Hiệu ứng viền Card theo trạng thái --- */
+.job-card {
+    /* ... giữ nguyên ... */
+    border-left: 4px solid transparent; /* Chuẩn bị cho border màu */
+}
+
+/* Viền trái đổi màu theo status */
+.job-card.status-expired { border-left-color: #e74c3c; }
+.job-card.status-urgent { border-left-color: #f39c12; }
+.job-card.status-active { border-left-color: #27ae60; }
+
+.expire-text { color: #e74c3c; font-weight: 600; }

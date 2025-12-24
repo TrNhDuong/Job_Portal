@@ -1,0 +1,417 @@
+/* --- 1. MODAL OVERLAY & CARD (Tổng quan) --- */
+
+.settings-modal-overlay {
+    /* Đảm bảo nó che phủ toàn bộ màn hình */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Mờ nền (Blur Backdrop) là một hiệu ứng hiện đại, mượt mà */
+    backdrop-filter: blur(5px); 
+    background-color: rgba(0, 0, 0, 0.4); /* Màu nền tối nhẹ */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Đảm bảo modal nằm trên cùng */
+    /* Hiệu ứng chuyển động mượt mà khi hiện/ẩn */
+    transition: opacity 0.3s ease; 
+}
+
+.settings-modal-card {
+    background: #ffffff;
+    border-radius: 12px; /* Góc bo tròn mềm mại */
+    width: 90%;
+    max-width: 850px; /* Kích thước tối ưu cho màn hình desktop */
+    height: 90%;
+    max-height: 600px; 
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Quan trọng để nội dung không tràn ra ngoài */
+    
+    /* Box Shadow "Pro" - nhẹ nhàng, không bị nặng nề */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.05); 
+    
+    /* Hiệu ứng Scale/Slide in khi mở */
+    transform: scale(0.95);
+    opacity: 0;
+    animation: modal-appear 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes modal-appear {
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* --- 2. HEADER & CLOSE BUTTON --- */
+
+.settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 30px;
+    border-bottom: 1px solid #e0e0e0;
+    background-color: #f7f7f7;
+}
+
+.settings-header h2 {
+    margin: 0;
+    font-size: 1.6rem;
+    color: #333333;
+    font-weight: 600;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #888888;
+    transition: color 0.2s ease, transform 0.2s ease;
+    padding: 5px;
+}
+
+.close-btn:hover {
+    color: #c0392b; /* Màu đỏ nổi bật khi hover */
+    transform: rotate(90deg);
+}
+
+/* --- 3. BODY (Sidebar + Content) --- */
+
+.settings-body {
+    display: flex;
+    flex-grow: 1; /* Cho phép body mở rộng hết phần còn lại */
+    min-height: 0; /* Quan trọng để flex-item hoạt động đúng */
+}
+
+/* --- 4. SIDEBAR (Điều hướng) --- */
+
+.settings-sidebar {
+    width: 250px;
+    padding: 15px 0;
+    background-color: #fafafa;
+    border-right: 1px solid #eeeeee;
+    flex-shrink: 0; /* Ngăn sidebar bị thu nhỏ */
+}
+
+.sidebar-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 30px;
+    cursor: pointer;
+    color: #555555;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease, color 0.2s ease, border-left 0.2s ease;
+    margin: 15px;
+}
+
+.sidebar-item svg {
+    margin-right: 12px;
+    font-size: 1.1rem;
+}
+
+.sidebar-item:hover {
+    background-color: #f0f0f0;
+    color: #333333;
+}
+
+.sidebar-item.active {
+    background-color: #e8f5ff; /* Màu nền nhẹ nhàng cho mục Active */
+    border-radius: 12px;
+    
+    color: #222222; /* Màu chủ đạo nổi bật */
+    /* border-left: 4px solid #007bff; Thanh dọc biểu thị trạng thái Active */
+    font-weight: 600;
+}
+
+/* --- 5. CONTENT (Nội dung chính) --- */
+
+.settings-content {
+    flex-grow: 1; /* Nội dung chiếm hết không gian còn lại */
+    padding: 30px;
+    overflow-y: auto; /* Cho phép cuộn nếu nội dung dài */
+}
+
+.settings-content-main h3 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 25px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.settings-content-main h4 {
+    font-size: 1.2rem;
+    color: #555;
+    margin-top: 30px;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+/* --- 6. FORM STYLES (Input, Label, Error) --- */
+
+.form-group, .form-group-static {
+    margin-bottom: 20px;
+}
+
+.form-group label, .form-group-static label {
+    display: block;
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.form-group input, .form-group-static input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #dddddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1); /* Hiệu ứng focus nhẹ nhàng */
+    outline: none;
+}
+
+/* Input readOnly */
+.form-group-static input[disabled], .form-group-static input[readOnly] {
+    background-color: #f7f7f7;
+    color: #888888;
+    cursor: default;
+}
+
+/* Error state */
+.form-group input.error {
+    border-color: #e74c3c;
+}
+
+.error-text {
+    color: #e74c3c;
+    font-size: 0.85rem;
+    margin-top: 5px;
+    margin-bottom: 0;
+}
+
+/* --- 7. BUTTONS & TOGGLES --- */
+
+/* Save Password Button */
+.btn-save-password {
+    /* Gradient hiện đại */
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+    padding: 6px 18px;
+    border: none;
+    border-radius: 18px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    margin-top: 50px;
+
+    /* Shadow nổi nhẹ */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Hover: nâng lên, đổi gradient nhẹ, thêm glow */
+.btn-save-password:hover {
+    transform: translateY(-3px);
+    background: linear-gradient(135deg, #43a1f5 0%, #00d8fe 100%);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* Active: nhấn xuống mượt mà */
+.btn-save-password:active {
+    transform: scale(0.97);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Tạo hiệu ứng sáng di chuyển khi hover (optional) */
+.btn-save-password::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: rgba(255, 255, 255, 0.15);
+    transform: rotate(45deg) translate(-100%, -100%);
+    transition: all 0.5s ease;
+    pointer-events: none;
+}
+
+.btn-save-password:hover::before {
+    transform: rotate(45deg) translate(0, 0);
+}
+
+/* Remove Account Button *
+/* Save Changes Button (chung) */
+.btn-save-changes {
+    /* Gradient hiện đại */
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+    padding: 6px 18px;
+    border: none;
+    border-radius: 18px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    margin-top: 50px;
+
+    /* Shadow nổi nhẹ */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Hover: nâng lên, đổi gradient nhẹ, thêm glow */
+.btn-save-changes:hover {
+    transform: translateY(-3px);
+    background: linear-gradient(135deg, #43a1f5 0%, #00d8fe 100%);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* Active: nhấn xuống mượt mà */
+.btn-save-changes:active {
+    transform: scale(0.97);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Tạo hiệu ứng sáng di chuyển khi hover (optional) */
+.btn-save-changes::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: rgba(255, 255, 255, 0.15);
+    transform: rotate(45deg) translate(-100%, -100%);
+    transition: all 0.5s ease;
+    pointer-events: none;
+}
+
+.btn-save-changes:hover::before {
+    transform: rotate(45deg) translate(0, 0);
+}
+
+/* Notification Toggles */
+.setting-toggle-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.setting-toggle-item:last-of-type {
+    border-bottom: none;
+}
+
+.setting-toggle-item label {
+    font-size: 1rem;
+    color: #333;
+    font-weight: 400;
+}
+
+/* Styling the native checkbox (Bạn có thể dùng thư viện switch UI để chuyên nghiệp hơn) */
+.setting-toggle-item input[type="checkbox"] {
+    /* Đảm bảo checkbox rõ ràng */
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+/* --- 8. RESPONSIVE DESIGN (Cho mobile) --- */
+
+@media (max-width: 768px) {
+    .settings-modal-card {
+        width: 100%;
+        height: 100%;
+        max-width: none;
+        max-height: none;
+        border-radius: 0;
+    }
+    
+    .settings-body {
+        flex-direction: column; /* Chuyển Sidebar xuống dưới Header */
+    }
+
+    .settings-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #eeeeee;
+        padding: 0;
+        /* Biến sidebar thành thanh Tab ngang */
+        display: flex;
+        overflow-x: auto;
+        white-space: nowrap;
+        background-color: #ffffff;
+    }
+    
+    .sidebar-item {
+        flex-shrink: 0;
+        padding: 12px 20px;
+        border-left: none !important;
+        border-bottom: 2px solid transparent;
+    }
+    
+    .sidebar-item.active {
+        border-left: none;
+        border-bottom: 2px solid #007bff; /* Active line ở dưới */
+    }
+
+    .settings-content {
+        padding: 20px;
+    }
+}
+
+.icon-img {
+    width: 25px; 
+    height: 25px;
+    margin: 0 10px  0 0;
+    /* ... các thuộc tính khác */
+}
+
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* Chỉnh lại Input để có chỗ cho Icon */
+.input-with-icon input {
+    width: 100%;
+    padding-right: 40px; /* Chừa chỗ bên phải cho icon */
+}
+
+/* Style cho Icon con mắt */
+.eye-icon-setting {
+    position: absolute;
+    right: 12px;
+    cursor: pointer;
+    color: #9ca3af;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s;
+}
+
+.eye-icon-setting:hover {
+    color: #0061ff; /* Xanh brand khi hover */
+}
