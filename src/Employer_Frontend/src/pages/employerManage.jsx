@@ -402,9 +402,18 @@ const CVManager = ({ job, initiallabel, onBack }) => {
     } catch (error) { console.error("API Error", error); return false; }
   };
 
-  const handleSendEmail = (subject, content) => {
-      alert(`Đã gửi email thành công tới ${targetRecipients.length} ứng viên!`);
-      setShowEmailModal(false);
+  const handleSendEmail = async (subject, content) => {
+      const res = await client.post('api/mail/send', {
+          to: targetRecipients.map(r => r.email),
+          subject,
+          htmlContent: content
+      });
+      if (res.data.success) {
+          alert('Gửi email thành công!');
+          setShowEmailModal(false);
+      } else {
+          alert('Gửi email thất bại: ' + res.data.message);
+      }
   };
 
   // --- RENDER CONDITION: SPLIT VIEW vs LIST VIEW ---
