@@ -461,6 +461,72 @@
   opacity: 1;
 }
 
-
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slideUpModal { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+/* --- NÚT GỬI OTP (Style mới) --- */
+
+/* 1. Hộp chứa Input + Nút (Làm mốc toạ độ) */
+.input-group-verify {
+    position: relative; /* Quan trọng: Giữ nút nằm trong hộp này */
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+/* 2. Input chừa chỗ cho nút */
+.auth-input.has-btn {
+    padding-right: 120px !important; /* Đẩy chữ sang trái để không đè lên nút */
+}
+
+/* 3. Nút Verify nhỏ gọn */
+.btn-verify {
+    position: absolute;
+    right: 5px;          /* Cách lề phải 5px */
+    top: 50%;            /* Căn giữa theo chiều dọc */
+    transform: translateY(-50%); /* Kéo lên 50% để nằm chính giữa tâm */
+    
+    height: 32px;        /* Chiều cao cố định (nhỏ hơn input 40px) */
+    padding: 0 12px;     /* Độ rộng vừa phải */
+    
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.8rem;   /* Chữ nhỏ gọn */
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    z-index: 10;
+    white-space: nowrap; /* Không cho xuống dòng */
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+}
+
+.btn-verify:hover:not(:disabled) {
+    background-color: #1d4ed8;
+    box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
+}
+
+.btn-verify:disabled {
+    background-color: #94a3b8;
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+/* Spinner xoay nhỏ xíu */
+.spinner-small {
+    width: 12px;
+    height: 12px;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}

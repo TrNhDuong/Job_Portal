@@ -265,6 +265,19 @@ export default function Homepage() {
     setActiveSetting("PostJob");
   };
   
+  // Hàm lấy chữ cái đầu (VD: "Bát Quái" -> "BQ")
+  const getInitials = (name) => {
+    if (!name) return "U";
+    const parts = name.trim().split(" ");
+    if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+    // Lấy chữ cái đầu của từ đầu tiên và từ cuối cùng
+    return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+  };
+
+  // Lấy dữ liệu logo GỐC (không lấy ảnh mặc định monoLogo nữa để check)
+  const rawLogoUrl = auth.auth.employerData?.data?.logo?.url;
+  const companyName = auth.auth.employerData?.data?.company || "Employer";
+
   return (
     <div>
       <div className="dashboard-theme">
@@ -279,7 +292,13 @@ export default function Homepage() {
           <div className="side-bar">
           <div className="sidebar-top-section">
             <div className="user-info-area" onClick={() => setActiveSetting("Profile")} >
-                <img src={logoUrl} alt="User Avatar" className="user-avatar" />
+                {rawLogoUrl ? (
+                    <img src={rawLogoUrl} alt="User Avatar" className="user-avatar" />
+                ) : (
+                    <div className="avatar-placeholder-init user-avatar placeholder">
+                        {getInitials(companyName)}
+                    </div>
+                )}
                 <div className="user-details">
                     <div className="user-info">{auth.getEmployerData()?.data?.company || "Công ty chưa đặt tên"}</div>
                     {/* Hiển thị điểm ở Sidebar luôn cho tiện theo dõi */}

@@ -74,23 +74,26 @@ export default function EmployerForgotPassword({ onBack }) {
 
   // --- BƯỚC 1: GỬI OTP ---
   const handleSendOTP = async () => {
-    if (!formData.email) return setError("Vui lòng nhập email");
-    
+    if (!formData.email) return setError("Vui lòng nhập email");   
     setLoading(true);
+    setError("");
     try {
         const email = formData.email;
         const response = await client.post(`api/send-otp`, {email});
         if (response.data.success){
-            setTimeout(() => {
-                setStep(2);
-                setSuccess("");
-                setError("");
-            }, 1000);
+          setSuccess("Mã OTP đã được gửi! Kiểm tra email.");
+          setCooldown(30);
+
+          setTimeout(() => {
+              setStep(2);
+              setSuccess("");
+              setError("");
+          }, 1000);
         }
     } catch (err) {
       setError(err.message || "Không thể gửi OTP.");
     } finally {
-      setOtpLoading(false);
+      setLoading(false);
     }
   };
 
@@ -100,6 +103,7 @@ export default function EmployerForgotPassword({ onBack }) {
     if (otpCode.length !== 6) return setError("Vui lòng nhập đủ 6 số OTP");
 
     setLoading(true);
+    setError("");
     try {
 
         const email = formData.email;
@@ -108,39 +112,21 @@ export default function EmployerForgotPassword({ onBack }) {
         );
         
         if (response.data.success){
-            setToken(response.data.data);
+            setToken(response.data.data); 
             setSuccess("Xác thực thành công!");
             setTimeout(() => {
-                setStep(3);
-                setSuccess("");
-                setError("");
+              setStep(3);
+              setSuccess("");
+              setError("");
             }, 1000);
         }
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Mã OTP không chính xác");
     } finally {
-      setOtpLoading(false);
+      setLoading(false);
     }
   };
 
-  // -------------------- OTP INPUT HANDLER --------------------
-  const handleOtpInput = (value, index) => {
-    if (!/^[0-9]?$/.test(value)) return;
-
-    const newOtp = [...otp];
-    newOtp[index] = value;
-    setOtp(newOtp);
-
-    if (value && index < 5) {
-      document.getElementById(`otp-${index + 1}`).focus();
-    }
-  };
-
-  // -------------------- CLOSE OTP MODAL --------------------
-  const closeOtpModal = () => {
-    setOtpModal(false);
-    setOtpSent(false);
-  };
 
   // --- BƯỚC 3: ĐỔI MẬT KHẨU ---
   const handleResetPassword = async () => {
@@ -360,8 +346,23 @@ export default function EmployerForgotPassword({ onBack }) {
                     if (step === 2) handleVerifyOTP();
                     if (step === 3) handleResetPassword();
                 }} 
-                disabled={loading}
-                style={step === 2 ? {backgroundColor: atlasGreen} : {}}
+                disabled={loading || (step === 2 && otp.join("").length < 6)}
+                style={{
+                    // Logic màu sắc:
+                    // Bước 2: Nếu đủ 6 số -> Màu xanh. Chưa đủ -> Màu xám nhạt
+                    backgroundColor: step === 2 
+                        ? (otp.join("").length === 6 ? atlasGreen : "#e5e7eb") 
+                        : (step === 1 || step === 3 ? atlasGreen : ""),
+                    
+                    // Logic màu chữ: Bước 2 chưa xong -> Chữ xám đậm cho dễ nhìn trên nền xám nhạt
+                    color: (step === 2 && otp.join("").length < 6) ? "#9ca3af" : "white",
+                    
+                    // Con trỏ chuột
+                    cursor: (step === 2 && otp.join("").length < 6) ? "not-allowed" : "pointer",
+                    
+                    // Hiệu ứng chuyển màu mượt
+                    transition: "all 0.2s ease"
+                }}
             >
                 {loading ? "Đang xử lý..." : 
                     step === 1 ? "Gửi mã xác thực" : 
@@ -370,48 +371,7 @@ export default function EmployerForgotPassword({ onBack }) {
                 }
             </button>
         </div>
-      </div>
-
-      {/* ---------------------- OTP MODAL ---------------------- */}
-      {otpModal && (
-        <div className="otp-overlay">
-          <div className="otp-modal">
-            <h2 className="otp-title">Nhập mã OTP</h2>
-            <p className="otp-sub">Chúng mình đã gửi mã đến email: <b>{formData.email}</b></p>
-            
-            <div className="otp-inputs">
-              {otp.map((digit, index) => (
-                <input
-                  key={index}
-                  id={`otp-${index}`}
-                  className="otp-input"
-                  maxLength="1"
-                  value={digit}
-                  onChange={(e) => handleOtpInput(e.target.value, index)}
-                />
-              ))}
-            </div>
-
-            <button className="otp-submit" onClick={verifyOtp} disabled={otpLoading}>
-              {otpLoading ? "Đang xác thực..." : "Xác nhận OTP"}
-            </button>
-
-            {resendTimer > 0 ? (
-              <p className="otp-resend-disabled">
-                Gửi lại OTP sau {resendTimer}s
-              </p>
-            ) : (
-              <p className="otp-resend" onClick={sendOtp}>
-                Gửi lại mã OTP
-              </p>
-            )}
-
-            <button className="otp-close" onClick={closeOtpModal}>
-              <HiX />
-            </button>
-          </div>
-        </div>
-      )}
+      </div>      
 
       <div className="auth-right">
         <ParticlesAuth />

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useMemo, useEffect } from "react";
 import "../styles/employerManagePosts.css";
 // Import thêm các icon đẹp mắt
-import { HiDotsHorizontal, HiLocationMarker, HiCurrencyDollar, HiBriefcase, HiClock, HiEye, HiUserGroup } from "react-icons/hi";
+import { HiDotsHorizontal, HiLocationMarker, HiCurrencyDollar, HiBriefcase, HiClock, HiEye, HiUserGroup, HiOfficeBuilding, HiRefresh } from "react-icons/hi";
 
 const jobTypes = ["Full-time", "Part-time", "Internship", "Freelance", "Contract"];
 
@@ -114,18 +114,29 @@ export default function EmployerManagePosts({
            </div>
            
            <div className="filter-group">
-              <select value={locationFilter} onChange={(e) => setLocationFilter(e.target.value)}>
-                <option value="">📍 Tất cả địa điểm</option>
-                {uniqueLocations.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
-              </select>
+              <div className="select-wrapper">
+                <HiLocationMarker className="select-icon" />
+                <select value={locationFilter} onChange={(e) => setLocationFilter(e.target.value)}>
+                  <option value="">Tất cả địa điểm</option>
+                  {uniqueLocations.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
+                </select>
+              </div>
 
-              <select value={jobTypeFilter} onChange={(e) => setJobTypeFilter(e.target.value)}>
-                <option value="">💼 Tất cả loại hình</option>
-                {jobTypes.map((type) => <option key={type} value={type}>{type}</option>)}
-              </select>
+              <div className="select-wrapper">
+                <HiBriefcase className="select-icon" />
+                <select value={jobTypeFilter} onChange={(e) => setJobTypeFilter(e.target.value)}>
+                  <option value="">Tất cả loại hình</option>
+                  {jobTypes.map((type) => <option key={type} value={type}>{type}</option>)}
+                </select>
+              </div>
 
-              <button className="btn-reset" onClick={() => { setTextFilter(""); setLocationFilter(""); setJobTypeFilter(""); }}>
-                Làm mới
+              <button 
+                className="btn-reset" 
+                onClick={() => { setTextFilter(""); setLocationFilter(""); setJobTypeFilter(""); }}
+                title="Xóa bộ lọc"
+              >
+                <HiRefresh className="btn-icon-spin" />
+                <span>Làm mới</span>
               </button>
            </div>
         </div>
@@ -201,8 +212,11 @@ export default function EmployerManagePosts({
           })
         ) : (
           <div className="empty-state">
-             <img src="https://cdni.iconscout.com/illustration/premium/thumb/search-not-found-illustration-download-in-svg-png-gif-file-formats--zoom-magnifier-404-error-empty-state-pack-user-interface-illustrations-5216538.png" alt="Empty" />
-             <p>Không tìm thấy bài đăng nào phù hợp.</p>
+              <div className="empty-icon-wrapper">
+                  <HiOfficeBuilding size={25} color="#9ca3af" /> {/* Icon tòa nhà xám */}
+              </div>
+              <h3>Chưa có bài đăng nào</h3>
+              <p>Hãy bắt đầu tạo tin tuyển dụng đầu tiên để thu hút nhân tài.</p>
           </div>
         )}
       </div>

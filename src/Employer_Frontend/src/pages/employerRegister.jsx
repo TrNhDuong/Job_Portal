@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { HiEye, HiEyeOff, HiCheck, HiX } from "react-icons/hi";
+import { ShieldCheck } from "lucide-react"; // Import thêm Icon Khiên
 import logoImage from "../assets/logo.png";
 import "../styles/register.css";
+import "../styles/emailModal.css"; // Đảm bảo import CSS cho Modal
 import ParticlesAuth from "../components/ParticlesAuth";
 
 const API_BASE_URL = "http://localhost:8080/api";
@@ -48,11 +50,6 @@ export default function EmployerRegister() {
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    const closeOtpModal = () => {
-        setShowOtpModal(false);
-        setOtpSent(false); // 🔥 bring back the button
     };
 
     // -------------------- SEND OTP --------------------
@@ -135,7 +132,7 @@ export default function EmployerRegister() {
         }
     };
 
-    // OTP input handler
+    // --- XỬ LÝ NHẬP OTP (Nâng cao: Tự động focus & Backspace) ---
     const handleOtpInput = (value, index) => {
         if (!/^[0-9]?$/.test(value)) return;
 
@@ -143,8 +140,18 @@ export default function EmployerRegister() {
         newOtp[index] = value;
         setOtp(newOtp);
 
+        // Tự động nhảy sang ô tiếp theo khi nhập số
         if (value && index < 5) {
-            document.getElementById(`otp-${index + 1}`).focus();
+            const nextInput = document.getElementById(`otp-input-${index + 1}`);
+            if (nextInput) nextInput.focus();
+        }
+    };
+
+    const handleOtpKeyDown = (e, index) => {
+        // Tự động lùi lại ô trước khi nhấn Backspace ở ô trống
+        if (e.key === "Backspace" && !otp[index] && index > 0) {
+            const prevInput = document.getElementById(`otp-input-${index - 1}`);
+            if (prevInput) prevInput.focus();
         }
     };
 
@@ -243,27 +250,44 @@ export default function EmployerRegister() {
 
                 <div className="auth-form">
 
-                    {/* Email */}
+                    {/* Email & OTP Button */}
                     <div className="form-group">
                         <label className="form-label">Email doanh nghiệp</label>
-                        <div className="input-wrapper">
+                        {/* Wrapper mới để chứa input và nút verify */}
+                        <div className="input-group-verify">
                             <input
                                 name="email"
                                 type="email"
-                                className="auth-input"
+                                className="auth-input has-btn" /* Thêm class has-btn để padding phải */
                                 placeholder="hr@company.com"
                                 value={formData.email}
                                 onChange={handleChange}
                                 onKeyDown={handleKeyDown}
+                                disabled={otpVerified} // Khóa email nếu đã xác thực
                             />
-                            {!otpSent && (
+                            
+                            {/* Nút Gửi OTP Mới */}
+                            {!otpVerified && (
                                 <button
-                                    className="otp-button"
+                                    type="button"
+                                    className="btn-verify"
                                     onClick={sendOtp}
-                                    disabled={otpLoading}
+                                    disabled={otpLoading || resendTimer > 0}
                                 >
-                                    {otpLoading ? "Đang gửi..." : "Gửi OTP"}
+                                    {otpLoading ? (
+                                        <>
+                                            <div className="spinner-small"></div>
+                                            <span>Đang gửi...</span>
+                                        </>
+                                    ) : (
+                                        resendTimer > 0 ? `Gửi lại (${resendTimer}s)` : (otpSent ? "Gửi lại" : "Gửi OTP")
+                                    )}
                                 </button>
+                            )}
+                            
+                            {/* Icon Check nếu đã xác thực */}
+                            {otpVerified && (
+                                <HiCheck className="verified-icon" style={{position:'absolute', right:'10px', top:'50%', transform:'translateY(-50%)', color:'#10b981', fontSize:'1.2rem'}} />
                             )}
                         </div>
                     </div>
@@ -428,48 +452,74 @@ export default function EmployerRegister() {
                 </div>
             </div>
 
-            {/* ---------------------- OTP MODAL ---------------------- */}
+            {/* ---------------------- NEW OTP MODAL ---------------------- */}
             {otpModal && (
-                <div className="otp-overlay">
-                    <div className="otp-modal">
-                        <h2 className="otp-title">Nhập mã OTP</h2>
-                        <p className="otp-sub">Chúng mình đã gửi mã đến email: <b>{email}</b></p>
-                        
-                        <div className="otp-inputs">
-                        {otp.map((digit, index) => (
-                            <input
-                            key={index}
-                            id={`otp-${index}`}
-                            className="otp-input"
-                            maxLength="1"
-                            value={digit}
-                            onChange={(e) => handleOtpInput(e.target.value, index)}
-                            />
-                        ))}
-                        </div>
-
-                        <button className="otp-submit" onClick={verifyOtp} disabled={otpLoading}>
-                            {otpLoading ? "Đang xác thực..." : "Xác nhận OTP"}
+                <div className="otp-modal-overlay">
+                    <div className="otp-modal-card">
+                        {/* Nút đóng */}
+                        <button className="btn-close-absolute" onClick={() => setOtpModal(false)}>
+                            <HiX size={24} />
                         </button>
 
-                        {resendTimer > 0 ? (
-                            <p className="otp-resend-disabled">
-                                Gửi lại OTP sau {resendTimer}s
-                            </p>
-                        ) : (
-                            <p className="otp-resend" onClick={sendOtp}>
-                                Gửi lại mã OTP
-                            </p>
-                        )}
+                        {/* Icon Khiên bảo mật */}
+                        <div className="otp-shield-icon">
+                            <ShieldCheck size={36} strokeWidth={2} />
+                        </div>
+                        
+                        <h3 className="otp-title">Xác thực tài khoản</h3>
+                        <p className="otp-desc">
+                            Chúng tôi đã gửi mã xác thực 6 số đến email <strong>{formData.email}</strong>. 
+                            <br/>Vui lòng kiểm tra hộp thư (kể cả mục Spam).
+                        </p>
 
-                        {/* <button className="otp-close" onClick={closeOtpModal}>
-                            <HiX />
-                        </button> fuck u*/}
+                        {/* Ô nhập 6 số */}
+                        <div className="otp-inputs">
+                            {otp.map((digit, index) => (
+                                <input
+                                    key={index}
+                                    id={`otp-input-${index}`} 
+                                    type="text"
+                                    maxLength="1"
+                                    className="otp-slot"
+                                    value={digit}
+                                    onChange={(e) => handleOtpInput(e.target.value, index)}
+                                    onKeyDown={(e) => handleOtpKeyDown(e, index)}
+                                    autoFocus={index === 0} // Tự động focus ô đầu
+                                />
+                            ))}
+                        </div>
+
+                        {/* Footer Modal */}
+                        <div className="otp-footer">
+                            <button 
+                                className="btn-confirm-otp" 
+                                onClick={verifyOtp} 
+                                disabled={otpLoading || otp.join("").length < 6}
+                            >
+                                {otpLoading ? "Đang xác thực..." : "Xác thực ngay"}
+                            </button>
+                            
+                            <div style={{ fontSize: '0.9rem', color: '#64748b' }}>
+                                Chưa nhận được mã?{' '}
+                                <button 
+                                    type="button"
+                                    onClick={sendOtp}
+                                    disabled={resendTimer > 0 || otpLoading}
+                                    style={{ 
+                                        background: 'none', border: 'none', color: '#2563eb', 
+                                        fontWeight: 700, cursor: resendTimer > 0 ? 'default' : 'pointer',
+                                        opacity: resendTimer > 0 ? 0.6 : 1, padding: 0
+                                    }}
+                                >
+                                    {resendTimer > 0 ? `Gửi lại sau ${resendTimer}s` : "Gửi lại mã mới"}
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}
 
-            {/* TERMS MODAL remains unchanged */}
+            {/* TERMS MODAL (Giữ nguyên) */}
             {showTerms && (
                 <div className="terms-modal-overlay" onClick={() => setShowTerms(false)}>
                     <div className="terms-modal-content" onClick={(e) => e.stopPropagation()}>
@@ -481,31 +531,24 @@ export default function EmployerRegister() {
                         </div>
 
                         <div className="terms-body">
-                            <p>
-                                Chào mừng bạn đến với <strong>InspireLeader</strong>.
-                            </p>
-
+                            <p>Chào mừng bạn đến với <strong>InspireLeader</strong>.</p>
                             <h4>1. Trách nhiệm của Nhà tuyển dụng</h4>
                             <ul>
                                 <li>Cung cấp thông tin doanh nghiệp chính xác.</li>
                                 <li>Không đăng tin tuyển dụng ảo hoặc lừa đảo.</li>
                                 <li>Bảo mật thông tin ứng viên.</li>
                             </ul>
-
                             <h4>2. Quyền lợi</h4>
                             <ul>
                                 <li>Được đăng tin tuyển dụng.</li>
                                 <li>Tiếp cận hồ sơ ứng viên.</li>
                             </ul>
-
                             <h4>3. Thanh toán</h4>
                             <ul>
                                 <li>Điểm Inspire không hoàn lại.</li>
                             </ul>
-
                             <h4>4. Vi phạm</h4>
                             <p>Có quyền khóa tài khoản nếu có hành vi vi phạm.</p>
-
                             <p><em>Cập nhật lần cuối: 28/11/2025</em></p>
                         </div>
 
