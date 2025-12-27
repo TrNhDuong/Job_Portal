@@ -8,7 +8,7 @@ import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 
 // Ảnh bìa mặc định (Khớp với trang Profile)
-const MOCK_BANNER = "https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=1920&auto=format&fit=crop";
+const MOCK_BANNER = "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=1920&auto=format&fit=crop";
 
 const EmployerProfileEdit = ({ initialData, onSave, onCancel, onChangeLogo, onChangeWallpaper }) => {
     

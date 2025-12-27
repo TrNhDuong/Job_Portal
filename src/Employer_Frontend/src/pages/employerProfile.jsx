@@ -7,7 +7,7 @@ import { AuthContext } from "../context/AuthContext.jsx";
 import client from '../api/client';
 
 // Cập nhật ảnh Mock đẹp hơn (ảnh văn phòng hiện đại)
-const MOCK_BANNER = "https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=1920&auto=format&fit=crop";
+const MOCK_BANNER = "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=1920&auto=format&fit=crop";
 
 const EmployerProfile = () => {
     const [mode, setMode] = useState('view');

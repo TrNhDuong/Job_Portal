@@ -215,7 +215,7 @@ export default function EmployerManagePosts({
               <div className="empty-icon-wrapper">
                   <HiOfficeBuilding size={25} color="#9ca3af" /> {/* Icon tòa nhà xám */}
               </div>
-              <h3>Chưa có bài đăng nào</h3>
+              <h3>Chưa có bài đăng nào đang mở</h3>
               <p>Hãy bắt đầu tạo tin tuyển dụng đầu tiên để thu hút nhân tài.</p>
           </div>
         )}
