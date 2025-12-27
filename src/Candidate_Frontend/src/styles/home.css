@@ -151,283 +151,628 @@
     max-width: 300px; /* Trên mobile cho card rộng ra chút */
   }
 }
-/* ============================
-   FEATURED JOBS SECTION
-============================ */
+/* =================================================================
+   1. FEATURED JOBS CONTAINER & HEADER
+   ================================================================= */
 
 .home-featured-wrapper {
-  margin-top: 8px;
+  margin-top: 24px;
+  position: relative; /* Quan trọng để làm mốc cho nút mũi tên absolute */
+  padding: 10px 0;    /* Padding để bóng đổ (shadow) của card không bị cắt */
 }
 
-.home-featured-title {
-  display: inline-flex;
+/* Header: Title + Icon */
+.home-featured-title-inner {
+  display: flex;
   align-items: center;
-  gap: 14px; 
-  padding-bottom: 4px;
+  gap: 14px;
+  margin-bottom: 8px;
 }
 
 .home-featured-title-icon-wrap {
-  width: 42px; 
+  width: 42px;
   height: 42px;
-  /* SỬA: Giảm bo góc từ 999px -> 10px cho đồng bộ với Card */
-  border-radius: 10px; 
+  border-radius: 10px;
   background: linear-gradient(135deg, #fee2e2, #fecaca);
+  border: 1px solid #fecaca;
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Thêm viền nhẹ cho sắc nét */
-  border: 1px solid #fecaca; 
+  flex-shrink: 0;
 }
 
 .home-featured-title-icon {
-  width: 22px; /* Thu nhỏ icon chút xíu cho tinh tế */
+  width: 22px;
   height: 22px;
   color: #dc2626;
   fill: #dc2626;
 }
 
 .home-featured-title-text {
-  font-size: clamp(24px, 3vw, 28px); /* Chỉnh font size vừa vặn hơn */
-  font-weight: 800;                
+  font-size: clamp(20px, 4vw, 26px);
+  font-weight: 800;
   color: #0f172a;
-  letter-spacing: -0.5px;       
+  letter-spacing: -0.5px;
 }
 
 .home-featured-error {
+  display: inline-block;
   font-size: 13px;
   color: #dc2626;
   background: #fee2e2;
-  padding: 4px 12px;
-  border-radius: 6px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 12px;
 }
 
-/* Grid jobs */
-.home-featured-grid {
-  margin-top: 24px; /* Tăng khoảng cách với tiêu đề cho thoáng */
-  display: grid;
-  /* Mobile: 1 cột */
-  grid-template-columns: 1fr; 
-  gap: 20px; /* Tăng gap chút cho thoáng */
+/* =================================================================
+   2. CAROUSEL & NAVIGATION ARROWS (Overlay Style)
+   ================================================================= */
+
+/* Khung hiển thị (Che đi phần bị tràn) */
+.home-featured-carousel {
+  overflow: hidden; 
+  width: 100%;
 }
 
-@media (min-width: 640px) {
-  /* Tablet: 2 cột */
-  .home-featured-grid {
-    grid-template-columns: repeat(2, 1fr);
+/* Đường ray trượt */
+.home-featured-track {
+  display: flex;
+  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1); /* Hiệu ứng trượt mượt */
+  width: 100%;
+}
+
+/* Item trong carousel */
+.home-featured-item {
+  flex-shrink: 0;
+  box-sizing: border-box;
+  padding: 0 10px; /* Khoảng cách giữa các card */
+}
+
+.home-featured-card-wrapper {
+  height: 100%; /* Đảm bảo card căng đều chiều cao */
+}
+
+/* --- NÚT ĐIỀU HƯỚNG (ARROWS) --- */
+.home-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20; /* Đè lên Job Card */
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  /* Mặc định ẩn trên PC để giao diện sạch, hiện khi hover vào vùng job */
+  opacity: 0; 
+}
+
+/* Hover vào vùng wrapper thì hiện nút */
+.home-featured-wrapper:hover .home-arrow {
+  opacity: 1;
+}
+
+.home-arrow:hover {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+}
+
+/* Vị trí nút Trái/Phải */
+.home-arrow.prev {
+  left: -22px; /* Đẩy nhẹ ra ngoài mép trái */
+}
+
+.home-arrow.next {
+  right: -22px; /* Đẩy nhẹ ra ngoài mép phải */
+}
+
+/* Responsive cho Mobile/Tablet: Nút nằm gọn bên trong và luôn hiện */
+@media (max-width: 1024px) {
+  .home-featured-wrapper:hover .home-arrow,
+  .home-arrow {
+    opacity: 1;
+    width: 36px;
+    height: 36px;
   }
+  .home-arrow.prev { left: 0; }
+  .home-arrow.next { right: 0; }
 }
 
-@media (min-width: 1024px) {
-  /* PC: 3 cột */
-  .home-featured-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-/* Skeleton */
-.home-featured-skeleton {
-  height: 180px; /* Tăng chiều cao skeleton cho khớp với JobCard thật */
-  border-radius: 10px;
-  background: linear-gradient(
-    90deg,
-    #f1f5f9 0%,
-    #e2e8f0 50%,
-    #f1f5f9 100%
-  );
-  background-size: 200% 100%;
-  animation: homeSkeletonShimmer 1.5s ease-in-out infinite;
-}
-
-@keyframes homeSkeletonShimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-/* ============================
-   JOB CARD
-============================ */
+/* =================================================================
+   3. JOB CARD (Minimalist & Modern)
+   ================================================================= */
 
 .home-job-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  /* GIẢM PADDING: 16px -> 12px */
-  padding: 12px; 
+  border-radius: 12px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  /* GIẢM KHOẢNG CÁCH DỌC: 12px -> 8px */
-  gap: 8px; 
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  gap: 12px;
+  height: 100%;
+  position: relative;
   transition: all 0.2s ease;
   cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .home-job-card:hover {
-  transform: translateY(-2px);
   border-color: #3b82f6;
-  box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.1);
 }
 
-/* Header */
-.home-job-card-header {
+/* --- Phần Trên: Logo & Thông tin --- */
+.home-job-card-top {
   display: flex;
+  gap: 12px;
   align-items: flex-start;
-  /* Giảm khoảng cách giữa Logo và Text: 12px -> 10px */
-  gap: 10px; 
 }
 
 .home-job-card-logo-wrap {
-  /* Thu nhỏ logo chút cho cân đối: 50px -> 44px */
-  width: 44px;
-  height: 44px;
+  width: 72px; /* Logo to rõ */
+  height: 72px;
   flex-shrink: 0;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 3px;
-  background: white;
+  border: 1px solid #f1f5f9;
+  border-radius: 10px;
+  padding: 4px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .home-job-card-logo {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
-.home-job-card-main {
+.home-job-card-info {
   flex: 1;
-  min-width: 0;
+  min-width: 0; /* Để text truncate hoạt động */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+
+/* Dòng Title + Badge */
+.home-job-card-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .home-job-card-title {
-  font-size: 15px; /* Giảm nhẹ font size title: 16px -> 15px */
+  font-size: 16px;
   font-weight: 700;
   color: #1e293b;
-  margin: 0 0 2px 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  margin: 0;
   line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Cắt dòng thứ 2 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.home-job-card-company-link {
-  background: none;
+.home-job-card-badge {
+  background: linear-gradient(135deg, #f97316, #ea580c); /* Gradient cam nổi bật */
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 100px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.home-job-card-company {
+  font-size: 14px;
+  color: #64748b;
+  background: transparent;
   border: none;
   padding: 0;
-  font-size: 13px; /* Giảm font size company: 14px -> 13px */
-  color: #64748b;
-  cursor: pointer;
   text-align: left;
-  display: block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  cursor: pointer;
   max-width: 100%;
-  margin-bottom: 4px; /* Giảm margin dưới: 8px -> 4px */
+  transition: color 0.2s;
 }
-.home-job-card-company-link:hover {
+.home-job-card-company:hover {
   color: #2563eb;
   text-decoration: underline;
 }
 
-/* Tags */
-.home-job-card-tags {
+/* --- Phần Dưới: Pills & Nút Lưu --- */
+.home-job-card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto; /* Đẩy xuống đáy */
+  padding-top: 12px;
+  border-top: 1px dashed #f1f5f9;
+}
+
+.home-job-card-pills {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
 }
 
-.home-job-card-tag {
-  font-size: 11px;
-  font-weight: 600;
-  padding: 2px 8px; /* Giảm padding trong tag */
-  border-radius: 4px;
-  background: #eff6ff;
-  color: #2563eb;
-  height: 24px; /* Cố định chiều cao cho gọn */
-  display: flex;
+.home-job-pill {
+  display: inline-flex;
   align-items: center;
-}
-
-.home-job-card-tag-outline {
-  background: #f1f5f9;
-  color: #475569;
-  border: 1px solid #e2e8f0;
-}
-
-/* Body: Lương & Location */
-.home-job-card-body {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  /* Giảm padding ngăn cách: 8px -> 6px */
-  padding-top: 6px; 
-  border-top: 1px dashed #e2e8f0;
-}
-
-.home-job-card-salary,
-.home-job-card-location {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 12px; /* Font nhỏ gọn */
-  color: #1e293b;
-  font-weight: 500;
-}
-
-.home-job-card-salary-icon { width: 14px; height: 14px; color: #16a34a; }
-.home-job-card-location-icon { width: 14px; height: 14px; color: #94a3b8; }
-
-/* Footer Buttons */
-.home-job-card-footer {
-  margin-top: auto;
-  /* Giảm padding top footer: 12px -> 8px */
-  padding-top: 8px; 
-  display: flex;
-  gap: 8px;
-}
-
-.home-job-card-btn {
-  flex: 1;
-  height: 32px; /* Giảm chiều cao nút: 36px -> 32px */
+  padding: 4px 10px;
   border-radius: 6px;
-  border: none;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
-  cursor: pointer;
+  color: #475569;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  white-space: nowrap;
+}
+
+/* Nút Lưu (Trái tim) */
+.home-job-card-save {
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s;
-}
-
-.home-job-card-btn.primary {
-  background: linear-gradient(90deg, #3b82f6, #6366f1);
-  color: white;
-  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
-}
-.home-job-card-btn.primary:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
-}
-
-.home-job-card-btn.ghost {
-  background: #f8fafc;
-  color: #475569;
+  border-radius: 50%;
+  background: transparent;
   border: 1px solid #e2e8f0;
+  cursor: pointer;
+  color: #94a3b8;
+  transition: all 0.2s;
+  flex-shrink: 0;
 }
-.home-job-card-btn.ghost:hover {
-  background: #e2e8f0;
+
+.home-job-card-save:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #64748b;
+  transform: scale(1.05);
+}
+
+.home-job-card-save.saved {
+  color: #ef4444;
+  background-color: #fef2f2;
+  border-color: #fecaca;
+}
+
+.home-job-card-save svg {
+  width: 18px;
+  height: 18px;
+}
+/* =================================================================
+   JOB DETAIL MODAL STYLES (Updated)
+   ================================================================= */
+
+/* --- 1. BACKDROP & CONTAINER --- */
+.home-modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px;
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+.home-job-modal {
+  width: 100%; max-width: 800px; height: 90vh; max-height: 800px;
+  background: #ffffff; border-radius: 16px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  display: flex; flex-direction: column; position: relative; overflow: hidden;
+  animation: modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalFadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modalSlideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.home-modal-close {
+  position: absolute; top: 16px; right: 16px;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: #f1f5f9; border: none;
+  display: flex; align-items: center; justify-content: center;
+  color: #64748b; cursor: pointer; z-index: 10; transition: all 0.2s ease;
+}
+.home-modal-close:hover { background: #fee2e2; color: #ef4444; transform: rotate(90deg); }
+
+/* --- 2. HEADER SECTION --- */
+.home-job-modal-header {
+  padding: 24px 24px 16px; display: flex; gap: 16px;
+  align-items: flex-start; border-bottom: 1px solid #f1f5f9; background: #fff; flex-shrink: 0;
+}
+.home-job-modal-logo-wrap {
+  width: 72px; height: 72px; border-radius: 12px; border: 1px solid #e2e8f0;
+  padding: 4px; background: #fff; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.home-job-modal-logo { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; }
+.home-job-modal-title {
+  margin: 0 0 6px; font-size: 20px; font-weight: 700; color: #0f172a; padding-right: 30px; line-height: 1.3;
+}
+.home-job-modal-company {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 14px; font-weight: 600; color: #2563eb; cursor: pointer; transition: opacity 0.2s;
+}
+.home-job-modal-company:hover { text-decoration: underline; opacity: 0.8; }
+
+/* --- 3. GRID INFO SECTION --- */
+.home-job-modal-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
+  padding: 16px 24px; background: #f8fafc; border-bottom: 1px solid #f1f5f9; flex-shrink: 0;
+}
+.home-job-modal-item { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.home-job-modal-icon {
+  width: 38px; height: 38px; border-radius: 10px; background: #ffffff;
+  border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center;
+  color: #64748b; flex-shrink: 0;
+}
+.home-job-modal-label { display: block; font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 600; margin-bottom: 2px; }
+.home-job-modal-value { display: block; font-size: 14px; font-weight: 600; color: #0f172a; }
+.home-job-modal-value.highlight { color: #2563eb; }
+.truncate-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+
+@media (max-width: 480px) { .home-job-modal-grid { grid-template-columns: 1fr; gap: 12px; } }
+
+/* --- 4. BODY SECTION --- */
+.home-job-modal-body {
+  flex: 1; overflow-y: auto; padding: 24px; scroll-behavior: smooth;
+}
+.home-job-modal-section { margin-bottom: 28px; }
+.home-job-modal-section:last-child { margin-bottom: 0; }
+
+/* Tiêu đề con (Đã bỏ dấu gạch) */
+.home-job-modal-subtitle {
+  font-size: 16px; font-weight: 700; margin-bottom: 12px; color: #0f172a;
+}
+/* Dấu gạch (::before) ĐÃ BỊ XOÁ TẠI ĐÂY */
+
+.home-job-modal-html { font-size: 15px; line-height: 1.6; color: #334155; text-align: justify; }
+.home-job-modal-html ul, .home-job-modal-html ol { padding-left: 20px; margin: 8px 0; }
+.home-job-modal-html li { margin-bottom: 6px; }
+.home-job-modal-html p { margin-bottom: 8px; }
+
+.home-job-modal-divider { border: 0; border-top: 1px solid #e2e8f0; margin: 24px 0; }
+.home-job-modal-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.home-job-modal-tag {
+  background: #f1f5f9; color: #475569; padding: 6px 14px;
+  border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid #e2e8f0;
+}
+.home-job-modal-detail-addr {
+  font-size: 13px; color: #64748b; margin-top: 20px;
+  font-style: italic; padding: 12px; background: #f8fafc; border-radius: 8px;
+}
+
+/* --- 5. FOOTER SECTION --- */
+.home-job-modal-footer {
+  padding: 16px 24px; border-top: 1px solid #e2e8f0; background: #fff;
+  display: flex; gap: 12px; flex-shrink: 0; z-index: 20;
+}
+.home-job-modal-btn {
+  height: 48px; padding: 0 24px; border-radius: 8px; font-weight: 600; font-size: 15px;
+  cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+  gap: 8px; text-decoration: none; transition: all 0.2s ease; border: 1px solid transparent;
+}
+.home-job-modal-btn.primary {
+  background: #2563eb; color: #ffffff; flex: 1; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+}
+.home-job-modal-btn.primary:hover { background: #1d4ed8; box-shadow: 0 6px 10px -1px rgba(37, 99, 235, 0.3); }
+.home-job-modal-btn.ghost { background: #ffffff; border-color: #cbd5e1; color: #475569; min-width: 120px; }
+.home-job-modal-btn.ghost:hover { background: #f8fafc; border-color: #94a3b8; color: #0f172a; }
+.home-job-modal-btn.saved { background: #fee2e2; border-color: #fecaca; color: #dc2626; min-width: 120px; }
+.home-job-modal-btn.saved:hover { background: #fecaca; }
+.home-job-modal-btn.full { width: 100%; }
+
+/* Scrollbar */
+.home-job-modal-body::-webkit-scrollbar { width: 6px; }
+.home-job-modal-body::-webkit-scrollbar-track { background: #f1f5f9; }
+.home-job-modal-body::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+.home-job-modal-body::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* ============================
+   JOB CARD (Clean & Minimalist)
+   ============================ */
+
+.home-job-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  position: relative;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.home-job-card:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+}
+
+/* --- TOP SECTION: Logo + Info --- */
+.home-job-card-top {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+/* Logo Wrapper */
+.home-job-card-logo-wrap {
+  width: 70px;
+  height: 70px;
+  flex-shrink: 0;
+  border: 1px solid #f1f5f9;
+  border-radius: 10px;
+  padding: 1px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-job-card-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+/* Info Wrapper */
+.home-job-card-info {
+  flex: 1;
+  min-width: 0; /* Important for ellipsis */
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Title Row */
+.home-job-card-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.home-job-card-title {
+  font-size: 16px;
+  font-weight: 700;
   color: #1e293b;
+  margin: 0;
+  line-height: 1.4;
+  /* Truncate text (2 lines max) */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.home-job-card-btn.saved {
-  background: #eff6ff;
+/* Badge (Nổi bật/Hot) */
+.home-job-card-badge {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 100px;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+/* Company Name */
+.home-job-card-company {
+  font-size: 14px;
+  color: #64748b;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  transition: color 0.2s;
+}
+
+.home-job-card-company:hover {
   color: #2563eb;
-  border: 1px solid #bfdbfe;
+  text-decoration: underline;
 }
 
+/* --- BOTTOM SECTION: Pills + Save Icon --- */
+.home-job-card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Đẩy Save Icon sang phải */
+  gap: 8px;
+  margin-top: auto; /* Đẩy xuống đáy nếu card bị giãn */
+}
+
+.home-job-card-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.home-job-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 100px; /* Pill shape */
+  font-size: 13px;
+  font-weight: 500;
+  color: #1e293b;
+  background-color: #f1f5f9; /* Nền xám nhạt giống ảnh */
+  white-space: nowrap;
+}
+
+/* Save Button (Heart Icon) */
+.home-job-card-save {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: transparent;
+  border: 1px solid #cbd5e1; /* Viền xám mờ mặc định */
+  cursor: pointer;
+  color: #64748b;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.home-job-card-save:hover {
+  background-color: #f1f5f9;
+  border-color: #94a3b8;
+  transform: scale(1.05);
+}
+
+.home-job-card-save.saved {
+  border-color: #0a5afb; /* Viền xanh lá giống ảnh */
+  color: #0d68f0;
+  background-color: #ecfdf5;
+}
+
+.home-job-card-save svg {
+  width: 18px;
+  height: 18px;
+}
 /* ===========================
-   FEATURED BRANDS
+   FEATURED BRANDS (Updated for Carousel)
    =========================== */
 
 .home-section-title {
@@ -435,140 +780,133 @@
   align-items: center;
   gap: 0.6rem;
 }
+/* ... (Giữ nguyên các class title icon cũ) ... */
 
-.home-section-title-icon-wrap {
-  width: 2.4rem;
-  height: 2.4rem;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: radial-gradient(circle at 30% 0%, #facc15 0, #f59e0b 40%, #f97316 100%);
-  box-shadow: 0 10px 25px rgba(251, 191, 36, 0.25);
-}
-
-.home-section-title-icon {
-  width: 1.25rem;
-  height: 1.25rem;
-  color: #fefce8;
-}
-
-.home-section-title-text {
-  font-size: clamp(26px, 3vw, 32px); 
-  font-weight: 800;                 
-  color: #0f172a;
-  letter-spacing: -0.5px;  
-}
-
-.home-section-error {
-  font-size: 0.875rem;
-  color: #b91c1c;
-}
-
-/* Wrapper & grid */
-
+/* Wrapper chính */
 .home-brands-wrapper {
   margin-top: 1.5rem;
+  position: relative; /* Quan trọng cho nút mũi tên */
+  padding: 10px 0;    /* Padding để shadow không bị cắt */
 }
 
+/* --- CAROUSEL STRUCTURE --- */
+
+/* Khung hiển thị (Cắt phần thừa) */
+.home-brands-carousel {
+  overflow: hidden;
+  width: 100%;
+}
+
+/* Đường ray trượt */
+.home-brands-track {
+  display: flex;
+  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  width: 100%;
+}
+
+/* Item container */
+.home-brands-item {
+  flex-shrink: 0;
+  box-sizing: border-box;
+  padding: 0 8px; /* Khoảng cách giữa các brand card */
+}
+
+/* --- TÁI SỬ DỤNG STYLE NÚT MŨI TÊN (Giống FeaturedJobs) --- */
+/* Nếu file CSS này load chung với FeaturedJobs, bạn không cần khai báo lại .home-arrow.
+   Nếu load riêng, hãy copy lại đoạn .home-arrow từ FeaturedJobs vào đây. */
+
+/* Logic hiển thị nút khi hover */
+.home-brands-wrapper:hover .home-arrow {
+  opacity: 1;
+}
+
+/* --- SKELETON (Khi loading) --- */
+/* Giữ lại Grid cho skeleton hoặc chuyển sang flex tùy ý, 
+   ở đây giữ Grid 4 cột để lúc load nhìn gọn */
 .home-brands-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
 }
-
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .home-brands-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 1.25rem;
   }
 }
-
-/* Skeleton khi loading */
 
 .home-brands-skeleton {
   height: 5.5rem;
   border-radius: 0.9rem;
-  background: linear-gradient(
-      110deg,
-      #f1f5f9 8%,
-      #e2e8f0 18%,
-      #f1f5f9 33%
-    );
+  background: linear-gradient(110deg, #f1f5f9 8%, #e2e8f0 18%, #f1f5f9 33%);
   background-size: 200% 100%;
   animation: home-brands-skeleton 1.2s ease-in-out infinite;
 }
 
-@keyframes home-brands-skeleton {
-  0% {
-    background-position: 0% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
-
-/* Card */
+/* --- CARD STYLING --- */
 
 .home-brand-card {
+  /* 1. Kích thước cố định chiều cao */
+  height: 100px; 
+  width: 100%; /* Chiếm hết chiều rộng của cột chia sẵn */
+  
   border-radius: 10px;
   border: 1px solid rgba(148, 163, 184, 0.3);
   background: radial-gradient(circle at top left, #eff6ff 0, #ffffff 40%);
   padding: 0.85rem 0.9rem;
+  
   display: flex;
-  align-items: center;
+  align-items: center; /* Căn giữa theo chiều dọc */
   gap: 0.75rem;
-  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
+  
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
   cursor: pointer;
-  transition:
-    transform 0.18s ease,
-    box-shadow 0.18s ease,
-    border-color 0.18s ease,
-    background 0.18s ease;
+  transition: all 0.2s ease;
+  overflow: hidden; /* Ẩn nội dung tràn ra ngoài card */
 }
 
 .home-brand-card:hover {
   transform: translateY(-3px);
   border-color: #38bdf8;
-  box-shadow: 0 18px 45px rgba(56, 189, 248, 0.25);
+  box-shadow: 0 10px 25px rgba(56, 189, 248, 0.25);
   background: radial-gradient(circle at top left, #dbeafe 0, #ffffff 55%);
-}
-
-.home-brand-card-main {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  width: 100%;
 }
 
 .home-brand-card-logo-wrap {
   flex-shrink: 0;
-  width: 3rem;
-  height: 3rem;
-  border-radius: 0.2rem;
-  padding: 0.25rem;
-  background: radial-gradient(circle at 10% 0%, #e0f2fe 0, #eff6ff 35%, #f9fafb 100%);
-  box-shadow: 0 6px 14px rgba(148, 163, 184, 0.35);
+  width: 3.5rem;  /* Tăng nhẹ kích thước logo cho cân đối */
+  height: 3.5rem;
+  border-radius: 8px;
+  padding: 4px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .home-brand-card-logo {
   width: 100%;
   height: 100%;
-  border-radius: 10px;
   object-fit: contain;
-  background-color: #f1f5f9;
+  border-radius: 4px;
 }
 
+/* Phần text bên phải */
 .home-brand-card-text {
-  flex: 1;
-  min-width: 0;
+  flex: 1;     
+  min-width: 0; 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
 }
 
+/* Tên công ty */
 .home-brand-card-name {
   font-size: 0.95rem;
   font-weight: 700;
   color: #0f172a;
-  margin-bottom: 0.15rem;
+  margin: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -577,20 +915,29 @@
 .home-brand-card-meta {
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+  gap: 2px;
 }
 
 .home-brand-card-meta-item {
-  display: inline-flex;
+  display: flex;     
   align-items: center;
-  gap: 0.3rem;
-  font-size: 0.78rem;
+  gap: 0.4rem;
+  font-size: 0.8rem;
   color: #64748b;
+  max-width: 100%;
 }
 
 .home-brand-card-meta-icon {
-  width: 0.8rem;
-  height: 0.8rem;
+  width: 0.9rem;
+  height: 0.9rem;
+  flex-shrink: 0; 
+}
+
+.home-brand-card-address {
+  flex: 1;          
+  white-space: nowrap;
+  overflow: hidden;  
+  text-overflow: ellipsis; 
 }
 
 /* ===========================
@@ -1093,19 +1440,20 @@
    TOP SECTORS (Redesigned)
    =========================== */
 
-/* Title Section */
+/* --- TITLE SECTION --- */
 .home-sectors-title {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px; /* Khoảng cách giữa icon và text */
 }
 
 .home-sectors-title-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px; /* Bo góc vuông mềm thay vì tròn hẳn */
-  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
-  border: 1px solid #fed7aa;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  /* Màu cam cam (Trending style) */
+  background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%);
+  border: 1px solid #fdba74;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1113,48 +1461,54 @@
   box-shadow: 0 4px 6px -1px rgba(234, 88, 12, 0.1);
 }
 
-.home-sectors-subtitle {
-  margin-top: 4px;
-  font-size: 14px;
-  color: #64748b;
-  font-weight: 500;
+.home-sectors-title-text {
+  font-size: clamp(20px, 4vw, 26px);
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.5px;
 }
 
-/* Grid Layout */
+/* --- WRAPPER & GRID --- */
+
+/* 1. Wrapper tạo khoảng cách với tiêu đề (GIỐNG FEATURED BRANDS) */
+.home-sectors-wrapper {
+  margin-top: 24px;
+}
+
+/* 2. Grid Layout */
 .home-sector-grid {
   display: grid;
-  /* Mobile: 2 cột để tiết kiệm diện tích dọc */
-  grid-template-columns: repeat(2, 1fr); 
+  grid-template-columns: repeat(2, 1fr); /* Mobile: 2 cột */
   gap: 16px;
 }
 
 @media (min-width: 768px) {
   .home-sector-grid {
-    grid-template-columns: repeat(4, 1fr); /* Tablet/PC: 4 cột */
+    grid-template-columns: repeat(4, 1fr); /* PC: 4 cột */
     gap: 24px;
   }
 }
 
-/* --- CARD STYLE (QUAN TRỌNG) --- */
+/* --- CARD STYLE --- */
 .home-sector-card {
   position: relative;
-  height: 180px; /* Tăng chiều cao để ảnh hiển thị đẹp hơn */
+  height: 180px; /* Chiều cao cố định */
   border-radius: 12px;
-  overflow: hidden; /* Cắt mọi thứ tràn ra ngoài */
+  overflow: hidden; /* Cắt ảnh thừa */
   cursor: pointer;
-  background: #0f172a; /* Nền dự phòng khi ảnh chưa load */
+  background: #0f172a; /* Màu nền chờ load ảnh */
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  isolation: isolate; /* Tạo stacking context mới */
+  isolation: isolate; /* Tạo context stack mới */
 }
 
-/* Hiệu ứng hover cho cả card */
+/* Hover vào card: Nổi lên */
 .home-sector-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
-/* Wrapper ảnh để xử lý zoom */
+/* --- BACKGROUND IMAGE (ZOOM EFFECT) --- */
 .home-sector-card-bg-wrap {
   position: absolute;
   inset: 0;
@@ -1167,83 +1521,84 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Zoom mượt */
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* Khi hover vào card -> Ảnh zoom lên */
+/* Hover: Ảnh zoom to */
 .home-sector-card:hover .home-sector-card-bg {
-  transform: scale(1.15); 
+  transform: scale(1.15);
 }
 
-/* Gradient Overlay: Giúp text trắng luôn nổi bật trên mọi ảnh nền */
+/* --- OVERLAY (GRADIENT) --- */
 .home-sector-card-overlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(0, 0, 0, 0.1) 0%,   /* Trên cùng trong suốt */
-    rgba(0, 0, 0, 0.4) 50%,  /* Giữa hơi tối */
-    rgba(0, 0, 0, 0.85) 100% /* Dưới đáy đen đậm để đỡ chữ */
+    rgba(15, 23, 42, 0.1) 0%,   /* Trên cùng hơi sáng */
+    rgba(15, 23, 42, 0.4) 40%,  /* Giữa tối dần */
+    rgba(15, 23, 42, 0.9) 100%  /* Dưới đáy đen đậm để hiện chữ */
   );
   z-index: -1;
   transition: opacity 0.3s;
 }
 
 .home-sector-card:hover .home-sector-card-overlay {
-  opacity: 0.9; /* Khi hover làm tối thêm chút để focus vào nội dung */
+  opacity: 0.95; /* Tối hơn chút khi hover */
 }
 
-/* Content Layout */
+/* --- CONTENT --- */
 .home-sector-card-content {
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
+  height: 100%;
   padding: 16px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  height: 100%;
+  justify-content: flex-end; /* Đẩy nội dung xuống đáy */
 }
 
-/* Hàng trên cùng của content: Icon + Arrow */
+/* Top Row: Icon + Arrow */
 .home-sector-card-top {
-  margin-bottom: auto; /* Đẩy phần icon lên trên cùng content area nếu muốn, hoặc để auto để nó trôi tự do */
+  margin-bottom: auto; /* Đẩy phần này lên trên cùng content area */
+  padding-top: 4px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding-top: 4px;
 }
 
 .home-sector-card-icon-wrap {
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  /* Hiệu ứng kính mờ (Glassmorphism) */
-  background: rgba(255, 255, 255, 0.2); 
+  /* Glassmorphism */
+  background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(4px);
   border: 1px solid rgba(255, 255, 255, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  transition: all 0.3s;
+  color: #fff;
+  transition: all 0.3s ease;
 }
 
+/* Hover: Icon đổi màu */
 .home-sector-card:hover .home-sector-card-icon-wrap {
-  background: #3b82f6; /* Hover icon chuyển màu xanh */
+  background: #3b82f6; 
   border-color: #3b82f6;
   transform: scale(1.1);
 }
 
-.home-sector-card-icon svg {
+.home-sector-card-icon-wrap svg {
   width: 20px;
   height: 20px;
 }
 
-/* Mũi tên trượt từ trái sang */
+/* Arrow: Slide từ trái sang */
 .home-sector-card-arrow {
-  color: white;
+  color: #fff;
   opacity: 0;
   transform: translateX(-10px);
   transition: all 0.3s ease;
@@ -1254,27 +1609,27 @@
   transform: translateX(0);
 }
 
-/* Phần Text dưới cùng */
+/* Text Info */
 .home-sector-card-text {
-  transform: translateY(4px); /* Text ban đầu hơi thấp xuống */
+  transform: translateY(4px);
   transition: transform 0.3s ease;
 }
 
 .home-sector-card:hover .home-sector-card-text {
-  transform: translateY(0); /* Hover thì nảy lên vị trí chuẩn */
+  transform: translateY(0);
 }
 
 .home-sector-card-title {
   font-size: 16px;
   font-weight: 700;
   color: #ffffff;
-  margin-bottom: 4px;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.5); /* Shadow text để nét hơn */
+  margin: 0 0 4px 0;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
 .home-sector-card-jobs {
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.9);
   font-weight: 500;
   display: block;
 }
@@ -1282,127 +1637,87 @@
 /* Mobile Responsive */
 @media (max-width: 640px) {
   .home-sector-card {
-    height: 150px; /* Mobile thu ngắn card lại chút */
+    height: 150px;
   }
   .home-sector-card-title {
     font-size: 14px;
   }
-  .home-sector-card-icon-wrap {
-    width: 32px;
-    height: 32px;
-  }
 }
-
 /* ===========================
-   CAREER TIPS
+   CAREER TIPS (Static Grid Version)
    =========================== */
 
-/* Title */
-
+/* --- TITLE SECTION --- */
 .home-tips-title {
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 14px;
 }
 
 .home-tips-title-icon {
-  width: 2.3rem;
-  height: 2.3rem;
+  width: 42px;
+  height: 42px;
   border-radius: 10px;
-  background: radial-gradient(circle at 0 0, #bfdbfe 0, #e0f2fe 40%, #ffffff 100%);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
-}
-
-.home-tips-title-icon svg {
-  width: 1.3rem;
-  height: 1.3rem;
-  color: #2563eb;
-}
-
-/* Actions (arrow buttons) */
-
-.home-tips-actions {
+  background: radial-gradient(circle at 30% 30%, #bfdbfe 0, #dbeafe 50%, #eff6ff 100%);
+  border: 1px solid #dbeafe;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-}
-
-.home-tips-nav-btn {
-  width: 2.4rem;
-  height: 2.4rem;
-  border-radius: 10px;
-  border: 1px solid #d1d5db;
-  background: #ffffff;
-  display: inline-flex;
-  align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition:
-    background 0.16s ease,
-    border-color 0.16s ease,
-    transform 0.16s ease,
-    box-shadow 0.16s ease;
-}
-
-.home-tips-nav-btn.primary {
-  border-width: 2px;
-  border-color: #2563eb;
   color: #2563eb;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.15);
 }
 
-.home-tips-nav-btn:hover {
-  background: #f9fafb;
-  transform: translateY(-1px);
-  box-shadow: 0 8px 18px rgba(148, 163, 184, 0.4);
+.home-tips-title-text {
+  font-size: clamp(20px, 4vw, 26px);
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.5px;
 }
 
-.home-tips-nav-icon {
-  width: 1.1rem;
-  height: 1.1rem;
+/* --- WRAPPER & GRID --- */
+
+/* 1. Tạo khoảng cách với tiêu đề (Đây là cái bạn cần) */
+.home-tips-wrapper {
+  margin-top: 24px;
 }
 
-/* Grid */
-
+/* 2. Grid Layout: 3 cột đều nhau */
 .home-tips-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 1.25rem;
+  grid-template-columns: minmax(0, 1fr); /* Mobile: 1 cột */
+  gap: 20px;
 }
 
 @media (min-width: 768px) {
   .home-tips-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr)); /* PC/Tablet: 3 cột */
   }
 }
 
-/* Card */
+/* --- CARD STYLE --- */
 
 .home-tip-card {
+  height: 100%; /* Đảm bảo các card cao bằng nhau */
   background: #ffffff;
-  border-radius: 10px;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+  border: 1px solid rgba(226, 232, 240, 0.6); /* Viền nhẹ */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
-  transform: translateY(0) scale(1);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .home-tip-card:hover {
-  transform: translateY(-4px) scale(1.01);
-  box-shadow: 0 18px 40px rgba(37, 99, 235, 0.32);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 20px -5px rgba(37, 99, 235, 0.15);
+  border-color: #bfdbfe;
 }
 
-/* Image area */
-
+/* Image Area */
 .home-tip-card-img-wrap {
   position: relative;
-  height: 11rem;
+  height: 180px;
   overflow: hidden;
 }
 
@@ -1410,43 +1725,64 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: scale(1);
-  transition: transform 0.35s ease;
+  transition: transform 0.5s ease;
 }
 
 .home-tip-card:hover .home-tip-card-img {
-  transform: scale(1.06);
+  transform: scale(1.1);
+}
+
+/* Tag */
+.home-tip-card-tag {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.95);
+  color: #1d4ed8;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  letter-spacing: 0.5px;
 }
 
 /* Body */
-
 .home-tip-card-body {
-  padding: 0.9rem 1rem 1.1rem;
-}
-
-.home-tip-card-tag {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.15rem 0.6rem;
-  border-radius: 10px;
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  background: #eff6ff;
-  color: #1d4ed8;
-  margin-bottom: 0.4rem;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  flex: 1; 
 }
 
 .home-tip-card-title {
-  font-size: 1rem;
+  font-size: 16px;
   font-weight: 700;
-  color: #1d4ed8;
-  margin-bottom: 0.2rem;
+  color: #1e293b;
+  margin-bottom: 8px;
+  line-height: 1.4;
+  
+  /* Cắt dòng title nếu quá dài */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color 0.2s;
+}
+
+.home-tip-card:hover .home-tip-card-title {
+  color: #2563eb;
 }
 
 .home-tip-card-desc {
-  font-size: 0.9rem;
-  color: #4b5563;
-  line-height: 1.5;
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.6;
+  
+  /* Cắt dòng mô tả */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }

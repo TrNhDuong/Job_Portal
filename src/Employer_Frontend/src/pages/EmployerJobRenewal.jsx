@@ -182,6 +182,10 @@ const EmployerJobRenewal = ({ onNavigateToDeposit, jobPosts, updateJobLocal }) =
       // Ở đây sau này cần gọi hàm reloadData() từ cha để cập nhật lại list
     }
   };
+
+  for (const job of processedJobs) {
+    console.log(job.expireDay);
+  }
   
   return (
     <div className="renewal-page">

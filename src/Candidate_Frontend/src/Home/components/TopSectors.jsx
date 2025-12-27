@@ -1,3 +1,4 @@
+// src/Home/components/TopSectors.jsx
 import Section from "./Section";
 import {
   Banknote,
@@ -9,9 +10,10 @@ import {
   Home as HomeIcon,
   Play,
   TrendingUp,
-  ArrowRight, // Import thêm icon mũi tên
+  ArrowRight,
 } from "lucide-react";
 
+// Import hình ảnh (Đảm bảo đường dẫn đúng với project của bạn)
 import imgBank from "../../assets/bank.jpg";
 import imgMarketing from "../../assets/marketing.jpg";
 import imgService from "../../assets/Service.jpg";
@@ -24,7 +26,7 @@ import imgLogistic from "../../assets/Logistic.jpg";
 const SECTORS = [
   { id: 1, name: "Tài Chính - Ngân Hàng", jobs: 1104, icon: <Banknote />, img: imgBank },
   { id: 2, name: "Marketing", jobs: 1253, icon: <Megaphone />, img: imgMarketing },
-  { id: 3, name: "CSKH", jobs: 947, icon: <Headphones />, img: imgService }, // Rút gọn tên cho đẹp UI
+  { id: 3, name: "CSKH", jobs: 947, icon: <Headphones />, img: imgService },
   { id: 4, name: "Truyền Thông", jobs: 921, icon: <Play />, img: imgMedia },
   { id: 5, name: "Công Nghệ (IT)", jobs: 657, icon: <Laptop2 />, img: imgIT },
   { id: 6, name: "Thiết Kế", jobs: 869, icon: <PenTool />, img: imgDesigner },
@@ -40,7 +42,7 @@ function SectorCard({ item }) {
         <img src={item.img} alt={item.name} className="home-sector-card-bg" />
       </div>
 
-      {/* Gradient Overlay để text dễ đọc */}
+      {/* Gradient Overlay */}
       <div className="home-sector-card-overlay" />
 
       {/* Nội dung chính */}
@@ -57,35 +59,35 @@ function SectorCard({ item }) {
 
         <div className="home-sector-card-text">
           <h3 className="home-sector-card-title">{item.name}</h3>
-          <span className="home-sector-card-jobs">{item.jobs.toLocaleString()} việc làm</span>
+          <span className="home-sector-card-jobs">
+            {item.jobs.toLocaleString()} việc làm
+          </span>
         </div>
       </div>
     </article>
   );
 }
 
-// Giữ nguyên Title
+// Tiêu đề section
 const topSectorsTitle = (
   <div className="home-sectors-title">
     <div className="home-sectors-title-icon">
-      <TrendingUp />
+      <TrendingUp size={24} />
     </div>
-    <div>
-      <div className="home-featured-title-text">Top ngành nổi bật</div>
-      <div className="home-sectors-subtitle">
-        Nhóm lĩnh vực đang có nhiều cơ hội việc làm
-      </div>
-    </div>
+    <div className="home-sectors-title-text">Top ngành nổi bật</div>
   </div>
 );
 
 export default function TopSectors() {
   return (
     <Section title={topSectorsTitle}>
-      <div className="home-sector-grid">
-        {SECTORS.map((s) => (
-          <SectorCard key={s.id} item={s} />
-        ))}
+      {/* Wrapper này giúp tạo khoảng cách margin-top với tiêu đề */}
+      <div className="home-sectors-wrapper">
+        <div className="home-sector-grid">
+          {SECTORS.map((s) => (
+            <SectorCard key={s.id} item={s} />
+          ))}
+        </div>
       </div>
     </Section>
   );

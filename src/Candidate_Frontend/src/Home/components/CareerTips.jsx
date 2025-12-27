@@ -1,6 +1,6 @@
 // src/Home/components/CareerTips.jsx
 import Section from "./Section";
-import { ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 
 const TIPS = [
   {
@@ -31,10 +31,10 @@ function TipCard({ tip }) {
     <article className="home-tip-card">
       <div className="home-tip-card-img-wrap">
         <img src={tip.img} alt={tip.title} className="home-tip-card-img" />
+        {tip.tag && <span className="home-tip-card-tag">{tip.tag}</span>}
       </div>
 
       <div className="home-tip-card-body">
-        {tip.tag && <span className="home-tip-card-tag">{tip.tag}</span>}
         <h3 className="home-tip-card-title">{tip.title}</h3>
         <p className="home-tip-card-desc">{tip.desc}</p>
       </div>
@@ -42,33 +42,26 @@ function TipCard({ tip }) {
   );
 }
 
+// Tiêu đề
 const tipsTitle = (
   <div className="home-tips-title">
     <div className="home-tips-title-icon">
       <CheckCircle2 />
     </div>
-    <div className="home-featured-title-text">Cẩm nang tìm việc</div>
+    <div className="home-tips-title-text">Cẩm nang tìm việc</div>
   </div>
 );
 
 export default function CareerTips() {
-  const actions = (
-    <div className="home-tips-actions">
-      <button className="home-tips-nav-btn" type="button">
-        <ArrowLeft className="home-tips-nav-icon" />
-      </button>
-      <button className="home-tips-nav-btn primary" type="button">
-        <ArrowRight className="home-tips-nav-icon" />
-      </button>
-    </div>
-  );
-
   return (
-    <Section title={tipsTitle} right={actions}>
-      <div className="home-tips-grid">
-        {TIPS.map((t) => (
-          <TipCard key={t.id} tip={t} />
-        ))}
+    <Section title={tipsTitle}>
+      {/* Wrapper này giúp tạo khoảng cách margin-top với tiêu đề */}
+      <div className="home-tips-wrapper">
+        <div className="home-tips-grid">
+          {TIPS.map((t) => (
+            <TipCard key={t.id} tip={t} />
+          ))}
+        </div>
       </div>
     </Section>
   );

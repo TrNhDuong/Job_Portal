@@ -694,3 +694,138 @@
 .text-muted { color: #94a3b8; }
 .close-btn { border: none; background: transparent; color: #94a3b8; cursor: pointer; padding: 4px; }
 .close-btn:hover { color: #0f172a; }
+
+/* --- SPLIT VIEW LAYOUT (Chế độ xem chi tiết chia đôi) --- */
+.split-view-wrapper {
+  height: calc(100vh - 100px); /* Trừ header/padding trên dưới */
+  display: flex;
+  flex-direction: column;
+  animation: slideInRight 0.3s ease-out;
+}
+
+.split-view-header {
+  margin-bottom: 10px;
+}
+
+.btn-back-split {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  color: #555;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.btn-back-split:hover {
+  background: #f0f0f0;
+  color: #000;
+}
+
+.split-container {
+  display: flex;
+  gap: 20px;
+  flex: 1; /* Chiếm hết chiều cao còn lại */
+  overflow: hidden; /* Quan trọng để scroll nằm trong panel */
+}
+
+/* --- Panel Trái: Thông tin --- */
+.info-panel {
+  width: 360px;
+  min-width: 360px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  border: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.info-header {
+  padding: 24px;
+  text-align: center;
+  border-bottom: 1px solid #f0f0f0;
+  background: linear-gradient(to bottom, #fff, #fafafa);
+}
+
+.info-body {
+  padding: 24px;
+  flex: 1;
+}
+
+.info-footer {
+  padding: 20px;
+  background: #f8f9fa;
+  border-top: 1px solid #eee;
+}
+
+.detail-section-title {
+  font-size: 13px;
+  text-transform: uppercase;
+  color: #999;
+  font-weight: 700;
+  margin-bottom: 15px;
+  letter-spacing: 0.5px;
+}
+
+.detail-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 15px;
+  color: #444;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* --- Panel Phải: PDF Viewer --- */
+.cv-panel {
+  flex: 1;
+  background: #525659; /* Màu chuẩn PDF viewer */
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.cv-toolbar {
+  height: 48px;
+  background: white;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+.btn-download {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.pdf-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* --- Animation --- */
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Điều chỉnh lại z-index cho overlay confirm để đè lên split view */
+.confirmation-overlay {
+  z-index: 9999 !important; 
+}

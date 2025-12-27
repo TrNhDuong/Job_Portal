@@ -125,14 +125,6 @@ export default function AccountSettingsLayout() {
             >
               Đổi mật khẩu
             </NavLink>
-            <NavLink
-              to="/dashboard/settings/security"
-              className={({ isActive }) =>
-                `profile-tab ${isActive ? "active" : ""}`
-              }
-            >
-              Quyền riêng tư
-            </NavLink>
           </nav>
         </div>
       </header>
