@@ -1,12 +1,49 @@
 import React, { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import client from "../../api/client";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
-import { AlertCircle, CheckCircle } from "lucide-react";
+import { Eye, EyeOff, CheckCircle2, AlertCircle, Lock, ShieldCheck } from "lucide-react";
+
+// --- COMPONENT INPUT RIÊNG CHO PASSWORD ---
+const PasswordInput = ({ label, id, value, onChange, placeholder, helperText }) => {
+  const [show, setShow] = useState(false);
+
+  return (
+    <div className="password-field-group">
+      <label htmlFor={id} className="password-label">
+        {label}
+      </label>
+      <div className="password-input-wrap">
+        {/* Icon Lock */}
+        <Lock className="password-input-icon" size={14} />
+        
+        <input
+          id={id}
+          type={show ? "text" : "password"}
+          name={id}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          className="password-input-field" // Sử dụng class mới từ PasswordSettings.css
+        />
+        
+        {/* Nút Toggle */}
+        <button
+          type="button"
+          onClick={() => setShow(!show)}
+          className="password-toggle-btn"
+          tabIndex="-1"
+        >
+          {show ? <EyeOff size={14} /> : <Eye size={14} />}
+        </button>
+      </div>
+      {helperText && <p className="field-helper-text">{helperText}</p>}
+    </div>
+  );
+};
 
 export default function PasswordSettings() {
   const { user } = useAuth();
+  
   const [passwords, setPasswords] = useState({
     current: "",
     newPass: "",
@@ -14,42 +51,30 @@ export default function PasswordSettings() {
   });
 
   const [loading, setLoading] = useState(false);
-
-  const [showCurrent, setShowCurrent] = useState(false);
-  const [showNewPass, setShowNewPass] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
-
-  const [showNotification, setShowNotification] = useState(false);
-  const [notificationType, setNotificationType] = useState("success");
-  const [notificationMessage, setNotificationMessage] = useState("");
+  const [msg, setMsg] = useState(null); 
 
   const handleChange = (e) => {
     setPasswords({ ...passwords, [e.target.name]: e.target.value });
-  };
-
-  const showToast = (type, text) => {
-    setNotificationType(type);
-    setNotificationMessage(text);
-    setShowNotification(true);
-    setTimeout(() => setShowNotification(false), 4000);
+    if (msg) setMsg(null);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMsg(null);
 
-    if (passwords.newPass !== passwords.confirm) {
-      showToast("error", "Mật khẩu mới không khớp.");
+    if (!passwords.current || !passwords.newPass || !passwords.confirm) {
+      setMsg({ type: "error", text: "Vui lòng điền đầy đủ các trường." });
       return;
     }
 
-    const newPassword = passwords.newPass;
-    const passwordRegex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$/;
-    const errorMessage =
-      "Mật khẩu mới phải có ít nhất 8 kí tự, một chữ hoa, một chữ thường, một chữ số và một kí hiệu đặc biệt.";
+    if (passwords.newPass !== passwords.confirm) {
+      setMsg({ type: "error", text: "Mật khẩu xác nhận không khớp." });
+      return;
+    }
 
-    if (!passwordRegex.test(newPassword)) {
-      showToast("error", errorMessage);
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$/;
+    if (!passwordRegex.test(passwords.newPass)) {
+      setMsg({ type: "error", text: "Mật khẩu mới không đủ mạnh." });
       return;
     }
 
@@ -61,12 +86,13 @@ export default function PasswordSettings() {
         newpassword: passwords.newPass,
       });
 
-      showToast("success", "Đổi mật khẩu thành công!");
+      setMsg({ type: "success", text: "Đổi mật khẩu thành công!" });
       setPasswords({ current: "", newPass: "", confirm: "" });
     } catch (err) {
-      const text =
-        err.response?.data?.message || "Lỗi: Mật khẩu hiện tại sai?";
-      showToast("error", text);
+      setMsg({ 
+        type: "error", 
+        text: err.response?.data?.message || "Mật khẩu hiện tại không đúng." 
+      });
     } finally {
       setLoading(false);
     }
@@ -75,121 +101,104 @@ export default function PasswordSettings() {
   if (!user) return null;
 
   return (
-    <>
-      {/* Toast */}
-      {showNotification && (
-        <div className="password-toast-wrapper">
-          <div
-            className={`password-toast ${
-              notificationType === "success"
-                ? "password-toast-success"
-                : "password-toast-error"
-            }`}
-          >
-            {notificationType === "success" ? (
-              <CheckCircle className="password-toast-icon" />
-            ) : (
-              <AlertCircle className="password-toast-icon" />
+    <div className="profile-settings-wrapper">
+      
+      {/* CỘT TRÁI: FORM ĐỔI MẬT KHẨU */}
+      <div className="profile-main-column">
+        <div className="modern-card">
+          
+          <div className="modern-card-header">
+            <div>
+              <h2 className="card-title">Đổi mật khẩu</h2>
+              <p className="card-subtitle">Bảo vệ tài khoản bằng mật khẩu mạnh</p>
+            </div>
+          </div>
+
+          <div className="modern-card-body">
+            {msg && (
+              <div className={`alert-box password-alert ${msg.type}`}>
+                {msg.type === 'success' ? <CheckCircle2 size={16}/> : <AlertCircle size={16}/>}
+                <span>{msg.text}</span>
+              </div>
             )}
-            <span className="password-toast-text">
-              {notificationMessage}
-            </span>
-          </div>
-        </div>
-      )}
 
-      {/* Card chính */}
-      <div className="password-card">
-        <div className="password-header">
-          <div>
-            <h2>Thay đổi mật khẩu</h2>
-            <p>Giữ tài khoản của bạn an toàn với mật khẩu mạnh.</p>
-          </div>
-        </div>
-
-        <form onSubmit={handleSubmit} className="password-form">
-          {/* Mật khẩu hiện tại */}
-          <div className="password-field-row">
-            <label htmlFor="current">Mật khẩu hiện tại</label>
-            <div className="password-input-wrapper">
-              <input
+            <form onSubmit={handleSubmit} className="password-form-compact fade-in">
+              
+              <PasswordInput
+                label="Mật khẩu hiện tại"
                 id="current"
-                type={showCurrent ? "text" : "password"}
-                name="current"
                 value={passwords.current}
                 onChange={handleChange}
-                placeholder="••••••••"
-                className="password-input"
+                placeholder="Nhập mật khẩu đang dùng"
               />
-              <FontAwesomeIcon
-                icon={showCurrent ? faEyeSlash : faEye}
-                className="password-eye-icon"
-                onClick={() => setShowCurrent(!showCurrent)}
+
+              <div className="password-divider" />
+
+              <PasswordInput
+                label="Mật khẩu mới"
+                id="newPass"
+                value={passwords.newPass}
+                onChange={handleChange}
+                placeholder="Nhập mật khẩu mới"
               />
-            </div>
-          </div>
 
-          {/* Mật khẩu mới */}
-          <div className="password-field-row password-field-row--top">
-            <label htmlFor="newPass">Mật khẩu mới</label>
-            <div className="password-input-group">
-              <div className="password-input-wrapper">
-                <input
-                  id="newPass"
-                  type={showNewPass ? "text" : "password"}
-                  name="newPass"
-                  value={passwords.newPass}
-                  onChange={handleChange}
-                  placeholder="••••••••"
-                  className="password-input"
-                />
-                <FontAwesomeIcon
-                  icon={showNewPass ? faEyeSlash : faEye}
-                  className="password-eye-icon"
-                  onClick={() => setShowNewPass(!showNewPass)}
-                />
-              </div>
-              <p className="password-helper">
-                Ít nhất 8 ký tự, bao gồm{" "}
-                <span>chữ hoa</span>, <span>chữ thường</span>,{" "}
-                <span>chữ số</span> và <span>kí tự đặc biệt</span>.
-              </p>
-            </div>
-          </div>
-
-          {/* Xác nhận mật khẩu mới */}
-          <div className="password-field-row">
-            <label htmlFor="confirm">Nhập lại mật khẩu mới</label>
-            <div className="password-input-wrapper">
-              <input
+              <PasswordInput
+                label="Xác nhận mật khẩu mới"
                 id="confirm"
-                type={showConfirm ? "text" : "password"}
-                name="confirm"
                 value={passwords.confirm}
                 onChange={handleChange}
-                placeholder="••••••••"
-                className="password-input"
+                placeholder="Nhập lại mật khẩu mới"
               />
-              <FontAwesomeIcon
-                icon={showConfirm ? faEyeSlash : faEye}
-                className="password-eye-icon"
-                onClick={() => setShowConfirm(!showConfirm)}
-              />
-            </div>
-          </div>
 
-          {/* Actions */}
-          <div className="password-actions">
-            <button
-              type="submit"
-              disabled={loading}
-              className="password-submit-btn"
-            >
-              {loading ? "Đang lưu..." : "Lưu thay đổi"}
-            </button>
+              {/* Box yêu cầu */}
+              <div className="password-requirements">
+                <p className="password-req-title">Yêu cầu mật khẩu:</p>
+                <ul className="password-req-list">
+                  <li>Tối thiểu 8 ký tự</li>
+                  <li>Chữ hoa (A-Z) & thường (a-z)</li>
+                  <li>Số (0-9) & ký tự đặc biệt (@, #, $...)</li>
+                </ul>
+              </div>
+
+              <div className="password-actions">
+                <button 
+                  type="submit" 
+                  className="password-submit-btn" 
+                  disabled={loading}
+                >
+                  {loading ? "Đang xử lý..." : "Lưu thay đổi"}
+                </button>
+              </div>
+            </form>
           </div>
-        </form>
+        </div>
       </div>
-    </>
+
+      {/* CỘT PHẢI: SIDEBAR TIPS */}
+      <aside className="profile-side-column">
+        {/* Vẫn dùng guideline-card từ dashboard.css vì nó dùng chung cho cả trang Profile */}
+        <div className="guideline-card">
+          <div className="guideline-header">
+            <div className="icon-circle bg-green-100 text-green-600">
+               <ShieldCheck size={18} />
+            </div>
+            <h3>An toàn bảo mật</h3>
+          </div>
+          <div className="guideline-body">
+            <ul className="guideline-list">
+              <li>
+                <strong>Không dùng chung:</strong> Không sử dụng mật khẩu này cho các tài khoản khác.
+              </li>
+              <li>
+                <strong>Thay đổi định kỳ:</strong> Nên đổi mật khẩu 3-6 tháng/lần.
+              </li>
+              <li>
+                <strong>Đăng xuất:</strong> Nhớ đăng xuất khi dùng máy tính công cộng.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
   );
 }
