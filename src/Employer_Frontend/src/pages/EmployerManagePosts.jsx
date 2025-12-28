@@ -56,20 +56,44 @@ export default function EmployerManagePosts({
 
   // Logic lọc giữ nguyên
   const uniqueLocations = useMemo(() => {
-    const locations = new Set(posts.map((p) => p.location));
-    return Array.from(locations).sort();
-  }, [posts]);
+  if (!Array.isArray(posts)) return [];
+
+  const locations = new Set(
+    posts
+      .map(p => p.location)
+      .filter(Boolean)
+  );
+
+  return [...locations].sort();
+}, [posts]);
 
   const filteredPosts = useMemo(() => {
-    if (disableFilterBar) return posts;
-    return posts.filter((post) => {
-      const matchesText = post.title.toLowerCase().includes(textFilter.toLowerCase()) || 
-                          post.position.toLowerCase().includes(textFilter.toLowerCase());
-      const matchesLocation = locationFilter ? post.location === locationFilter : true; 
-      const matchesJobType = jobTypeFilter ? post.jobType === jobTypeFilter : true;
-      return matchesText && matchesLocation && matchesJobType; 
-    });
-  }, [posts, textFilter, locationFilter, jobTypeFilter, disableFilterBar]);
+  if (!Array.isArray(posts)) return [];
+  if (disableFilterBar) return posts;
+
+  const filterText = textFilter.toLowerCase();
+
+  return posts.filter(post => {
+    const title = post.title?.toLowerCase() ?? "";
+    const position = post.position?.toLowerCase() ?? "";
+
+    const matchesText =
+      title.includes(filterText) ||
+      position.includes(filterText);
+
+    const matchesLocation =
+      locationFilter
+        ? post.location?.toLowerCase() === locationFilter.toLowerCase()
+        : true;
+
+    const matchesJobType =
+      jobTypeFilter
+        ? post.jobType === jobTypeFilter
+        : true;
+
+    return matchesText && matchesLocation && matchesJobType;
+  });
+}, [posts, textFilter, locationFilter, jobTypeFilter, disableFilterBar]);
 
   // Helper format tiền tệ
   const formatSalary = (min, max, currency) => {
@@ -98,7 +122,7 @@ export default function EmployerManagePosts({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [menuOpenId]);
-
+  console.log(posts)
   return (
     <div className="manage-posts-wrapper">
       {!disableFilterBar && (

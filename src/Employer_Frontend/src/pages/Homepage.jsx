@@ -179,13 +179,17 @@ export default function Homepage() {
     }
   };
 
-  const updateJobLocal = (jobUpdated) => {
-      setJobPosts(prev =>
-          prev.map(job =>
-              job._id === jobUpdated._id ? { ...job, ...jobUpdated } : job
-          )
-      );
-  };
+  const updateJobLocal = (updatedJob) => {
+        setJobPosts((prevPosts) => {
+            // Kiểm tra an toàn: nếu prevPosts không phải mảng thì trả về mảng chứa job mới
+            if (!Array.isArray(prevPosts)) return [updatedJob];
+
+            // Duyệt mảng cũ, tìm job trùng ID để thay thế, còn lại giữ nguyên
+            return prevPosts.map((post) => 
+                post._id === updatedJob._id ? updatedJob : post
+            );
+        });
+    };
 
   // Hàm Update bài đăng (Logic cũ, không trừ tiền khi edit thông tin)
   const handleUpdatePost = async (updatedData) => {

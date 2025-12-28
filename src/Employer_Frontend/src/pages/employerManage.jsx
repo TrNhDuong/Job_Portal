@@ -294,7 +294,7 @@ const JobListView = ({ jobs, onSelectJob }) => {
                 <p className="job-location">{job.location}</p>
               </div>
               <div className="job-right">
-                <p className="job-label">{job.label}</p>
+                <p className="job-label">{}</p>
               </div>
             </div>
             
