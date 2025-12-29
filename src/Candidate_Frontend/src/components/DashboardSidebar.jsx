@@ -1,8 +1,8 @@
 // src/components/DashboardSidebar.jsx
-import React from "react";
+import React, { useMemo } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { FileText, Briefcase, Bell, LogOut } from "lucide-react";
+import { FileText, Briefcase, Bell, LogOut, ChevronRight } from "lucide-react";
 
 export default function DashboardSidebar() {
   const { user, logout } = useAuth();
@@ -10,11 +10,14 @@ export default function DashboardSidebar() {
 
   if (!user) return null;
 
-  const avatarUrl =
-    user.logo?.url ||
-    `https://ui-avatars.com/api/?name=${encodeURIComponent(
-      user.name || user.email || "U"
-    )}&background=4f46e5&color=fff`;
+  const avatarUrl = useMemo(() => {
+    return (
+      user.logo?.url ||
+      `https://ui-avatars.com/api/?name=${encodeURIComponent(
+        user.name || user.email || "U"
+      )}&background=4f46e5&color=fff`
+    );
+  }, [user]);
 
   const getNavLinkClass = ({ isActive }) =>
     ["dashboard-nav-link", isActive ? "dashboard-nav-link-active" : ""]
@@ -29,36 +32,44 @@ export default function DashboardSidebar() {
     navigate("/");
   };
 
-  const handleOpenProfile = () => {
-    navigate("/dashboard/settings/profile");
-  };
+  const handleOpenProfile = () => navigate("/dashboard/settings/profile");
 
   return (
-    <aside className="dashboard-sidebar">
-      {/* CARD AVATAR – BẤM CẢ KHUNG ĐỂ VÀO PROFILE */}
+    <aside className="dashboard-sidebar dashboard-sidebar-lg">
+      {/* PROFILE CARD */}
       <button
         type="button"
-        className="dashboard-profile-card"
+        className="dashboard-profile-card dashboard-profile-card-lg"
         onClick={handleOpenProfile}
+        aria-label="Mở hồ sơ"
       >
         <div className="dashboard-profile-top">
-          <div className="dashboard-avatar-circle">
+          <div className="dashboard-avatar-circle dashboard-avatar-circle-lg">
             <img
               src={avatarUrl}
               alt={user.name || "Avatar"}
               className="dashboard-avatar-img"
             />
           </div>
+
           <div className="dashboard-profile-text">
-            <div className="dashboard-profile-info-name">
+            <div className="dashboard-profile-info-name dashboard-profile-info-name-lg">
               {user.name || "Ứng viên"}
             </div>
-            <p className="dashboard-profile-info-email">{user.email}</p>
+            <p className="dashboard-profile-info-email dashboard-profile-info-email-lg">
+              {user.email}
+            </p>
+
+            <div className="dashboard-profile-cta">
+              <span>Xem hồ sơ</span>
+              <ChevronRight className="dashboard-profile-cta-icon" />
+            </div>
           </div>
         </div>
       </button>
 
-      <nav className="dashboard-nav">
+      {/* NAV */}
+      <nav className="dashboard-nav dashboard-nav-lg">
         <div className="dashboard-nav-group-label">Ứng viên</div>
 
         <NavLink to="/dashboard" end className={getNavLinkClass}>
@@ -68,7 +79,7 @@ export default function DashboardSidebar() {
 
         <NavLink to="/dashboard/my-cv" className={getNavLinkClass}>
           <FileText className="dashboard-nav-link-icon" />
-          <span>Sơ yếu lý lịch(CV)</span>
+          <span>Sơ yếu lý lịch (CV)</span>
         </NavLink>
 
         <div className="dashboard-nav-group-label">Thông báo</div>
@@ -78,14 +89,17 @@ export default function DashboardSidebar() {
           <span>Thông báo &amp; Email</span>
         </NavLink>
 
-        <button
-          type="button"
-          onClick={handleLogout}
-          className="dashboard-logout-btn"
-        >
-          <LogOut className="dashboard-logout-icon" />
-          <span>Đăng xuất</span>
-        </button>
+        {/* FOOTER ACTION */}
+        <div className="dashboard-sidebar-footer">
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="dashboard-logout-btn dashboard-logout-btn-lg"
+          >
+            <LogOut className="dashboard-logout-icon" />
+            <span>Đăng xuất</span>
+          </button>
+        </div>
       </nav>
     </aside>
   );

@@ -1,4 +1,4 @@
-/* ==== LOGIN PAGE – sẽ đổi tên file này thành login.css ==== */
+/* src/styles/login.css */
 
 .login-page {
   min-height: 100vh;
@@ -6,6 +6,7 @@
   align-items: center;
   justify-content: center;
   padding: 24px 16px;
+  /* Giữ background đồng bộ với Register */
   background: linear-gradient(135deg, #e0f2fe 0%, #f9fafb 45%, #ecfeff 100%);
   color: #0f172a;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
@@ -18,13 +19,13 @@
   position: relative;
 }
 
-/* Badge trên đầu */
+/* Badge - Đồng bộ bo góc 8px */
 .login-badge {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   padding: 6px 12px;
-  border-radius: 999px;
+  border-radius: 8px; /* SỬA: 999px -> 8px */
   border: 1px solid #e2e8f0;
   background: #ffffff;
   box-shadow: 0 4px 12px rgba(148, 163, 184, 0.3);
@@ -41,29 +42,57 @@
 .login-badge-dot {
   width: 6px;
   height: 6px;
-  border-radius: 999px;
+  border-radius: 50%;
   background: #22c55e;
 }
 
-/* Card login */
+/* Card - Đồng bộ bo góc 20px và shadow */
 .login-card {
   margin-top: 10px;
-  border-radius: 26px;
+  border-radius: 20px; /* SỬA: 26px -> 20px */
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  box-shadow: 0 22px 55px rgba(15, 23, 42, 0.22);
-  padding: 28px 28px 22px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.2);
+  padding: 32px 32px 28px;
+}
+
+/* Back Button - Thêm mới cho đồng bộ */
+.login-back-btn-wrapper {
+  margin-bottom: 16px;
+}
+
+.login-back-btn {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
+}
+
+.login-back-btn:hover {
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  transform: translateX(-2px);
 }
 
 /* Header */
 .login-header {
   text-align: center;
-  margin-bottom: 18px;
+  margin-bottom: 24px;
 }
 
 .login-title {
   font-size: clamp(22px, 2.6vw, 28px);
-  font-weight: 600;
+  font-weight: 700;
   color: #020617;
   margin: 0;
 }
@@ -74,43 +103,62 @@
   color: transparent;
 }
 
-/* Form */
+.login-subtitle {
+  margin: 8px 0 0;
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+/* Form Layout */
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px; /* Tăng khoảng cách cho thoáng */
 }
 
 .login-field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .login-label {
   font-size: 14px;
-  font-weight: 500;
-  color: #0f172a;
+  font-weight: 600;
+  color: #1e293b;
 }
 
-/* Ô input */
+/* Input Styles - SỬA LỚN: Đồng bộ Shape & Focus */
 .login-input-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  height: 52px; /* chiều cao input */
-  border-radius: 999px;
-  border: 1px solid #cbd5f5;
+  gap: 10px;
+  height: 50px;
+  border-radius: 10px; /* SỬA: 999px -> 10px */
+  border: 1px solid #cbd5e1;
   padding: 0 16px;
   background: #ffffff;
-  transition: border-color 0.18s ease, box-shadow 0.18s ease,
-    transform 0.12s ease;
+  transition: all 0.2s ease;
 }
 
 .login-input-row:focus-within {
   border-color: #0ea5e9;
-  box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.18);
+  background-color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.15); /* Hiệu ứng Ring focus */
   transform: translateY(-1px);
+}
+
+.login-input-leading {
+  width: 20px;
+  height: 20px;
+  color: #94a3b8;
+  flex-shrink: 0;
+  transition: color 0.2s;
+}
+
+.login-input-row:focus-within .login-input-leading {
+  color: #0ea5e9;
 }
 
 .login-input-control {
@@ -120,25 +168,27 @@
   background: transparent;
   font-size: 14px;
   color: #0f172a;
+  font-weight: 500;
 }
 
 .login-input-control::placeholder {
-  color: #94a3b8;
+  color: #cbd5e1;
+  font-weight: 400;
 }
 
-/* Eye icon */
+/* Eye Btn */
 .login-eye-btn {
   border: none;
   outline: none;
   background: transparent;
-  border-radius: 999px;
-  padding: 4px;
+  border-radius: 6px;
+  padding: 6px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #94a3b8;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition: all 0.2s;
 }
 
 .login-eye-btn:hover {
@@ -147,69 +197,73 @@
 }
 
 .login-eye-icon {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
 }
 
-/* Message */
-.login-message {
-  font-size: 13px;
-  border-radius: 12px;
-  padding: 8px 12px;
-  border: 1px solid transparent;
-}
-
-.login-message-error {
-  border-color: #fecaca;
-  background: #fef2f2;
-  color: #b91c1c;
-}
-
-.login-message-success {
-  border-color: #bbf7d0;
-  background: #f0fdf4;
-  color: #166534;
-}
-
-/* Nút submit */
-.login-submit-btn {
+/* Forgot Password & Links */
+.login-forgot-row {
+  display: flex;
+  justify-content: flex-end;
   margin-top: 4px;
+}
+
+.login-forgot-link {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+  transition: color 0.2s;
+  text-decoration: none;
+}
+
+.login-forgot-link:hover {
+  color: #0ea5e9;
+  text-decoration: underline;
+}
+
+/* Submit Button - SỬA LỚN: Đồng bộ Shape */
+.login-submit-btn {
+  margin-top: 8px;
   width: 100%;
   border: none;
   outline: none;
   cursor: pointer;
-  border-radius: 999px;
-  padding: 12px 16px;
-  font-size: 14px;
+  border-radius: 10px; /* SỬA: 999px -> 10px */
+  padding: 14px 16px;
+  font-size: 15px;
   font-weight: 600;
   color: #ffffff;
   background-image: linear-gradient(90deg, #0284c7, #4f46e5, #10b981);
-  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.35);
-  transition: transform 0.12s ease, box-shadow 0.12s ease,
-    filter 0.15s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease;
 }
 
 .login-submit-btn:hover {
-  filter: brightness(1.05);
-  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.45);
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 .login-submit-btn:active {
-  transform: translateY(1px) scale(0.99);
-  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.3);
+  transform: translateY(1px);
 }
 
 .login-submit-btn:disabled {
-  opacity: 0.6;
+  opacity: 0.7;
   cursor: not-allowed;
+  transform: none;
 }
 
 /* Footer */
 .login-footer {
-  margin-top: 18px;
+  margin-top: 24px;
   text-align: center;
   font-size: 14px;
-  color: #4b5563;
+  color: #64748b;
 }
 
 .login-footer-link {
@@ -217,21 +271,110 @@
   margin: 0;
   border: none;
   background: none;
-  color: #0369a1;
-  font-weight: 500;
-  text-decoration: underline;
-  text-underline-offset: 2px;
+  color: #0284c7;
+  font-weight: 600;
+  text-decoration: none;
   cursor: pointer;
+  margin-left: 4px;
+}
+.login-footer-link:hover {
+  text-decoration: underline;
 }
 
-/* Mobile */
+.login-footnote {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* Message Box */
+.login-message {
+  font-size: 13px;
+  border-radius: 8px;
+  padding: 10px 14px;
+  border: 1px solid transparent;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+.login-message-error {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #ef4444;
+}
+.login-message-success {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+/* Icon Premium Wrapper */
+.login-card-premium {
+  position: relative;
+  overflow: hidden;
+}
+
+.login-card-premium::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  background: radial-gradient(
+      600px 240px at 20% 0%,
+      rgba(14, 165, 233, 0.15),
+      transparent 55%
+    ),
+    radial-gradient(
+      600px 240px at 80% 0%,
+      rgba(79, 70, 229, 0.12),
+      transparent 55%
+    );
+  pointer-events: none;
+}
+
+.login-card-premium > * {
+  position: relative;
+  z-index: 1;
+}
+
+.login-title-icon {
+  width: 54px;
+  height: 54px;
+  margin: 0 auto 12px;
+  border-radius: 14px; /* SỬA: Bo góc vuông hơn */
+  background: linear-gradient(
+    135deg,
+    rgba(14, 165, 233, 0.15),
+    rgba(79, 70, 229, 0.15)
+  );
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  display: grid;
+  place-items: center;
+}
+
+.login-title-icon-svg {
+  width: 24px;
+  height: 24px;
+  color: #0f172a;
+}
+
 @media (max-width: 480px) {
   .login-card {
-    padding: 24px 20px 20px;
-    border-radius: 22px;
+    padding: 24px 20px;
   }
+}
 
-  .login-input-row {
-    height: 50px;
-  }
+/* --- FIX LỖI 2 CON MẮT --- */
+/* Ẩn nút xem mật khẩu mặc định của trình duyệt (Edge/IE) */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+
+/* Ẩn trên một số trình duyệt khác nếu có */
+input[type="password"]::-webkit-contacts-auto-fill-button,
+input[type="password"]::-webkit-credentials-auto-fill-button {
+  visibility: hidden;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
 }

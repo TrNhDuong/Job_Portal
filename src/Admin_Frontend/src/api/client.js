@@ -1,9 +1,9 @@
 import axios from "axios";
 
+// Thay đổi baseURL tùy theo server của bạn
 const client = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE || "http://localhost:8080",
+  baseURL: "http://localhost:8080", 
   headers: { "Content-Type": "application/json" },
-  withCredentials: false,
 });
 
 export default client;

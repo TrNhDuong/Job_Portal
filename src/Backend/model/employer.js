@@ -39,6 +39,13 @@ const employerSchema = new mongoose.Schema({
     website: {
         type: String,
     },
+    contact: {
+        email: String,
+        phone: String
+    },
+    scale: {
+        type: String,
+    },
     jobPosted: [
         {
             type: mongoose.Schema.Types.ObjectId,

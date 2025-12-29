@@ -94,7 +94,7 @@ const EmployerDeposit = () => {
 
   return (
     <div className="deposit-page">
-      <PointDisplay points={auth.points} />
+      <PointDisplay points={auth.employerData.data.point} />
 
       <div className="deposit-container">
         <div className="deposit-header">
@@ -154,13 +154,16 @@ const EmployerDeposit = () => {
         <div className="custom-input-section">
             <div className="input-group">
                 <label>Số điểm muốn mua (Tùy chỉnh):</label>
-                <input
-                    type="number"
-                    min="0"
-                    value={pointsToBuy.toString()} // Chuyển về string để hiển thị đúng
-                    onChange={handleInputChange}
-                    placeholder="0"
-                />
+                <div className="input-wrapper">
+                    <input
+                        type="number"
+                        min="0"
+                        value={pointsToBuy.toString()}
+                        onChange={handleInputChange}
+                        placeholder="0"
+                    />
+                    <span className="input-suffix">ĐIỂM</span>
+                </div>
             </div>
             
             <div className="summary-box">

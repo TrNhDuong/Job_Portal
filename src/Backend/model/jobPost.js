@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import cron from "node-cron";
 
 const jobPost = new mongoose.Schema({
     title: {
@@ -67,22 +68,60 @@ const jobPost = new mongoose.Schema({
     state: {    // State of the job post: open, closed, pending
         type: String,
         required: true,
-        enum: ['Open', 'Closed', 'Pending'],
-        default: 'Open'
+        enum: ['Open', 'Closed'],
+        default: 'Closed',
     },
     expireDay: {
         type: Date,
     },
+    daysLeft: { type: Number, default: 0 },// chỉ tính khi state = 'Closed'
     applicants: [
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Application',
         }
     ],
+    metric: {
+        newed: {
+            type: Number,
+            default: 0
+        },
+        pass: {
+            type: Number,
+            default: 0
+        },
+        interviewed: {
+            type: Number,
+            default: 0
+        }
+    },
     description: {  // Description of the job, which is displayed when the user clicks on the job post
         type: String,
         required: true,
     },
+});
+
+// --- Static method để đóng job hết hạn ---
+jobPost.statics.closeExpiredJobs = async function() {
+    try {
+        const today = new Date();
+        today.setHours(0,0,0,0); // chỉ so sánh ngày
+
+        const result = await this.updateMany(
+            { state: 'Open', expireDay: { $lte: today } },
+            { $set: { state: 'Closed' } }
+        );
+
+        console.log(`[JobPost] ${result.modifiedCount} job(s) đã được đóng tự động.`);
+    } catch (err) {
+        console.error('[JobPost] Lỗi khi đóng job hết hạn:', err);
+    }
+};
+
+// --- Cron job tự động chạy 0h mỗi ngày ---
+cron.schedule('0 0 * * *', async () => {
+    const JobPost = mongoose.model('JobPost'); // lấy model hiện tại
+    await JobPost.closeExpiredJobs();
 });
 
 export const JobPost = mongoose.model("JobPost", jobPost);

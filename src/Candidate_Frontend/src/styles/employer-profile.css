@@ -1,0 +1,415 @@
+/* src/styles/employer-profile.css */
+
+/* =============== PAGE BACKGROUND (Clean & Flat) =============== */
+.empfb-page {
+  min-height: 100vh;
+  padding-bottom: 40px;
+  background: #f8fafc; /* Nền xám nhạt phẳng */
+  color: #0f172a;
+  font-family: inherit;
+}
+
+.empfb-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.empfb-loading {
+  min-height: 60vh;
+  display: grid;
+  place-items: center;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* =============== COVER =============== */
+.empfb-cover {
+  position: relative;
+  height: 280px; /* Giảm chiều cao chút */
+  background: #cbd5e1;
+}
+
+.empfb-cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.empfb-cover-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.4));
+}
+
+/* =============== HEADER CARD (Sửa bo góc) =============== */
+.empfb-header {
+  margin-top: -60px;
+  position: relative;
+  z-index: 2;
+}
+
+.empfb-header-card {
+  display: grid;
+  grid-template-columns: 100px 1fr auto;
+  gap: 20px;
+  align-items: end; /* Avatar nằm dưới cùng hàng với tên */
+  
+  padding: 20px;
+  /* GIẢM BO GÓC */
+  border-radius: 12px; 
+  
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); /* Bóng nhẹ phẳng */
+}
+
+.empfb-avatar {
+  width: 100px;
+  height: 100px;
+  /* GIẢM BO GÓC AVATAR */
+  border-radius: 12px;
+  background: #ffffff;
+  border: 4px solid #ffffff; /* Viền trắng tách biệt */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  overflow: hidden;
+  position: relative;
+  top: -10px; /* Đẩy lên chút */
+}
+
+.empfb-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.empfb-header-main {
+  padding-bottom: 4px;
+}
+
+.empfb-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.empfb-name {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.empfb-badges {
+  display: flex;
+  gap: 8px;
+}
+
+.empfb-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  /* GIẢM BO GÓC */
+  border-radius: 6px;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.empfb-subrow {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.empfb-subitem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.empfb-link {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+}
+.empfb-link:hover { text-decoration: underline; }
+
+.empfb-truncate {
+  max-width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.empfb-actions {
+  display: flex;
+  gap: 10px;
+  padding-bottom: 4px;
+}
+
+/* BUTTONS (Sửa bo góc) */
+.empfb-btn {
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  /* GIẢM BO GÓC BUTTON */
+  border-radius: 8px;
+  padding: 10px 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.empfb-btn-primary {
+  background: #2563eb;
+  color: #fff;
+}
+.empfb-btn-primary:hover { background: #1d4ed8; }
+
+.empfb-btn-ghost {
+  background: #f1f5f9;
+  color: #475569;
+}
+.empfb-btn-ghost:hover { background: #e2e8f0; }
+
+/* TABS (Sửa bo góc) */
+.empfb-tabs {
+  margin-top: 16px;
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.empfb-tab {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  font-weight: 600;
+  padding: 10px 16px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  /* Tab chữ nhật, chỉ bo góc trên */
+  border-radius: 8px 8px 0 0;
+  border-bottom: 2px solid transparent;
+}
+
+.empfb-tab:hover { color: #0f172a; background: #f8fafc; }
+
+.empfb-tab.is-active {
+  color: #2563eb;
+  border-bottom-color: #2563eb;
+  background: #ffffff;
+}
+
+/* =============== BODY =============== */
+.empfb-body { margin-top: 24px; }
+
+.empfb-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr; /* Cột chính rộng gấp đôi cột phụ */
+  gap: 24px;
+  align-items: start;
+}
+
+/* CARD (Sửa bo góc) */
+.empfb-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  /* GIẢM BO GÓC CARD */
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.empfb-card-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.empfb-card-header h2 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.empfb-chip {
+  background: #f1f5f9;
+  padding: 4px 10px;
+  border-radius: 20px; /* Chip vẫn bo tròn để phân biệt */
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.empfb-card-body { padding: 20px; }
+
+/* DESCRIPTION (Hyper Text Styles) */
+.empfb-desc-html {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #334155;
+}
+.empfb-desc-html p { margin-bottom: 12px; }
+.empfb-desc-html ul, .empfb-desc-html ol {
+  padding-left: 20px; margin-bottom: 12px;
+}
+.empfb-desc-html ul { list-style: disc; }
+.empfb-desc-html strong { color: #0f172a; font-weight: 600; }
+
+.empfb-readmore {
+  margin-top: 12px;
+  background: transparent;
+  border: none;
+  color: #2563eb;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+}
+.empfb-readmore:hover { text-decoration: underline; }
+
+/* JOBS LIST (Sửa bo góc) */
+.empfb-jobs {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.empfb-job {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border: 1px solid #e2e8f0;
+  /* GIẢM BO GÓC JOB CARD */
+  border-radius: 8px;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.empfb-job:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+}
+
+.empfb-job-left {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.empfb-job-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  padding: 2px;
+  background: #fff;
+}
+.empfb-job-logo img { width: 100%; height: 100%; object-fit: contain; border-radius: 4px; }
+
+.empfb-job-info h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0 0 4px 0;
+}
+
+.empfb-job-sub {
+  font-size: 13px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.empfb-dot { font-size: 8px; color: #cbd5e1; }
+
+.empfb-savebtn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.empfb-savebtn:hover { border-color: #cbd5e1; color: #0f172a; }
+.empfb-savebtn.is-saved { color: #ef4444; border-color: #fecaca; background: #fef2f2; }
+
+/* INTRO (Right Sidebar) */
+.empfb-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.empfb-intro-item {
+  display: flex;
+  gap: 12px;
+  font-size: 14px;
+}
+.empfb-intro-icon { color: #94a3b8; flex-shrink: 0; margin-top: 2px; }
+.empfb-intro-label { font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 600; }
+
+/* === ĐÃ CẬP NHẬT: SỬA LỖI NGẮT DÒNG CẮT TỪ === */
+.empfb-intro-value { 
+  color: #0f172a; 
+  font-weight: 500; 
+  
+  /* Cũ: word-break: break-all; -> Gây lỗi cắt từ */
+  /* Mới: Chỉ xuống dòng ở khoảng trắng, từ quá dài mới cắt */
+  word-break: break-word; 
+  overflow-wrap: break-word; 
+  white-space: normal;
+}
+
+/* =============== MODAL (Cho JobDetailPanel) =============== */
+.empfb-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5); /* Nền tối mờ */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.empfb-modal-dialog {
+  /* Quan trọng: Để JobDetailPanel tự quyết định layout bên trong */
+  background: transparent; 
+  width: auto;
+  max-width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .empfb-header-card { grid-template-columns: 1fr; text-align: center; justify-items: center; }
+  .empfb-avatar { width: 80px; height: 80px; }
+  .empfb-grid { grid-template-columns: 1fr; }
+  .empfb-actions { justify-content: center; width: 100%; }
+  .empfb-btn { flex: 1; justify-content: center; }
+}

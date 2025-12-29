@@ -17,6 +17,9 @@ import "./styles/verify-otp.css";
 import "./styles/password-setting.css";
 import "./styles/security-settings.css";
 import "./styles/job-search.css";
+import "./styles/notification-settings.css";
+import "./styles/application-status.css";
+import "./styles/employer-profile.css";
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>

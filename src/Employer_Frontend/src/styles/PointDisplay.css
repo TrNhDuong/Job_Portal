@@ -4,7 +4,10 @@
     justify-content: center;
     align-items: center;
     background: linear-gradient(135deg, #0061ff 0%, #60efff 100%);
-    padding: 50px 20px 120px 20px;
+    
+    /* 👇 ĐIỀU CHỈNH: Giảm padding bottom từ 120px xuống 70px để đỡ trống */
+    padding: 40px 20px 70px 20px; 
+    
     border-radius: 0 0 50px 50px;
     color: white;
     position: relative;
@@ -12,61 +15,89 @@
     box-shadow: 0 10px 25px rgba(0, 97, 255, 0.2);
 }
 
-/* --- Họa tiết Lưới toạ độ (Grid Pattern) --- */
+/* --- Họa tiết Lưới toạ độ (Giữ nguyên) --- */
 .point-display-container::before {
     content: "";
     position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    /* Vẽ các ô vuông mờ */
+    width: 100%; height: 100%; top: 0; left: 0;
     background-image: 
         linear-gradient(rgba(255, 255, 255, 0.2) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255, 255, 255, 0.2) 1px, transparent 1px);
-    background-size: 40px 40px; /* Kích thước ô lưới */
-    z-index: 0; /* Nằm dưới cùng */
+    background-size: 40px 40px;
+    z-index: 0;
     opacity: 0.6;
 }
 
-/* --- Họa tiết Đường cong Đồ thị (Graph Curves) --- */
+/* --- Họa tiết Đường cong (Giữ nguyên) --- */
 .point-display-container::after {
     content: "";
     position: absolute;
-    bottom: -50px;
-    left: -10%;
-    width: 120%;
-    height: 200px;
-    
-    /* Vẽ 2 đường cong mờ bằng SVG data URI */
+    bottom: -50px; left: -10%; width: 120%; height: 200px;
     background: 
         radial-gradient(ellipse at center, rgba(255,255,255,0.2) 0%, transparent 70%),
         url("data:image/svg+xml,%3Csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 100 Q 250 50 500 100 T 1000 100' stroke='rgba(255,255,255,0.4)' fill='none' stroke-width='2'/%3E%3Cpath d='M0 120 Q 300 60 600 120 T 1200 120' stroke='rgba(255,255,255,0.2)' fill='none' stroke-width='2'/%3E%3C/svg%3E");
-    
     background-size: cover;
     z-index: 0;
     opacity: 1;
 }
 
-/* --- 2. Vòng tròn trung tâm --- */
+/* --- 2. Vòng tròn trung tâm (ĐÃ SỬA) --- */
 .point-circle {
-    min-width: 220px;  /* Kích thước tối thiểu là 220px */
-    min-height: 220px;
-    width: auto;       /* Cho phép mở rộng chiều ngang */
-    height: auto;
-    aspect-ratio: 1 / 1;
-    padding: 30px;
-    background: rgba(255, 255, 255, 0.2); /* Kính mờ */
-    backdrop-filter: blur(10px);
-    border: 2px solid rgba(255, 255, 255, 0.5);
+    width: 280px; 
+    height: 280px; 
+    padding: 0;
+    
+    /* 1. NỀN GRADIENT: Tạo cảm giác kính cong (Trên sáng - Dưới tối) */
+    background: linear-gradient(
+        135deg, 
+        rgba(255, 255, 255, 0.3) 0%, 
+        rgba(255, 255, 255, 0.05) 100%
+    );
+    
+    backdrop-filter: blur(15px); /* Tăng độ mờ kính */
+    
+    /* 2. VIỀN 3D: Viền trên trắng rõ, viền dưới mờ đi (Giả lập ánh sáng) */
+    border: 2px solid transparent; 
+    border-top-color: rgba(255, 255, 255, 0.9);
+    border-left-color: rgba(255, 255, 255, 0.9);
+    border-right-color: rgba(255, 255, 255, 0.9);
+    border-bottom-color: rgba(255, 255, 255, 0.9);
+    
     border-radius: 50%;
-    display: flex;              /* Quan trọng: Dùng Flex để căn giữa */
-    justify-content: center;    /* Căn giữa ngang */
-    align-items: center;        /* Căn giữa dọc */
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
     position: relative;
     z-index: 2;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    
+    /* 3. BÓNG ĐỔ ĐA TẦNG: */
+    box-shadow: 
+        /* Bóng đổ sâu xuống nền xanh */
+        0 20px 50px rgba(0, 0, 0, 0.3),
+        /* Bóng sáng bên trong (Inner Glow) tạo độ dày cho kính */
+        inset 0 0 30px rgba(255, 255, 255, 0.1);
+        
+    /* Animation nảy nhẹ giữ nguyên */
     animation: float 6s ease-in-out infinite;
+}
+
+/* Hiệu ứng hào quang (Pulse) */
+.point-circle::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    z-index: -1;
+    animation: pulse-ring 3s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+
+@keyframes pulse-ring {
+    0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.5; }
+    100% { transform: translate(-50%, -50%) scale(1.4); opacity: 0; }
 }
 
 @keyframes float {
@@ -75,82 +106,63 @@
     100% { transform: translateY(0px); }
 }
 
-/* Wrapper nội dung bên trong để đảm bảo text không bị lệch */
+/* Wrapper nội dung */
 .point-content {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     text-align: center;
     width: 100%;
+    height: 100%; /* Chiếm toàn bộ chiều cao vòng tròn */
+    gap: 0; 
 }
 
-.icon-plus {
-    font-size: 1.5rem;
-    line-height: 1;
-    margin-bottom: 0px;
+.point-icon-wrapper {
+    font-size: 1.8rem; /* Thu nhỏ icon lại xíu cho tinh tế */
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 8px; /* Đẩy chữ Số dư cách ra */
+    margin-top: -35px; /* 👇 MẸO: Kéo icon lên cao một chút để nhường chỗ cho số */
 }
 
 .point-number {
-    font-size: clamp(2rem, 10vw, 3.5rem);
+    /* Font to nhưng dùng letter-spacing âm để các số xích lại gần nhau, đỡ tốn diện tích ngang */
+    font-size: 3.5rem; 
     font-weight: 800;
     margin: 0;
-    line-height: 1.1;
-    text-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    white-space: nowrap;
+    line-height: 1;
+    color: #fff;
+    text-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    letter-spacing: -2px; /* 👇 QUAN TRỌNG: Giúp số 100,000 gọn gàng hơn */
+}
+
+.currency-unit {
+    display: block; /* 👇 Xuống dòng */
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    margin-top: 15px; /* Cách số ra một chút */
+    text-transform: uppercase;
+    padding: 2px 10px;
+    border-radius: 20px;
 }
 
 .label-points {
-    font-size: 1rem;
+    font-size: 0.8rem; /* Chữ nhỏ lại cho gọn */
     text-transform: uppercase;
-    letter-spacing: 1px;
-    opacity: 0.9;
-    margin-bottom: 10px;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 1);
+    font-weight: 600;
+    margin-bottom: 30px; /* Cách con số một chút */
 }
 
-/* --- 3. Styles cho Badge (Huy hiệu Rank) --- */
-.membership-badge {
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    font-weight: 700;
-    white-space: nowrap; /* Không cho xuống dòng */
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    margin-top: 5px;
-    
-    /* Quan trọng: Text color sẽ được set cụ thể bên dưới */
+/* Responsive: Trên mobile thu nhỏ vòng tròn lại xíu */
+@media (max-width: 768px) {
+    .point-circle {
+        width: 220px;
+        height: 220px;
+    }
+    .point-number {
+        font-size: 2.2rem;
+    }
 }
-
-/* Màu sắc cụ thể cho từng rank */
-.badge-diamond {
-    background: #2c004e; /* Tím đậm */
-    color: #00d2ff;      /* Chữ xanh sáng */
-    border: 1px solid #00d2ff;
-}
-
-.badge-gold {
-    background: #fff5c3; /* Vàng nhạt */
-    color: #b48811;      /* Chữ vàng đậm */
-    border: 1px solid #b48811;
-}
-
-.badge-silver {
-    background: #f0f4f8;
-    color: #5b6f82;
-    border: 1px solid #5b6f82;
-}
-
-.badge-starter {
-    background: rgba(255,255,255,0.3);
-    color: white;
-}
-
-/* --- 4. Trang trí nền (Giản lược cho đỡ rối) ---
-.tech-bg-decoration {
-    position: absolute;
-    top: -50%; left: -50%;
-    width: 200%; height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
-    background-size: 30px 30px; /* Chấm bi nhỏ kiểu tech 
-    opacity: 0.3;
-    pointer-events: none;
-} */

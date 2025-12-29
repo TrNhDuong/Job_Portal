@@ -4,58 +4,81 @@ import { useAuth } from "../context/AuthContext";
 import { HiOutlineCalendar, HiOutlineUsers, HiExclamationCircle, HiX, HiCheck, HiClock } from "react-icons/hi";
 import "../styles/employerJobRenewal.css";
 import toast from 'react-hot-toast';
+import client from "../api/client";
 
 const POINTS_PER_DAY = 10;
 const MAX_DAYS = 90;
 
-// Helper: Chuyển đổi string "dd/mm/yyyy" sang Date object
-const parseDate = (dateStr) => {
-  const [day, month, year] = dateStr.split('/');
-  return new Date(`${year}-${month}-${day}`);
+function formatDate(dateString) {
+  const d = new Date(dateString);
+  return d.toLocaleDateString("vi-VN"); 
+}
+
+const calculateNewExpirationDate = (currentExpireDateStr, daysToRenew) => {
+    const now = new Date();
+    
+    const todayUTC = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+    
+    let baseDate;
+
+    if (!currentExpireDateStr) {
+        baseDate = todayUTC;
+    } else {
+        const currentExpire = new Date(currentExpireDateStr);
+        const currentExpireUTC = new Date(
+            Date.UTC(currentExpire.getFullYear(), currentExpire.getMonth(), currentExpire.getDate())
+        );
+        
+        if (currentExpireUTC.getTime() < todayUTC.getTime()) {
+            baseDate = todayUTC;
+        } else {
+            baseDate = currentExpireUTC;
+        }
+    }
+    baseDate.setUTCDate(baseDate.getUTCDate() + daysToRenew);
+
+    return baseDate;
 };
 
-// Helper: Tính số ngày còn lại
 const getDaysRemaining = (expireDateStr) => {
-  if (!expireDateStr)
-    return 0
-  const today = new Date();
-  today.setHours(0, 0, 0, 0); // Reset giờ về 0 để so sánh chính xác
-  const expire = parseDate(expireDateStr);
-  const diffTime = expire - today;
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+    if (!expireDateStr) return 0;
+
+    const expireDate = new Date(expireDateStr);
+    
+    const now = new Date();
+    const expireUTC = new Date(expireDate.getUTCFullYear(), expireDate.getUTCMonth(), expireDate.getUTCDate());
+
+    // Lấy Ngày Hiện Tại (Today) ở dạng UTC
+    const todayUTC = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+
+    const diffTime = expireUTC.getTime() - todayUTC.getTime();
+    
+    // Hằng số cho 1 ngày
+    const oneDay = 1000 * 60 * 60 * 24;
+
+    // 5. Tính số ngày và làm tròn
+    return Math.ceil(diffTime / oneDay);
 };
+
 
 // 👇 NHẬN PROP jobPosts TỪ CHA (HOMEPAGE)
-const EmployerJobRenewal = ({ onNavigateToDeposit, jobPosts }) => {
+const EmployerJobRenewal = ({ onNavigateToDeposit, jobPosts, updateJobLocal }) => {
   const { auth, handleTransaction } = useAuth();
-  
+  console.log(jobPosts)
   // State Modal
   const [selectedJob, setSelectedJob] = useState(null);
   const [days, setDays] = useState(1);
-  const [totalCost, setTotalCost] = useState(POINTS_PER_DAY);
+  const [totalCost, setTotalCost] = useState(POINTS_PER_DAY)
 
-  // Dữ liệu giả lập (Nếu chưa có API/Props từ cha thì dùng cái này test)
-  const mockAllJobs = [
-    { id: 1, title: "Senior React Developer", expireDate: "20/11/2025", applicants: 12 }, // Đã qua (Giả sử nay là sau 20/11)
-    { id: 2, title: "Backend NodeJS Engineer", expireDate: "28/11/2025", applicants: 5 }, // Sắp hết
-    { id: 3, title: "UI/UX Designer", expireDate: "30/12/2025", applicants: 8 }, // Còn lâu
-    { id: 4, title: "Project Manager", expireDate: "10/11/2025", applicants: 20 }, // Đã qua
-    { id: 5, title: "DevOps Engineer", expireDate: "01/12/2025", applicants: 3 }, // Sắp hết
-    { id: 6, title: "Design Engineer", expireDate: "01/12/2025", applicants: 5 },
-  ];
+  const sourceData = jobPosts && jobPosts.length > 0 ? jobPosts : [];
 
-  // Sử dụng prop jobPosts nếu có, không thì dùng mock
-  // Lưu ý: Sau này kết nối API ở Homepage rồi truyền xuống đây
-  const sourceData = jobPosts && jobPosts.length > 0 ? jobPosts : mockAllJobs;
-
+  console.log(auth)
   // --- LOGIC XỬ LÝ & SẮP XẾP ---
   const processedJobs = useMemo(() => {
     // 1. Gắn thêm thông tin trạng thái cho từng job
     const jobsWithStatus = sourceData.map(job => {
-        // Giả định ngày hiện tại để test logic (Bạn có thể bỏ dòng này khi chạy thật)
-        // const mockToday = new Date("2025-11-25"); 
   
-        const daysLeft = getDaysRemaining(job?.expireDate);
+        const daysLeft = getDaysRemaining(job?.expireDay);
         let status = 'active'; // Mặc định xanh
         let label = `Còn ${daysLeft} ngày`;
 
@@ -73,13 +96,10 @@ const EmployerJobRenewal = ({ onNavigateToDeposit, jobPosts }) => {
     // 2. Sắp xếp: Expired -> Urgent -> Active
     return jobsWithStatus.sort((a, b) => {
         const priority = { expired: 0, urgent: 1, active: 2 };
-        
         // So sánh theo nhóm trước
         if (priority[a.status] !== priority[b.status]) {
             return priority[a.status] - priority[b.status];
         }
-        
-        // Nếu cùng nhóm, so sánh số ngày còn lại (Tăng dần)
         return a.daysLeft - b.daysLeft;
     });
   }, [sourceData]);
@@ -118,41 +138,58 @@ const EmployerJobRenewal = ({ onNavigateToDeposit, jobPosts }) => {
     setSelectedJob(null);
   };
 
-  const handleConfirmRenewal = () => {   
+  const handleConfirmRenewal = async () => {   
     if (days < 1 || days > MAX_DAYS) {
         toast.error(`Số ngày gia hạn phải từ 1 đến ${MAX_DAYS}`);
         return;
     }
 
-    if (auth.points < totalCost) {
+    if (auth.employerData.data.point < totalCost) {
       toast.error("Không đủ điểm! Vui lòng nạp thêm.");
       if (onNavigateToDeposit) onNavigateToDeposit();
       return;
     }
 
     if (window.confirm(`Xác nhận gia hạn ${days} ngày cho bài viết này?`)) {
-      // --- LOGIC API (Comment lại để sau này thêm) ---
-      /*
-      try {
-          const res = await client.post('/api/job/renew', { 
-              jobId: selectedJob.id, 
-              days: days 
-          });
-          if (res.success) { ... }
-      } catch (err) { ... }
-      */
+      let newExpireDay = undefined;
+      if (selectedJob.state !== 'Pending'){
+        newExpireDay = calculateNewExpirationDate(selectedJob.expireDay, days);
+      }
+     try {
+      const email = auth.employerData.data.email;
+      const res = await client.patch(`api/post-job/extend?jobId=${selectedJob._id}&email=${email}`,
+        {expireDay: newExpireDay, point: totalCost}
+      );
+      if (res.data.success){
+        // Logic Mock UI
+        handleTransaction(totalCost, "remove");
+        toast.success(`Đã gia hạn "${selectedJob.title}" thêm ${days} ngày!`);
+        const updatedJob = {
+            ...selectedJob,
+            expireDay: newExpireDay,
+            state: "Open"
+        };
+
+        // 1. cập nhật local ngay lập tức
+    
+        closeRenewalModal();
+        updateJobLocal(updatedJob);
+      }
+     } catch (error){
+
+     }
       
-      // Logic Mock UI
-      handleTransaction(totalCost, "remove");
-      toast.success(`Đã gia hạn "${selectedJob.title}" thêm ${days} ngày!`);
-      closeRenewalModal();
       // Ở đây sau này cần gọi hàm reloadData() từ cha để cập nhật lại list
     }
   };
+
+  for (const job of processedJobs) {
+    console.log(job.expireDay);
+  }
   
   return (
     <div className="renewal-page">
-      <PointDisplay points={auth.points} />
+      <PointDisplay points={auth.employerData.data.point} />
       
       <div className="renewal-container">
         <div className="renewal-header">
@@ -162,7 +199,7 @@ const EmployerJobRenewal = ({ onNavigateToDeposit, jobPosts }) => {
 
         <div className="job-grid">
           {processedJobs.map((job) => (
-            <div key={job.id} className={`job-card status-${job.status}`}>
+            <div key={job.id || job._id || index} className={`job-card status-${job.status}`}>
               {/* Dải trạng thái có màu thay đổi theo status */}
               <div className={`status-strip ${job.status}`}>
                   {job.label}
@@ -172,10 +209,10 @@ const EmployerJobRenewal = ({ onNavigateToDeposit, jobPosts }) => {
               
               <div className="job-meta">
                   <div className={`meta-item ${job.status === 'expired' ? 'expire-text' : ''}`}>
-                      <HiOutlineCalendar /> <span>Hết hạn: {job.expireDate}</span>
+                      <HiOutlineCalendar /> <span>{formatDate(job.expireDay)}</span>
                   </div>
                   <div className="meta-item">
-                      <HiOutlineUsers /> <span>{job.applicants} ứng viên</span>
+                      <HiOutlineUsers /> <span>{job.applicants.length} ứng viên</span>
                   </div>
               </div>
 

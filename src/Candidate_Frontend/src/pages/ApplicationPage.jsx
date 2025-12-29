@@ -1,301 +1,366 @@
-// src/pages/ApplicationPage.jsx
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import client from "../api/client";
 import {
-  UploadCloud,
   FileText,
   AlertCircle,
   CheckCircle,
   ChevronRight,
-  X,
+  Briefcase,
+  MapPin,
+  DollarSign,
+  Building2,
+  Loader2,
 } from "lucide-react";
+
+// 1. Import Component chi tiết
+import JobDetailPanel from "../components/JobDetailPanel";
 
 export default function ApplicationPage() {
   const { id: jobId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
 
+  const [candidate, setCandidate] = useState(null);
+  const [candidateCVs, setCandidateCVs] = useState([]);
   const [selectedCV, setSelectedCV] = useState(null);
-  const [uploadedFile, setUploadedFile] = useState(null);
+
+  const [job, setJob] = useState(null);
+
+  const [loadingJob, setLoadingJob] = useState(true);
+  const [loadingCVs, setLoadingCVs] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
+  // 2. State quản lý hiển thị Modal
+  const [showDetail, setShowDetail] = useState(false);
+
+  /* ===================== HELPERS ===================== */
+  const formatSalary = (salary) => {
+    if (!salary) return "Thỏa thuận";
+    if (typeof salary === "string") return salary;
+    if (typeof salary === "number") return salary.toString();
+
+    if (typeof salary === "object") {
+      const { minSalary, maxSalary, currency } = salary || {};
+      const curr = currency || "VND";
+      if (minSalary != null && maxSalary != null) return `${minSalary} - ${maxSalary} ${curr}`;
+      if (minSalary != null) return `Từ ${minSalary} ${curr}`;
+      if (maxSalary != null) return `Tối đa ${maxSalary} ${curr}`;
+    }
+    return "Thỏa thuận";
+  };
+
+  const getCompanyName = (j) =>
+    j?.companyName ||
+    j?.company?.name ||
+    (typeof j?.company === "string" ? j.company : "Công ty");
+
+  const getLocation = (j) => j?.location || j?.address || j?.city || "Chưa cập nhật";
+
+  const normalizeCVArray = (cv) => {
+    if (!cv) return [];
+    const arr = Array.isArray(cv) ? cv : [cv];
+    return arr
+      .filter(Boolean)
+      .sort(
+        (a, b) =>
+          new Date(b.uploadedAt || 0).getTime() - new Date(a.uploadedAt || 0).getTime()
+      );
+  };
+
+  const canSubmit = useMemo(() => {
+    return !!(selectedCV?.url && candidate?._id && !submitting);
+  }, [selectedCV?.url, candidate?._id, submitting]);
+
+  /* ===================== FETCH JOB ===================== */
   useEffect(() => {
-    if (user?.CV?.length > 0) {
-      setSelectedCV(user.CV[0]._id);
-    }
-  }, [user]);
+    const fetchJob = async () => {
+      if (!jobId) {
+        setLoadingJob(false);
+        return;
+      }
 
-  const handleSelectCV = (cvId) => {
-    setSelectedCV(cvId);
-    setUploadedFile(null);
-    setError(null);
-  };
+      setLoadingJob(true);
+      try {
+        const res = await client.get(`/api/post-job/id?jobId=${jobId}`);
+        const data = res.data?.success && res.data?.data ? res.data.data : res.data;
+        setJob(data || null);
+      } catch (err) {
+        console.error(err);
+        setJob(null);
+      } finally {
+        setLoadingJob(false);
+      }
+    };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    fetchJob();
+  }, [jobId]);
 
-    const allowed = [
-      "application/pdf",
-      "application/msword",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    ];
-    if (!allowed.includes(file.type)) {
-      setError("Only PDF, DOC, or DOCX files are allowed.");
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      setError("File must be under 5MB.");
-      return;
-    }
+  /* ===================== FETCH CANDIDATE + CV ===================== */
+  useEffect(() => {
+    const fetchCandidate = async () => {
+      if (!user?.email) {
+        setLoadingCVs(false);
+        return;
+      }
 
-    setSelectedCV(null);
-    setUploadedFile(file);
-    setError(null);
-  };
+      setLoadingCVs(true);
+      try {
+        const res = await client.get(`/api/candidate?email=${encodeURIComponent(user.email)}`);
+        const data = res.data?.success && res.data?.data ? res.data.data : res.data;
 
-  const handleRemoveUploadedFile = (e) => {
-    e.stopPropagation();
-    setUploadedFile(null);
-  };
+        setCandidate(data || null);
 
+        const cvList = normalizeCVArray(data?.CV);
+        setCandidateCVs(cvList);
+
+        if (cvList.length > 0) setSelectedCV(cvList[0]);
+      } catch (err) {
+        console.error(err);
+        setCandidate(null);
+        setCandidateCVs([]);
+        setSelectedCV(null);
+      } finally {
+        setLoadingCVs(false);
+      }
+    };
+
+    fetchCandidate();
+  }, [user?.email]);
+
+  /* ===================== SUBMIT ===================== */
   const handleSubmit = async () => {
-    if (!selectedCV && !uploadedFile) {
-      setError("Please select or upload a resume.");
+    if (!selectedCV?.url) {
+      setError("Vui lòng chọn một hồ sơ xin việc.");
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
-    if (!user?.email) {
-      setError("You must be logged in to apply.");
+    if (!candidate?._id) {
+      setError("Không tìm thấy thông tin ứng viên.");
       return;
     }
 
-    setLoading(true);
+    setSubmitting(true);
+    setError(null);
+
     try {
-      // Upload new CV
-      if (uploadedFile) {
-        const fd = new FormData();
-        fd.append("cv", uploadedFile);
-        await client.post(
-          `/api/upload/candidate/cv?email=${encodeURIComponent(
-            user.email
-          )}`,
-          fd
-        );
-      }
-
-      // Apply Job
-      const body = { email: user.email };
-      if (selectedCV) body.resumeId = selectedCV;
-
-      await client.patch(
-        `/api/post-job/applyJob?jobId=${jobId}`,
-        body
-      );
+      await client.patch(`/api/post-job/applyJob?jobId=${jobId}`, {
+        candidateId: candidate._id,
+        email: user.email,
+        cv_url: selectedCV.url,
+      });
 
       setIsSuccess(true);
     } catch (err) {
-      setError(
-        err.response?.data?.message ||
-          "Failed to submit application."
-      );
+      console.error(err);
+      setError(err.response?.data?.message || "Nộp hồ sơ thất bại.");
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
-  /* ---------------------- SUCCESS UI ---------------------- */
-
+  /* ===================== SUCCESS UI ===================== */
   if (isSuccess) {
     return (
-      <div className="apply-success-wrapper">
-        <div className="apply-success-card">
-          <div className="apply-success-icon-wrap">
-            <CheckCircle className="apply-success-icon" />
-          </div>
-
-          <h2 className="apply-success-title">
-            Application Submitted!
-          </h2>
-          <p className="apply-success-desc">
-            Your application has been received and is under review.
-          </p>
-
-          <div className="apply-success-meta">
-            <div>
-              <span className="apply-meta-label">Email</span>
-              <p className="apply-meta-value">{user.email}</p>
+      <div className="apply-page">
+        <div className="apply-container">
+          <div className="apply-success">
+            <div className="apply-success-icon">
+              <CheckCircle size={40} />
             </div>
-            <div>
-              <span className="apply-meta-label">Job ID</span>
-              <p className="apply-meta-value">
-                #{jobId?.slice(-6).toUpperCase()}
-              </p>
+            <h2 className="apply-success-title">Nộp hồ sơ thành công!</h2>
+            <p className="apply-success-desc">Hồ sơ của bạn đã được gửi tới nhà tuyển dụng.</p>
+
+            <div className="apply-success-actions">
+              <button onClick={() => navigate("/my-applications")} className="apply-btn apply-btn-primary">
+                Xem hồ sơ đã nộp <ChevronRight size={18} />
+              </button>
+
+              <button onClick={() => navigate("/")} className="apply-btn apply-btn-ghost">
+                Tìm thêm việc làm
+              </button>
             </div>
-          </div>
-
-          <div className="apply-success-actions">
-            <button
-              onClick={() => navigate("/my-applications")}
-              className="apply-btn-primary"
-            >
-              View My Applications <ChevronRight size={18} />
-            </button>
-
-            <button
-              onClick={() => navigate("/")}
-              className="apply-btn-ghost"
-            >
-              Browse More Jobs
-            </button>
           </div>
         </div>
       </div>
     );
   }
 
-  /* ------------------------ MAIN FORM UI ------------------------ */
-
+  /* ===================== MAIN UI ===================== */
   return (
     <div className="apply-page">
       <div className="apply-container">
+        {/* Error */}
         {error && (
-          <div className="apply-error">
-            <AlertCircle className="apply-error-icon" />
+          <div className="apply-alert apply-alert-error">
+            <AlertCircle size={18} />
             <div>
-              <h3 className="apply-error-title">Error</h3>
-              <p className="apply-error-text">{error}</p>
+              <div className="apply-alert-title">Có lỗi xảy ra</div>
+              <div className="apply-alert-text">{error}</div>
             </div>
           </div>
         )}
 
-        <div className="apply-card">
-          <div className="apply-card-header">
-            <h1 className="apply-card-title">Select Your Resume</h1>
-            <p className="apply-card-sub">
-              Choose an existing resume or upload a new one.
-            </p>
+        {/* JOB INFO */}
+        <section className="apply-panel">
+          <div className="apply-panel-top">
+            <div className="apply-panel-badge">
+              <span className="dot" />
+              THÔNG TIN CÔNG VIỆC
+            </div>
+
+            {/* 3. Sửa logic nút xem chi tiết: set state true */}
+            <button 
+                type="button" 
+                className="apply-link" 
+                onClick={() => setShowDetail(true)}
+            >
+              Xem chi tiết
+            </button>
           </div>
+
+          <div className="apply-job">
+            <div className="apply-job-head">
+              <div className="apply-job-icon">
+                <Briefcase size={18} />
+              </div>
+
+              <div className="apply-job-title">
+                <h2>{loadingJob ? "Đang tải..." : job?.title || "Vị trí tuyển dụng"}</h2>
+                <p>{loadingJob ? " " : getCompanyName(job)}</p>
+              </div>
+            </div>
+
+            <div className="apply-job-grid">
+              <div className="apply-job-item">
+                <Building2 size={16} />
+                <div>
+                  <span className="label">Công ty</span>
+                  <span className="value">{loadingJob ? "Đang tải..." : getCompanyName(job)}</span>
+                </div>
+              </div>
+
+              <div className="apply-job-item">
+                <MapPin size={16} />
+                <div>
+                  <span className="label">Địa điểm</span>
+                  <span className="value">{loadingJob ? "Đang tải..." : getLocation(job)}</span>
+                </div>
+              </div>
+
+              <div className="apply-job-item">
+                <DollarSign size={16} />
+                <div>
+                  <span className="label">Mức lương</span>
+                  <span className="value">{loadingJob ? "Đang tải..." : formatSalary(job?.salary)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* CV SELECT */}
+        <section className="apply-card">
+          <header className="apply-card-header">
+            <div className="apply-card-title">Chọn hồ sơ xin việc</div>
+            <div className="apply-card-sub">
+              Hãy chọn 1 CV phù hợp nhất để nộp cho công việc này.
+            </div>
+          </header>
 
           <div className="apply-card-body">
-            {/* EXISTING CV LIST */}
-            {user?.CV?.length > 0 && (
-              <div>
-                <h2 className="apply-section-label">Your Resumes</h2>
-
-                <div className="apply-cv-list">
-                  {user.CV.map((cv) => (
-                    <label
-                      key={cv._id}
-                      className={`apply-cv-item ${
-                        selectedCV === cv._id ? "active" : ""
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="resume"
-                        checked={selectedCV === cv._id}
-                        onChange={() => handleSelectCV(cv._id)}
-                        className="hidden"
-                      />
-
-                      <div className="apply-cv-icon">
-                        <FileText size={20} />
-                      </div>
-
-                      <div>
-                        <p className="apply-cv-name">{cv.name || "Resume"}</p>
-                        <p className="apply-cv-meta">
-                          Uploaded{" "}
-                          {cv.uploadedAt
-                            ? new Date(cv.uploadedAt).toLocaleDateString()
-                            : "N/A"}
-                        </p>
-                      </div>
-
-                      {selectedCV === cv._id && (
-                        <CheckCircle className="apply-cv-check" />
-                      )}
-                    </label>
-                  ))}
-                </div>
+            {loadingCVs ? (
+              <div className="apply-loading">
+                <Loader2 className="spin" size={18} />
+                Đang tải CV...
               </div>
-            )}
-
-            {/* SEPARATOR */}
-            {user?.CV?.length > 0 && (
-              <div className="apply-divider">OR UPLOAD NEW</div>
-            )}
-
-            {/* UPLOAD BOX */}
-            {!uploadedFile ? (
-              <div
-                onClick={() =>
-                  document.getElementById("uploadCV").click()
-                }
-                className="apply-upload-box"
-              >
-                <div className="apply-upload-icon-wrap">
-                  <UploadCloud className="apply-upload-icon" />
+            ) : candidateCVs.length === 0 ? (
+              <div className="apply-empty">
+                <FileText size={22} />
+                <div>
+                  <div className="apply-empty-title">Bạn chưa có CV nào</div>
+                  <div className="apply-empty-sub">Hãy tải CV lên trong hồ sơ của bạn trước khi ứng tuyển.</div>
                 </div>
-                <p className="apply-upload-title">
-                  Click to upload resume
-                </p>
-                <p className="apply-upload-sub">
-                  PDF, DOC, DOCX (max 5MB)
-                </p>
-                <input
-                  id="uploadCV"
-                  type="file"
-                  className="hidden"
-                  accept=".pdf,.doc,.docx"
-                  onChange={handleFileChange}
-                />
               </div>
             ) : (
-              <div className="apply-uploaded-file">
-                <div className="apply-uploaded-icon">
-                  <FileText size={20} />
-                </div>
-                <div className="apply-uploaded-info">
-                  <p>{uploadedFile.name}</p>
-                  <span>
-                    {(uploadedFile.size / 1024 / 1024).toFixed(2)}MB
-                  </span>
-                </div>
+              <div className="apply-cv-list">
+                {candidateCVs.map((cv) => {
+                  const active = selectedCV?.url === cv.url;
+                  return (
+                    <label key={cv.public_id || cv.url} className={`apply-cv ${active ? "is-active" : ""}`}>
+                      <input
+                        type="radio"
+                        checked={active}
+                        onChange={() => setSelectedCV(cv)}
+                        hidden
+                      />
+                      <div className="apply-cv-left">
+                        <div className="apply-cv-ico">
+                          <FileText size={18} />
+                        </div>
+                        <div className="apply-cv-meta">
+                          <div className="apply-cv-name">{cv.name || "CV xin việc"}</div>
+                          <div className="apply-cv-time">
+                            {cv.uploadedAt
+                              ? `Tải lên ${new Date(cv.uploadedAt).toLocaleDateString("vi-VN")}`
+                              : " "}
+                          </div>
+                        </div>
+                      </div>
 
-                <button
-                  onClick={handleRemoveUploadedFile}
-                  className="apply-upload-remove"
-                >
-                  <X size={20} />
-                </button>
+                      {active ? (
+                        <div className="apply-cv-check">
+                          <CheckCircle size={20} />
+                        </div>
+                      ) : null}
+                    </label>
+                  );
+                })}
               </div>
             )}
           </div>
 
-          <div className="apply-card-footer">
-            <button
-              onClick={() => navigate(-1)}
-              className="apply-btn-ghost"
-            >
-              Cancel
+          <footer className="apply-card-footer">
+            <button onClick={() => navigate(-1)} className="apply-btn apply-btn-ghost">
+              Hủy
             </button>
 
             <button
               onClick={handleSubmit}
-              disabled={loading}
-              className="apply-btn-primary"
+              disabled={!canSubmit || candidateCVs.length === 0}
+              className="apply-btn apply-btn-primary"
             >
-              {loading ? "Submitting..." : "Submit Application"}
+              {submitting ? (
+                <>
+                  <Loader2 className="spin" size={18} /> Đang nộp...
+                </>
+              ) : (
+                "Nộp hồ sơ"
+              )}
             </button>
-          </div>
-        </div>
+          </footer>
+        </section>
       </div>
+
+      {/* 4. Thêm Modal hiển thị JobDetailPanel */}
+      {showDetail && job && (
+        <div 
+            className="apply-modal-overlay" 
+            onClick={() => setShowDetail(false)}
+        >
+            <div 
+                className="apply-modal-content" 
+                onClick={(e) => e.stopPropagation()}
+            >
+                <JobDetailPanel job={job} onClose={() => setShowDetail(false)} />
+            </div>
+        </div>
+      )}
     </div>
   );
 }

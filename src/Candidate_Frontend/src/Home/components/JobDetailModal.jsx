@@ -1,173 +1,215 @@
-// src/home/components/JobDetailModal.jsx
-import React from "react";
+// src/Home/components/JobDetailModal.jsx
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { MapPin, Briefcase, DollarSign, Clock, X, Heart } from "lucide-react";
+import { MapPin, Briefcase, DollarSign, Clock, X, Heart, Building2 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
-
-// Format lương
-function formatSalary(salary) {
-  if (!salary) return "Thỏa thuận";
-
-  if (typeof salary === "string") return salary;
-  if (typeof salary === "number") return salary.toString();
-
-  if (typeof salary === "object") {
-    const { minSalary, maxSalary, currency } = salary || {};
-    const curr = currency || "";
-    if (minSalary && maxSalary) return `${minSalary} - ${maxSalary} ${curr}`.trim();
-    if (minSalary) return `Từ ${minSalary} ${curr}`.trim();
-    if (maxSalary) return `Tối đa ${maxSalary} ${curr}`.trim();
-  }
-  return "Thỏa thuận";
-}
 
 export default function JobDetailModal({ job, onClose, onSave, isSaved }) {
   const { user } = useAuth();
-
   const safeJob = job || {};
   const jobId = safeJob._id;
 
-  const jobDetails = {
-    title: safeJob.title || "Không có tiêu đề",
-    company: safeJob.company || "Không rõ công ty",
-    location: safeJob.location || "N/A",
-    salary: formatSalary(safeJob.salary),
-    about: safeJob.description || "Mô tả công việc không có sẵn.",
-    state: safeJob.state || "Closed",
-    level: "Senior",
-    posted: "2 days ago",
-    requirements: [
-      "5+ years of frontend experience",
-      "Strong knowledge of React and TypeScript",
-      "Experience with modern CSS and Tailwind",
-      "Excellent communication skills",
-    ],
-  };
+  // 1. Khóa cuộn trang nền
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, []);
 
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) onClose();
   };
 
   const handleSaveClick = () => {
-    if (onSave) onSave(safeJob); // dùng chung logic với JobCard
+    if (onSave) onSave(safeJob);
   };
+
+  // --- LOGIC XỬ LÝ DỮ LIỆU ---
+
+  // Logo
+  const companyInitial = (safeJob.company && safeJob.company.charAt(0)) || "?";
+  const placeholderLogo = `https://ui-avatars.com/api/?name=${encodeURIComponent(companyInitial)}&background=f1f5f9&color=1e293b`;
+  const logoSrc = safeJob.logo?.url || placeholderLogo;
+
+  // Salary
+  const formatSalary = (salary) => {
+    if (!salary) return "Thỏa thuận";
+    if (salary.minSalary !== undefined && salary.maxSalary !== undefined) {
+      const currency = salary.currency || "VND";
+      if (currency === "VND") {
+        const min = (salary.minSalary / 1000000).toLocaleString('vi-VN');
+        const max = (salary.maxSalary / 1000000).toLocaleString('vi-VN');
+        return `${min} - ${max} triệu`;
+      }
+      return `${salary.minSalary.toLocaleString()} - ${salary.maxSalary.toLocaleString()} ${currency}`;
+    }
+    return "Thỏa thuận";
+  };
+
+  // Date
+  const formatDate = (dateString) => {
+    if (!dateString) return "Không thời hạn";
+    return new Date(dateString).toLocaleDateString("vi-VN");
+  };
+
+  // Address
+  const fullAddress = safeJob.detailedAddress 
+    ? `${safeJob.detailedAddress}, ${safeJob.location}`
+    : safeJob.location || "Chưa cập nhật";
+
+  // Major
+  const displayMajor = safeJob.major === 'Other' && safeJob.customMajor 
+    ? safeJob.customMajor 
+    : safeJob.major;
 
   return (
     <div className="home-modal-backdrop" onClick={handleBackdropClick}>
       <div className="home-job-modal" onClick={(e) => e.stopPropagation()}>
-        {/* Nút đóng */}
+        
+        {/* Close Button */}
         <button className="home-modal-close" onClick={onClose}>
-          <X className="home-modal-close-icon" />
+          <X size={20} />
         </button>
 
-        {/* HEADER */}
-        <header className="home-job-modal-header">
-          <div className="home-job-modal-header-main">
-            <h1 className="home-job-modal-title">{jobDetails.title}</h1>
-            <p className="home-job-modal-company">{jobDetails.company}</p>
+        {/* --- HEADER --- */}
+        <div className="home-job-modal-header">
+          <div className="home-job-modal-logo-wrap">
+            <img 
+              src={logoSrc} 
+              alt="Logo" 
+              className="home-job-modal-logo"
+              onError={(e) => e.target.src = placeholderLogo} 
+            />
           </div>
+          <div style={{flex: 1}}>
+            <h2 className="home-job-modal-title">{safeJob.title || "Chưa có tiêu đề"}</h2>
+            <div 
+              className="home-job-modal-company"
+              onClick={() => window.location.href = `/employer/${encodeURIComponent(safeJob.companyEmail)}`}
+            >
+              <Building2 size={14} />
+              {safeJob.company || "Công ty ẩn danh"}
+            </div>
+          </div>
+        </div>
 
-          <span
-            className={
-              jobDetails.state === "Open"
-                ? "home-job-modal-pill home-job-modal-pill-open"
-                : "home-job-modal-pill home-job-modal-pill-closed"
-            }
-          >
-            {jobDetails.state === "Open" ? "Đang tuyển" : "Đã đóng"}
-          </span>
-        </header>
-
-        {/* GRID INFO */}
-        <section className="home-job-modal-grid">
-          <div className="home-job-modal-grid-item">
-            <MapPin className="home-job-modal-grid-icon" />
+        {/* --- GRID INFO (Đã bỏ Số lượng ứng tuyển) --- */}
+        <div className="home-job-modal-grid">
+          {/* Mức lương */}
+          <div className="home-job-modal-item">
+            <div className="home-job-modal-icon"><DollarSign size={18}/></div>
             <div>
-              <p className="home-job-modal-grid-label">Địa điểm</p>
-              <p className="home-job-modal-grid-value">
-                {jobDetails.location}
-              </p>
+              <span className="home-job-modal-label">Mức lương</span>
+              <span className="home-job-modal-value highlight">{formatSalary(safeJob.salary)}</span>
             </div>
           </div>
 
-          <div className="home-job-modal-grid-item">
-            <Briefcase className="home-job-modal-grid-icon" />
+          {/* Địa điểm */}
+          <div className="home-job-modal-item">
+            <div className="home-job-modal-icon"><MapPin size={18}/></div>
             <div>
-              <p className="home-job-modal-grid-label">Cấp bậc</p>
-              <p className="home-job-modal-grid-value">
-                {jobDetails.level}
-              </p>
+              <span className="home-job-modal-label">Địa điểm</span>
+              <span className="home-job-modal-value truncate-text" title={fullAddress}>
+                {safeJob.location || "Toàn quốc"}
+              </span>
             </div>
           </div>
 
-          <div className="home-job-modal-grid-item">
-            <DollarSign className="home-job-modal-grid-icon" />
+          {/* Kinh nghiệm */}
+          <div className="home-job-modal-item">
+            <div className="home-job-modal-icon"><Briefcase size={18}/></div>
             <div>
-              <p className="home-job-modal-grid-label">Mức lương</p>
-              <p className="home-job-modal-grid-value">
-                {jobDetails.salary}
-              </p>
+              <span className="home-job-modal-label">Kinh nghiệm</span>
+              <span className="home-job-modal-value">
+                {safeJob.experience ? `${safeJob.experience} năm` : "Không yêu cầu"}
+              </span>
             </div>
           </div>
 
-          <div className="home-job-modal-grid-item">
-            <Clock className="home-job-modal-grid-icon" />
+          {/* Hạn nộp */}
+          <div className="home-job-modal-item">
+            <div className="home-job-modal-icon"><Clock size={18}/></div>
             <div>
-              <p className="home-job-modal-grid-label">Ngày đăng</p>
-              <p className="home-job-modal-grid-value">
-                {jobDetails.posted}
-              </p>
+              <span className="home-job-modal-label">Hạn nộp</span>
+              <span className="home-job-modal-value">{formatDate(safeJob.expireDay)}</span>
             </div>
           </div>
-        </section>
+        </div>
 
-        {/* BODY */}
-        <section className="home-job-modal-body">
-          <h3 className="home-job-modal-subtitle">Mô tả công việc</h3>
-          <p className="home-job-modal-about">
-            {jobDetails.about}
-          </p>
+        {/* --- BODY (Scrollable) --- */}
+        <div className="home-job-modal-body">
+          
+          {/* 1. Mô tả công việc */}
+          <div className="home-job-modal-section">
+            <h3 className="home-job-modal-subtitle">Mô tả công việc</h3>
+            <div 
+              className="home-job-modal-html"
+              dangerouslySetInnerHTML={{ __html: safeJob.description || "<p>Chưa cập nhật thông tin.</p>" }} 
+            />
+          </div>
 
-          <h3 className="home-job-modal-subtitle home-job-modal-subtitle-gap">
-            Yêu cầu (giả lập)
-          </h3>
-          <ul className="home-job-modal-req-list">
-            {jobDetails.requirements.map((req, i) => (
-              <li key={i}>{req}</li>
-            ))}
-          </ul>
-        </section>
+          {/* 2. Yêu cầu ứng viên (LUÔN HIỆN) */}
+          <div className="home-job-modal-section">
+            <h3 className="home-job-modal-subtitle">Yêu cầu ứng viên</h3>
+            <div 
+              className="home-job-modal-html"
+              dangerouslySetInnerHTML={{ 
+                __html: safeJob.requirement || "<p>Chưa cập nhật thông tin yêu cầu.</p>" 
+              }} 
+            />
+          </div>
 
-        {/* FOOTER */}
-        <footer className="home-job-modal-footer">
-          {!user && (
-            <Link to="/login" className="home-job-modal-btn primary">
-              Đăng nhập để ứng tuyển
-            </Link>
+          {/* 3. Quyền lợi (LUÔN HIỆN) */}
+          <div className="home-job-modal-section">
+            <h3 className="home-job-modal-subtitle">Quyền lợi & Chế độ</h3>
+            <div 
+              className="home-job-modal-html"
+              dangerouslySetInnerHTML={{ 
+                __html: safeJob.welfare || "<p>Chưa cập nhật thông tin quyền lợi.</p>" 
+              }} 
+            />
+          </div>
+          
+          <hr className="home-job-modal-divider" />
+
+          {/* Tags bổ sung */}
+          <div className="home-job-modal-tags">
+              {safeJob.jobType && <span className="home-job-modal-tag">{safeJob.jobType}</span>}
+              {safeJob.degree && <span className="home-job-modal-tag">{safeJob.degree}</span>}
+              {displayMajor && <span className="home-job-modal-tag">{displayMajor}</span>}
+          </div>
+
+          {/* Hiển thị địa chỉ chi tiết ở cuối */}
+          {safeJob.detailedAddress && (
+             <p className="home-job-modal-detail-addr">
+                <strong>Địa chỉ cụ thể:</strong> {safeJob.detailedAddress}
+             </p>
           )}
+        </div>
 
-          {user && jobId && (
-            <>
-              <Link
-                to={`/apply/${jobId}`}
-                className="home-job-modal-btn primary"
-              >
-                Ứng tuyển ngay
-              </Link>
-
-              <button
-                type="button"
-                onClick={handleSaveClick}
-                className={`home-job-modal-btn ${
-                  isSaved ? "saved" : "ghost"
-                }`}
-              >
-                <Heart className="home-job-modal-btn-icon" />
-                {isSaved ? "Đã lưu job" : "Lưu job"}
-              </button>
-            </>
+        {/* --- FOOTER --- */}
+        <div className="home-job-modal-footer">
+          {!user ? (
+             <Link to="/login" className="home-job-modal-btn primary full">
+               Đăng nhập để ứng tuyển
+             </Link>
+          ) : (
+             <>
+               <button 
+                 className={`home-job-modal-btn ${isSaved ? "saved" : "ghost"}`}
+                 onClick={handleSaveClick}
+               >
+                 <Heart size={18} fill={isSaved ? "currentColor" : "none"} />
+                 {isSaved ? "Đã lưu" : "Lưu tin"}
+               </button>
+               <Link to={`/apply/${jobId}`} className="home-job-modal-btn primary">
+                 Ứng tuyển ngay
+               </Link>
+             </>
           )}
-        </footer>
+        </div>
+
       </div>
     </div>
   );

@@ -28,27 +28,28 @@ export default function VerifyOtpPage() {
 
   // Lấy action từ query (?action=xxx)
   const searchParams = new URLSearchParams(location.search);
-  const action = searchParams.get("action"); // 'update-profile' | 'update-password' | null
+  const action = searchParams.get("action"); 
+  // action: 'update-profile' | 'update-password' | 'forgot-password' | null(default registration)
 
-  // 1. Lấy dữ liệu tạm ở sessionStorage
+  // NOTE FIX: mapping sessionStorage key theo action (Candidate-only)
+  const getStorageKey = () => {
+    if (action === "update-profile") return "updateProfileData";
+    if (action === "update-password") return "updatePasswordData";
+    if (action === "forgot-password") return "forgotPasswordData";
+    return "registrationData";
+  };
+
+  // 1) Lấy dữ liệu tạm từ sessionStorage
   useEffect(() => {
-    let storageKey;
-
-    if (action === "update-profile") {
-      storageKey = "updateProfileData";
-    } else if (action === "update-password") {
-      storageKey = "updatePasswordData";
-    } else {
-      storageKey = "registrationData";
-    }
-
+    const storageKey = getStorageKey();
     const stored = sessionStorage.getItem(storageKey);
 
     if (!stored) {
-      if (action === "update-profile") navigate("/dashboard/settings/profile");
-      else if (action === "update-password") navigate("/login");
-      else navigate("/register");
-      return;
+      // NOTE FIX: fallback route rõ ràng theo action
+      if (action === "update-profile") return navigate("/dashboard/settings/profile");
+      if (action === "update-password") return navigate("/dashboard/settings/security");
+      if (action === "forgot-password") return navigate("/forgot-password/candidate");
+      return navigate("/register");
     }
 
     const parsed = JSON.parse(stored);
@@ -56,15 +57,14 @@ export default function VerifyOtpPage() {
     setEmail(parsed.email);
   }, [action, navigate, location.search]);
 
-  // 2. Đếm ngược resend OTP
+  // 2) Countdown resend OTP
   useEffect(() => {
     if (countdown <= 0) return;
     const timer = setTimeout(() => setCountdown((c) => c - 1), 1000);
     return () => clearTimeout(timer);
   }, [countdown]);
 
-  // --- OTP handlers ---
-
+  // OTP handlers
   const handleChange = (e, index) => {
     const { value } = e.target;
     if (/[^0-9]/.test(value)) return;
@@ -73,9 +73,7 @@ export default function VerifyOtpPage() {
     newOtp[index] = value;
     setOtp(newOtp);
 
-    if (value && index < 5) {
-      inputRefs.current[index + 1]?.focus();
-    }
+    if (value && index < 5) inputRefs.current[index + 1]?.focus();
   };
 
   const handleKeyDown = (e, index) => {
@@ -84,25 +82,20 @@ export default function VerifyOtpPage() {
     }
   };
 
-  // Cho phép paste cả dãy OTP
   const handlePaste = (e) => {
     e.preventDefault();
     const paste = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
     if (!paste) return;
 
-    const nextOtp = [...otp];
-    for (let i = 0; i < paste.length; i++) {
-      nextOtp[i] = paste[i];
-    }
+    const nextOtp = Array(6).fill("");
+    for (let i = 0; i < paste.length; i++) nextOtp[i] = paste[i];
     setOtp(nextOtp);
 
-    const lastIndex = paste.length - 1;
-    if (lastIndex >= 0 && lastIndex < 6) {
-      inputRefs.current[lastIndex]?.focus();
-    }
+    const lastIndex = Math.min(paste.length - 1, 5);
+    if (lastIndex >= 0) inputRefs.current[lastIndex]?.focus();
   };
 
-  // 4. Gửi lại OTP
+  // 4) Gửi lại OTP
   const handleResend = async () => {
     if (countdown > 0 || !email) return;
     setMsg(null);
@@ -112,14 +105,19 @@ export default function VerifyOtpPage() {
       await client.post("/api/send-otp", { email });
       setMsg({ type: "success", text: "Mã xác thực mới đã được gửi!" });
       setCountdown(120);
+      setOtp(Array(6).fill(""));
+      inputRefs.current[0]?.focus();
     } catch (err) {
-      setMsg({ type: "error", text: "Lỗi gửi OTP." });
+      setMsg({
+        type: "error",
+        text: err?.response?.data?.message || "Lỗi gửi OTP.",
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  // 5. Gửi OTP lên server
+  // 5) Submit OTP
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMsg(null);
@@ -133,10 +131,23 @@ export default function VerifyOtpPage() {
     setLoading(true);
 
     try {
-      // Bước 1: verify OTP
-      await client.post("/api/verify-otp", { email, otp: code });
+      // NOTE FIX 1: cần giữ verifyRes để lấy token cho forgot-password
+      let verifyRes;
 
-      // Bước 2: xử lý theo action (candidate)
+      // NOTE FIX 2: chọn endpoint verify theo action
+      if (action === "forgot-password") {
+        verifyRes = await client.post("/api/verify-otp/forgot/candidate", {
+          email,
+          otp: code,
+        });
+      } else {
+        verifyRes = await client.post("/api/verify-otp", {
+          email,
+          otp: code,
+        });
+      }
+
+      // ===== ACTION HANDLING =====
       if (action === "update-profile") {
         if (!data) throw new Error("Không tìm thấy dữ liệu cập nhật profile");
         const { oldEmail, email: newEmail, name, phone } = data;
@@ -147,53 +158,71 @@ export default function VerifyOtpPage() {
           phone,
         });
 
-        if (user) {
-          login({ ...user, name, email: newEmail, phone });
-        }
+        if (user) login({ ...user, name, email: newEmail, phone });
 
         sessionStorage.removeItem("updateProfileData");
-        navigate("/dashboard/settings/profile");
-      } else if (action === "update-password") {
+        setMsg({ type: "success", text: "Cập nhật thông tin thành công!" });
+        setTimeout(() => navigate("/dashboard/settings/profile"), 2000);
+        return;
+      }
+
+      if (action === "update-password") {
         if (!data) throw new Error("Không tìm thấy dữ liệu đổi mật khẩu");
 
         await client.post("/api/password/candidate", {
           email: data.email,
-          newpassword: data.newPassword,
+          password: data.oldPassword,     
+          newpassword: data.newPassword,  
         });
 
         sessionStorage.removeItem("updatePasswordData");
         setMsg({ type: "success", text: "Đổi mật khẩu thành công!" });
-        setTimeout(() => navigate("/login"), 1500);
-      } else {
-        // ĐĂNG KÝ TÀI KHOẢN CANDIDATE MỚI
-        if (!data) throw new Error("Không tìm thấy dữ liệu đăng ký");
-
-        const payload = {
-          name: data.name,
-          email: data.email,
-          password: data.password,
-        };
-
-        await client.post("/api/candidateRegister", payload);
-
-        sessionStorage.removeItem("registrationData");
-        navigate("/login");
+        setTimeout(() => navigate("/login"), 2000);
+        return;
       }
+
+      if (action === "forgot-password") {
+        // NOTE FIX 4: token nằm ở verifyRes.data.data (theo backend bạn gửi)
+        const token = verifyRes?.data?.data;
+        if (!token) throw new Error("Không nhận được token reset từ verify-otp");
+
+        sessionStorage.setItem(
+          "resetPasswordData",
+          JSON.stringify({ email, token })
+        );
+
+        sessionStorage.removeItem("forgotPasswordData");
+        setTimeout(() => navigate("/reset-password"), 2000);
+        return;
+      }
+
+      // default: registration
+      if (!data) throw new Error("Không tìm thấy dữ liệu đăng ký");
+
+      await client.post("/api/candidateRegister", {
+        name: data.name,
+        email: data.email,
+        password: data.password,
+      });
+
+      sessionStorage.removeItem("registrationData");
+      setMsg({ type: "success", text: "Đăng ký thành công! Hãy đăng nhập." });
+      setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
-      console.error(err);
       setMsg({
         type: "error",
         text:
-          err.response?.data?.message ||
+          err?.response?.data?.message ||
+          err?.message ||
           "Mã OTP không đúng, đã hết hạn hoặc có lỗi khi xử lý.",
       });
+    } finally {
       setLoading(false);
     }
   };
 
   return (
     <div className="otp-page">
-      {/* background decor */}
       <div className="otp-bg">
         <div className="otp-bg-circle otp-bg-circle-1" />
         <div className="otp-bg-circle otp-bg-circle-2" />
@@ -201,7 +230,6 @@ export default function VerifyOtpPage() {
 
       <div className="otp-container">
         <div className="otp-card">
-          {/* Icon */}
           <div className="otp-icon-wrap">
             <div className="otp-icon-glow" />
             <div className="otp-icon-main">
@@ -214,7 +242,6 @@ export default function VerifyOtpPage() {
             </div>
           </div>
 
-          {/* Title */}
           <div className="otp-header">
             <h2>Xác thực bảo mật</h2>
             <p>
@@ -224,7 +251,6 @@ export default function VerifyOtpPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="otp-form">
-            {/* OTP inputs */}
             <div className="otp-input-row">
               {otp.map((digit, index) => (
                 <input
@@ -237,11 +263,11 @@ export default function VerifyOtpPage() {
                   onKeyDown={(e) => handleKeyDown(e, index)}
                   onPaste={handlePaste}
                   className={`otp-input ${digit ? "otp-input-filled" : ""}`}
+                  inputMode="numeric"
                 />
               ))}
             </div>
 
-            {/* Message */}
             {msg && (
               <div
                 className={`otp-alert ${
@@ -257,12 +283,7 @@ export default function VerifyOtpPage() {
               </div>
             )}
 
-            {/* Submit */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="otp-submit-btn"
-            >
+            <button type="submit" disabled={loading} className="otp-submit-btn">
               {loading ? (
                 <>
                   <div className="otp-submit-spinner" />
@@ -276,22 +297,21 @@ export default function VerifyOtpPage() {
               )}
             </button>
 
-            {/* Cancel dưới nút Xác nhận */}
             <button
               type="button"
               onClick={() => navigate(-1)}
               className="otp-cancel-btn"
+              disabled={loading}
             >
               Hủy
             </button>
 
-            {/* Resend */}
             <div className="otp-resend">
               <p>Không nhận được mã?</p>
               <button
                 type="button"
                 onClick={handleResend}
-                disabled={countdown > 0}
+                disabled={countdown > 0 || loading}
                 className={`otp-resend-btn ${
                   countdown > 0 ? "otp-resend-btn-disabled" : ""
                 }`}
