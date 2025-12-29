@@ -1,7 +1,7 @@
 .home-page {
   min-height: calc(100vh - 88px); 
   background: linear-gradient(135deg, #e0f2fe 0%, #eff6ff 40%, #e0f2fe 100%);
-  padding: 24px 0 40px;
+  padding: 0px 0 40px;
 }
 
 .home-shell {
@@ -35,120 +35,210 @@
 }
 
 /* ============================
-   HERO SECTION
+   NEW HERO SECTION (Job Portal Style)
 ============================ */
 .home-hero {
-  text-align: center;
-  padding: 80px 0 50px; /* Tăng padding chút cho thoáng */
+  background: linear-gradient(135deg, #97b6f8 0%, #7c3aed 100%); /* Màu gradient từ ảnh */
+  padding: 80px 0;
+  min-height: 550px;
+  display: flex;
+  align-items: center;
+  color: white;
+  overflow: hidden;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
 }
 
-.home-hero-content {
-  max-width: 800px; /* Thu hẹp lại một chút để chữ không bị dàn trải quá */
+.home-hero-container {
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 0 16px;
+  padding: 0 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 40px;
+}
+
+/* --- BÊN TRÁI --- */
+.home-hero-left {
+  flex: 1;
+  text-align: left;
+}
+
+.hero-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  text-transform: capitalize;
+  opacity: 0.9;
+  margin-bottom: 20px;
+}
+
+.hero-badge .dot {
+  width: 10px;
+  height: 10px;
+  background-color: #f472b6; /* Chấm hồng */
+  border-radius: 50%;
 }
 
 .home-hero-title {
-  font-size: clamp(32px, 4.5vw, 48px); /* Tăng kích thước chữ một chút */
-  font-weight: 800;
-  color: #0f172a;
-  line-height: 1.2;
-  margin-bottom: 24px;
-}
-
-/* CLASS MỚI: Để xuống dòng và giữ màu gradient gốc */
-.home-hero-gradient-text {
-  background: linear-gradient(90deg, #4f46e5, #7c3aed, #22c55e); /* Màu gốc của bạn */
-  -webkit-background-clip: text;
-  color: transparent;
-  display: block; /* SỬA: Xuống dòng */
-  margin-top: 8px; /* Tạo khoảng cách với dòng trên */
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 20px;
+  color: white;
 }
 
 .home-hero-subtitle {
-  font-size: 16px;
-  color: #64748b;
-  max-width: 600px;
-  margin: 0 auto;
-  line-height: 1.6;
+  font-size: 18px;
+  opacity: 0.9;
+  margin-bottom: 35px;
 }
 
-/* --- PHẦN METRICS (SỬA NHIỀU NHẤT) --- */
-.home-hero-metrics {
-  margin-top: 40px;
-  display: flex; /* SỬA: Dùng flexbox thay vì grid để căn giữa 2 thẻ dễ hơn */
-  justify-content: center;
-  gap: 24px;
+.hero-btn-primary {
+  background-color: white;
+  color: #1e293b;
+  padding: 14px 40px;
+  border-radius: 100px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  transition: all 0.3s ease;
 }
 
-.home-hero-metric-item {
-  padding: 16px 24px;
-  /* SỬA UI/UX: Giảm bo góc và làm phẳng */
-  border-radius: 10px; /* Cũ: 18px -> Mới: 10px */
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  /* SỬA: Shadow nhẹ hơn (Flat style) */
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); 
-  min-width: 180px; /* Đảm bảo độ rộng đồng đều */
+.hero-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
 }
 
-/* Giữ nguyên màu chữ gốc */
-.home-hero-metric-big {
-  font-size: 28px;
-  font-weight: 800;
-  color: #2288f3; 
-}
-
-.home-hero-metric-small {
-  margin-top: 4px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #475569;
-}
-
-/* Responsive cho mobile */
-@media (max-width: 640px) {
-  .home-hero-metrics {
-    flex-direction: column; /* Xếp dọc trên mobile */
-    align-items: center;
-  }
-  .home-hero-metric-item {
-    width: 100%;
-    max-width: 280px;
-  }
-}
-
-.home-hero-metrics {
-  margin-top: 40px;
+.hero-user-stats {
+  margin-top: 50px;
   display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.avatar-stack {
+  display: flex;
+}
+
+.avatar-stack img {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  border: 3px solid #7c3aed;
+  margin-right: -15px;
+  background: #eee;
+}
+
+.stats-number {
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.stats-text {
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+/* --- BÊN PHẢI (VISUALS) --- */
+.home-hero-right {
+  flex: 1;
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.image-grid {
+  position: relative;
+  width: 450px;
+  height: 400px;
+}
+/* Container chứa toàn bộ khối ảnh bên phải */
+.hero-image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 500px; /* Chiều cao bắt buộc để các khối con có điểm tựa */
+}
+
+.img-block {
+  position: absolute;
+  border-radius: 30px;
+  overflow: hidden;
+  border-radius: 40px; /* Bo góc lớn như mẫu */
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.img-block img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Khối ảnh chính (Cô gái) */
+.block-blue {
+  width: 320px;
+  height: 340px;
+  background-color: #60a5fa;
+  top: -20px;
+  right: 50px;
+  z-index: 2;
+}
+
+/* Khối ảnh phụ (Bắt tay) */
+.block-yellow {
+  width: 240px;
+  height: 200px;
+  background-color: #fbbf24;
+  bottom: -10px;
+  left: -50px;
+  z-index: 3;
+  border: 0px solid transparent; /* Tạo khoảng hở giữa 2 khối nếu cần */
+}
+
+/* Briefcase Icon floating */
+.floating-icon {
+  position: absolute;
+  top: -50px;
+  right: 0px;
+  width: 80px;
+  height: 80px;
+  background: white;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  flex-wrap: wrap; /* Cho phép xuống dòng nếu màn hình quá bé */
-  gap: 20px;       /* Giảm khoảng cách chút xíu cho gọn (24px -> 20px) */
+  color: #1e293b;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  z-index: 4;
 }
 
-.home-hero-metric-item {
-  padding: 16px 20px;
-  /* Style phẳng & bo góc 10px */
-  border-radius: 10px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-  
-  /* Đảm bảo độ rộng đồng đều cho 3 card */
-  flex: 1; 
-  min-width: 160px; /* Card không bị co quá nhỏ */
-  max-width: 240px; /* Card không bị giãn quá to */
+.decor-sparkle {
+  position: absolute;
+  bottom: 20px;
+  right: 0;
+  font-size: 40px;
+  color: white;
+  opacity: 0.8;
 }
 
-/* Responsive cho mobile */
-@media (max-width: 640px) {
-  .home-hero-metrics {
-    flex-direction: column; /* Xếp dọc trên điện thoại */
-    align-items: center;
+/* Responsive cho Mobile */
+@media (max-width: 992px) {
+  .home-hero-container {
+    flex-direction: column;
+    text-align: center;
   }
-  .home-hero-metric-item {
-    width: 100%;
-    max-width: 300px; /* Trên mobile cho card rộng ra chút */
+  .home-hero-left {
+    text-align: center;
+  }
+  .hero-badge { justify-content: center; }
+  .hero-user-stats { justify-content: center; }
+  .home-hero-right {
+    margin-top: 50px;
+    justify-content: center;
   }
 }
 /* =================================================================
