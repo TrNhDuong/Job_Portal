@@ -7,13 +7,18 @@ const applicationSchema = new mongoose.Schema(
       ref: 'Candidate',
       required: true,
     },
+    contactEmail: {
+      type: String,
+      required: true,
+    },
     jobId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'JobPost',
       required: true,
     },
     CV_url: {
-      url: String,
+      type: String,
+      required: true,
     },
     appliedDate: {
       type: Date,
@@ -22,13 +27,15 @@ const applicationSchema = new mongoose.Schema(
     label: {
       type: String,
       default: 'New',
-      enum: ['New', 'Viewed', 'Interviewing', 'Rejected', 'Hired'],
+      enum: ['New', 'Viewed', 'Shortlisted', 'Interviewing', 'Offered', 'Rejected', 'Hired'],
     },
-  },
-  { timestamps: true }
+  }
 );
 
-// Không tạo index cho jobId hoặc candidateId để tránh chi phí bảo trì
+applicationSchema.index(
+    { candidateId: 1, jobId: 1 },
+    { unique: true }
+);
 
 const Application = mongoose.model('Application', applicationSchema);
 

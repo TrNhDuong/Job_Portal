@@ -41,6 +41,10 @@ const candidateSchema = new mongoose.Schema({
             uploadedAt: { type: Date, default: Date.now }
         }
     ],
+    timeStamp: {
+        type: Date,
+        default: Date.now,
+    },
 });
 
 const Candidate = mongoose.model('Candidate', candidateSchema);

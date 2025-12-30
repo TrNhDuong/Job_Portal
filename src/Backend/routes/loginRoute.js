@@ -42,7 +42,7 @@ router.post("/loginEmployer", async (req, res) => {
     const { email, password } = req.body;
     // Handle login logic here
     const employerPass = await EmployerRepository.getHashedPassword(email);
-
+    console.log(email, password);
     // For demonstration, we'll just return a success message
     if (!employerPass.success) {
         return res.status(404).json({ 

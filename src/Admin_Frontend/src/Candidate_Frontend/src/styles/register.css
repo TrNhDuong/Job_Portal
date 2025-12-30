@@ -1,0 +1,304 @@
+
+.register-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  background: linear-gradient(135deg, #e0f2fe 0%, #f9fafb 45%, #ecfeff 100%);
+  color: #0f172a;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+.register-wrapper {
+  width: 100%;
+  max-width: 560px;
+  position: relative;
+}
+
+/* Badge nhỏ phía trên card */
+.register-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(148, 163, 184, 0.3);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+  margin: 0 auto;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.register-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: #22c55e;
+}
+
+/* Card chính */
+.register-card {
+  margin-top: 10px;
+  border-radius: 28px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.2);
+  padding: 32px 32px 26px;
+}
+
+/* Header */
+.register-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.register-title {
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 600;
+  color: #020617;
+  margin: 0;
+}
+
+.register-title-gradient {
+  background: linear-gradient(90deg, #0ea5e9, #6366f1, #22c55e);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* Form */
+.register-form {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.register-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.register-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.register-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #0f172a;
+}
+
+.register-hint {
+  font-size: 11px;
+  color: #64748b;
+}
+
+/* Input row */
+.register-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 56px; /* CHIỀU CAO Ô NHẬP */
+  border-radius: 999px;
+  border: 1px solid #cbd5f5;
+  padding: 0 16px;
+  background: #ffffff;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease,
+    transform 0.12s ease;
+}
+
+.register-input-row:focus-within {
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.18);
+  transform: translateY(-1px);
+}
+
+.register-input-icon {
+  width: 20px;
+  height: 20px;
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+.register-input-control {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  color: #0f172a;
+}
+
+.register-input-control::placeholder {
+  color: #94a3b8;
+}
+
+/* Eye button */
+.register-eye-btn {
+  border: none;
+  outline: none;
+  background: transparent;
+  border-radius: 999px;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.register-eye-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.register-eye-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Checkbox & điều khoản */
+.register-checkbox-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+.register-checkbox {
+  margin-top: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1px solid #cbd5e1;
+  accent-color: #0ea5e9;
+}
+
+.register-checkbox-label {
+  font-size: 13px;
+  color: #1f2937;
+}
+
+.register-link {
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: none;
+  color: #0369a1;
+  font-size: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+/* Message */
+.register-message {
+  font-size: 13px;
+  border-radius: 12px;
+  padding: 8px 12px;
+  border: 1px solid transparent;
+}
+
+.register-message-error {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.register-message-success {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+  color: #166534;
+}
+
+/* Submit button */
+.register-submit-btn {
+  margin-top: 4px;
+  width: 100%;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  border-radius: 999px;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  background-image: linear-gradient(90deg, #0284c7, #4f46e5, #10b981);
+  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.35);
+  transition: transform 0.12s ease, box-shadow 0.12s ease,
+    filter 0.15s ease;
+}
+
+.register-submit-btn:hover {
+  filter: brightness(1.05);
+  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.45);
+}
+
+.register-submit-btn:active {
+  transform: translateY(1px) scale(0.99);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+}
+
+.register-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Footer */
+.register-footer {
+  margin-top: 18px;
+  text-align: center;
+  font-size: 14px;
+  color: #4b5563;
+}
+
+.register-footer-link {
+  color: #0369a1;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+@media (max-width: 480px) {
+  .register-card {
+    padding: 24px 20px 22px;
+    border-radius: 22px;
+  }
+
+  .register-input-row {
+    height: 52px;
+  }
+}
+
+.register-back-btn-wrapper {
+  margin-bottom: 12px;
+}
+
+.register-back-btn {
+  background: none;
+  border: none;
+  color: #0369a1;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s ease;
+}
+
+.register-back-btn:hover {
+  color: #0c4a6e;
+}
