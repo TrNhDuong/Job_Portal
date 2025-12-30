@@ -58,7 +58,29 @@ export default function Navbar() {
 
             {user ? (
               <Link to="/dashboard" className="navbar-user">
-                {/* ... nội dung user profile */}
+                <div className="navbar-user-avatar-wrap">
+                  {avatarUrl ? (
+                    <img
+                      src={avatarUrl}
+                      alt={user.name || "avatar"}
+                      className="navbar-user-avatar-img"
+                    />
+                  ) : (
+                    <div className="navbar-user-avatar-fallback">
+                      <span className="text-xs font-semibold">
+                        {initials}
+                      </span>
+                    </div>
+                  )}
+                  <span className="navbar-user-status-dot" />
+                </div>
+
+                <div className="navbar-user-text">
+                  <span className="navbar-user-name">
+                    {user.name || "Tài khoản"}
+                  </span>
+                  <span className="navbar-user-sub">Dashboard</span>
+                </div>
               </Link>
             ) : (
               <div className="navbar-auth-guest">

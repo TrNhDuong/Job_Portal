@@ -1,15 +1,30 @@
 // src/Home/components/JobDetailModal.jsx
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { MapPin, Briefcase, DollarSign, Clock, X, Heart, Building2 } from "lucide-react";
+import { 
+  MapPin, 
+  Briefcase, 
+  DollarSign, 
+  Clock, 
+  X, 
+  Heart, 
+  Building2, 
+  AlertTriangle // 1. Import Icon Báo cáo
+} from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+
+// 2. Import Modal Báo Cáo (Đảm bảo đường dẫn đúng)
+import ReportJobModal from "../../components/ReportJobModal"; 
 
 export default function JobDetailModal({ job, onClose, onSave, isSaved }) {
   const { user } = useAuth();
   const safeJob = job || {};
   const jobId = safeJob._id;
 
-  // 1. Khóa cuộn trang nền
+  // 3. State quản lý hiển thị Modal Báo Cáo
+  const [showReportModal, setShowReportModal] = useState(false);
+
+  // Khóa cuộn trang nền
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => {
@@ -18,11 +33,24 @@ export default function JobDetailModal({ job, onClose, onSave, isSaved }) {
   }, []);
 
   const handleBackdropClick = (e) => {
-    if (e.target === e.currentTarget) onClose();
+    // Nếu click vào nền đen VÀ không phải đang mở report modal thì đóng job detail
+    if (e.target === e.currentTarget && !showReportModal) {
+        onClose();
+    }
   };
 
   const handleSaveClick = () => {
     if (onSave) onSave(safeJob);
+  };
+
+  // 4. Hàm xử lý click nút Báo cáo
+  const handleReportClick = () => {
+    if (!user) {
+        alert("Vui lòng đăng nhập để báo cáo.");
+        // Chuyển hướng login nếu cần, ở đây dùng alert đơn giản vì đang trong modal
+        return; 
+    }
+    setShowReportModal(true);
   };
 
   // --- LOGIC XỬ LÝ DỮ LIỆU ---
@@ -65,12 +93,28 @@ export default function JobDetailModal({ job, onClose, onSave, isSaved }) {
 
   return (
     <div className="home-modal-backdrop" onClick={handleBackdropClick}>
+      
+      {/* Thêm onClick stopPropagation để click vào modal không đóng nó.
+         Đảm bảo z-index của modal này thấp hơn z-index của ReportModal trong CSS
+      */}
       <div className="home-job-modal" onClick={(e) => e.stopPropagation()}>
         
-        {/* Close Button */}
-        <button className="home-modal-close" onClick={onClose}>
-          <X size={20} />
-        </button>
+        {/* Nút Close & Report ở góc phải */}
+        <div className="home-modal-actions">
+            {/* 5. Nút Báo cáo */}
+            <button 
+                className="home-modal-icon-btn report" 
+                onClick={handleReportClick}
+                title="Báo cáo tin này"
+            >
+                <AlertTriangle size={18} />
+            </button>
+
+            {/* Nút Đóng */}
+            <button className="home-modal-icon-btn close" onClick={onClose}>
+                <X size={20} />
+            </button>
+        </div>
 
         {/* --- HEADER --- */}
         <div className="home-job-modal-header">
@@ -94,7 +138,7 @@ export default function JobDetailModal({ job, onClose, onSave, isSaved }) {
           </div>
         </div>
 
-        {/* --- GRID INFO (Đã bỏ Số lượng ứng tuyển) --- */}
+        {/* --- GRID INFO --- */}
         <div className="home-job-modal-grid">
           {/* Mức lương */}
           <div className="home-job-modal-item">
@@ -149,7 +193,7 @@ export default function JobDetailModal({ job, onClose, onSave, isSaved }) {
             />
           </div>
 
-          {/* 2. Yêu cầu ứng viên (LUÔN HIỆN) */}
+          {/* 2. Yêu cầu ứng viên */}
           <div className="home-job-modal-section">
             <h3 className="home-job-modal-subtitle">Yêu cầu ứng viên</h3>
             <div 
@@ -160,7 +204,7 @@ export default function JobDetailModal({ job, onClose, onSave, isSaved }) {
             />
           </div>
 
-          {/* 3. Quyền lợi (LUÔN HIỆN) */}
+          {/* 3. Quyền lợi */}
           <div className="home-job-modal-section">
             <h3 className="home-job-modal-subtitle">Quyền lợi & Chế độ</h3>
             <div 
@@ -211,6 +255,15 @@ export default function JobDetailModal({ job, onClose, onSave, isSaved }) {
         </div>
 
       </div>
+
+      {/* 6. Render Report Modal đè lên trên */}
+      {showReportModal && (
+        <ReportJobModal 
+            job={safeJob} 
+            onClose={() => setShowReportModal(false)} 
+        />
+      )}
+
     </div>
   );
 }

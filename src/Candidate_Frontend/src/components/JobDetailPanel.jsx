@@ -1,3 +1,4 @@
+// src/components/JobDetailPanel.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import {
   X,
@@ -8,10 +9,10 @@ import {
   Building2,
   ExternalLink,
   Clock,
-  GraduationCap
+  AlertTriangle // Icon báo cáo
 } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
-import "../styles/job-search.css"; // Đảm bảo bạn đã import file CSS này
+import "../styles/job-search.css";
 
 import { useAuth } from "../context/AuthContext";
 import {
@@ -19,20 +20,25 @@ import {
   removeSaveJob as apiRemoveSaveJob,
 } from "../api/candidate";
 
-// --- HÀM FORMAT LƯƠNG (Đồng bộ với JobListings) ---
+// Import Modal Báo Cáo
+import ReportJobModal from "./ReportJobModal";
+
+// --- HELPERS ---
+
+// 1. Format Lương
 const formatSalary = (salary) => {
   if (!salary) return "Thỏa thuận";
   if (typeof salary === "string") return salary;
 
-  // Xử lý object lương
+  // Xử lý object lương { minSalary, maxSalary, currency }
   if (typeof salary === "object") {
     const { minSalary, maxSalary, currency } = salary || {};
     
-    // Nếu là VND hoặc không có currency -> Quy đổi ra Triệu
+    // Nếu là VND hoặc không có currency -> Quy đổi ra "Triệu"
     if (!currency || currency === "VND") {
       const toMillion = (num) => {
         if (!num) return 0;
-        // Chia cho 1 triệu, giữ tối đa 1 số thập phân (ví dụ: 10.5)
+        // Chia 1 triệu, giữ tối đa 1 số thập phân
         return (num / 1000000).toLocaleString('vi-VN', { maximumFractionDigits: 1 });
       };
 
@@ -40,7 +46,7 @@ const formatSalary = (salary) => {
       if (minSalary) return `Từ ${toMillion(minSalary)} triệu`;
       if (maxSalary) return `Tối đa ${toMillion(maxSalary)} triệu`;
     } 
-    // Nếu là ngoại tệ -> Giữ nguyên
+    // Nếu là ngoại tệ -> Giữ nguyên số và đơn vị
     else {
       const formatNum = (num) => num.toLocaleString('en-US');
       if (minSalary && maxSalary) return `${formatNum(minSalary)} - ${formatNum(maxSalary)} ${currency}`;
@@ -49,7 +55,7 @@ const formatSalary = (salary) => {
     }
   }
   
-  // Fallback số thường
+  // Fallback nếu database lưu số thường (VND)
   if (typeof salary === "number") {
      return (salary / 1000000).toLocaleString('vi-VN', { maximumFractionDigits: 1 }) + " triệu";
   }
@@ -57,11 +63,13 @@ const formatSalary = (salary) => {
   return "Thỏa thuận";
 };
 
-// Hàm format ngày
+// 2. Format Ngày
 const formatDate = (dateString) => {
   if (!dateString) return "Không thời hạn";
   return new Date(dateString).toLocaleDateString("vi-VN");
 };
+
+// --- COMPONENT CHÍNH ---
 
 export default function JobDetailPanel({ job, onClose }) {
   const navigate = useNavigate();
@@ -69,32 +77,36 @@ export default function JobDetailPanel({ job, onClose }) {
 
   const [isSaved, setIsSaved] = useState(false);
   const [saving, setSaving] = useState(false);
+  
+  // State điều khiển modal báo cáo
+  const [showReportModal, setShowReportModal] = useState(false);
 
   const jobId = useMemo(() => String(job?._id || ""), [job?._id]);
 
-  // --- LOGIC DỮ LIỆU ---
+  // --- LOGIC DỮ LIỆU --- //
 
-  // 1. Logo
+  // Logo: Ưu tiên logo job -> logo url -> placeholder
   const companyInitial = (job?.company && job.company.charAt(0)) || "?";
   const placeholderLogo = `https://ui-avatars.com/api/?name=${encodeURIComponent(companyInitial)}&background=f1f5f9&color=1e293b`;
   const logoSrc = (job?.logo && job.logo.url) || job?.logoUrl || placeholderLogo;
 
-  // 2. Link công ty
+  // Link đến trang Employer
   const companyIdentifier = job?.companyEmail || job?.company || "";
   const companyLink = `/employer/${encodeURIComponent(companyIdentifier)}`;
 
-  // 3. Địa chỉ
+  // Địa chỉ đầy đủ
   const fullAddress = job?.detailedAddress 
     ? `${job.detailedAddress}, ${job.location}`
     : job?.location || "Chưa cập nhật";
 
-  // 4. Ngành nghề (Custom Major)
+  // Ngành nghề hiển thị
   const displayMajor = job?.major === 'Other' && job?.customMajor 
     ? job.customMajor 
     : job?.major;
 
-  // --- EFFECTS ---
+  // --- EFFECTS --- //
   useEffect(() => {
+    // Kiểm tra job này đã được user lưu chưa
     if (user && Array.isArray(user.listSaveJobs) && jobId) {
       setIsSaved(user.listSaveJobs.map(String).includes(jobId));
     } else {
@@ -102,7 +114,8 @@ export default function JobDetailPanel({ job, onClose }) {
     }
   }, [user, jobId]);
 
-  // --- HANDLERS ---
+  // --- HANDLERS --- //
+
   const handleApply = () => {
     if (!user) {
       alert("Bạn cần đăng nhập để ứng tuyển.");
@@ -113,7 +126,10 @@ export default function JobDetailPanel({ job, onClose }) {
   };
 
   const handleSaveJob = async () => {
-    if (!user) return navigate("/login");
+    if (!user) {
+        alert("Bạn cần đăng nhập để lưu tin.");
+        return navigate("/login");
+    }
     if (!jobId) return;
 
     try {
@@ -126,26 +142,49 @@ export default function JobDetailPanel({ job, onClose }) {
         setIsSaved(true);
       }
     } catch (err) {
-      console.error(err);
+      console.error("Lỗi khi lưu job:", err);
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleReportClick = () => {
+    if (!user) {
+        alert("Vui lòng đăng nhập để báo cáo.");
+        return navigate("/login");
+    }
+    setShowReportModal(true);
   };
 
   if (!job) return null;
 
   return (
     <div className="job-detail">
-      {/* --- HEADER --- */}
-      <div className="job-detail-header">
-        <button
-          type="button"
-          onClick={onClose}
-          className="job-detail-close"
-          aria-label="Đóng"
-        >
-          <X size={20} />
-        </button>
+      {/* ================= HEADER ================= */}
+      <div className="job-detail-header relative">
+        
+        {/* Cụm nút hành động góc phải */}
+        <div className="absolute top-5 right-5 flex gap-2">
+            {/* Nút Báo cáo */}
+            <button 
+                type="button"
+                onClick={handleReportClick}
+                className="job-detail-icon-btn report"
+                title="Báo cáo tin này"
+            >
+                <AlertTriangle size={18} />
+            </button>
+
+            {/* Nút Đóng */}
+            <button
+                type="button"
+                onClick={onClose}
+                className="job-detail-icon-btn close"
+                aria-label="Đóng"
+            >
+                <X size={20} />
+            </button>
+        </div>
 
         <div className="job-detail-header-content">
           <div className="job-detail-logo-wrap">
@@ -158,6 +197,7 @@ export default function JobDetailPanel({ job, onClose }) {
           </div>
           <div>
             <h2 className="job-detail-title">{job.title}</h2>
+            
             <Link to={companyLink} className="job-detail-company-link">
               <Building2 size={14} />
               {job.company}
@@ -167,10 +207,10 @@ export default function JobDetailPanel({ job, onClose }) {
         </div>
       </div>
 
-      {/* --- BODY --- */}
+      {/* ================= BODY ================= */}
       <div className="job-detail-body">
         
-        {/* Grid thông tin chính */}
+        {/* 1. Grid thông tin tóm tắt */}
         <div className="job-detail-grid">
           {/* Mức lương */}
           <div className="job-detail-info-card">
@@ -213,18 +253,20 @@ export default function JobDetailPanel({ job, onClose }) {
           </div>
         </div>
 
-        {/* --- NỘI DUNG CHI TIẾT --- */}
-
-        {/* 1. Mô tả công việc */}
+        {/* 2. Nội dung chi tiết (HTML) */}
+        
+        {/* Mô tả */}
         <section className="job-detail-section">
           <h3 className="job-detail-section-title">Mô tả công việc</h3>
           <div
             className="job-detail-html-content"
-            dangerouslySetInnerHTML={{ __html: job.description || "<p>Chưa cập nhật thông tin.</p>" }}
+            dangerouslySetInnerHTML={{ 
+                __html: job.description || "<p>Chưa cập nhật thông tin.</p>" 
+            }}
           />
         </section>
 
-        {/* 2. Yêu cầu ứng viên (Luôn hiện để đồng bộ UI) */}
+        {/* Yêu cầu */}
         <section className="job-detail-section">
           <h3 className="job-detail-section-title">Yêu cầu ứng viên</h3>
           <div
@@ -235,7 +277,7 @@ export default function JobDetailPanel({ job, onClose }) {
           />
         </section>
 
-        {/* 3. Quyền lợi (Luôn hiện) */}
+        {/* Quyền lợi */}
         <section className="job-detail-section">
           <h3 className="job-detail-section-title">Quyền lợi & Chế độ</h3>
           <div
@@ -248,23 +290,23 @@ export default function JobDetailPanel({ job, onClose }) {
 
         <hr className="job-detail-divider" />
 
-        {/* Tags bổ sung */}
+        {/* Tags */}
         <div className="job-detail-tags">
            {job.jobType && <span className="job-detail-tag">{job.jobType}</span>}
            {job.degree && <span className="job-detail-tag">{job.degree}</span>}
            {displayMajor && <span className="job-detail-tag">{displayMajor}</span>}
         </div>
 
-        {/* Địa chỉ chi tiết */}
+        {/* Địa chỉ chi tiết (nếu có) */}
         {job.detailedAddress && (
            <p className="job-detail-detail-addr">
-              <strong>Địa chỉ cụ thể:</strong> {job.detailedAddress}
+             <strong>Địa chỉ cụ thể:</strong> {job.detailedAddress}
            </p>
         )}
 
       </div>
 
-      {/* --- FOOTER --- */}
+      {/* ================= FOOTER ================= */}
       <div className="job-detail-footer">
         <button
           type="button"
@@ -284,6 +326,15 @@ export default function JobDetailPanel({ job, onClose }) {
           {saving ? "..." : (isSaved ? "Đã lưu" : "Lưu tin")}
         </button>
       </div>
+
+      {/* ================= REPORT MODAL ================= */}
+      {/* Hiển thị đè lên trên Panel hiện tại */}
+      {showReportModal && (
+        <ReportJobModal 
+            job={job} 
+            onClose={() => setShowReportModal(false)} 
+        />
+      )}
     </div>
   );
 }

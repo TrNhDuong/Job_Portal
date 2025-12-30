@@ -1267,3 +1267,35 @@
   background: #eff6ff;
   border: 1px solid #dbeafe;
 }
+
+/* Trong src/styles/job-search.css */
+
+.job-detail-icon-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: #f1f5f9;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+/* Style cho nút Close */
+.job-detail-icon-btn.close:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+/* Style riêng cho nút Report */
+.job-detail-icon-btn.report {
+  background: #fff1f2; /* Nền đỏ rất nhạt */
+  color: #f87171;      /* Icon đỏ nhạt */
+}
+.job-detail-icon-btn.report:hover {
+  background: #fee2e2;
+  color: #dc2626;      /* Icon đỏ đậm */
+}

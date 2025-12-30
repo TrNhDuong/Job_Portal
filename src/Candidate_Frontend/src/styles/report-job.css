@@ -1,0 +1,174 @@
+/* src/styles/report-job.css */
+
+/* Overlay phủ toàn màn hình */
+.report-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6); /* Nền đen mờ */
+  backdrop-filter: blur(4px); /* Hiệu ứng kính mờ */
+  z-index: 9999; /* Đảm bảo nó nằm trên cùng (cao hơn cả JobDetailPanel) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Card nội dung */
+.report-modal-card {
+  width: 100%;
+  max-width: 500px;
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.2);
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Nút đóng góc phải */
+.report-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: none;
+  background: #f1f5f9;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.report-close-btn:hover {
+  background: #e2e8f0;
+  color: #ef4444;
+}
+
+/* Các style cũ (Header, Form, Options...) giữ nguyên nhưng tinh chỉnh padding */
+.report-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 24px;
+  padding-right: 30px; /* Tránh bị nút close đè */
+}
+
+.report-icon-wrapper {
+  width: 44px;
+  height: 44px;
+  background: #fef2f2;
+  color: #ef4444;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.report-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.report-subtitle {
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+/* Options List */
+.report-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.report-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.report-option:hover { background: #f8fafc; }
+.report-option.selected {
+  background: #fef2f2;
+  border-color: #fca5a5;
+  color: #b91c1c;
+}
+.report-option.selected .report-option-icon { color: #dc2626; }
+.report-option-icon { color: #94a3b8; display: flex; }
+.report-option-text { font-weight: 500; font-size: 14px; }
+
+/* Textarea */
+.report-textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  font-family: inherit;
+  font-size: 14px;
+  margin-top: 8px;
+  outline: none;
+}
+.report-textarea:focus { border-color: #ef4444; }
+
+/* Actions */
+.report-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.report-btn {
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.report-btn.ghost { background: transparent; color: #64748b; }
+.report-btn.ghost:hover { background: #f1f5f9; }
+.report-btn.danger { background: #ef4444; color: white; }
+.report-btn.danger:hover { background: #dc2626; }
+.report-btn.danger:disabled { opacity: 0.6; cursor: not-allowed; }
+.report-btn.primary { background: #2563eb; color: white; }
+
+/* Success View */
+.report-success-view { text-align: center; padding: 20px 0; }
+.report-success-icon { 
+  width: 70px; height: 70px; 
+  background: #dcfce7; color: #16a34a; 
+  border-radius: 50%; 
+  display: grid; place-items: center; 
+  margin: 0 auto 16px;
+}
+.report-success-view h2 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+.report-success-view p { color: #64748b; margin-bottom: 24px; font-size: 14px; }
+
+/* Animations */
+.animate-zoom-in { animation: zoomIn 0.2s ease-out; }
+.animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
+
+@keyframes zoomIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}

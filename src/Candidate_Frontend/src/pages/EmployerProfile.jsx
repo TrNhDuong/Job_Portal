@@ -6,41 +6,63 @@ import {
   Globe,
   MapPin,
   Users,
-  Mail,
+  Mail, 
   Phone,
   Share2,
   Copy,
   Info,
   LayoutList,
-  Briefcase,
   Bookmark,
   DollarSign,
+  Briefcase
 } from "lucide-react";
 
-// --- THAY ĐỔI 1: Import Modal mới ---
+// Import Modal hiển thị chi tiết (đã có nút report bên trong modal này)
 import JobDetailModal from "../Home/components/JobDetailModal"; 
 
 import "../styles/employer-profile.css";
 
-// ... (Giữ nguyên phần Helper formatSalary và EmployerJobCard cũ) ...
+// --- CẬP NHẬT: Logic hiển thị lương ra "Triệu" ---
 function formatSalary(salary) {
   if (!salary) return "Thỏa thuận";
   if (typeof salary === "string") return salary;
-  if (typeof salary === "number") return salary.toString();
+
+  // Trường hợp salary là Object { min, max, currency }
   if (typeof salary === "object") {
     const { minSalary, maxSalary, currency } = salary || {};
-    const curr = currency || "";
-    if (minSalary && maxSalary) return `${minSalary} - ${maxSalary} ${curr}`.trim();
-    if (minSalary) return `Từ ${minSalary} ${curr}`.trim();
-    if (maxSalary) return `Tối đa ${maxSalary} ${curr}`.trim();
+    
+    // Nếu là VND hoặc không có đơn vị -> Quy đổi ra Triệu
+    if (!currency || currency === "VND") {
+      const toMillion = (num) => {
+        if (!num) return 0;
+        // Chia cho 1 triệu, giữ tối đa 1 số thập phân (ví dụ: 10.5)
+        return (num / 1000000).toLocaleString('vi-VN', { maximumFractionDigits: 1 });
+      };
+
+      if (minSalary && maxSalary) return `${toMillion(minSalary)} - ${toMillion(maxSalary)} triệu`;
+      if (minSalary) return `Từ ${toMillion(minSalary)} triệu`;
+      if (maxSalary) return `Tối đa ${toMillion(maxSalary)} triệu`;
+    } 
+    // Nếu là ngoại tệ (USD, EUR...) -> Giữ nguyên số và đơn vị
+    else {
+      const formatNum = (num) => num.toLocaleString('en-US');
+      if (minSalary && maxSalary) return `${formatNum(minSalary)} - ${formatNum(maxSalary)} ${currency}`;
+      if (minSalary) return `Từ ${formatNum(minSalary)} ${currency}`;
+      if (maxSalary) return `Tối đa ${formatNum(maxSalary)} ${currency}`;
+    }
   }
+  
+  // Trường hợp salary là số nguyên đơn thuần (fallback)
+  if (typeof salary === "number") {
+     return (salary / 1000000).toLocaleString('vi-VN', { maximumFractionDigits: 1 }) + " triệu";
+  }
+
   return "Thỏa thuận";
 }
 
 function EmployerJobCard({ job, logoSrc, companyName, onOpen, saved, onToggleSave }) {
-  // ... (Giữ nguyên code EmployerJobCard của bạn) ...
   const companyInitial = (companyName && companyName.charAt(0)) || "?";
-  const placeholderLogo = `https://ui-avatars.com/api/?name=${companyInitial}&background=random&color=fff`;
+  const placeholderLogo = `https://ui-avatars.com/api/?name=${encodeURIComponent(companyInitial)}&background=random&color=fff`;
 
   const handleBookmark = (e) => {
     e.stopPropagation();
@@ -60,6 +82,7 @@ function EmployerJobCard({ job, logoSrc, companyName, onOpen, saved, onToggleSav
             src={logoSrc || job.logoUrl || placeholderLogo}
             alt={companyName || job.company || "Company Logo"}
             className="job-card-logo"
+            onError={(e) => e.target.src = placeholderLogo}
           />
         </div>
         <div className="job-card-main">
@@ -72,12 +95,13 @@ function EmployerJobCard({ job, logoSrc, companyName, onOpen, saved, onToggleSav
             </div>
             <div className="job-card-meta">
               <DollarSign className="job-card-meta-icon" />
-              <span>{formatSalary(job.salary)}</span>
+              {/* Sử dụng hàm formatSalary mới */}
+              <span className="text-green-600 font-semibold">{formatSalary(job.salary)}</span>
             </div>
           </div>
           <div className="job-card-pill-row">
-            <span className="job-card-pill">{job.jobType || "N/A"}</span>
-            <span className="job-card-pill job-card-pill--outline">{job.major || "N/A"}</span>
+            <span className="job-card-pill">{job.jobType || "Full-time"}</span>
+            <span className="job-card-pill job-card-pill--outline">{job.major || "Khác"}</span>
           </div>
         </div>
         <button
@@ -120,7 +144,6 @@ export default function EmployerProfilePage() {
   }, [savedJobIds]);
 
   // ===== Fetch Logic =====
-  // ... (Giữ nguyên logic useEffect fetchEmployer và fetchJobs của bạn) ...
   useEffect(() => {
     const fetchEmployer = async () => {
       setLoading(true);
@@ -159,7 +182,6 @@ export default function EmployerProfilePage() {
     fetchEmployer();
   }, [email]);
 
-  // ... (Giữ nguyên handleCopy, toggleSaveJob, isJobSaved) ...
   const profileUrl = useMemo(() => (typeof window !== "undefined" ? window.location.href : ""), []);
   
   const handleCopy = async () => {
@@ -210,17 +232,17 @@ export default function EmployerProfilePage() {
 
   return (
     <div className="empfb-page">
-      {/* ... (Giữ nguyên phần COVER, HEADER, TABS, SIDEBAR của bạn) ... */}
       
+      {/* COVER */}
       <div className="empfb-cover">
         <img className="empfb-cover-img" src={coverSrc} alt="cover" />
         <div className="empfb-cover-overlay" />
       </div>
 
+      {/* HEADER */}
       <div className="empfb-container empfb-header">
-         {/* ... Code Header cũ của bạn ... */}
          <div className="empfb-header-card">
-           <div className="empfb-avatar"><img src={logoSrc} alt={companyName} /></div>
+           <div className="empfb-avatar"><img src={logoSrc} alt={companyName} onError={(e) => e.target.src="/logo-placeholder.png"} /></div>
            <div className="empfb-header-main">
              <div className="empfb-title-row">
                <h1 className="empfb-name">{companyName}</h1>
@@ -250,9 +272,12 @@ export default function EmployerProfilePage() {
          </div>
       </div>
 
+      {/* BODY */}
       <div className="empfb-container empfb-body">
         <div className="empfb-grid">
+          
           <main className="empfb-left">
+            {/* Tab Giới thiệu */}
             {activeTab === "about" && (
               <section className="empfb-card">
                 <header className="empfb-card-header"><h2>Giới thiệu chung</h2></header>
@@ -271,6 +296,7 @@ export default function EmployerProfilePage() {
               </section>
             )}
 
+            {/* Tab Việc làm */}
             {activeTab === "jobs" && (
               <section className="empfb-card">
                 <header className="empfb-card-header">
@@ -306,8 +332,8 @@ export default function EmployerProfilePage() {
             )}
           </main>
 
+          {/* SIDEBAR RIGHT */}
           <aside className="empfb-right">
-             {/* ... Code Sidebar giữ nguyên ... */}
              <section className="empfb-card empfb-sticky">
               <header className="empfb-card-header"><h2>Thông tin liên hệ</h2></header>
               <div className="empfb-card-body empfb-intro">
@@ -320,7 +346,7 @@ export default function EmployerProfilePage() {
         </div>
       </div>
 
-      {/* --- THAY ĐỔI 2: Render Modal mới --- */}
+      {/* RENDER MODAL MỚI KHI CLICK VÀO JOB */}
       {selectedJob && (
         <JobDetailModal
           job={selectedJob}
