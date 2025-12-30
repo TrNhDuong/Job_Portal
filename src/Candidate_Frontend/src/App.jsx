@@ -16,11 +16,11 @@ import JobSearchPage from "./pages/JobSearchPage.jsx";
 import AccountSettingsLayout from "./pages/settings/AccountSettingsLayout.jsx";
 import ProfileSettings from "./pages/settings/ProfileSettings.jsx";
 import PasswordSettings from "./pages/settings/PasswordSettings.jsx";
-import SecuritySettings from "./pages/settings/SecuritySettings.jsx";
 import MyJobsPage from "./pages/MyJobsPage.jsx";
 import ForgotPasswordCandidate from "./pages/ForgotPassword";
 import ResetPasswordPage from "./pages/ResetPasswordPage.jsx";
 import EmployerProfilePage from "./pages/EmployerProfile.jsx";
+
 function App() {
   const location = useLocation();
   const hideNavbarRoutes = ["/register", "/login", "/verify-otp", "/forgot-password", "/reset-password"];
@@ -57,7 +57,6 @@ function App() {
                 <Route index element={<ProfileSettings />} />
                 <Route path="profile" element={<ProfileSettings />} />
                 <Route path="password" element={<PasswordSettings />} />
-                <Route path="security" element={<SecuritySettings />} />
               </Route>
             </Route>
           </Routes>

@@ -1,22 +1,42 @@
-// src/components/JobListings.jsx
 import React from "react";
 import useJobs from "../hooks/useJobs";
 import { Bookmark, MapPin, DollarSign, Briefcase } from "lucide-react";
 
-// ... (giữ nguyên hàm formatSalary và component JobCard)
+// --- HÀM FORMAT LƯƠNG (ĐÃ SỬA: Đơn vị Triệu) ---
 function formatSalary(salary) {
   if (!salary) return "Thỏa thuận";
   if (typeof salary === "string") return salary;
-  if (typeof salary === "number") return salary.toString();
 
+  // Nếu salary là object { minSalary, maxSalary, currency }
   if (typeof salary === "object") {
     const { minSalary, maxSalary, currency } = salary || {};
-    const curr = currency || "";
+    
+    // Nếu là VND hoặc không có currency -> Quy đổi ra Triệu
+    if (!currency || currency === "VND") {
+      const toMillion = (num) => {
+        if (!num) return 0;
+        // Chia cho 1 triệu và format số (ví dụ: 10.5)
+        return (num / 1000000).toLocaleString('vi-VN', { maximumFractionDigits: 1 });
+      };
 
-    if (minSalary && maxSalary) return `${minSalary} - ${maxSalary} ${curr}`.trim();
-    if (minSalary) return `Từ ${minSalary} ${curr}`.trim();
-    if (maxSalary) return `Tối đa ${maxSalary} ${curr}`.trim();
+      if (minSalary && maxSalary) return `${toMillion(minSalary)} - ${toMillion(maxSalary)} triệu`;
+      if (minSalary) return `Từ ${toMillion(minSalary)} triệu`;
+      if (maxSalary) return `Tối đa ${toMillion(maxSalary)} triệu`;
+    } 
+    // Nếu là ngoại tệ (USD...) -> Giữ nguyên số và thêm đơn vị tiền tệ
+    else {
+      const formatNum = (num) => num.toLocaleString('en-US');
+      if (minSalary && maxSalary) return `${formatNum(minSalary)} - ${formatNum(maxSalary)} ${currency}`;
+      if (minSalary) return `Từ ${formatNum(minSalary)} ${currency}`;
+      if (maxSalary) return `Tối đa ${formatNum(maxSalary)} ${currency}`;
+    }
   }
+
+  // Fallback: Nếu salary là số đơn thuần (giả định là VND)
+  if (typeof salary === "number") {
+    return (salary / 1000000).toLocaleString('vi-VN', { maximumFractionDigits: 1 }) + " triệu";
+  }
+
   return "Thỏa thuận";
 }
 
@@ -43,6 +63,7 @@ function JobCard({ job, onSelectJob, isSelected }) {
             src={job.logoUrl || placeholderLogo}
             alt={job.company || "Company Logo"}
             className="job-card-logo"
+            onError={(e) => e.target.src = placeholderLogo}
           />
         </div>
 
@@ -120,7 +141,7 @@ export default function JobListings({ selectedJob, onSelectJob, filters, setFilt
 
   // Hàm xử lý khi nhấn phím trong input
   const handleKeyDown = (e) => {
-     // Cho phép các phím điều hướng và xóa
+    // Cho phép các phím điều hướng và xóa
     const allowed = [
       "Backspace",
       "Delete",
@@ -134,7 +155,7 @@ export default function JobListings({ selectedJob, onSelectJob, filters, setFilt
 
     if (allowed.includes(e.key)) {
       if (e.key === "Enter") {
-         // Logic chuyển trang khi nhấn Enter
+        // Logic chuyển trang khi nhấn Enter
         if (!pageInput) return;
 
         const num = Number(pageInput);
@@ -144,8 +165,8 @@ export default function JobListings({ selectedJob, onSelectJob, filters, setFilt
         if (num >= 1 && num <= maxPage) {
            handlePageChange(num);
         } else {
-            // Nếu không hợp lệ, reset về trang hiện tại (hoặc có thể thông báo lỗi)
-            setPageInput(String(currentPage));
+           // Nếu không hợp lệ, reset về trang hiện tại
+           setPageInput(String(currentPage));
         }
       }
       return;
@@ -155,19 +176,18 @@ export default function JobListings({ selectedJob, onSelectJob, filters, setFilt
     if (!/^\d$/.test(e.key)) e.preventDefault();
   };
   
-    // Xử lý sự kiện onBlur (khi input mất focus) để reset về trang hiện tại nếu input rỗng hoặc không hợp lệ
-    const handleBlur = () => {
-         if (!pageInput) {
+  // Xử lý sự kiện onBlur (khi input mất focus) để reset về trang hiện tại nếu input rỗng hoặc không hợp lệ
+  const handleBlur = () => {
+       if (!pageInput) {
+          setPageInput(String(currentPage));
+          return;
+       }
+       
+       const num = Number(pageInput);
+       if (num < 1 || num > maxPage) {
             setPageInput(String(currentPage));
-            return;
-        }
-        
-        const num = Number(pageInput);
-        if (num < 1 || num > maxPage) {
-             setPageInput(String(currentPage));
-        }
-    }
-
+       }
+  }
 
   const handlePaste = (e) => {
     const text = e.clipboardData.getData("text");
@@ -241,7 +261,7 @@ export default function JobListings({ selectedJob, onSelectJob, filters, setFilt
               value={pageInput}
               onChange={handlePageInputChange}
               onKeyDown={handleKeyDown}
-              onBlur={handleBlur} // Thêm sự kiện onBlur
+              onBlur={handleBlur}
               onPaste={handlePaste}
               inputMode="numeric"
               pattern="[0-9]*"

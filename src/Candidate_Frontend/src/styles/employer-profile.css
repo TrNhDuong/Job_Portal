@@ -369,7 +369,18 @@
 }
 .empfb-intro-icon { color: #94a3b8; flex-shrink: 0; margin-top: 2px; }
 .empfb-intro-label { font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 600; }
-.empfb-intro-value { color: #0f172a; font-weight: 500; word-break: break-all; }
+
+/* === ĐÃ CẬP NHẬT: SỬA LỖI NGẮT DÒNG CẮT TỪ === */
+.empfb-intro-value { 
+  color: #0f172a; 
+  font-weight: 500; 
+  
+  /* Cũ: word-break: break-all; -> Gây lỗi cắt từ */
+  /* Mới: Chỉ xuống dòng ở khoảng trắng, từ quá dài mới cắt */
+  word-break: break-word; 
+  overflow-wrap: break-word; 
+  white-space: normal;
+}
 
 /* =============== MODAL (Cho JobDetailPanel) =============== */
 .empfb-modal {

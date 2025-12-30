@@ -1,44 +1,91 @@
-// src/pages/settings/ProfileSettings.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../../context/AuthContext";
 import client from "../../api/client";
 import { useNavigate } from "react-router-dom";
 
 import {
-  AlertCircle,
-  CheckCircle,
-  Mail,
-  User as UserIcon,
-  Info,
+  Mail, User, Edit3, X, CheckCircle2, AlertCircle,
+  Bold, Italic, Underline, List, ListOrdered,
+  AlignLeft, AlignCenter, AlignRight, Type,
+  FileText, Lightbulb, Sparkles, Target, Star
 } from "lucide-react";
 
 import "../../styles/dashboard.css";
 
-const FramedInput = ({ label, id, hint, ...props }) => (
-  <div className="profile-field">
-    <label htmlFor={id} className="profile-field-label">
-      <span>{label}</span>
-      {props.required && <span className="profile-required">*</span>}
-    </label>
+// --- RICH TEXT EDITOR ---
+const RichTextEditor = ({ value, onChange, disabled }) => {
+  const contentRef = useRef(null);
 
-    <input
-      id={id}
-      {...props}
-      className={`profile-input ${
-        props.disabled ? "profile-input-disabled" : ""
-      }`}
-    />
-    {hint && <p className="profile-field-hint">{hint}</p>}
+  const execCmd = (cmd, val = null) => {
+    document.execCommand(cmd, false, val);
+    if (contentRef.current) onChange(contentRef.current.innerHTML);
+  };
+
+  // Đồng bộ giá trị từ props vào contentEditable div
+  useEffect(() => {
+    if (contentRef.current && contentRef.current.innerHTML !== value) {
+      // Chỉ cập nhật nếu giá trị thực sự khác biệt để tránh reset con trỏ
+      // Nếu value là undefined/null thì set thành ""
+      contentRef.current.innerHTML = value || "";
+    }
+  }, [value]); // Thêm dependency [value] để cập nhật khi props thay đổi từ ngoài (ví dụ lúc mới load)
+
+  return (
+    <div className={`modern-editor ${disabled ? "disabled" : ""}`}>
+      {!disabled && (
+        <div className="editor-toolbar">
+          <div className="toolbar-group">
+            <button type="button" onClick={() => execCmd("bold")}><Bold size={14}/></button>
+            <button type="button" onClick={() => execCmd("italic")}><Italic size={14}/></button>
+            <button type="button" onClick={() => execCmd("underline")}><Underline size={14}/></button>
+          </div>
+          <div className="toolbar-divider" />
+          <div className="toolbar-group">
+            <button type="button" onClick={() => execCmd("insertUnorderedList")}><List size={14}/></button>
+            <button type="button" onClick={() => execCmd("insertOrderedList")}><ListOrdered size={14}/></button>
+          </div>
+          <div className="toolbar-divider" />
+          <div className="toolbar-group">
+            <button type="button" onClick={() => execCmd("justifyLeft")}><AlignLeft size={14}/></button>
+            <button type="button" onClick={() => execCmd("justifyCenter")}><AlignCenter size={14}/></button>
+            <button type="button" onClick={() => execCmd("justifyRight")}><AlignRight size={14}/></button>
+          </div>
+          <div className="toolbar-divider" />
+          <div className="toolbar-group">
+             <button type="button" onClick={() => execCmd("formatBlock", "H3")}><Type size={14}/></button>
+          </div>
+        </div>
+      )}
+      <div
+        ref={contentRef}
+        className="editor-content"
+        contentEditable={!disabled}
+        onInput={(e) => onChange(e.currentTarget.innerHTML)}
+        suppressContentEditableWarning={true}
+      />
+    </div>
+  );
+};
+
+// --- INPUT COMPONENT ---
+const ModernInput = ({ label, icon: Icon, ...props }) => (
+  <div className="modern-field">
+    <label className="modern-label">{label}</label>
+    <div className="modern-input-wrap">
+      {Icon && <Icon className="modern-input-icon" size={16} />}
+      <input className="modern-input" {...props} />
+    </div>
   </div>
 );
 
-const FramedTextarea = ({ label, id, hint, ...props }) => (
-  <div className="profile-field">
-    <label htmlFor={id} className="profile-field-label">
+// --- VIEW ROW COMPONENT ---
+const InfoRow = ({ label, value, icon: Icon }) => (
+  <div className="info-row">
+    <div className="info-label">
+      {Icon && <Icon size={14} className="text-gray-400" />}
       <span>{label}</span>
-    </label>
-    <textarea id={id} rows={4} {...props} className="profile-textarea" />
-    {hint && <p className="profile-field-hint">{hint}</p>}
+    </div>
+    <div className="info-value">{value}</div>
   </div>
 );
 
@@ -46,251 +93,193 @@ export default function ProfileSettings() {
   const { user, login } = useAuth();
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    description: "",
-  });
-
-  const [msg, setMsg] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState({ name: "", email: "", description: "" });
   const [loading, setLoading] = useState(false);
-
-  // toast
-  const [showNotification, setShowNotification] = useState(false);
-  const [notificationType, setNotificationType] = useState("success");
-  const [notificationMessage, setNotificationMessage] = useState("");
+  const [msg, setMsg] = useState(null); 
 
   useEffect(() => {
     if (user) {
       setFormData({
         name: user.name || "",
         email: user.email || "",
-        description: user.description || "",
+        description: user.description || "", // Đảm bảo load description từ user
       });
     }
   }, [user]);
 
-  const handleChange = (e) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-    setMsg(null);
+  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  
+  // Hàm này được gọi mỗi khi RichTextEditor thay đổi nội dung
+  const handleDescChange = (val) => {
+      setFormData(prev => ({ ...prev, description: val }));
   };
 
-  const showToast = (type, text) => {
-    setNotificationType(type);
-    setNotificationMessage(text);
-    setShowNotification(true);
-    setTimeout(() => setShowNotification(false), 4000);
-  };
-
-  const handleSubmit = async (e) => {
+  const handleUpdate = async (e) => {
     e.preventDefault();
-    if (!user) return;
-
-    setMsg(null);
     setLoading(true);
-
-    const isEmailChanged = formData.email !== user.email;
+    setMsg(null);
 
     try {
-      // chỉ đổi name + description
-      if (!isEmailChanged) {
-        const payload = {
-          name: formData.name,
-          description: formData.description,
-        };
-
-        await client.patch(
-          `/api/candidate?email=${encodeURIComponent(user.email)}`,
-          payload
-        );
-        login({ ...user, ...payload });
-
-        const text = "Cập nhật thông tin thành công!";
-        setMsg({ type: "success", text });
-        showToast("success", text);
-        setLoading(false);
+      // 1. Kiểm tra nếu đổi email (Logic cũ giữ nguyên)
+      if (formData.email !== user.email) {
+        await client.post("/api/send-otp", { email: formData.email });
+        sessionStorage.setItem("updateProfileData", JSON.stringify({ 
+            ...formData, 
+            description: formData.description, // Đảm bảo lưu description vào session
+            oldEmail: user.email, 
+            role: "candidate" 
+        }));
+        navigate("/verify-otp?action=update-profile");
         return;
       }
 
-      // đổi email: gửi OTP
-      await client.post("/api/send-otp", { email: formData.email });
+      // 2. Chuẩn bị payload cập nhật
+      // Lưu ý: Đảm bảo field 'description' khớp với schema backend (Candidate model)
+      const payload = { 
+          name: formData.name, 
+          description: formData.description 
+      };
 
-      sessionStorage.setItem(
-        "updateProfileData",
-        JSON.stringify({
-          ...formData,
-          oldEmail: user.email,
-          role: "candidate",
-        })
-      );
+      console.log("Sending update payload:", payload); // Debug: Kiểm tra dữ liệu gửi đi
 
-      showToast(
-        "success",
-        "Đã gửi mã xác thực đến email mới, vui lòng kiểm tra hộp thư."
-      );
-      setLoading(false);
-      navigate("/verify-otp?action=update-profile");
+      // 3. Gọi API cập nhật
+      const res = await client.patch(`/api/candidate?email=${encodeURIComponent(user.email)}`, payload);
+      
+      // 4. Cập nhật lại Context User (để UI refresh ngay lập tức)
+      // Quan trọng: res.data hoặc res.data.data chứa user mới nhất từ backend trả về
+      // Nếu backend không trả về full user, ta merge thủ công payload vào user hiện tại
+      const updatedUser = { ...user, ...payload };
+      login(updatedUser);
+      
+      setMsg({ type: "success", text: "Cập nhật thông tin thành công!" });
+      setIsEditing(false);
+
     } catch (err) {
-      const text =
-        err.response?.data?.message ||
-        "Lỗi: Không thể gửi OTP / cập nhật thông tin.";
-      setMsg({ type: "error", text });
-      showToast("error", text);
+      console.error("Update error:", err);
+      setMsg({ type: "error", text: err.response?.data?.message || "Có lỗi xảy ra khi cập nhật." });
+    } finally {
       setLoading(false);
+    }
+  };
+
+  const cancelEdit = () => {
+    setIsEditing(false);
+    setMsg(null);
+    // Reset form về dữ liệu gốc của user
+    if (user) {
+        setFormData({ 
+            name: user.name || "", 
+            email: user.email || "", 
+            description: user.description || "" 
+        });
     }
   };
 
   if (!user) return null;
 
-  const hasDescription = !!formData.description?.trim();
-
   return (
-    <>
-      {/* TOAST */}
-      {showNotification && (
-        <div className="profile-toast">
-          <div
-            className={`profile-toast-inner ${
-              notificationType === "success"
-                ? "profile-toast-success"
-                : "profile-toast-error"
-            }`}
-          >
-            <CheckCircle className="profile-toast-icon" />
-            <span className="profile-toast-text">{notificationMessage}</span>
+    <div className="profile-settings-wrapper">
+      
+      {/* CỘT CHÍNH: FORM THÔNG TIN */}
+      <div className="profile-main-column">
+        <div className="modern-card">
+          
+          <div className="modern-card-header">
+            <div>
+              <h2 className="card-title">Thông tin cá nhân</h2>
+              <p className="card-subtitle">Thông tin này sẽ hiển thị trên hồ sơ ứng tuyển của bạn</p>
+            </div>
+            {!isEditing && (
+              <button onClick={() => setIsEditing(true)} className="btn-edit">
+                <Edit3 size={14} /> Cập nhật
+              </button>
+            )}
+          </div>
+
+          <div className="modern-card-body">
+            {msg && (
+              <div className={`alert-box ${msg.type}`}>
+                {msg.type === 'success' ? <CheckCircle2 size={16}/> : <AlertCircle size={16}/>}
+                <span>{msg.text}</span>
+              </div>
+            )}
+
+            {isEditing ? (
+              /* --- FORM EDIT MODE --- */
+              <form onSubmit={handleUpdate} className="edit-form fade-in">
+                <div className="form-grid-2">
+                  <ModernInput label="Họ và tên" name="name" value={formData.name} onChange={handleChange} icon={User} required />
+                  <ModernInput label="Email đăng nhập" name="email" value={formData.email} onChange={handleChange} icon={Mail} required />
+                </div>
+
+                <div className="modern-field">
+                  <label className="modern-label flex justify-between">
+                    Giới thiệu bản thân
+                    <span className="label-hint">Sử dụng công cụ để định dạng văn bản đẹp hơn</span>
+                  </label>
+                  {/* Truyền đúng value và onChange */}
+                  <RichTextEditor value={formData.description} onChange={handleDescChange} />
+                </div>
+
+                <div className="form-actions">
+                  <button type="button" onClick={cancelEdit} className="btn-secondary" disabled={loading}>Hủy bỏ</button>
+                  <button type="submit" className="btn-primary" disabled={loading}>{loading ? "Đang lưu..." : "Lưu thay đổi"}</button>
+                </div>
+              </form>
+            ) : (
+              /* --- VIEW MODE --- */
+              <div className="view-mode fade-in">
+                <div className="view-grid-2">
+                  <InfoRow label="Họ và tên" value={formData.name} icon={User} />
+                  <InfoRow label="Email" value={formData.email} icon={Mail} />
+                </div>
+
+                <div className="view-section">
+                  <div className="view-section-header">
+                    <FileText size={16} className="text-blue-600"/>
+                    <h3>Giới thiệu bản thân</h3>
+                  </div>
+                  
+                  <div 
+                    className="html-preview-box"
+                    dangerouslySetInnerHTML={{ 
+                      __html: formData.description || "<em class='text-gray-400'>Bạn chưa viết giới thiệu bản thân. Hãy cập nhật để hồ sơ ấn tượng hơn.</em>" 
+                    }} 
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </div>
-      )}
-
-      {/* MAIN 2 CỘT – GIỐNG HÌNH BẠN GỬI */}
-      <div className="profile-main">
-        {/* FORM TRÁI */}
-        <section className="profile-main-left">
-          <form onSubmit={handleSubmit} className="profile-card">
-            <div className="profile-card-header">
-              <h2>Chỉnh sửa thông tin</h2>
-              <p>
-                Những thông tin này sẽ hiển thị cho nhà tuyển dụng khi bạn ứng
-                tuyển.
-              </p>
-            </div>
-
-            <div className="profile-card-body">
-              <FramedInput
-                label="Họ và tên"
-                id="name"
-                name="name"
-                type="text"
-                required
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="Nhập họ tên đầy đủ của bạn"
-              />
-              <FramedInput
-                label="Email đăng nhập"
-                id="email"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="your.email@example.com"
-                hint="Khi thay đổi email, hệ thống sẽ gửi mã OTP để xác thực địa chỉ mới."
-              />
-              <FramedTextarea
-                label="Giới thiệu bản thân"
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                placeholder="Mô tả ngắn gọn về kinh nghiệm, kỹ năng và định hướng nghề nghiệp của bạn..."
-                hint="Giới thiệu súc tích 2–4 câu, tập trung vào điểm mạnh nổi bật."
-              />
-            </div>
-
-            <div className="profile-card-footer">
-              <button
-                type="submit"
-                disabled={loading}
-                className="profile-primary-btn"
-              >
-                {loading ? "Đang lưu..." : "Lưu thay đổi"}
-              </button>
-
-              {msg && (
-                <div
-                  className={`profile-msg ${
-                    msg.type === "error"
-                      ? "profile-msg-error"
-                      : "profile-msg-success"
-                  }`}
-                >
-                  <AlertCircle className="profile-msg-icon" />
-                  <span>{msg.text}</span>
-                </div>
-              )}
-            </div>
-          </form>
-        </section>
-
-        {/* TÓM TẮT PHẢI */}
-        <aside className="profile-main-right">
-          <div className="profile-summary-card">
-            <p className="profile-summary-title">Tóm tắt tài khoản</p>
-
-            <div className="profile-summary-row">
-              <div className="profile-summary-icon user">
-                <UserIcon className="w-4 h-4" />
-              </div>
-              <div>
-                <p className="profile-summary-label">Họ tên</p>
-                <p className="profile-summary-value">
-                  {formData.name || "Chưa cập nhật"}
-                </p>
-              </div>
-            </div>
-
-            <div className="profile-summary-row">
-              <div className="profile-summary-icon mail">
-                <Mail className="w-4 h-4" />
-              </div>
-              <div>
-                <p className="profile-summary-label">Email đăng nhập</p>
-                <p className="profile-summary-value break-all">
-                  {formData.email}
-                </p>
-                <p className="profile-summary-hint">
-                  Đây là email nhận thông báo và dùng để đăng nhập hệ thống.
-                </p>
-              </div>
-            </div>
-
-            <div className="profile-summary-row">
-              <div className="profile-summary-icon info">
-                <Info className="w-4 h-4" />
-              </div>
-              <div>
-                <p className="profile-summary-label">Giới thiệu bản thân</p>
-                <p className="profile-summary-desc">
-                  {hasDescription
-                    ? formData.description
-                    : "Bạn chưa viết mô tả. Hãy chia sẻ ngắn gọn về bản thân để gây ấn tượng với nhà tuyển dụng."}
-                </p>
-              </div>
-            </div>
-
-            <div className="profile-tip">
-              <p className="profile-tip-title">
-                Mẹo nhỏ để hồ sơ của bạn “xịn” hơn ✨
-              </p>
-              <ul className="profile-tip-list">
-                <li>Giới thiệu bản thân súc tích, tập trung vào điểm mạnh.</li>
-                <li>Cập nhật thông tin ngay khi có thay đổi liên hệ.</li>
-                <li>Dùng email thường xuyên để không bỏ lỡ cơ hội.</li>
-              </ul>
-            </div>
-          </div>
-        </aside>
       </div>
-    </>
+
+      {/* CỘT PHỤ: SIDEBAR HƯỚNG DẪN */}
+      <aside className="profile-side-column">
+        
+        {/* Card 1: Hướng dẫn nhanh */}
+        <div className="guideline-card">
+          <div className="guideline-header">
+            <div className="icon-circle bg-yellow-100 text-yellow-600">
+               <Lightbulb size={18} />
+            </div>
+            <h3>Mẹo hồ sơ chuyên nghiệp</h3>
+          </div>
+          <div className="guideline-body">
+            <ul className="guideline-list">
+              <li>
+                <strong>Ảnh đại diện:</strong> Rõ mặt, lịch sự, phông nền đơn giản.
+              </li>
+              <li>
+                <strong>Tên hiển thị:</strong> Dùng tên thật để tạo sự tin cậy.
+              </li>
+              <li>
+                <strong>Email:</strong> Dùng email thường xuyên kiểm tra.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
   );
 }

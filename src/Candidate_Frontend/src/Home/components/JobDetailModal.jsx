@@ -1,14 +1,30 @@
-import React, { useEffect } from "react";
+// src/Home/components/JobDetailModal.jsx
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { MapPin, Briefcase, DollarSign, Clock, X, Heart, Building2 } from "lucide-react";
+import { 
+  MapPin, 
+  Briefcase, 
+  DollarSign, 
+  Clock, 
+  X, 
+  Heart, 
+  Building2, 
+  AlertTriangle // 1. Import Icon Báo cáo
+} from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+
+// 2. Import Modal Báo Cáo (Đảm bảo đường dẫn đúng)
+import ReportJobModal from "../../components/ReportJobModal"; 
 
 export default function JobDetailModal({ job, onClose, onSave, isSaved }) {
   const { user } = useAuth();
   const safeJob = job || {};
   const jobId = safeJob._id;
 
-  // Khóa cuộn trang nền khi Modal mở (UX tốt hơn)
+  // 3. State quản lý hiển thị Modal Báo Cáo
+  const [showReportModal, setShowReportModal] = useState(false);
+
+  // Khóa cuộn trang nền
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => {
@@ -17,21 +33,36 @@ export default function JobDetailModal({ job, onClose, onSave, isSaved }) {
   }, []);
 
   const handleBackdropClick = (e) => {
-    if (e.target === e.currentTarget) onClose();
+    // Nếu click vào nền đen VÀ không phải đang mở report modal thì đóng job detail
+    if (e.target === e.currentTarget && !showReportModal) {
+        onClose();
+    }
   };
 
   const handleSaveClick = () => {
     if (onSave) onSave(safeJob);
   };
 
-  // Logic Logo & Salary
+  // 4. Hàm xử lý click nút Báo cáo
+  const handleReportClick = () => {
+    if (!user) {
+        alert("Vui lòng đăng nhập để báo cáo.");
+        // Chuyển hướng login nếu cần, ở đây dùng alert đơn giản vì đang trong modal
+        return; 
+    }
+    setShowReportModal(true);
+  };
+
+  // --- LOGIC XỬ LÝ DỮ LIỆU ---
+
+  // Logo
   const companyInitial = (safeJob.company && safeJob.company.charAt(0)) || "?";
-  const placeholderLogo = `https://ui-avatars.com/api/?name=${companyInitial}&background=f1f5f9&color=1e293b`;
+  const placeholderLogo = `https://ui-avatars.com/api/?name=${encodeURIComponent(companyInitial)}&background=f1f5f9&color=1e293b`;
   const logoSrc = safeJob.logo?.url || placeholderLogo;
 
+  // Salary
   const formatSalary = (salary) => {
     if (!salary) return "Thỏa thuận";
-    if (typeof salary === "string") return salary;
     if (salary.minSalary !== undefined && salary.maxSalary !== undefined) {
       const currency = salary.currency || "VND";
       if (currency === "VND") {
@@ -39,26 +70,53 @@ export default function JobDetailModal({ job, onClose, onSave, isSaved }) {
         const max = (salary.maxSalary / 1000000).toLocaleString('vi-VN');
         return `${min} - ${max} triệu`;
       }
-      return `${salary.minSalary} - ${salary.maxSalary} ${currency}`;
+      return `${salary.minSalary.toLocaleString()} - ${salary.maxSalary.toLocaleString()} ${currency}`;
     }
     return "Thỏa thuận";
   };
 
+  // Date
   const formatDate = (dateString) => {
     if (!dateString) return "Không thời hạn";
     return new Date(dateString).toLocaleDateString("vi-VN");
   };
 
+  // Address
+  const fullAddress = safeJob.detailedAddress 
+    ? `${safeJob.detailedAddress}, ${safeJob.location}`
+    : safeJob.location || "Chưa cập nhật";
+
+  // Major
+  const displayMajor = safeJob.major === 'Other' && safeJob.customMajor 
+    ? safeJob.customMajor 
+    : safeJob.major;
+
   return (
     <div className="home-modal-backdrop" onClick={handleBackdropClick}>
-      {/* Animation xuất hiện từ dưới lên nhẹ nhàng */}
+      
+      {/* Thêm onClick stopPropagation để click vào modal không đóng nó.
+         Đảm bảo z-index của modal này thấp hơn z-index của ReportModal trong CSS
+      */}
       <div className="home-job-modal" onClick={(e) => e.stopPropagation()}>
         
-        <button className="home-modal-close" onClick={onClose}>
-          <X size={20} />
-        </button>
+        {/* Nút Close & Report ở góc phải */}
+        <div className="home-modal-actions">
+            {/* 5. Nút Báo cáo */}
+            <button 
+                className="home-modal-icon-btn report" 
+                onClick={handleReportClick}
+                title="Báo cáo tin này"
+            >
+                <AlertTriangle size={18} />
+            </button>
 
-        {/* HEADER */}
+            {/* Nút Đóng */}
+            <button className="home-modal-icon-btn close" onClick={onClose}>
+                <X size={20} />
+            </button>
+        </div>
+
+        {/* --- HEADER --- */}
         <div className="home-job-modal-header">
           <div className="home-job-modal-logo-wrap">
             <img 
@@ -80,8 +138,9 @@ export default function JobDetailModal({ job, onClose, onSave, isSaved }) {
           </div>
         </div>
 
-        {/* GRID INFO */}
+        {/* --- GRID INFO --- */}
         <div className="home-job-modal-grid">
+          {/* Mức lương */}
           <div className="home-job-modal-item">
             <div className="home-job-modal-icon"><DollarSign size={18}/></div>
             <div>
@@ -89,20 +148,30 @@ export default function JobDetailModal({ job, onClose, onSave, isSaved }) {
               <span className="home-job-modal-value highlight">{formatSalary(safeJob.salary)}</span>
             </div>
           </div>
+
+          {/* Địa điểm */}
           <div className="home-job-modal-item">
             <div className="home-job-modal-icon"><MapPin size={18}/></div>
             <div>
               <span className="home-job-modal-label">Địa điểm</span>
-              <span className="home-job-modal-value">{safeJob.location || "Toàn quốc"}</span>
+              <span className="home-job-modal-value truncate-text" title={fullAddress}>
+                {safeJob.location || "Toàn quốc"}
+              </span>
             </div>
           </div>
+
+          {/* Kinh nghiệm */}
           <div className="home-job-modal-item">
             <div className="home-job-modal-icon"><Briefcase size={18}/></div>
             <div>
               <span className="home-job-modal-label">Kinh nghiệm</span>
-              <span className="home-job-modal-value">{safeJob.experience ? `${safeJob.experience} năm` : "Không yêu cầu"}</span>
+              <span className="home-job-modal-value">
+                {safeJob.experience ? `${safeJob.experience} năm` : "Không yêu cầu"}
+              </span>
             </div>
           </div>
+
+          {/* Hạn nộp */}
           <div className="home-job-modal-item">
             <div className="home-job-modal-icon"><Clock size={18}/></div>
             <div>
@@ -112,24 +181,58 @@ export default function JobDetailModal({ job, onClose, onSave, isSaved }) {
           </div>
         </div>
 
-        {/* BODY (Scrollable) */}
+        {/* --- BODY (Scrollable) --- */}
         <div className="home-job-modal-body">
-          <h3 className="home-job-modal-subtitle">Mô tả công việc</h3>
-          {/* Hiển thị HTML an toàn */}
-          <div 
-            className="home-job-modal-html"
-            dangerouslySetInnerHTML={{ __html: safeJob.description || "<p>Chưa có mô tả chi tiết.</p>" }} 
-          />
           
+          {/* 1. Mô tả công việc */}
+          <div className="home-job-modal-section">
+            <h3 className="home-job-modal-subtitle">Mô tả công việc</h3>
+            <div 
+              className="home-job-modal-html"
+              dangerouslySetInnerHTML={{ __html: safeJob.description || "<p>Chưa cập nhật thông tin.</p>" }} 
+            />
+          </div>
+
+          {/* 2. Yêu cầu ứng viên */}
+          <div className="home-job-modal-section">
+            <h3 className="home-job-modal-subtitle">Yêu cầu ứng viên</h3>
+            <div 
+              className="home-job-modal-html"
+              dangerouslySetInnerHTML={{ 
+                __html: safeJob.requirement || "<p>Chưa cập nhật thông tin yêu cầu.</p>" 
+              }} 
+            />
+          </div>
+
+          {/* 3. Quyền lợi */}
+          <div className="home-job-modal-section">
+            <h3 className="home-job-modal-subtitle">Quyền lợi & Chế độ</h3>
+            <div 
+              className="home-job-modal-html"
+              dangerouslySetInnerHTML={{ 
+                __html: safeJob.welfare || "<p>Chưa cập nhật thông tin quyền lợi.</p>" 
+              }} 
+            />
+          </div>
+          
+          <hr className="home-job-modal-divider" />
+
           {/* Tags bổ sung */}
           <div className="home-job-modal-tags">
-             {safeJob.jobType && <span className="home-job-modal-tag">{safeJob.jobType}</span>}
-             {safeJob.degree && <span className="home-job-modal-tag">{safeJob.degree}</span>}
-             {safeJob.major && <span className="home-job-modal-tag">{safeJob.major}</span>}
+              {safeJob.jobType && <span className="home-job-modal-tag">{safeJob.jobType}</span>}
+              {safeJob.degree && <span className="home-job-modal-tag">{safeJob.degree}</span>}
+              {displayMajor && <span className="home-job-modal-tag">{displayMajor}</span>}
           </div>
+
+          {/* Hiển thị địa chỉ chi tiết ở cuối */}
+          {safeJob.detailedAddress && (
+             <p className="home-job-modal-detail-addr">
+                <strong>Địa chỉ cụ thể:</strong> {safeJob.detailedAddress}
+             </p>
+          )}
         </div>
 
-        {/* FOOTER (Fixed at bottom of card) */}
+        {/* --- FOOTER --- */}
         <div className="home-job-modal-footer">
           {!user ? (
              <Link to="/login" className="home-job-modal-btn primary full">
@@ -152,6 +255,15 @@ export default function JobDetailModal({ job, onClose, onSave, isSaved }) {
         </div>
 
       </div>
+
+      {/* 6. Render Report Modal đè lên trên */}
+      {showReportModal && (
+        <ReportJobModal 
+            job={safeJob} 
+            onClose={() => setShowReportModal(false)} 
+        />
+      )}
+
     </div>
   );
 }
