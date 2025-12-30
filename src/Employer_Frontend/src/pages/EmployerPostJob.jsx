@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect, useContext } from "react"; // Thêm useEffect
 import "../styles/employerpost.css";
 import { AuthContext } from "../context/AuthContext.jsx"; 
-import { HiPencilAlt, HiBriefcase, HiCurrencyDollar, HiOfficeBuilding, HiSave, HiTrash } from "react-icons/hi";
-
+import { HiPencilAlt, HiBriefcase, HiCurrencyDollar, HiOfficeBuilding, HiSave, HiTrash, HiClipboardList, HiGift } from "react-icons/hi";
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 
@@ -21,6 +20,8 @@ const initialFormState = {
   degree: "Bachelor",
   experience: "",
   description: "",
+  requirement: "", 
+  welfare: "",
   logo: ""
 };
 
@@ -36,8 +37,8 @@ const EmployerPostJob = ({ onSubmit, initialData }) => {
   const auth = useContext(AuthContext);
   const [form, setForm] = useState(initialFormState);
   const [errors, setErrors] = useState({});
-  
-  const [charCount, setCharCount] = useState(0);
+  const [activeTab, setActiveTab] = useState('description');
+  const [charCounts, setCharCounts] = useState({ description: 0, requirement: 0, welfare: 0 });
   const calculateTextLength = (htmlContent) => {
     if (!htmlContent) return 0;
     const parser = new DOMParser();
@@ -54,7 +55,7 @@ const EmployerPostJob = ({ onSubmit, initialData }) => {
       companyEmail: initialData.companyEmail || "",
       position: initialData.position || "",
       location: initialData.location || "",
-      detailedAddress: initialData.detailedAddress || "", // Giả sử API trả về cái này
+      detailedAddress: initialData.detailedAddress || "", 
 
       minSalary: String(initialData.salary.minSalary || ""), 
       maxSalary: String(initialData.salary.maxSalary || ""),
@@ -66,14 +67,20 @@ const EmployerPostJob = ({ onSubmit, initialData }) => {
       degree: initialData.degree || "Bachelor",
       experience: String(initialData.experience || "0"), 
       description: initialData.description || "",
+      requirement: initialData.requirement || "", 
+      welfare: initialData.welfare || "",
       logo: initialData.logo || "",
     };
     setForm(flattenedData);
-    setCharCount(calculateTextLength(initialData.description));
+    setCharCounts({
+        description: calculateTextLength(initialData.description),
+        requirement: calculateTextLength(initialData.requirement),
+        welfare: calculateTextLength(initialData.welfare),
+    });
   } else {
     // Nếu không có initialData (bấm "Đăng tin"), reset form
     setForm(initialFormState);
-    setCharCount(0);
+    setCharCounts({ description: 0, requirement: 0, welfare: 0 });
   }
   // Luôn xóa lỗi khi chuyển form
   setErrors({});
@@ -91,12 +98,14 @@ const EmployerPostJob = ({ onSubmit, initialData }) => {
     customMajor: useRef(null),
     experience: useRef(null),
     description: useRef(null),
+    requirement: useRef(null), 
+    welfare: useRef(null),
     logo: useRef(null)
   };
 
   const quillModules = {
     toolbar: [
-      [{ 'header': [2, 3, false] }],
+      [{ 'header': [3, 4, false] }],
       [{ 'color': ['#000000', '#0061ff', '#e74c3c'] }],
       ['bold', 'italic', 'underline'], 
       [{'list': 'ordered'}, {'list': 'bullet'}], 
@@ -181,27 +190,26 @@ const EmployerPostJob = ({ onSubmit, initialData }) => {
   };
 
   // 👇 3. Hàm xử lý riêng cho Editor
-  const handleDescriptionChange = (content, delta, source, editor) => {
+  const handleEditorChange = (name, content, editor) => {
     const plainText = editor.getText();
     const currentLength = plainText.length > 1 ? plainText.trim().length : 0;
-    // Giới hạn ký tự 
+    
     if (currentLength > 5000) return;
-    
-    setForm(prev => ({ ...prev, description: content }));
-    setCharCount(currentLength);
-    
-    // Xóa lỗi nếu đã nhập
-    if (errors.description && currentLength > 0) {
-        setErrors(prev => ({ ...prev, description: "" }));
+
+    setForm(prev => ({ ...prev, [name]: content }));
+    setCharCounts(prev => ({ ...prev, [name]: currentLength }));
+
+    if (errors[name] && currentLength > 0) {
+        setErrors(prev => ({ ...prev, [name]: "" }));
     }
-  };
+};
 
   // (Hàm validateForm ... không đổi)
   const validateForm = () => {
     const newErrors = {};
     const requiredFields = [
       "title", "position", "location", "detailedAddress",
-      "minSalary", "maxSalary", "degree", "major", "experience", "description",
+      "minSalary", "maxSalary", "degree", "major", "experience", "description", "requirement", "welfare"
     ];
 
     requiredFields.forEach((field) => {
@@ -220,7 +228,15 @@ const EmployerPostJob = ({ onSubmit, initialData }) => {
 
     if (Object.keys(newErrors).length > 0) {
       const firstErrorKey = Object.keys(newErrors)[0];
-      fieldRefs[firstErrorKey].current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      
+      if (['description', 'requirement', 'welfare'].includes(firstErrorKey)) {
+          setActiveTab(firstErrorKey);
+      }
+
+      const targetRef = fieldRefs[firstErrorKey];
+      if(['description', 'requirement', 'welfare'].includes(firstErrorKey)){
+      }
+      targetRef?.current?.scrollIntoView({ behavior: "smooth", block: "center" });
       fieldRefs[firstErrorKey].current?.focus();
       return false;
     }
@@ -249,6 +265,22 @@ const EmployerPostJob = ({ onSubmit, initialData }) => {
         setForm(initialFormState);
         setErrors({});
     }
+  };
+
+  const renderTabButton = (tabName, label, errorKey) => {
+    const hasError = errors[errorKey];
+    const isActive = activeTab === tabName;
+    
+    return (
+        <button 
+            type="button" 
+            onClick={() => setActiveTab(tabName)}
+            className={`tab-btn ${isActive ? 'active' : ''} ${hasError ? 'error-tab' : ''}`}
+        >
+            {label}
+            {hasError && <span className="error-dot" title="Mục này chưa nhập"></span>}
+        </button>
+    );
   };
 
   return (
@@ -316,52 +348,68 @@ const EmployerPostJob = ({ onSubmit, initialData }) => {
                 </div>
             </div>
 
-            {/* Card 2: Mô tả chi tiết */}
+            {/* --- Card 2: Mô tả công việc (Description) --- */}
             <div className="card-box">
-                <div className="card-header">
-                    <div className="icon-wrapper green"><HiBriefcase /></div>
-                    <h3>Chi tiết công việc</h3>
-                </div>
-                <div className="card-body">
-                    <div className="form-group">
-                        <label>Mô tả & Yêu cầu <span className="req">*</span></label>
-                        <div className={`editor-wrapper ${errors.description ? "error-border" : ""}`}>
-                            <ReactQuill 
-                                theme="snow"
-                                value={form.description}
-                                onChange={handleDescriptionChange}
-                                modules={quillModules}
-                                formats={quillFormats}
-                                placeholder="- Mô tả công việc...&#10;- Yêu cầu ứng viên..."
-                            />
-                        </div>
-                        {errors.description && <span className="err-msg">{errors.description}</span>}
-                        <div className="char-count">{charCount}/5000</div>
+                <div className="card-header-tabs">
+                    <div className="tabs-wrapper">
+                        {renderTabButton('description', 'Mô tả công việc', 'description')}
+                        {renderTabButton('requirement', 'Yêu cầu ứng viên', 'requirement')}
+                        {renderTabButton('welfare', 'Quyền lợi & Phúc lợi', 'welfare')}
                     </div>
                 </div>
-            </div>
-
-             {/* Card 3: Địa điểm làm việc */}
-             <div className="card-box">
-                <div className="card-header">
-                    <div className="icon-wrapper purple"><HiOfficeBuilding /></div>
-                    <h3>Địa điểm làm việc</h3>
-                </div>
+                
                 <div className="card-body">
-                    <div className="form-row">
-                        <div className="form-group half">
-                            <label>Tỉnh/Thành phố <span className="req">*</span></label>
-                            <select ref={fieldRefs.location} name="location" value={form.location} onChange={handleChange} className={errors.location ? "error" : ""}>
-                                <option value="">-- Chọn --</option>
-                                {provinces.map((p) => <option key={p}>{p}</option>)}
-                            </select>
-                            {errors.location && <span className="err-msg">{errors.location}</span>}
+                    {/* Tab Content: Description */}
+                    <div style={{ display: activeTab === 'description' ? 'block' : 'none' }}>
+                        <div className="form-group">
+                            <label>Mô tả công việc <span className="req">*</span></label>
+                            <div className={`editor-wrapper ${errors.description ? "error-border" : ""}`} ref={fieldRefs.description}>
+                                <ReactQuill 
+                                    theme="snow"
+                                    value={form.description}
+                                    onChange={(c, d, s, e) => handleEditorChange('description', c, e)}
+                                    modules={quillModules} formats={quillFormats}
+                                    placeholder="- Mô tả trách nhiệm..."
+                                />
+                            </div>
+                            {errors.description && <span className="err-msg">{errors.description}</span>}
+                            <div className="char-count">{charCounts.description}/5000</div>
                         </div>
-                        <div className="form-group half">
-                            <label>Địa chỉ chi tiết <span className="req">*</span></label>
-                            <input ref={fieldRefs.detailedAddress} name="detailedAddress" value={form.detailedAddress} onChange={handleChange}
-                                className={errors.detailedAddress ? "error" : ""} placeholder="VD: Tầng 5, Tòa nhà ABC..." />
-                            {errors.detailedAddress && <span className="err-msg">{errors.detailedAddress}</span>}
+                    </div>
+
+                    {/* Tab Content: Requirement */}
+                    <div style={{ display: activeTab === 'requirement' ? 'block' : 'none' }}>
+                        <div className="form-group">
+                            <label>Yêu cầu ứng viên <span className="req">*</span></label>
+                            <div className={`editor-wrapper ${errors.requirement ? "error-border" : ""}`} ref={fieldRefs.requirement}>
+                                <ReactQuill 
+                                    theme="snow"
+                                    value={form.requirement}
+                                    onChange={(c, d, s, e) => handleEditorChange('requirement', c, e)}
+                                    modules={quillModules} formats={quillFormats}
+                                    placeholder="- Kỹ năng chuyên môn..."
+                                />
+                            </div>
+                            {errors.requirement && <span className="err-msg">{errors.requirement}</span>}
+                            <div className="char-count">{charCounts.requirement}/5000</div>
+                        </div>
+                    </div>
+
+                    {/* Tab Content: Welfare */}
+                    <div style={{ display: activeTab === 'welfare' ? 'block' : 'none' }}>
+                        <div className="form-group">
+                            <label>Quyền lợi & Phúc lợi <span className="req">*</span></label>
+                            <div className={`editor-wrapper ${errors.welfare ? "error-border" : ""}`} ref={fieldRefs.welfare}>
+                                <ReactQuill 
+                                    theme="snow"
+                                    value={form.welfare}
+                                    onChange={(c, d, s, e) => handleEditorChange('welfare', c, e)}
+                                    modules={quillModules} formats={quillFormats}
+                                    placeholder="- Chế độ bảo hiểm, thưởng..."
+                                />
+                            </div>
+                            {errors.welfare && <span className="err-msg">{errors.welfare}</span>}
+                            <div className="char-count">{charCounts.welfare}/5000</div>
                         </div>
                     </div>
                 </div>
@@ -370,6 +418,38 @@ const EmployerPostJob = ({ onSubmit, initialData }) => {
 
         {/* --- CỘT PHẢI (SIDEBAR STICKY - 30%) --- */}
         <div className="right-section">
+            
+            {/* Card 3: ĐỊA ĐIỂM  */}
+            <div className="card-box"> 
+                <div className="card-header small-header">
+                    <div className="icon-wrapper purple"><HiOfficeBuilding /></div>
+                    <h3>Địa điểm</h3>
+                </div>
+                <div className="card-body">
+                    {/* ... Code input location/address cũ dán vào đây ... */}
+                    {/* Lưu ý: Đổi form-row thành form-group xếp chồng dọc cho đẹp vì cột phải hẹp */}
+                    <div className="form-group">
+                        <label>Tỉnh/Thành phố <span className="req">*</span></label>
+                        <select ref={fieldRefs.location} name="location" value={form.location} onChange={handleChange} className={errors.location ? "error" : ""}>
+                            <option value="">-- Chọn --</option>
+                            {provinces.map((p) => <option key={p}>{p}</option>)}
+                        </select>
+                        {errors.location && <span className="err-msg">{errors.location}</span>}
+                    </div>
+                    <div className="form-group">
+                        <label>Địa chỉ chi tiết <span className="req">*</span></label>
+                        <textarea /* Đổi input thành textarea cho đỡ bị tràn */
+                            rows="3"
+                            ref={fieldRefs.detailedAddress} name="detailedAddress" 
+                            value={form.detailedAddress} onChange={handleChange}
+                            className={errors.detailedAddress ? "error" : ""} 
+                            placeholder="Số nhà, đường..." 
+                            style={{resize: 'none'}}
+                        />
+                        {errors.detailedAddress && <span className="err-msg">{errors.detailedAddress}</span>}
+                    </div>
+                </div>
+            </div>
             
             {/* Card 4: Mức lương & Tiền tệ */}
             <div className="card-box sticky-card">

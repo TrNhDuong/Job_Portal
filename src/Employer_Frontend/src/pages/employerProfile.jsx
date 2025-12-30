@@ -7,7 +7,7 @@ import { AuthContext } from "../context/AuthContext.jsx";
 import client from '../api/client';
 
 // Cập nhật ảnh Mock đẹp hơn (ảnh văn phòng hiện đại)
-const MOCK_BANNER = "https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=1920&auto=format&fit=crop";
+const MOCK_BANNER = "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=1920&auto=format&fit=crop";
 
 const EmployerProfile = () => {
     const [mode, setMode] = useState('view');
@@ -77,6 +77,18 @@ const EmployerProfile = () => {
         );
     }
 
+    // Hàm helper lấy chữ cái đầu
+    const getInitials = (name) => {
+        if (!name) return "CP"; // CP = Company
+        const parts = name.trim().split(" ");
+        if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+        return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+    };
+
+    // Lấy data chuẩn
+    const rawLogo = auth.employerData?.data?.logo?.url; // Logo gốc từ DB
+    const companyName = data.company || "Company";
+
     // --- MODE: VIEW ---
     return (
         <div className="profile-page-wrapper">
@@ -99,7 +111,13 @@ const EmployerProfile = () => {
                 <div className="header-info-bar">
                     {/* Logo hình tròn */}
                     <div className="logo-container">
-                        <img src={logo} alt="Company Logo" className="logo-img" />
+                        {rawLogo ? (
+                            <img src={rawLogo} alt="Company Logo" className="logo-img" />
+                        ) : (
+                            <div className="avatar-placeholder-init logo-img placeholder">
+                                {getInitials(companyName)}
+                            </div>
+                        )}
                     </div>
                     
                     <div className="text-info">

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useMemo, useEffect } from "react";
 import "../styles/employerManagePosts.css";
 // Import thêm các icon đẹp mắt
-import { HiDotsHorizontal, HiLocationMarker, HiCurrencyDollar, HiBriefcase, HiClock, HiEye, HiUserGroup } from "react-icons/hi";
+import { HiDotsHorizontal, HiLocationMarker, HiCurrencyDollar, HiBriefcase, HiClock, HiEye, HiUserGroup, HiOfficeBuilding, HiRefresh } from "react-icons/hi";
 
 const jobTypes = ["Full-time", "Part-time", "Internship", "Freelance", "Contract"];
 
@@ -56,20 +56,44 @@ export default function EmployerManagePosts({
 
   // Logic lọc giữ nguyên
   const uniqueLocations = useMemo(() => {
-    const locations = new Set(posts.map((p) => p.location));
-    return Array.from(locations).sort();
-  }, [posts]);
+  if (!Array.isArray(posts)) return [];
+
+  const locations = new Set(
+    posts
+      .map(p => p.location)
+      .filter(Boolean)
+  );
+
+  return [...locations].sort();
+}, [posts]);
 
   const filteredPosts = useMemo(() => {
-    if (disableFilterBar) return posts;
-    return posts.filter((post) => {
-      const matchesText = post.title.toLowerCase().includes(textFilter.toLowerCase()) || 
-                          post.position.toLowerCase().includes(textFilter.toLowerCase());
-      const matchesLocation = locationFilter ? post.location === locationFilter : true; 
-      const matchesJobType = jobTypeFilter ? post.jobType === jobTypeFilter : true;
-      return matchesText && matchesLocation && matchesJobType; 
-    });
-  }, [posts, textFilter, locationFilter, jobTypeFilter, disableFilterBar]);
+  if (!Array.isArray(posts)) return [];
+  if (disableFilterBar) return posts;
+
+  const filterText = textFilter.toLowerCase();
+
+  return posts.filter(post => {
+    const title = post.title?.toLowerCase() ?? "";
+    const position = post.position?.toLowerCase() ?? "";
+
+    const matchesText =
+      title.includes(filterText) ||
+      position.includes(filterText);
+
+    const matchesLocation =
+      locationFilter
+        ? post.location?.toLowerCase() === locationFilter.toLowerCase()
+        : true;
+
+    const matchesJobType =
+      jobTypeFilter
+        ? post.jobType === jobTypeFilter
+        : true;
+
+    return matchesText && matchesLocation && matchesJobType;
+  });
+}, [posts, textFilter, locationFilter, jobTypeFilter, disableFilterBar]);
 
   // Helper format tiền tệ
   const formatSalary = (min, max, currency) => {
@@ -98,7 +122,7 @@ export default function EmployerManagePosts({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [menuOpenId]);
-
+  console.log(posts)
   return (
     <div className="manage-posts-wrapper">
       {!disableFilterBar && (
@@ -114,18 +138,29 @@ export default function EmployerManagePosts({
            </div>
            
            <div className="filter-group">
-              <select value={locationFilter} onChange={(e) => setLocationFilter(e.target.value)}>
-                <option value="">📍 Tất cả địa điểm</option>
-                {uniqueLocations.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
-              </select>
+              <div className="select-wrapper">
+                <HiLocationMarker className="select-icon" />
+                <select value={locationFilter} onChange={(e) => setLocationFilter(e.target.value)}>
+                  <option value="">Tất cả địa điểm</option>
+                  {uniqueLocations.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
+                </select>
+              </div>
 
-              <select value={jobTypeFilter} onChange={(e) => setJobTypeFilter(e.target.value)}>
-                <option value="">💼 Tất cả loại hình</option>
-                {jobTypes.map((type) => <option key={type} value={type}>{type}</option>)}
-              </select>
+              <div className="select-wrapper">
+                <HiBriefcase className="select-icon" />
+                <select value={jobTypeFilter} onChange={(e) => setJobTypeFilter(e.target.value)}>
+                  <option value="">Tất cả loại hình</option>
+                  {jobTypes.map((type) => <option key={type} value={type}>{type}</option>)}
+                </select>
+              </div>
 
-              <button className="btn-reset" onClick={() => { setTextFilter(""); setLocationFilter(""); setJobTypeFilter(""); }}>
-                Làm mới
+              <button 
+                className="btn-reset" 
+                onClick={() => { setTextFilter(""); setLocationFilter(""); setJobTypeFilter(""); }}
+                title="Xóa bộ lọc"
+              >
+                <HiRefresh className="btn-icon-spin" />
+                <span>Làm mới</span>
               </button>
            </div>
         </div>
@@ -201,8 +236,11 @@ export default function EmployerManagePosts({
           })
         ) : (
           <div className="empty-state">
-             <img src="https://cdni.iconscout.com/illustration/premium/thumb/search-not-found-illustration-download-in-svg-png-gif-file-formats--zoom-magnifier-404-error-empty-state-pack-user-interface-illustrations-5216538.png" alt="Empty" />
-             <p>Không tìm thấy bài đăng nào phù hợp.</p>
+              <div className="empty-icon-wrapper">
+                  <HiOfficeBuilding size={25} color="#9ca3af" /> {/* Icon tòa nhà xám */}
+              </div>
+              <h3>Chưa có bài đăng nào đang mở</h3>
+              <p>Hãy bắt đầu tạo tin tuyển dụng đầu tiên để thu hút nhân tài.</p>
           </div>
         )}
       </div>

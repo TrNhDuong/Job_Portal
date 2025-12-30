@@ -152,9 +152,8 @@ const EmployerJobRenewal = ({ onNavigateToDeposit, jobPosts, updateJobLocal }) =
 
     if (window.confirm(`Xác nhận gia hạn ${days} ngày cho bài viết này?`)) {
       let newExpireDay = undefined;
-      if (selectedJob.state !== 'Pending'){
-        newExpireDay = calculateNewExpirationDate(selectedJob.expireDay, days);
-      }
+      newExpireDay = calculateNewExpirationDate(selectedJob.expireDay, days);
+      console.log('New expireDay', newExpireDay)
      try {
       const email = auth.employerData.data.email;
       const res = await client.patch(`api/post-job/extend?jobId=${selectedJob._id}&email=${email}`,
