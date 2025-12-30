@@ -1,0 +1,466 @@
+/* --- 1. LOGO & LAYOUT CHUNG --- */
+.auth-page {
+    position: relative;
+    height: 100vh; 
+    overflow: hidden; 
+}
+
+
+.top-left-logo-register {
+    position: relative;
+    top: 0px; left: -10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 20;
+}
+
+.logo-img-small { width: 32px; height: 32px; object-fit: contain; }
+
+.brand-name-corner {
+    font-size: 1.2rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, #0061ff, #60efff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+}
+
+/* --- 2. CỘT TRÁI (FORM) --- */
+.auth-left-register {
+    width: 45%; 
+    flex: none;
+    padding: 40px 60px 20px 60px; 
+    justify-content: flex-start; /* Đẩy nội dung lên trên thay vì căn giữa */
+    max-width: 650px;
+    overflow-y: auto;
+    scrollbar-width: none; 
+}
+.auth-left::-webkit-scrollbar { display: none; }
+
+/* --- Cột Phải --- */
+.auth-right {
+    flex: 1; 
+    /* background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%); */
+    background: linear-gradient(135deg, #0061ff 0%, #60efff 100%);   
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; 
+    justify-content: center;
+    padding: 80px;
+}
+
+/* --- HỘP QUOTE (STYLE MỚI) --- */
+.hero-text-container {
+    position: relative;
+    z-index: 10;
+    color: #ffffff;
+    text-align: right; /* Căn lề phải cho chữ */
+    animation: fadeInRight 1s ease-out;
+    user-select: none;
+    -webkit-user-select: none;
+    pointer-events: none;
+}
+
+.hero-text-container h1 {
+    font-size: 3.5rem; /* Chữ to, đậm */
+    font-weight: 900;
+    line-height: 1;   /* Dòng sát nhau cho chắc chắn */
+    margin: 0;
+    letter-spacing: 1px;
+    color: #ffffff;
+    text-shadow: 0 4px 15px rgba(0, 50, 150, 0.3);
+    mix-blend-mode: overlay;
+    opacity: 0.75;
+    text-shadow: none;
+}
+
+/* Tạo khoảng cách nhỏ giữa 2 cụm từ (thay cho gạch ngang) */
+.spacer {
+    height: 30px; 
+}
+
+.separator {
+    width: 100px;
+    height: 3px;
+    background: white;
+    margin: 30px 0 30px auto;
+    border-radius: 3px;
+    opacity: 0.7;
+    mix-blend-mode: overlay;
+}
+
+/* Animation trượt từ phải sang cho động */
+@keyframes fadeInRight {
+    from { opacity: 0; transform: translateX(30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* Responsive: Thu nhỏ và căn giữa lại khi màn hình bé */
+@media (max-width: 1100px) {
+    .auth-right {
+        align-items: center; /* Quay về giữa */
+        padding-right: 0;
+        text-align: center;
+    }
+    .hero-text-container { text-align: center; }
+    .hero-text-container h1 { font-size: 2.5rem; }
+}
+
+/* --- 3. HEADER (SÁT LẠI) --- */
+.auth-header-compact {
+    margin-bottom: 20px; 
+    margin-top: 0; 
+}
+
+.auth-title {
+    font-size: 1.8rem;
+    margin-bottom: 2px; /* Sát rạt với subtitle */
+    line-height: 1.2;
+}
+
+.auth-subtitle {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin-top: 0;
+}
+
+/* --- 4. INPUT & LABEL (SIÊU GỌN) --- */
+.auth-form {
+    gap: 3px; 
+}
+
+.form-group {
+    display: flex; 
+    flex-direction: column; 
+    /* 👇 QUAN TRỌNG: Giảm khoảng cách giữa Label và Input xuống 2px */
+    gap: 2px; 
+    flex: 1; 
+    position: relative; 
+}
+
+.form-label {
+    font-size: 0.85rem; 
+    margin-bottom: 0; /* Bỏ margin thừa */
+    font-weight: 600;
+    color: #374151;
+}
+
+.auth-input {
+    padding: 0 12px;
+    font-size: 0.95rem;
+    height: 40px; /* Chiều cao vừa vặn */
+    border: 1.5px solid #e5e7eb; 
+    border-radius: 8px;
+    transition: all 0.2s;
+    width: 100%;
+}
+.auth-input:focus { border-color: #0061ff; outline: none; }
+
+.input-wrapper { position: relative; display: flex; align-items: center; }
+
+/* --- 5. VALIDATION BOX (CODE CŨ CỦA BẠN - ĐÃ KHÔI PHỤC) --- */
+.validation-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 10px 15px; /* Padding chuẩn cũ */
+    margin-top: 5px;
+}
+
+.validation-header { 
+    font-size: 0.85rem; 
+    color: #64748b; 
+    margin-bottom: 10px; 
+    font-weight: 500; 
+}
+
+.validation-list {
+    list-style: none; 
+    padding: 0; 
+    margin: 0;
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 8px;
+}
+
+.validation-item {
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+    font-size: 0.85rem; 
+    color: #94a3b8; 
+    transition: color 0.2s;
+}
+
+.validation-item.valid { 
+    color: #10b981; 
+    font-weight: 600; 
+}
+
+.check-icon { 
+    font-size: 1rem; 
+}
+
+.dot { font-size: 1.2rem; line-height: 0.5; }
+
+/* --- CÁC PHẦN KHÁC --- */
+.eye-icon { position: absolute; right: 10px; cursor: pointer; color: #9ca3af; font-size: 1.2rem; }
+
+.terms-checkbox { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: #4b5563; margin-top: 5px; }
+.terms-checkbox input { width: 14px; height: 14px; cursor: pointer; accent-color: #0061ff; }
+.link-term { color: #0061ff; font-weight: 600; cursor: pointer; text-decoration: none; }
+
+.auth-button { margin-top: 10px; padding: 12px; font-size: 0.95rem; background: #0061ff; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; }
+.auth-button:hover { background: #0052d4; }
+
+.auth-footer { margin-top: 15px; font-size: 0.85rem; text-align: center; }
+.auth-link { color: #0061ff; font-weight: 600; cursor: pointer; }
+
+.form-row {
+    display: flex;
+    gap: 15px; /* Khoảng cách giữa 2 ô */
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .auth-right { display: none; }
+    .auth-left { padding: 90px 20px 20px 20px; max-width: 100%; }
+    .top-left-logo-register { top: 20px; left: 20px; }
+    .form-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+/* --- TERMS MODAL (Thêm vào cuối file) --- */
+.terms-modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Nền tối */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* Đè lên tất cả */
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.3s ease;
+}
+
+.terms-modal-content {
+    background: white;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh; /* Chiều cao tối đa 80% màn hình */
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    animation: slideUpModal 0.3s ease;
+}
+
+.terms-header {
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.terms-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.btn-close-terms {
+    background: none; border: none; cursor: pointer; color: #999; font-size: 1.2rem;
+}
+.btn-close-terms:hover { color: #333; }
+
+/* Khu vực nội dung cuộn được */
+.terms-body {
+    padding: 20px;
+    overflow-y: auto; /* Cho phép cuộn dọc */
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #555;
+    text-align: justify;
+}
+
+.terms-body h4 { margin-top: 15px; margin-bottom: 8px; color: #0061ff; }
+.terms-body ul { padding-left: 20px; margin-bottom: 10px; }
+
+.terms-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #eee;
+    text-align: right;
+}
+
+.btn-accept {
+    background: #0061ff;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+}
+.btn-accept:hover { background: #0052d4; }
+
+/* Dark overlay behind modal */
+.otp-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.45); /* soft dim */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+/* OTP modal box */
+.otp-modal {
+  background: #fff;
+  width:420px;
+  padding: 28px 24px;
+  border-radius: 14px;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  animation: fadeUp 0.25s ease-out;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Title */
+.otp-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+/* Subtitle */
+.otp-sub {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 22px;
+}
+
+/* OTP input row */
+/* OTP input container — stays horizontal */
+.otp-inputs {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+/* Individual OTP input — now with glow animation */
+.otp-input {
+  width: 52px;
+  height: 58px;
+  font-size: 26px;
+  font-weight: 600;
+  text-align: center;
+  border: 2px solid #dcdcdc;
+  border-radius: 10px;
+  background: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.25s ease, transform 0.12s ease;
+}
+
+/* Focus glow */
+.otp-input:focus {
+  outline: none;
+  border-color: #4d7cff;
+  box-shadow: 0 0 10px rgba(77, 124, 255, 0.45);
+  transform: scale(1.06);
+}
+
+/* lil “pop” animation when user types */
+@keyframes otpPop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Apply pop when input has value */
+.otp-input:not(:placeholder-shown) {
+  animation: otpPop 0.25s ease-out;
+}
+
+
+/* Confirm button */
+.otp-confirm-btn {
+  width: 100%;
+  padding: 12px 0;
+  background: #4d7cff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.otp-confirm-btn:hover {
+  background: #3a63d6;
+}
+
+/* Resend link */
+.otp-resend {
+  margin-top: 18px;
+  font-size: 14px;
+  color: #777;
+}
+
+.otp-resend span {
+  color: #4d7cff;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+}
+
+.otp-resend span:hover {
+  text-decoration: underline;
+}
+
+/* Close button (optional) */
+.otp-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  cursor: pointer;
+  font-size: 20px;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.otp-close:hover {
+  opacity: 1;
+}
+
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUpModal { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }

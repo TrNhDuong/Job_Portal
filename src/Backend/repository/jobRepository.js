@@ -69,9 +69,28 @@ export class JobRepository {
         if (!updatedJobPost.success) {
             return { success: false, message: "Job post not found" };
         }
-        const jobPostAtributes = ["title", "company", "position", "salary", "degree", "experience", "jobType", "major", "description", "logo"];
+        const jobPostAtributes = ["title", "company", "position", "salary", "degree", 
+            "experience", "jobType", "major", "description", "requirement", "welfare", "logo", "expireDay"];
         for (const attribute of jobPostAtributes){
             updatedJobPost.data[attribute] = updates[attribute] || updatedJobPost.data[attribute];
+        }
+        if (updates["addApplicants"]){
+            updatedJobPost.data.applicants.push(updates["addApplicants"]);
+            updatedJobPost.data.metric.new += 1;
+        }
+        if (updates["newLabel"]){
+            const label = updates["newLabel"];
+            if (label === "Interviewing"){
+                updatedJobPost.data.metric.interviewing += 1;
+            } else if (label === "Hired"){
+                updatedJobPost.data.metric.hired += 1;
+            }
+            const oldLabel = updates["oldLabel"];
+            if (oldLabel === "Interviewing"){
+                updatedJobPost.data.metric.interviewing -= 1;
+            } else if (oldLabel === "New"){
+                updatedJobPost.data.metric.new -= 1;
+            }
         }
         await JobPost.findByIdAndUpdate(jobId, updatedJobPost.data);
         return { success: true, message: "Job post updated successfully" };

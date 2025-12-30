@@ -55,7 +55,11 @@ const employerSchema = new mongoose.Schema({
     point: {
         type: Number,
         default: 0
-    }
+    },
+    timeStamp: {
+        type: Date,
+        default: Date.now,
+    },
 });
 
 

@@ -1,11 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { 
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
-  BarChart, Bar, PieChart, Pie, Cell 
+import {
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell
 } from 'recharts';
-import { 
-    HiArrowSmUp, HiArrowSmDown, HiCurrencyDollar, HiUserAdd, 
-    HiDocumentText, HiDownload, HiCalendar 
+import {
+  HiArrowSmUp,
+  HiArrowSmDown,
+  HiCurrencyDollar,
+  HiUserAdd,
+  HiDocumentText,
+  HiDownload,
+  HiCalendar,
+  HiArrowLeft
 } from "react-icons/hi";
 import '../styles/Dashboard.css';
 import { statsService } from '../services/statsService';
@@ -15,7 +29,13 @@ export default function Dashboard() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Theme support
+  const [activeCard, setActiveCard] = useState('revenue'); // default chart doanh thu
+  const [drillDownType, setDrillDownType] = useState('revenue'); // 'revenue' | 'users' | 'jobs'
+  const [timeRange, setTimeRange] = useState('month'); // month | week
+  const [selectedMonth, setSelectedMonth] = useState(null);
+  const [monthlyData, setMonthlyData] = useState([]);
+  const [weeklyData, setWeeklyData] = useState([]);
+
   const theme = localStorage.getItem('theme') || 'light';
   const isDark = theme === 'dark';
   const gridColor = isDark ? '#334155' : '#e5e7eb';
@@ -27,186 +47,234 @@ export default function Dashboard() {
 
   const fetchStats = async () => {
     setLoading(true);
-    try {
-      const res = await statsService.getDashboardStats();
-      if (res.success) {
-        setStats(res.data);
-      }
-    } catch (error) {
-      console.error("Lỗi tải thống kê:", error);
-    } finally {
-      setLoading(false);
+    const res = await statsService.getDashboardStats();
+    if (res.success) {
+      setStats(res.data);
+      setMonthlyData(res.data.revenue); // default chart doanh thu tháng
     }
+    setLoading(false);
   };
 
   const handleExportRevenue = () => {
-    if (!stats || !stats.revenue) return;
-    const dataExport = stats.revenue.map(item => ({
-        "Tháng": item.name,
-        "Doanh thu (VND)": item.revenue
-    }));
-    exportToExcel(dataExport, "Bao_cao_doanh_thu");
+    if (!stats?.revenue) return;
+    exportToExcel(
+      stats.revenue.map(i => ({
+        Tháng: i.name,
+        "Doanh thu (VND)": i.revenue
+      })),
+      "Bao_cao_doanh_thu"
+    );
   };
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
-  };
+  const formatCurrency = (v) =>
+    new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(v);
 
-  // --- 🔥 LOGIC: TỰ ĐỘNG DÙNG MOCK DATA NẾU TRỐNG ---
   const getUserComposition = () => {
-      let totalEmployer = 0;
-      let totalCandidate = 0;
-
-      // Tính toán từ dữ liệu thật (nếu có)
-      if (stats && stats.traffic) {
-          stats.traffic.forEach(day => {
-              totalEmployer += (day.employer || 0);
-              totalCandidate += (day.candidate || 0);
-          });
-      }
-
-      // ✅ NẾU DỮ LIỆU = 0 -> DÙNG MOCK DATA ĐỂ HIỂN THỊ
-      if (totalEmployer === 0 && totalCandidate === 0) {
-          return [
-              { name: 'Nhà tuyển dụng', value: 450, color: '#3b82f6' }, // 35% - Xanh dương
-              { name: 'Ứng viên', value: 850, color: '#8b5cf6' }       // 65% - Tím
-          ];
-      }
-
-      // Nếu có dữ liệu thật thì dùng dữ liệu thật
+    let totalEmployer = 0, totalCandidate = 0;
+    if (stats?.traffic) {
+      stats.traffic.forEach(day => {
+        totalEmployer += day.employer || 0;
+        totalCandidate += day.candidate || 0;
+      });
+    }
+    if (totalEmployer === 0 && totalCandidate === 0) {
       return [
-          { name: 'Nhà tuyển dụng', value: totalEmployer, color: '#3b82f6' }, 
-          { name: 'Ứng viên', value: totalCandidate, color: '#8b5cf6' }       
+        { name: 'Nhà tuyển dụng', value: 450, color: '#3b82f6' },
+        { name: 'Ứng viên', value: 850, color: '#8b5cf6' }
       ];
+    }
+    return [
+      { name: 'Nhà tuyển dụng', value: totalEmployer, color: '#3b82f6' },
+      { name: 'Ứng viên', value: totalCandidate, color: '#8b5cf6' }
+    ];
   };
 
   const pieData = getUserComposition();
 
-  // Loading
-  if (loading) {
-    return <div className="dashboard-container"><div className="loading-container"><div className="spinner"></div></div></div>;
-  }
-  if (!stats) return null; 
+  if (loading) return (
+    <div className="dashboard-container">
+      <div className="loading-container">
+        <div className="spinner" />
+      </div>
+    </div>
+  );
 
-  const today = new Date().toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  if (!stats) return null;
+
+  const today = new Date().toLocaleDateString('vi-VN', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+
+  const handleCardClick = async (type) => {
+    setActiveCard(type);
+    setDrillDownType(type);
+    setTimeRange('month');
+    setSelectedMonth(null);
+
+    if (type === 'revenue') {
+      setMonthlyData(stats.revenue);
+    } else if (type === 'users') {
+      const monthly = await statsService.getMonthlyUsers(); // giả lập data tháng users
+      setMonthlyData(monthly);
+    } else if (type === 'jobs') {
+      const monthly = await statsService.getMonthlyJobs(); // giả lập data tháng jobs
+      setMonthlyData(monthly);
+    }
+  };
+
+  const handleBarClick = async (data) => {
+    if (!data) return;
+    setSelectedMonth(data.name);
+    setTimeRange('week');
+    let weekly;
+    if (drillDownType === 'revenue') {
+      weekly = await statsService.getWeeklyRevenueByMonth(data.name);
+    } else if (drillDownType === 'users') {
+      weekly = await statsService.getWeeklyUsersByMonth(data.name);
+    } else if (drillDownType === 'jobs') {
+      weekly = await statsService.getWeeklyJobsByMonth(data.name);
+    }
+    setWeeklyData(weekly);
+  };
+
+  const getDataKey = () => drillDownType==='revenue'?'revenue':'value';
 
   return (
     <div className="dashboard-container fade-in">
-      
-      {/* WELCOME */}
+
       <div className="welcome-banner">
-          <h1 className="welcome-title">Xin chào, Administrator!</h1>
-          <div className="welcome-subtitle">
-              <HiCalendar /> Hôm nay là {today}
-          </div>
+        <h1 className="welcome-title">Xin chào, Administrator!</h1>
+        <div className="welcome-subtitle">
+          <HiCalendar /> {today}
+        </div>
       </div>
 
-      <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: '20px'}}>
-         <button 
-            onClick={handleExportRevenue}
-            className="btn-excel"
-            style={{background: 'var(--bg-element)', color: 'var(--primary-color)', border: '1px solid var(--border-color)'}}
-         >
-            <HiDownload size={18} /> Xuất báo cáo Doanh thu
-         </button>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 20 }}>
+        <button className="btn-excel" onClick={handleExportRevenue}>
+          <HiDownload /> Xuất báo cáo Doanh thu
+        </button>
       </div>
-      
-      {/* STATS CARDS */}
+
       <div className="stats-grid">
-        <div className="stat-card">
-            <div className="stat-icon income"><HiCurrencyDollar /></div>
-            <div className="stat-info">
-                <span className="stat-label">Tổng Doanh Thu</span>
-                <h3 className="stat-value">{formatCurrency(stats.summary.totalRevenue)}</h3>
-                <span className="stat-trend positive"><HiArrowSmUp /> +12.5%</span>
-            </div>
+        <div
+          className={`stat-card income ${activeCard==='revenue'?'active':''}`}
+          onClick={()=>handleCardClick('revenue')}
+        >
+          <div className="stat-icon income"><HiCurrencyDollar /></div>
+          <div className="stat-info">
+            <span className="stat-label">Tổng Doanh Thu</span>
+            <h3 className="stat-value">{formatCurrency(stats.summary.totalRevenue)}</h3>
+            <span className="stat-trend positive"><HiArrowSmUp /> +12.5%</span>
+          </div>
         </div>
 
-        <div className="stat-card">
-            <div className="stat-icon users"><HiUserAdd /></div>
-            <div className="stat-info">
-                <span className="stat-label">Thành viên mới</span>
-                <h3 className="stat-value">{stats.summary.newUsers.toLocaleString()}</h3>
-                <span className="stat-trend positive"><HiArrowSmUp /> +5.2%</span>
-            </div>
+        <div
+          className={`stat-card users ${activeCard==='users'?'active':''}`}
+          onClick={()=>handleCardClick('users')}
+        >
+          <div className="stat-icon users"><HiUserAdd /></div>
+          <div className="stat-info">
+            <span className="stat-label">Thành viên mới</span>
+            <h3 className="stat-value">{stats.summary.newUsers}</h3>
+            <span className="stat-trend positive"><HiArrowSmUp /> +5.2%</span>
+          </div>
         </div>
 
-        <div className="stat-card">
-            <div className="stat-icon jobs"><HiDocumentText /></div>
-            <div className="stat-info">
-                <span className="stat-label">Tin Tuyển Dụng</span>
-                <h3 className="stat-value">{stats.summary.totalJobs.toLocaleString()}</h3>
-                <span className="stat-trend negative"><HiArrowSmDown /> -2.1%</span>
-            </div>
+        <div
+          className={`stat-card jobs ${activeCard==='jobs'?'active':''}`}
+          onClick={()=>handleCardClick('jobs')}
+        >
+          <div className="stat-icon jobs"><HiDocumentText /></div>
+          <div className="stat-info">
+            <span className="stat-label">Tin tuyển dụng</span>
+            <h3 className="stat-value">{stats.summary.totalJobs}</h3>
+            <span className="stat-trend negative"><HiArrowSmDown /> -2.1%</span>
+          </div>
         </div>
       </div>
 
-      {/* CHARTS */}
-      <div className="charts-grid">
-        
-        {/* Chart 1 */}
-        <div className="chart-box">
-            <div className="chart-header">
-                <h3 className="chart-title">Thống kê Truy cập & Đăng ký</h3>
-            </div>
-            <div style={{ width: '100%', height: 320 }}>
-                <ResponsiveContainer>
-                    <BarChart data={stats.traffic} margin={{top: 10, right: 10, left: -20, bottom: 0}}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridColor} />
-                        <XAxis dataKey="name" tick={{fill: axisColor, fontSize: 12}} axisLine={false} tickLine={false} dy={10} />
-                        <YAxis tick={{fill: axisColor, fontSize: 12}} axisLine={false} tickLine={false} />
-                        <Tooltip 
-                            cursor={{fill: 'transparent'}}
-                            contentStyle={{backgroundColor: 'var(--bg-element)', borderColor: 'var(--border-color)', color: 'var(--text-primary)', borderRadius: '12px'}}
-                        />
-                        <Bar dataKey="visits" name="Lượt truy cập" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={30} />
-                        <Bar dataKey="registers" name="Đăng ký mới" fill="#0ea5e9" radius={[4, 4, 0, 0]} barSize={30} />
-                    </BarChart>
-                </ResponsiveContainer>
-            </div>
-        </div>
-
-        {/* Chart 2: DONUT CHART (Có Mock Data) */}
-        <div className="chart-box">
-            <div className="chart-header">
-                <h3 className="chart-title">Phân loại người dùng mới</h3>
-            </div>
-            <div style={{ width: '100%', height: 280, display:'flex', alignItems:'center', justifyContent:'center' }}>
-                <ResponsiveContainer>
-                    <PieChart>
-                        <Pie
-                            data={pieData}
-                            cx="50%"
-                            cy="50%"
-                            innerRadius={70}
-                            outerRadius={100}
-                            paddingAngle={5}
-                            dataKey="value"
-                            stroke="none"
-                        >
-                            {pieData.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={entry.color} />
-                            ))}
-                        </Pie>
-                        <Tooltip 
-                             contentStyle={{backgroundColor: 'var(--bg-element)', borderColor: 'var(--border-color)', color: 'var(--text-primary)', borderRadius: '12px'}}
-                             itemStyle={{ color: 'var(--text-primary)' }}
-                        />
-                    </PieChart>
-                </ResponsiveContainer>
-            </div>
-            
-            <div className="custom-legend">
-                {pieData.map((entry, index) => (
-                    <div key={index} className="legend-item">
-                        <div className="legend-dot" style={{background: entry.color}}></div>
-                        <span>{entry.name}: <b>{entry.value}</b></span>
-                    </div>
+      {/* MONTHLY CHART */}
+      <div className="chart-box">
+        <h3 className="chart-title">
+          {drillDownType==='revenue'?'Doanh thu theo tháng':
+           drillDownType==='users'?'Thành viên mới theo tháng':
+           'Tin tuyển dụng theo tháng'}
+        </h3>
+        <div style={{ width:'100%', height:320 }}>
+          <ResponsiveContainer>
+            <BarChart data={monthlyData}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridColor} />
+              <XAxis dataKey="name" tick={{ fill: axisColor }} />
+              <YAxis tick={{ fill: axisColor }} />
+              <Tooltip />
+              <Bar
+                dataKey={getDataKey()}
+                radius={[6,6,0,0]}
+                onClick={handleBarClick}
+              >
+                {monthlyData.map((entry,i)=>(
+                  <Cell
+                    key={i}
+                    fill={drillDownType==='revenue'?'#22c55e': drillDownType==='users'?'#3b82f6':'#f97316'}
+                    stroke={entry.name===selectedMonth?'#000': 'none'}
+                    strokeWidth={entry.name===selectedMonth?2:0}
+                  />
                 ))}
-            </div>
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
         </div>
-
       </div>
+
+      {/* WEEKLY DRILL-DOWN CHART */}
+      {timeRange==='week' && weeklyData.length>0 && (
+        <div className="chart-box">
+          <button className="back-btn" onClick={()=>setTimeRange('month')}>
+            <HiArrowLeft /> Quay lại
+          </button>
+          <h3 className="chart-title">
+            {drillDownType==='revenue'?'Doanh thu theo tuần':
+             drillDownType==='users'?'Thành viên mới theo tuần':
+             'Tin tuyển dụng theo tuần'}
+          </h3>
+          <div style={{width:'100%', height:300}}>
+            <ResponsiveContainer>
+              <BarChart data={weeklyData}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false}/>
+                <XAxis dataKey="name"/>
+                <YAxis/>
+                <Tooltip/>
+                <Bar
+                  dataKey="value"
+                  radius={[6,6,0,0]}
+                  fill={drillDownType==='revenue'?'#22c55e': drillDownType==='users'?'#3b82f6':'#f97316'}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
+
+      {/* USER COMPOSITION DONUT */}
+      <div className="chart-box">
+        <h3 className="chart-title">Phân loại người dùng mới</h3>
+        <div style={{width:'100%', height:280}}>
+          <ResponsiveContainer>
+            <PieChart>
+              <Pie
+                data={pieData}
+                cx="50%"
+                cy="50%"
+                innerRadius={70}
+                outerRadius={100}
+                dataKey="value"
+              >
+                {pieData.map((e,i)=><Cell key={i} fill={e.color}/>)}
+              </Pie>
+              <Tooltip/>
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
     </div>
   );
 }
