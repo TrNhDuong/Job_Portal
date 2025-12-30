@@ -6,6 +6,7 @@ import CareerTips from "./components/CareerTips";
 import { useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import client from "../api/client";
+import Footer from "./components/Footer.jsx";
 
 export default function HomePage() {
   const { user, login } = useAuth();
@@ -55,6 +56,7 @@ export default function HomePage() {
         <section className="home-section home-section-last">
           <CareerTips />
         </section>
+        <Footer />
       </div>
     </main>
   );
