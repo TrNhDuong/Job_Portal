@@ -265,9 +265,9 @@ const EmployerDeposit = () => {
             
           
             
-            <button className="btn-confirm-mock" onClick={confirmPayment} style={{ marginTop: '20px' }}>
+            {/* <button className="btn-confirm-mock" onClick={confirmPayment} style={{ marginTop: '20px' }}>
               <HiCheckCircle /> Đã thanh toán xong
-            </button>
+            </button> */}
           </div>
         </div>
       )}
