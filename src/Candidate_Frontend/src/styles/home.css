@@ -38,7 +38,7 @@
    NEW HERO SECTION (Job Portal Style)
 ============================ */
 .home-hero {
-  background: linear-gradient(135deg, #97b6f8 0%, #7c3aed 100%); /* Màu gradient từ ảnh */
+  background: linear-gradient(135deg, #c2d7f7 0%, #c7b303 100%); /* Màu gradient từ ảnh */
   padding: 80px 0;
   min-height: 400px;
   display: flex;
@@ -558,6 +558,8 @@
   width: 18px;
   height: 18px;
 }
+
+
 /* =================================================================
    JOB DETAIL MODAL STYLES (Updated)
    ================================================================= */
