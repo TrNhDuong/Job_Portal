@@ -91,6 +91,7 @@ const EmployerDeposit = () => {
         console.log('Tong tien: ', totalMoney)
         const res = await client.post('/api/payment', { 
             amount: pointsToBuy * EXCHANGE_RATE,
+            email: localStorage.getItem('email'),
             point: parseInt(pointsToBuy) + bonusPoints
         });
         
