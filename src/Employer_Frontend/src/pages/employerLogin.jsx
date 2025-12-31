@@ -45,7 +45,7 @@ export default function EmployerLogin() {
       setTimeout(() => navigate("/homepage"), 300);
 
     } catch (err) {
-      toast.error("Không thể kết nối đến máy chủ.");
+      toast.error("Sai mật khẩu. Vui lòng thử lại.");
     } finally {
       setLoading(false);
     }

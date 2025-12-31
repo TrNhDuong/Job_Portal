@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import '../styles/Setting.css';
 import { FaUser, FaBell, FaSave, FaTimes } from 'react-icons/fa';
 import profileIcon from '../assets/icon/profile.png'; // Giữ lại nếu cần, mặc dù đang dùng securityIcon
-import { HiEye, HiEyeOff } from "react-icons/hi";
+import { HiEye, HiEyeOff, HiCheck } from "react-icons/hi";
 import securityIcon from '../assets/icon/security.png';
 import bellIcon from '../assets/icon/bell.png';
 import client from '../api/client';
@@ -26,11 +26,20 @@ const Setting = ({ isVisible, onClose }) => {
     const [accountForm, setAccountForm] = useState(accountInitialState);
     const [errors, setErrors] = useState({});
 
+    const [isPasswordFocused, setIsPasswordFocused] = useState(false);
+
     const [showPassword, setShowPassword] = useState({
         current: false,
         new: false,
         confirm: false
     });
+
+    const passCriteria = {
+        length: accountForm.newPassword.length >= 8,
+        lower: /[a-z]/.test(accountForm.newPassword),
+        upper: /[A-Z]/.test(accountForm.newPassword),
+        number: /\d/.test(accountForm.newPassword),
+    };
 
     if (!isVisible) return null;
 
@@ -53,16 +62,24 @@ const Setting = ({ isVisible, onClose }) => {
             newErrors.currentPassword = 'Vui lòng nhập mật khẩu hiện tại.';
         }
         if (accountForm.newPassword.length < 6) {
-            newErrors.newPassword = 'Mật khẩu mới phải có ít nhất 6 ký tự.';
+            newErrors.newPassword = 'Mật khẩu chưa đủ mạnh.';
+            setIsPasswordFocused(true);
         }
         if (accountForm.newPassword !== accountForm.confirmNewPassword) {
-            newErrors.confirmNewPassword = 'Xác nhận mật khẩu không khớp.';
+            newErrors.confirmNewPassword = 'Mật khẩu nhập lại không khớp.';
         }
+
+        if (accountForm.currentPassword && accountForm.newPassword === accountForm.currentPassword) {
+            newErrors.newPassword = 'Mật khẩu mới không được trùng với mật khẩu hiện tại.';
+        }
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
+            toast.error("Vui lòng kiểm tra lại thông tin nhập");    
             return;
         }
+
+        const loadingToast = toast.loading('Đang cập nhật mật khẩu...');
 
         try {
             // 2. Đảm bảo sử dụng email và currentPassword/newPassword từ state
@@ -78,12 +95,13 @@ const Setting = ({ isVisible, onClose }) => {
 
             if (response.data.success){
                 toast.success('Cập nhật mật khẩu thành công');
+                setAccountForm(accountInitialState);
+                setIsPasswordFocused(false);
             } else {
                 // Xử lý lỗi từ server (ví dụ: mật khẩu cũ không đúng)
-                toast.error(response.data.message || 'Đã có lỗi xảy ra khi cập nhật mật khẩu');
+                toast.error(response.data.message || 'Mật khẩu hiện tại không đúng.');
             }
-            setAccountForm(accountInitialState);
-            onClose();
+            //onClose();
         } catch (err) {
             toast.error('Lỗi kết nối hoặc server. Vui lòng thử lại.');
             console.error("Lỗi đổi mật khẩu:", err);
@@ -125,14 +143,16 @@ const Setting = ({ isVisible, onClose }) => {
                     </div>
 
                     {/* Input Mật khẩu Mới */}
-                    <div className="form-group">
-                        <label>Mật khẩu Mới</label>
-                        <div className="input-with-icon">
+                    <div className="form-group" style={{ position: 'relative' }}>
+                        <label>Mật khẩu Mới</label>
+                        <div className="input-with-icon">
                             <input 
                                 type={showPassword.new ? "text" : "password"} 
                                 name="newPassword" 
                                 value={accountForm.newPassword}
                                 onChange={handleChange}
+                                onFocus={() => setIsPasswordFocused(true)}
+                                onBlur={() => setIsPasswordFocused(false)}
                                 className={errors.newPassword ? 'error' : ''}
                                 placeholder="Nhập mật khẩu mới"
                             />
@@ -140,8 +160,34 @@ const Setting = ({ isVisible, onClose }) => {
                                 {showPassword.new ? <HiEyeOff /> : <HiEye />}
                             </div>
                         </div>
-                        {errors.newPassword && <p className="error-text">{errors.newPassword}</p>}
-                    </div>
+                        {errors.newPassword && <p className="error-text">{errors.newPassword}</p>}
+
+                        {/* --- Password Criteria Box --- */}
+                        {isPasswordFocused && (
+                            <div className="validation-box" onMouseDown={(e) => e.preventDefault()}>
+                                <div className="validation-header">Mật khẩu của bạn phải chứa:</div>
+                                <ul className="validation-list">
+                                    {/* ... (Giữ nguyên nội dung list bên trong) ... */}
+                                     <li className={`validation-item ${passCriteria.length ? 'valid' : ''}`}>
+                                        {passCriteria.length ? <HiCheck className="check-icon" /> : <span className="dot">•</span>}
+                                        Từ 8 ký tự trở lên
+                                    </li>
+                                    <li className={`validation-item ${passCriteria.lower ? 'valid' : ''}`}>
+                                        {passCriteria.lower ? <HiCheck className="check-icon" /> : <span className="dot">•</span>}
+                                        Ít nhất 1 chữ thường
+                                    </li>
+                                    <li className={`validation-item ${passCriteria.upper ? 'valid' : ''}`}>
+                                        {passCriteria.upper ? <HiCheck className="check-icon" /> : <span className="dot">•</span>}
+                                        Ít nhất 1 chữ hoa
+                                    </li>
+                                    <li className={`validation-item ${passCriteria.number ? 'valid' : ''}`}>
+                                        {passCriteria.number ? <HiCheck className="check-icon" /> : <span className="dot">•</span>}
+                                        Ít nhất 1 số
+                                    </li>
+                                </ul>
+                            </div>
+                        )}
+                    </div>
 
                     {/* Input Nhập lại Mật khẩu Mới */}
                     <div className="form-group">
