@@ -3,6 +3,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { HiEye, HiEyeOff } from "react-icons/hi";
 import logoImage from "../assets/logo.png";
 import "../styles/employerLogin.css";
+import toast from 'react-hot-toast';
 import EmployerForgotPassword from "./employerForgotPassword.jsx";
 import ParticlesAuth from "../components/ParticlesAuth";
 import client from "../api/client.js";
@@ -14,8 +15,6 @@ export default function EmployerLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   if (isForgotPassword) {
@@ -24,13 +23,11 @@ export default function EmployerLogin() {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      setError("Vui lòng nhập email và mật khẩu");
+      toast.error("Vui lòng nhập email và mật khẩu");
       return;
     }
 
     setLoading(true);
-    setError("");
-    setSuccess("");
 
     try {
       const response = await client.post(`/api/loginEmployer`, {email: email, password: password});
@@ -39,16 +36,16 @@ export default function EmployerLogin() {
       const { success } = data;
 
       if (!success) {
-        setError("Đăng nhập thất bại.");
+        toast.error("Đăng nhập thất bại.");
         return;
       }
 
-      setSuccess("Đăng nhập thành công");
+      // toast.success("Đăng nhập thành công");
       localStorage.setItem("email", email)
       setTimeout(() => navigate("/homepage"), 300);
 
     } catch (err) {
-      setError("Không thể kết nối đến máy chủ.");
+      toast.error("Không thể kết nối đến máy chủ.");
     } finally {
       setLoading(false);
     }
@@ -112,9 +109,6 @@ export default function EmployerLogin() {
                     </div>
                 </div>
             </div>
-
-            {error && <div className="error-msg">{error}</div>}
-            {success && <div className="success-msg">{success}</div>}
 
             <button
                 className="auth-button"

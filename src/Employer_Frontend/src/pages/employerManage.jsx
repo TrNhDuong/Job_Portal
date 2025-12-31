@@ -6,6 +6,7 @@ import { ArrowLeft, User, FileWarning, ExternalLink, Ban, Check, Mail, Flame, X,
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import {Paperclip, Minimize2, Maximize2, Trash2, MapPin } from 'lucide-react';
+import toast from 'react-hot-toast';
 import "../styles/emailModal.css"; 
 
 // ==========================================
@@ -349,7 +350,7 @@ const CVManager = ({ job, initiallabel, onBack }) => {
         try {
             const response = await client.get(`api/application/applicantinfo?jobId=${job._id}`);
             if (response.data.success && isMounted) setCvList(response.data.data);
-        } catch (error) { console.error("Failed to fetch", error); } 
+        } catch (error) { console.error("Failed to fetch", error); toast.error("Không thể tải danh sách ứng viên"); } 
         finally { if (isMounted) setLoading(false); }
     };
     if (job) fetchApplicants();
@@ -406,15 +407,17 @@ const CVManager = ({ job, initiallabel, onBack }) => {
             if (selectedCv && selectedCv.application._id === applicationId) {
                 setSelectedCv(prev => ({ ...prev, application: { ...prev.application, label: newStatus } }));
             }
+            toast.success(`Đã cập nhật trạng thái: ${newStatus}`);
             return true;
         } else {
-            alert(response.data.message); return false;
+            toast.error("Cập nhật thất bại");
+            return false;
         }
-    } catch (error) { console.error("API Error", error); return false; }
+    } catch (error) { console.error("API Error", error); toast.error("Lỗi kết nối server"); return false; }
   };
 
   const handleSendEmail = (subject, content) => {
-      alert(`Đã gửi email thành công tới ${targetRecipients.length} ứng viên!`);
+      toast.success(`Đã gửi email thành công tới ${targetRecipients.length} ứng viên!`);
       setShowEmailModal(false);
   };
 

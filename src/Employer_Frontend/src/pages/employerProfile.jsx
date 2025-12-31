@@ -5,6 +5,7 @@ import monoLogo from '../assets/mono-logo.png';
 import EmployerProfileEdit from './EmployerProfileEdit';
 import { AuthContext } from "../context/AuthContext.jsx";
 import client from '../api/client';
+import toast from 'react-hot-toast';
 
 // Cập nhật ảnh Mock đẹp hơn (ảnh văn phòng hiện đại)
 const MOCK_BANNER = "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=1920&auto=format&fit=crop";
@@ -30,11 +31,11 @@ const EmployerProfile = () => {
                 onSave={async (updatedData) => {
                     const result = await client.patch(`api/employer?email=${data.email}`, updatedData);
                     if (result.data.success) {
-                        alert("Cập nhật hồ sơ thành công!");
+                        toast.success("Cập nhật hồ sơ thành công!");
                         await updateEmployerWithData(updatedData);
                         setMode('view');
                     } else {
-                        alert("Cập nhật hồ sơ thất bại. Vui lòng thử lại.");
+                        toast.error("Cập nhật hồ sơ thất bại. Vui lòng thử lại.");
                     }
                 }}
                 onChangeLogo={async (logo) => {
@@ -50,7 +51,8 @@ const EmployerProfile = () => {
                             await updateData();                            
                         }
                     } catch ( error ){
-                        console.log(error)
+                        toast.dismiss(loadingToast);
+                        toast.error("Lỗi kết nối server.");
                     } finally {
                         setLoading(false); 
                     }
@@ -68,7 +70,8 @@ const EmployerProfile = () => {
                             await updateData();                            
                         }
                     } catch ( error ){
-                        console.log(error)
+                        console.log(error);
+                        toast.error("Không thể tải ảnh lên. Vui lòng thử lại.");
                     } finally {
                         setLoading(false); 
                     }

@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect, useContext } from "react"; // Thêm useEffect
 import "../styles/employerpost.css";
 import { AuthContext } from "../context/AuthContext.jsx"; 
-import { HiPencilAlt, HiBriefcase, HiCurrencyDollar, HiOfficeBuilding, HiSave, HiTrash, HiClipboardList, HiGift } from "react-icons/hi";
+import { HiPencilAlt, HiBriefcase, HiCurrencyDollar, HiOfficeBuilding, HiSave, HiTrash, HiClipboardList, HiGift, HiExclamationCircle } from "react-icons/hi";
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
+import toast from 'react-hot-toast';
 
 const initialFormState = {
   id: null,
@@ -257,14 +258,68 @@ const EmployerPostJob = ({ onSubmit, initialData }) => {
       };
 
       onSubmit(formattedData);
+      } else {
+        toast.error("Vui lòng kiểm tra lại các thông tin còn thiếu!");
     }
   };
 
   const handleReset = () => {
-    if(window.confirm("Bạn có chắc muốn xóa hết thông tin đã nhập?")) {
-        setForm(initialFormState);
-        setErrors({});
-    }
+    toast((t) => (
+      <div style={{ position: 'relative', minWidth: '100px', padding: '2px' }}>
+         <div 
+            className="toast-backdrop-hack" 
+            onClick={() => toast.dismiss(t.id)} 
+         ></div>
+
+         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px', pointerEvents: 'none' }}>
+             <div style={{ 
+                width: '40px', height: '40px', borderRadius: '50%', 
+                background: '#fee2e2', display: 'flex', alignItems: 'center', justifyContent: 'center' 
+             }}>
+                <HiExclamationCircle size={24} color="#ef4444" />
+             </div>
+             <div>
+                <p style={{ fontWeight: '600', margin: '0 0 4px 0', fontSize: '15px', color: '#1f2937' }}>
+                    Làm mới form?
+                </p>
+                <p style={{ margin: 0, fontSize: '13px', color: '#6b7280' }}>
+                    Toàn bộ dữ liệu đã nhập sẽ bị xóa.
+                </p>
+             </div>
+         </div>
+
+         <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+            <button 
+                onClick={() => toast.dismiss(t.id)} 
+                className="toast-btn-base toast-btn-cancel"
+            >
+                Hủy
+            </button>
+            <button
+                className="toast-btn-base toast-btn-delete" // Dùng class màu đỏ
+                onClick={() => {
+                    setForm(initialFormState);
+                    setErrors({});
+                    toast.dismiss(t.id);
+                    toast.success("Đã xóa toàn bộ dữ liệu nhập vào.");
+                }}
+            >
+                Xóa
+            </button>
+         </div>
+      </div>
+    ), {
+        duration: 4000,
+        position: 'top-center',
+        style: {
+            background: '#fff',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
+            borderRadius: '12px',
+            border: '1px solid #f3f4f6',
+            padding: '16px',
+            pointerEvents: 'auto'
+        }
+    });
   };
 
   const renderTabButton = (tabName, label, errorKey) => {

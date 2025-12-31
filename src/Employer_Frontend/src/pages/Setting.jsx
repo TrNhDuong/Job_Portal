@@ -7,6 +7,7 @@ import securityIcon from '../assets/icon/security.png';
 import bellIcon from '../assets/icon/bell.png';
 import client from '../api/client';
 import { AuthContext } from "../context/AuthContext.jsx"; 
+import toast, { Toaster } from 'react-hot-toast';
 
 // Khởi tạo state: ĐÃ THÊM currentPassword
 const accountInitialState = {
@@ -76,15 +77,15 @@ const Setting = ({ isVisible, onClose }) => {
             const response = await client.post(`/api/password/employer`, data);
 
             if (response.data.success){
-                alert('Cập nhật mật khẩu thành công')
+                toast.success('Cập nhật mật khẩu thành công');
             } else {
                 // Xử lý lỗi từ server (ví dụ: mật khẩu cũ không đúng)
-                alert(response.data.message || 'Đã có lỗi xảy ra khi cập nhật mật khẩu');
+                toast.error(response.data.message || 'Đã có lỗi xảy ra khi cập nhật mật khẩu');
             }
             setAccountForm(accountInitialState);
             onClose();
         } catch (err) {
-            alert('Lỗi kết nối hoặc server. Vui lòng thử lại.');
+            toast.error('Lỗi kết nối hoặc server. Vui lòng thử lại.');
             console.error("Lỗi đổi mật khẩu:", err);
             return;
         }

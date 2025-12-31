@@ -6,6 +6,8 @@ import logoImage from "../assets/logo.png";
 import "../styles/register.css";
 import "../styles/emailModal.css"; // Đảm bảo import CSS cho Modal
 import ParticlesAuth from "../components/ParticlesAuth";
+import toast from 'react-hot-toast';
+
 
 const API_BASE_URL = "http://localhost:8080/api";
 
@@ -36,9 +38,6 @@ export default function EmployerRegister() {
     const [resendTimer, setResendTimer] = useState(0);
 
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
-    const [success, setSuccess] = useState("");
-
     const email = formData.email;
 
     const passCriteria = {
@@ -55,12 +54,12 @@ export default function EmployerRegister() {
     // -------------------- SEND OTP --------------------
     const sendOtp = async () => {
         if (!email) {
-            setError("Email là bắt buộc.");
+            toast.error("Email là bắt buộc.");
             return;
         }
 
         setOtpLoading(true);
-        setError("");
+        toast.dismiss();
 
         try {
             const res = await fetch(`${API_BASE_URL}/send-otp`, {
@@ -76,7 +75,7 @@ export default function EmployerRegister() {
 
             setOtpSent(true);
             setOtpModal(true);
-            setSuccess("OTP đã được gửi! Hãy kiểm tra email.");
+            toast.success("OTP đã được gửi! Hãy kiểm tra email.");
 
             // Resend countdown
             setResendTimer(30);
@@ -91,7 +90,7 @@ export default function EmployerRegister() {
             }, 1000);
 
         } catch (err) {
-            setError(err.message || "Không thể gửi OTP.");
+            toast.error("Không thể gửi OTP.");
         } finally {
             setOtpLoading(false);
         }
@@ -102,12 +101,12 @@ export default function EmployerRegister() {
         const otpCode = otp.join("");
 
         if (otpCode.length !== 6) {
-            setError("OTP chưa đầy đủ.");
+            toast.error("OTP chưa đầy đủ.");
             return;
         }
 
         setOtpLoading(true);
-        setError("");
+        toast.dismiss();
 
         try {
             const res = await fetch(`${API_BASE_URL}/verify-otp`, {
@@ -123,10 +122,10 @@ export default function EmployerRegister() {
 
             setOtpVerified(true);
             setOtpModal(false);
-            setSuccess("Xác thực OTP thành công!");
+            toast.success("Xác thực OTP thành công!");
 
         } catch (err) {
-            setError(err.message);
+            toast.error(err.message);
         } finally {
             setOtpLoading(false);
         }
@@ -158,39 +157,39 @@ export default function EmployerRegister() {
     // -------------------- REGISTER --------------------
     const handleRegister = async () => {
         if (!Object.values(formData).every(val => val)) {
-            setError("Vui lòng điền đầy đủ thông tin");
+            toast.error("Vui lòng điền đầy đủ thông tin");
             return;
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(formData.email)) {
-            setError("Email không hợp lệ");
+            toast.error("Email không hợp lệ");
             return;
         }
 
         const phoneRegex = /^[0-9]{10,11}$/;
         if (!phoneRegex.test(formData.phone)) {
-            setError("Số điện thoại không hợp lệ");
+            toast.error("Số điện thoại không hợp lệ");
             return;
         }
 
         if (!Object.values(passCriteria).every(Boolean)) {
-            setError("Mật khẩu chưa thỏa mãn yêu cầu");
+            toast.error("Mật khẩu chưa thỏa mãn yêu cầu");
             return;
         }
 
         if (formData.password !== formData.confirmPassword) {
-            setError("Mật khẩu nhập lại không khớp");
+            toast.error("Mật khẩu nhập lại không khớp");
             return;
         }
 
         if (!agreeTerms) {
-            setError("Bạn cần đồng ý điều khoản");
+            toast.error("Bạn cần đồng ý điều khoản");
             return;
         }
 
         if (!otpVerified) {
-            setError("Bạn cần xác thực OTP.");
+            toast.error("Bạn cần xác thực OTP.");
             return;
         }
 
@@ -213,15 +212,15 @@ export default function EmployerRegister() {
 
             const data = await response.json();
             if (!data.success) {
-                setError("Đăng ký thất bại.");
+                toast.error("Đăng ký thất bại.");
                 return;
             }
 
-            setSuccess("Đăng ký thành công!");
+            toast.success("Đăng ký thành công!");
             navigate("/login");
 
         } catch (err) {
-            setError("Không thể kết nối server.");
+            toast.error("Không thể kết nối server.");
         } finally {
             setLoading(false);
         }
@@ -421,9 +420,6 @@ export default function EmployerRegister() {
                             .
                         </span>
                     </label>
-
-                    {error && <div className="error-msg">{error}</div>}
-                    {success && <div className="success-msg">{success}</div>}
 
                     <button className="auth-button" onClick={handleRegister} disabled={loading}>
                         {loading ? "Đang xử lý..." : "Đăng ký tài khoản"}

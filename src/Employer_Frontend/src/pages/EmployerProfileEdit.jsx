@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import '../styles/employerProfileEdit.css';
 import { FaSave, FaTimes, FaCamera, FaGlobe, FaMapMarkerAlt, FaImage } from 'react-icons/fa';
+import toast from 'react-hot-toast';
 
 // Import Editor
 import ReactQuill from 'react-quill-new';

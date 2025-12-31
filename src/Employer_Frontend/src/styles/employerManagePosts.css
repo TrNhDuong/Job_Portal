@@ -389,3 +389,72 @@
   font-weight: 500;
   margin: 0;
 }
+
+/* --- Style cho Toast xác nhận --- */
+
+/* Nút bấm chung */
+.toast-btn-base {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease; /* Hiệu ứng mượt */
+}
+
+/* Nút Hủy */
+.toast-btn-cancel {
+    background: white;
+    border: 1px solid #e5e7eb;
+    color: #374151;
+}
+.toast-btn-cancel:hover {
+    background: #f3f4f6; /* Xám nhẹ khi hover */
+    border-color: #d1d5db;
+}
+
+/* Nút Xóa (Màu đỏ) */
+.toast-btn-delete {
+    background: #ef4444;
+    border: none;
+    color: white;
+    box-shadow: 0 2px 5px rgba(239, 68, 68, 0.3);
+}
+.toast-btn-delete:hover {
+    background: #dc2626; /* Đỏ đậm hơn */
+    box-shadow: 0 4px 8px rgba(239, 68, 68, 0.4);
+    transform: translateY(-1px); /* Nổi lên nhẹ */
+}
+
+/* Nút Xác nhận (Màu xanh) */
+.toast-btn-confirm {
+    background: #0061ff;
+    border: none;
+    color: white;
+    box-shadow: 0 2px 5px rgba(0, 97, 255, 0.3);
+}
+.toast-btn-confirm:hover {
+    background: #0056e0; /* Xanh đậm hơn */
+    box-shadow: 0 4px 8px rgba(0, 97, 255, 0.4);
+    transform: translateY(-1px);
+}
+
+/* Nút Đóng (Màu đỏ - dùng khi đóng bài đăng) */
+.toast-btn-close {
+    background: #ef4444;
+    border: none;
+    color: white;
+    box-shadow: 0 2px 5px rgba(239, 68, 68, 0.3);
+}
+.toast-btn-close:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+}
+
+/* Lớp nền vô hình để bắt sự kiện click ra ngoài */
+.toast-backdrop-hack {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: -1; /* Nằm ngay dưới nội dung toast */
+    cursor: default;
+}
