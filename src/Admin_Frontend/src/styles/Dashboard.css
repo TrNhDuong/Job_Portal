@@ -63,6 +63,13 @@
 .stat-trend.negative { background: #fef2f2; color: #dc2626; }
 
 /* --- CHARTS GRID --- */
+.recharts-wrapper:focus,
+.recharts-wrapper:focus-visible,
+.recharts-surface:focus,
+.recharts-surface:focus-visible {
+  outline: none !important;
+}
+
 .charts-grid {
   display: grid;
   grid-template-columns: 1.5fr 1fr; /* Cột biểu đồ to hơn cột tròn */
@@ -84,7 +91,7 @@
 }
 
 .chart-title {
-  margin: 0; font-size: 1.1rem; color: var(--text-primary); font-weight: 700;
+  margin: 16px 0 16px 0; font-size: 1.1rem; color: var(--text-primary); font-weight: 700;
 }
 
 /* Custom Legend cho Pie Chart */
@@ -110,4 +117,74 @@
 @media (max-width: 1200px) {
   .stats-grid { grid-template-columns: 1fr; }
   .charts-grid { grid-template-columns: 1fr; }
+}
+
+/* M just doing whatever here */
+.stat-card {
+  cursor: pointer;
+  transition: all .25s ease;
+}
+
+.stat-card.active {
+  border: 2px solid var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(59,130,246,.15);
+}
+
+.chart-filter {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.chart-filter button {
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1px solid #ddd;
+  background: transparent;
+  cursor: pointer;
+}
+
+.chart-filter button.active {
+  background: #3b82f6;
+  color: white;
+}
+
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 9999px; /* fully rounded */
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  background: var(--primary-color);
+  color: #fff;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: all 0.25s ease;
+  width: fit-content;
+}
+
+.back-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+  background: #2563eb; /* đậm hơn chút khi hover */
+}
+
+.back-btn svg {
+  font-size: 1.2rem; /* icon lớn hơn tí */
+}
+
+/* Dark mode override */
+[data-theme='dark'] .back-btn {
+  background: #1e40af;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+[data-theme='dark'] .back-btn:hover {
+  background: #3b82f6;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.4);
 }

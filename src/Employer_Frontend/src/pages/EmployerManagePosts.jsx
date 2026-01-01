@@ -1,7 +1,11 @@
 import React, { useState, useRef, useMemo, useEffect } from "react";
 import "../styles/employerManagePosts.css";
-// Import thêm các icon đẹp mắt
-import { HiDotsHorizontal, HiLocationMarker, HiCurrencyDollar, HiBriefcase, HiClock, HiEye, HiUserGroup } from "react-icons/hi";
+import { 
+  HiDotsHorizontal, HiLocationMarker, HiCurrencyDollar, HiBriefcase, HiClock, 
+  HiOfficeBuilding, HiRefresh, 
+  HiOutlineTrash, HiOutlinePencil, HiOutlineLockClosed, HiOutlineLockOpen, HiOutlineExclamation 
+} from "react-icons/hi";
+import toast from 'react-hot-toast';
 
 const jobTypes = ["Full-time", "Part-time", "Internship", "Freelance", "Contract"];
 
@@ -32,44 +36,171 @@ export default function EmployerManagePosts({
   };
 
   const handleDeleteClick = (postId) => {
-    if (window.confirm("Hành động này không thể hoàn tác. Bạn chắc chắn muốn xóa?")) {
-      onDelete?.(postId);
-    }
     setMenuOpenId(null);
+    toast((t) => (
+      <div style={{ minWidth: '50px', padding: '2px' }}>
+        <div 
+            className="toast-backdrop-hack" 
+            onClick={() => toast.dismiss(t.id)} 
+            title="Nhấn vào đây để đóng"
+        ></div>
+
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px', position: 'relative', pointerEvents: 'none' }}>
+            <div style={{ 
+                width: '40px', height: '40px', borderRadius: '50%', 
+                background: '#fee2e2', display: 'flex', alignItems: 'center', justifyContent: 'center' 
+            }}>
+                <HiOutlineTrash size={22} color="#ef4444" />
+            </div>
+            <div>
+                <p style={{ fontWeight: '600', margin: 0, fontSize: '15px', color: '#1f2937' }}>Xóa bài đăng này?</p>
+                <p style={{ margin: 0, fontSize: '13px', color: '#6b7280' }}>Hành động này không thể hoàn tác.</p>
+            </div>
+        </div>
+        
+        {/* Footer: Buttons (Đã dùng Class CSS để có Hover) */}
+        <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', position: 'relative' }}>
+          <button 
+            onClick={() => toast.dismiss(t.id)}
+            className="toast-btn-base toast-btn-cancel"
+          >
+            Hủy
+          </button>
+          <button 
+            onClick={() => {
+              onDelete?.(postId);
+              toast.dismiss(t.id);
+            }}
+            className="toast-btn-base toast-btn-delete"
+          >
+            Xóa
+          </button>
+        </div>
+      </div>
+    ), { 
+        duration: 4000, 
+        position: 'top-center',
+        style: {
+            background: '#fff',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
+            borderRadius: '12px',
+            border: '1px solid #f3f4f6',
+            padding: '16px',
+            pointerEvents: 'auto' // Quan trọng để click được nút
+        }
+    });
   };
 
   const handleToggleStatusClick = (post) => {
-    // 1. Kiểm tra trạng thái hiện tại
-    const isCurrentlyClosed = post.state === 'Closed';
-    
-    const message = isCurrentlyClosed 
-      ? "Bạn có muốn mở lại bài tuyển dụng này không?" 
-      : "Bạn muốn đóng bài tuyển dụng này? Ứng viên sẽ không thể nộp đơn nữa.";
-
-    if (window.confirm(message)) {
-      post.state = isCurrentlyClosed ? 'Open' : 'Closed';
-      onUpdateState(post)
-    }
-    
     setMenuOpenId(null);
+    const isCurrentlyClosed = post.state === 'Closed';
+
+    toast((t) => (
+      <div style={{ minWidth: '50px', padding: '2px' }}>
+        <div 
+            className="toast-backdrop-hack" 
+            onClick={() => toast.dismiss(t.id)} 
+        ></div>
+
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '16px', pointerEvents: 'none' }}>
+            <div style={{ 
+                width: '40px', height: '40px', borderRadius: '50%', 
+                background: isCurrentlyClosed ? '#dbeafe' : '#fee2e2',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+            }}>
+                {isCurrentlyClosed 
+                    ? <HiOutlineLockOpen size={22} color="#0061ff"/> 
+                    : <HiOutlineLockClosed size={22} color="#ef4444"/>
+                }
+            </div>
+            <div>
+                <p style={{ fontWeight: '600', margin: '0 0 4px 0', fontSize: '15px', color: '#1f2937' }}>
+                    {isCurrentlyClosed ? "Mở lại tuyển dụng?" : "Đóng bài đăng này?"}
+                </p>
+                <p style={{ margin: 0, fontSize: '13px', color: '#6b7280', lineHeight: '1.4' }}>
+                    {isCurrentlyClosed 
+                        ? "Bài viết sẽ hiển thị công khai để ứng viên nộp hồ sơ." 
+                        : "Ứng viên sẽ không thể nộp đơn nữa."}
+                </p>
+            </div>
+        </div>
+
+        {/* Buttons (Đã dùng Class CSS để có Hover) */}
+        <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+          <button 
+            onClick={() => toast.dismiss(t.id)}
+            className="toast-btn-base toast-btn-cancel"
+          >
+            Hủy
+          </button>
+          <button 
+            onClick={() => {
+              const updatedPost = { ...post, state: isCurrentlyClosed ? 'Open' : 'Closed' };
+              onUpdateState(updatedPost);
+              toast.dismiss(t.id);
+            }}
+            className={`toast-btn-base ${isCurrentlyClosed ? 'toast-btn-confirm' : 'toast-btn-close'}`}
+          >
+            Xác nhận
+          </button>
+        </div>
+      </div>
+    ), { 
+        duration: 4000, 
+        position: 'top-center',
+        style: {
+            background: '#fff',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
+            borderRadius: '12px',
+            border: '1px solid #f3f4f6',
+            padding: '16px',
+            pointerEvents: 'auto'
+        }
+    });
   };
 
   // Logic lọc giữ nguyên
   const uniqueLocations = useMemo(() => {
-    const locations = new Set(posts.map((p) => p.location));
-    return Array.from(locations).sort();
-  }, [posts]);
+  if (!Array.isArray(posts)) return [];
+
+  const locations = new Set(
+    posts
+      .map(p => p.location)
+      .filter(Boolean)
+  );
+
+  return [...locations].sort();
+}, [posts]);
 
   const filteredPosts = useMemo(() => {
-    if (disableFilterBar) return posts;
-    return posts.filter((post) => {
-      const matchesText = post.title.toLowerCase().includes(textFilter.toLowerCase()) || 
-                          post.position.toLowerCase().includes(textFilter.toLowerCase());
-      const matchesLocation = locationFilter ? post.location === locationFilter : true; 
-      const matchesJobType = jobTypeFilter ? post.jobType === jobTypeFilter : true;
-      return matchesText && matchesLocation && matchesJobType; 
-    });
-  }, [posts, textFilter, locationFilter, jobTypeFilter, disableFilterBar]);
+  if (!Array.isArray(posts)) return [];
+  if (disableFilterBar) return posts;
+
+  const filterText = textFilter.toLowerCase();
+
+  return posts.filter(post => {
+    const title = post.title?.toLowerCase() ?? "";
+    const position = post.position?.toLowerCase() ?? "";
+
+    const matchesText =
+      title.includes(filterText) ||
+      position.includes(filterText);
+
+    const matchesLocation =
+      locationFilter
+        ? post.location?.toLowerCase() === locationFilter.toLowerCase()
+        : true;
+
+    const matchesJobType =
+      jobTypeFilter
+        ? post.jobType === jobTypeFilter
+        : true;
+
+    return matchesText && matchesLocation && matchesJobType;
+  });
+}, [posts, textFilter, locationFilter, jobTypeFilter, disableFilterBar]);
 
   // Helper format tiền tệ
   const formatSalary = (min, max, currency) => {
@@ -98,7 +229,7 @@ export default function EmployerManagePosts({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [menuOpenId]);
-
+  console.log(posts)
   return (
     <div className="manage-posts-wrapper">
       {!disableFilterBar && (
@@ -114,18 +245,29 @@ export default function EmployerManagePosts({
            </div>
            
            <div className="filter-group">
-              <select value={locationFilter} onChange={(e) => setLocationFilter(e.target.value)}>
-                <option value="">📍 Tất cả địa điểm</option>
-                {uniqueLocations.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
-              </select>
+              <div className="select-wrapper">
+                <HiLocationMarker className="select-icon" />
+                <select value={locationFilter} onChange={(e) => setLocationFilter(e.target.value)}>
+                  <option value="">Tất cả địa điểm</option>
+                  {uniqueLocations.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
+                </select>
+              </div>
 
-              <select value={jobTypeFilter} onChange={(e) => setJobTypeFilter(e.target.value)}>
-                <option value="">💼 Tất cả loại hình</option>
-                {jobTypes.map((type) => <option key={type} value={type}>{type}</option>)}
-              </select>
+              <div className="select-wrapper">
+                <HiBriefcase className="select-icon" />
+                <select value={jobTypeFilter} onChange={(e) => setJobTypeFilter(e.target.value)}>
+                  <option value="">Tất cả loại hình</option>
+                  {jobTypes.map((type) => <option key={type} value={type}>{type}</option>)}
+                </select>
+              </div>
 
-              <button className="btn-reset" onClick={() => { setTextFilter(""); setLocationFilter(""); setJobTypeFilter(""); }}>
-                Làm mới
+              <button 
+                className="btn-reset" 
+                onClick={() => { setTextFilter(""); setLocationFilter(""); setJobTypeFilter(""); }}
+                title="Xóa bộ lọc"
+              >
+                <HiRefresh className="btn-icon-spin" />
+                <span>Làm mới</span>
               </button>
            </div>
         </div>
@@ -157,11 +299,27 @@ export default function EmployerManagePosts({
                             </button>
                             {menuOpenId === post._id && (
                                 <div className="dropdown-menu" ref={menuRef} onClick={(e) => e.stopPropagation()}>
-                                    <div className="dropdown-item" onClick={() => handleToggleStatusClick(post)}>
-                                        {isClosed ? "🔄 Mở lại tuyển dụng" : "⛔ Đóng tuyển dụng"}
+                                    <div className="dropdown-item" onClick={() => handleToggleStatusClick(post)} style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                                        {isClosed ? (
+                                            <>
+                                                <HiOutlineLockOpen size={18} /> Mở lại tuyển dụng
+                                            </>
+                                        ) : (
+                                            <>
+                                                <HiOutlineLockClosed size={18} /> Đóng tuyển dụng
+                                            </>
+                                        )}
                                     </div>
-                                    <div className="dropdown-item" onClick={() => handleEditClick(post)}>✏️ Chỉnh sửa</div>
-                                    <div className="dropdown-item danger" onClick={() => handleDeleteClick(post._id)}>🗑️ Xóa bài</div>
+
+                                    {/* 2. Thay emoji Pencil */}
+                                    <div className="dropdown-item" onClick={() => handleEditClick(post)} style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                                        <HiOutlinePencil size={18} /> Chỉnh sửa
+                                    </div>
+
+                                    {/* 3. Thay emoji Trash */}
+                                    <div className="dropdown-item danger" onClick={() => handleDeleteClick(post._id)} style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                                        <HiOutlineTrash size={18} /> Xóa bài
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -201,8 +359,11 @@ export default function EmployerManagePosts({
           })
         ) : (
           <div className="empty-state">
-             <img src="https://cdni.iconscout.com/illustration/premium/thumb/search-not-found-illustration-download-in-svg-png-gif-file-formats--zoom-magnifier-404-error-empty-state-pack-user-interface-illustrations-5216538.png" alt="Empty" />
-             <p>Không tìm thấy bài đăng nào phù hợp.</p>
+              <div className="empty-icon-wrapper">
+                  <HiOfficeBuilding size={25} color="#9ca3af" /> {/* Icon tòa nhà xám */}
+              </div>
+              <h3>Chưa có bài đăng nào đang mở</h3>
+              <p>Hãy bắt đầu tạo tin tuyển dụng đầu tiên để thu hút nhân tài.</p>
           </div>
         )}
       </div>

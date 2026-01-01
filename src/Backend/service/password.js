@@ -7,7 +7,7 @@ export const generatePassword = () => {
     const pool = upper + lower + num + spec;
 
     let pass = "";
-    for (let i = 0; i < len; i++) {
+    for (let i = 0; i < 10; i++) {
         pass += pool[Math.floor(Math.random() * pool.length)];
     }
     return pass;

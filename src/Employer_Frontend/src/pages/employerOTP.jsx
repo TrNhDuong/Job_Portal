@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { HiArrowLeft } from "react-icons/hi";
 import logoImage from "../assets/logo.png";
 import "../styles/forgotPassword.css";
+import toast from 'react-hot-toast';
 // import client from "../api/client.js";
 
 export default function EmployerOTP() {
@@ -13,8 +14,6 @@ export default function EmployerOTP() {
 
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
   const [cooldown, setCooldown] = useState(30);
 
@@ -52,19 +51,19 @@ export default function EmployerOTP() {
   const handleVerify = async () => {
     const code = getOtpString();
 
-    if (code.length !== 6) return setError("Vui lòng nhập đủ 6 số");
+    if (code.length !== 6) return toast.error("Vui lòng nhập đủ 6 số");
 
     setLoading(true);
     try {
       await new Promise((r) => setTimeout(r, 1000));
       if (code !== "123456") throw new Error("Sai mã OTP (nhập 123456 để test)");
 
-      setSuccess("Xác thực thành công!");
+      toast.success("Xác thực thành công!");
       setTimeout(() => {
         navigate("/reset-password", { state: { email } });
       }, 1000);
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setLoading(false);
     }
@@ -74,7 +73,7 @@ export default function EmployerOTP() {
     if (cooldown > 0) return;
 
     setCooldown(30);
-    setSuccess("Mã OTP mới đã được gửi!");
+    toast.success("Mã OTP mới đã được gửi!");
     setOtp(["", "", "", "", "", ""]);
     inputsRef.current[0].focus();
 
@@ -170,10 +169,6 @@ export default function EmployerOTP() {
              <label htmlFor="dontAsk" style={{ cursor: 'pointer' }}>Không hỏi lại trên thiết bị này trong 14 ngày.</label>
           </div>
 
-
-          {/* Error & success */}
-          {error && <div className="error-msg" style={{ marginBottom: 15 }}>{error}</div>}
-          {success && <div className="success-msg" style={{ marginBottom: 15 }}>{success}</div>}
 
           {/* Submit Button */}
           <button

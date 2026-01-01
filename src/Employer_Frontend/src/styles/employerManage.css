@@ -1,448 +1,944 @@
-.employer-manage-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background-color: #f9fafb;
-  position: relative; /* quan trọng nè bé */
+.dashboard-container {
+  padding: 24px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  font-family: 'Be Vietnam Pro', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  width: 100%;
+  margin-top: -40px;
+  box-sizing: border-box;
 }
 
-/* Filter Bar */
-.filter-bar {
-  top: 64px;
-  background: #ffffff;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 12px 24px;
-  border-bottom: 1px solid var(--border);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  z-index: 998;
-  transition: left 0.3s ease, width 0.3s ease;
-}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.animate-fade-in { animation: fadeIn 0.4s ease-out; }
+.animate-slide-in { animation: fadeIn 0.3s ease-out; }
 
-
-.filter-row-top {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  justify-content: flex-start;
-  flex-wrap: wrap;
-}
-
-.filter-input {
-  flex: 1;
-  min-width: 220px;
-  max-width: 400px;
-  padding: 8px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 0.95rem;
-  font-family: 'Be Vietnam Pro', sans-serif;
-}
-
-.filter-row-bottom {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.filter-select select{
-  -webkit-appearance: none; 
-  -moz-appearance: none;    
-  appearance: none;
-  /* 2. Thiết lập kích thước & padding */
-  padding: 8px 12px;
-  padding-right: 35px; 
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  background-color: #f9fafb;
-  /* 3. Thêm mũi tên tùy chỉnh (Icon SVG màu xám) */
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right 10px center; /* Căn phải 10px, Căn giữa dọc */
-  background-size: 16px; /* Kích thước mũi tên */
-  font-size: 0.95rem;
-  cursor: pointer;
-  flex: 1;
-  min-width: 160px;
-  /* 4. Fix lỗi mất font (nếu có) */
-  font-family: 'Be Vietnam Pro', sans-serif;
-  color: #374151; /* Màu chữ xám đậm cho rõ */
-}
-
-/* Hiệu ứng khi di chuột hoặc focus */
-.filter-select select:hover,
-.filter-select select:focus {
-  border-color: #2563eb; /* Viền xanh khi chọn */
-  outline: none;
-  background-color: #fff;
-}
-
-.filter-row-bottom button {
-  background: #2563eb;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 14px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.2s ease;
-  font-family: 'Be Vietnam Pro', sans-serif;
-}
-
-.filter-row-bottom button:hover {
-  background: #1e40af;
-}
-
-/* CV List Section */
-.cv-list {
-  flex: 1;
-  overflow-y: auto;
-  padding: calc(104px + 48px) 20px 20px; /* top padding = filter bar height + extra margin */
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
-  box-sizing: border-box; /* ensures padding is included in height */
-}
-
-
-.cv-card {
+/* --- Filter Bar --- */
+.dashboard-filter-bar {
   background: white;
-  border-radius: 10px;
   padding: 16px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 8px;
+  border: 1px solid #eaecf0;
+  margin-bottom: 24px;
+}
+
+.filter-row { display: flex; gap: 12px; flex-wrap: wrap; }
+.filter-input {
+  padding: 10px 14px;
+  border: 1px solid #d0d5dd;
+  border-radius: 8px;
+  outline: none;
+  font-size: 14px;
+  min-width: 220px;
+  font-family: 'Be Vietnam Pro', sans-serif; /* Fix lỗi mất font */
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+/* 2. Ô Select Địa điểm (Custom Mũi tên) */
+.filter-select {
+  /* Reset mặc định */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  padding: 10px 14px;
+  padding-right: 40px; /* Chừa chỗ cho mũi tên */
+  
+  border: 1px solid #d0d5dd;
+  border-radius: 8px;
+  outline: none;
+  font-size: 14px;
+  min-width: 220px;
+  font-family: 'Be Vietnam Pro', sans-serif; /* Fix lỗi mất font */
+  cursor: pointer;
+  background-color: #fff;
+  color: #344054;
+
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23667085' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 14px center; /* Căn giữa dọc, cách phải 14px */
+  background-size: 16px;
+  
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.filter-input:focus, .filter-select:focus { border-color: #2196f3; box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1); }
+
+/* --- Job Card --- */
+.job-list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); /* Widen slightly for better spacing */
+  gap: 24px;
+}
+
+.job-card {
+  background: white;
+  padding: 24px; /* Increased padding to match design */
+  border-radius: 12px;
+  border: 1px solid #eaecf0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.05);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  position: relative;
 }
 
-.cv-card:hover {
+.job-card:hover {
+  border-color: #2196f3;
   transform: translateY(-2px);
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 12px 20px rgba(33, 150, 243, 0.1);
 }
 
-.cv-info {
+/* Job Header Section (Summary) */
+.job-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.job-left {
   display: flex;
   flex-direction: column;
-  gap: 6px; /* Consistent spacing between all info fields */
-}
-
-.cv-header h3 {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #111827;
-}
-
-.cv-position {
-  margin: 0;
-  font-size: 0.95rem;
-  color: #6b7280;
-}
-
-.cv-location,
-.cv-date {
-  margin: 0;
-  font-size: 0.9rem;
-  color: #9ca3af;
-}
-
-.view-btn {
-  margin-top: 12px; /* keeps button separate from info */
-  padding: 8px 12px;
-  background-color: #2563eb;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.2s ease;
-
-  align-self: flex-end;
-}
-
-.view-btn:hover {
-  background-color: #1e40af;
-}
-
-.no-results {
-  text-align: center;
-  color: #6b7280;
-  font-size: 1rem;
-  margin-top: 40px;
-}
-
-.cv-priority-flag {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  position: absolute;
-  top: 8px;
-  left: 8px;
-}
-
-.cv-priority-high {
-  background-color: red;
-}
-
-.cv-priority-low {
-  background-color: green;
-}
-
-/* ✅ Back button fix trong white box */
-.back-btn {
-  padding: 8px 14px;
-  background: #2563eb;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background 0.2s ease;
-
-  /* Sửa layout cho cân đối */
-  align-self: flex-start; /* Nút tự co lại đúng kích thước */
-  margin-bottom: 9px;  /* Tạo khoảng cách với tiêu đề "CVs for..." */
-
-  display: flex;
-  align-items: center;
   gap: 6px;
 }
 
-.back-btn:hover {
-  background: #1e40af;
+.job-left h3 { 
+  margin: 0; 
+  color: #101828; 
+  font-size: 18px; 
+  font-weight: 700; 
+  line-height: 1.4; 
 }
 
-/* --- THÊM MỚI: Style cho Tag (Nhãn) Trạng thái --- */
-/* Dùng position: absolute để đặt nó ở góc trên bên phải */
-.cv-status-tag {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: white;
-  z-index: 5; /* Nằm trên cờ ưu tiên nếu có */
+.job-position { 
+  color: #475467; 
+  font-size: 14px; 
+  font-weight: 500;
+  margin: 0;
 }
 
-.cv-status-tag.dau {
-  background-color: #16a34a; /* Màu xanh lá (Đậu) */
+.job-location { 
+  color: #98a2b3; 
+  font-size: 14px; 
+  margin: 4px 0 0 0;
 }
 
-.cv-status-tag.tu-choi {
-  background-color: #dc2626; /* Màu đỏ (Từ chối) */
-}
-/* ------------------------------------------------ */
-
-/* --- THÊM MỚI: Style làm mờ thẻ CV --- */
-/* Áp dụng cho thẻ CV không còn ở trạng thái "chua_xem" */
-.cv-card.faded {
-  opacity: 0.65;
-  background-color: #f9fafb; /* Nền hơi xám đi */
+/* Total Applicant Count (Big Number on Right) */
+.job-len {
+  font-size: 32px;
+  font-weight: 700;
+  color: #344054;
+  line-height: 1;
+  margin: 0;
+  padding-left: 16px; /* Spacing from text */
 }
 
-/* Khi di chuột vào thẻ đã mờ, nó sẽ sáng rõ trở lại */
-.cv-card.faded:hover {
-  opacity: 1; 
-  background-color: #ffffff;
-}
-
-/* --- THÊM MỚI: Style cho Checkbox trên thẻ CV --- */
-.cv-card-checkbox {
-  position: absolute;
-  bottom: 10px;
-  left: 10px; /* Đặt ở góc trên bên trái */
-  z-index: 5;
-  transform: scale(1.2); /* Làm cho checkbox to hơn một chút */
-  cursor: pointer;
-}
-
-/* --- THÊM MỚI: Thanh Hành động hàng loạt (Batch Action) --- */
-.batch-action-bar {
-  position: fixed;
-  bottom: 24px; /* <--- THAY ĐỔI 1: ĐẶT Ở DƯỚI CÙNG */
-  /* left/right vẫn được set bằng inline style trong JSX */
-  z-index: 999;
-  
-  background-color: #1e40af;
-  color: white;
+/* --- Metrics --- */
+.job-metrics {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 24px;
+  gap: 12px; /* Increased gap */
+  padding-top: 20px;
+  border-top: 1px solid #f2f4f7;
+}
+
+.metric-box {
+  flex: 1;
+  text-align: center;
+  padding: 16px 8px; /* Taller box */
+  background: #f9fafb;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  
-  /* THAY ĐỔI 2: Hiệu ứng trượt LÊN (bắt đầu từ ngoài màn hình) */
-  transform: translateY(100px); 
-  opacity: 0;
-  pointer-events: none;
-  transition: transform 0.3s ease, opacity 0.3s ease;
-}
-
-.batch-action-bar.visible {
-  transform: translateY(0); /* <--- Trượt về vị trí (bottom: 24px) */
-  opacity: 1;
-  pointer-events: all;
-}
-
-.batch-action-info {
-  font-weight: 600;
-  font-size: 1rem;
-}
-
-.batch-action-buttons {
-  display: flex;
-  gap: 12px;
-}
-
-.batch-action-bar button {
-  border: none;
-  padding: 8px 14px;
-  border-radius: 6px;
-  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-/* Nút "Đã xem" */
-.btn-batch-action {
-  background-color: #ffffff; /* Nút trắng */
-  color: #1e40af; /* Chữ xanh */
-}
-.btn-batch-action:hover {
-  background-color: #e0e7ff; /* Xanh nhạt */
-}
-
-/* Nút "Từ chối" */
-.btn-batch-reject {
-  background-color: #dc2626; /* Nút đỏ */
-  color: white;
-}
-.btn-batch-reject:hover {
-  background-color: #b91c1c; /* Đỏ đậm */
-}
-
-/* Nút "Hủy" */
-.btn-batch-cancel {
-  background-color: transparent;
-  color: white;
-  border: 1px solid white;
-}
-.btn-batch-cancel:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-/* --- THÊM MỚI: Style cho Thống kê nhanh --- */
-.cv-quick-stats {
-  font-size: 0.95rem;
-  color: #374151; /* Màu chữ xám đậm */
-  font-weight: 500;
-  margin-bottom: 5px; /* Khoảng cách với bộ lọc bên dưới */
-  margin-top: -6px; /* Gần tiêu đề h2 hơn */
-  padding-left: 2px; /* Thẳng hàng với tiêu đề (nếu có) */
-}
-
-/* Làm cho số liệu nổi bật hơn */
-.cv-quick-stats strong {
-  color: #1a202c; /* Màu đen */
-  font-weight: 600;
-}
-
-/* Màu cho thống kê Đậu CV (giống nhãn) */
-.stat-dau {
-  color: #16a34a; /* Màu xanh lá */
-  font-weight: 600;
-}
-
-/* Màu cho thống kê Từ chối (giống nhãn) */
-.stat-tu-choi {
-  color: #dc2626; /* Màu đỏ */
-  font-weight: 600;
-}
-
-/* Màu cho thống kê Đã xem */
-.stat-da-xem {
-  color: #4c80f1; /* Màu xanh dương (màu nút "Xem CV") */
-  font-weight: 600;
-}
-
-/* Màu cho thống kê Chưa xem */
-.stat-chua-xem {
-  color: #6b7280; /* Màu xám (màu chữ phụ) */
-  font-weight: 600;
-}
-
-.stat-dau strong { color: #16a34a; }
-.stat-tu-choi strong { color: #dc2626; }
-.stat-da-xem strong { color: #4c80f1; }
-.stat-chua-xem strong { color: #6b7280; }
-
-.job-post-metrics {
-  display: flex;
-  justify-content: space-between; /* Chia đều khoảng cách */
-  align-items: center;
-  padding-top: 16px;
-  border-top: 1px solid #f1f5f9; /* Đường kẻ ngang ngăn cách */
-}
-
-.metric-item {
+  transition: background 0.2s;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex: 1; /* Chia đều chiều rộng */
-  position: relative;
+  gap: 4px;
 }
+.metric-box:hover { background: #eff8ff; }
 
-/* Đường kẻ dọc ngăn cách giữa các metrics (trừ thằng cuối cùng) */
-.metric-item:not(:last-child)::after {
-  content: "";
-  position: absolute;
-  right: 0;
-  height: 70%;
-  width: 1px;
-  background-color: #e2e8f0;
-}
-
-.metric-count {
-  font-size: 1.25rem;
-  font-weight: 700;
+.metric-number { 
+  display: block; 
+  font-size: 20px; 
+  font-weight: 700; 
   line-height: 1;
+}
+.metric-label { 
+  font-size: 13px; 
+  color: #667085; 
+  font-weight: 500; 
+}
+
+/* Metric Colors */
+.metric-box.new .metric-number { color: #0086c9; }
+.metric-box.potential .metric-number { color: #12b76a; }
+.metric-box.interview .metric-number { color: #f79009; }
+.metric-number.zero { color: #d0d5dd !important; }
+
+/* --- Pipeline Tabs --- */
+.pipeline-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.pipeline-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: white;
+  border: 1px solid #d0d5dd;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #344054;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.pipeline-tab:hover { background: #f9fafb; }
+.pipeline-tab.active { background: #eff8ff; border-color: #2196f3; color: #1570ef; }
+
+.count-badge {
+  background: #f2f4f7; color: #344054;
+  padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: 600;
+}
+.pipeline-tab.active .count-badge { background: #ffffff; color: #1570ef; }
+
+/* --- CV Item List --- */
+.cv-list { display: flex; flex-direction: column; gap: 12px; }
+
+.cv-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: white;
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: 1px solid #eaecf0;
+  transition: box-shadow 0.2s;
+}
+
+.cv-item:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+
+.cv-checkbox { margin-right: 16px; width: 18px; height: 18px; cursor: pointer; }
+
+.cv-main-info { flex: 1; }
+
+.cv-header-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin-bottom: 4px;
 }
 
-.metric-label {
-  font-size: 0.75rem;
-  color: #64748b;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+.cv-name { font-weight: 600; font-size: 16px; color: #101828; }
+.priority-icon { color: #f04438; width: 16px; height: 16px; }
+
+/* Status Pills */
+.status-pill {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 12px;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.status-pill.pass { background: #ecfdf3; color: #027a48; border: 1px solid #abefc6; }
+.status-pill.rejected { background: #fef3f2; color: #b42318; border: 1px solid #fecdca; }
+.status-pill.viewed { background: #f9fafb; color: #344054; border: 1px solid #eaecf0; }
+.status-pill.new { background: #eff8ff; color: #175cd3; border: 1px solid #b2ddff; }
+
+.cv-sub { font-size: 13px; color: #667085; margin-top: 4px; }
+
+/* --- Actions --- */
+.view-btn-outline {
+  background: white;
+  border: 1px solid #d0d5dd;
+  color: #344054;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.view-btn-outline:hover {
+  border-color: #2196f3;
+  color: #2196f3;
+  background: #eff8ff;
 }
 
-/* --- COLOR CODING (MÃ HÓA MÀU) --- */
-
-/* 1. Mới (Quan trọng nhất - Màu đỏ/cam) */
-.count-new .metric-count {
-  color: #ef4444; /* Red 500 */
+.back-btn-row { margin-bottom: 20px; }
+.btn-back {
+  background: none; border: none; cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+  color: #667085; font-size: 14px; font-weight: 500; padding: 0;
 }
-/* Hiệu ứng nền nhẹ khi hover vào số (Optional) */
-.count-new:hover .metric-count {
-  text-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
-}
+.btn-back:hover { color: #2196f3; }
 
-/* 2. Tiềm năng (Màu xanh lá - Positive) */
-.count-potential .metric-count {
-  color: #10b981; /* Emerald 500 */
+.no-results, .loading-state, .no-data-msg {
+  text-align: center; color: #667085; padding: 40px 0; font-size: 14px;
 }
 
-/* 3. Phỏng vấn (Màu xanh dương - Process) */
-.count-interviewed .metric-count {
-  color: #3b82f6; /* Blue 500 */
+/* --- Modal Styles --- */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 1000;
+}
+.modal-content {
+  background: white; padding: 24px; border-radius: 12px;
+  width: 500px; max-width: 90%;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.modal-title { font-size: 18px; font-weight: 700; }
+.close-btn { background: none; border: none; cursor: pointer; color: #666; }
+.modal-body p { margin-bottom: 12pfx; line-height: 1.5; color: #333; }
+.modal-actions { margin-top: 24px; display: flex; justify-content: flex-end; gap: 12px; }
+.btn { padding: 8px 16px; border-radius: 6px; font-weight: 500; cursor: pointer; border: none; }
+.btn-primary { background: #2196f3; color: white; }
+.btn-danger { background: #fef2f2; color: #ef4444; }
+.btn-secondary { background: #f3f4f6; color: #374151; }
+/* =========================================
+   1. CONTAINER & LAYOUT
+   ========================================= */
+.cv-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* Khoảng cách chuẩn giữa các thẻ */
+  padding: 4px; 
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* =========================================
+   2. THE PREMIUM CARD
+   ======================================== */
+.cv-card-premium {
+  position: relative;
+  display: flex;
+  justify-content: space-between; /* Đẩy Left và Right ra 2 đầu */
+  align-items: center;
+  
+  background: #ffffff;
+  padding: 16px 20px;
+  border-radius: 16px; /* Bo góc lớn hiện đại */
+  
+  /* Đổ bóng siêu mượt (Layered Shadows) */
+  box-shadow: 
+    0 2px 4px rgba(0,0,0,0.02), 
+    0 1px 0 rgba(0,0,0,0.02);
+  border: 1px solid rgba(241, 245, 249, 1);
+  
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); /* Hiệu ứng vật lý */
+  cursor: pointer;
+}
+
+/* Hover Effect: Nổi lên & Bóng đậm */
+.cv-card-premium:hover {
+  transform: translateY(-2px) scale(1.002);
+  box-shadow: 
+    0 12px 24px -6px rgba(0, 0, 0, 0.08), 
+    0 4px 8px -2px rgba(0, 0, 0, 0.04);
+  border-color: rgba(226, 232, 240, 1);
+  z-index: 10;
+}
+
+/* Trạng thái chưa đọc */
+.cv-card-premium.is-unread {
+  background: #f8fafc; /* Nền hơi lạnh nhẹ */
+}
+.cv-card-premium.is-unread .candidate-name {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* Glowing Dot Animation */
+.glow-dot {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  background-color: #3b82f6;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.8);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+  70% { box-shadow: 0 0 0 6px rgba(59, 130, 246, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+}
+
+/* =========================================
+   3. LEFT SIDE: INFO & IDENTITY
+   ========================================= */
+.card-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1; /* Chiếm hết không gian bên trái */
+}
+
+/* Checkbox */
+.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  padding-left: 12px; /* Chừa chỗ cho glow dot */
+}
+.premium-checkbox {
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  accent-color: #0f172a;
+}
+
+/* Avatar Group */
+.avatar-group {
+  display: flex;
+  align-items: center;
+  margin-left: 30px;
+  gap: 16px;
+}
+
+.avatar-box {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+}
+.avatar-box img, .avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 14px; /* Squircle */
+  object-fit: cover;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05); /* Viền chìm */
+}
+.avatar-placeholder {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  color: #0284c7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 20px;
+}
+.badge-flame {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  background: #ef4444;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Info Stack (Tên & Meta) */
+.info-stack {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px; /* Khoảng cách siêu nhỏ giữa dòng tên và dòng email */
+}
+
+.primary-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1.2;
+}
+.candidate-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+  letter-spacing: -0.01em;
+}
+
+/* Status Tags (High-end Pills) */
+.status-tag {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+.status-tag.new { background: #eff6ff; color: #3b82f6; border: 1px solid #dbeafe; }
+.status-tag.success { background: #f0fdf4; color: #16a34a; border: 1px solid #dcfce7; }
+.status-tag.danger { background: #fef2f2; color: #dc2626; border: 1px solid #fee2e2; }
+.status-tag.warning { background: #fffbeb; color: #d97706; border: 1px solid #fef3c7; }
+
+/* Secondary Row (Email & Date) */
+.secondary-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+}
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: color 0.2s;
+}
+.meta-icon { opacity: 0.6; }
+.divider { color: #cbd5e1; font-size: 10px; }
+
+/* =========================================
+   4. RIGHT SIDE: ACTIONS
+   ========================================= */
+.card-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.action-group {
+  display: flex;
+  gap: 8px;
+  opacity: 0;
+  transform: translateX(10px);
+  transition: all 0.3s ease;
+}
+
+/* Hover thẻ -> Hiện nút */
+.cv-card-premium:hover .action-group {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.action-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: #f1f5f9;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.action-btn:hover {
+  background: #0f172a; /* Nút chuyển màu đen sang trọng */
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.arrow-cue {
+  color: #cbd5e1;
+  transition: transform 0.2s;
+}
+.cv-card-premium:hover .arrow-cue {
+  transform: translateX(3px);
+  color: #94a3b8;
+}
+
+/* =========================================
+   5. EMPTY STATE
+   ========================================= */
+.empty-state-premium {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 0;
+  color: #94a3b8;
+  border: 2px dashed #e2e8f0;
+  border-radius: 16px;
+  background: #f8fafc;
+}
+.empty-icon-box {
+  background: #fff;
+  padding: 16px;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  margin-bottom: 16px;
+  color: #cbd5e1;
+}
+
+/* --- Overlay & Main Content --- */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background-color: rgba(15, 23, 42, 0.6); /* Màu nền tối hiện đại */
+  backdrop-filter: blur(8px); /* Hiệu ứng mờ nền mạnh hơn */
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999;
+}
+
+.modal-content-premium {
+  background-color: #ffffff !important;
+  width: 90vw; height: 85vh; max-width: 1100px;
+  border-radius: 16px; /* Bo góc lớn hơn */
+  display: flex; flex-direction: column;
+  /* Đổ bóng 2 lớp tạo chiều sâu */
+  box-shadow: 
+      0 10px 15px -3px rgba(0, 0, 0, 0.1), 
+      0 4px 6px -2px rgba(0, 0, 0, 0.05),
+      0 0 0 1px rgba(0,0,0,0.05); /* Viền mờ tinh tế */
+  overflow: hidden;
+}
+
+/* --- Header Premium --- */
+.modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex; justify-content: space-between; align-items: center;
+}
+
+.header-identity {
+  display: flex; align-items: center; gap: 16px;
+}
+
+/* Avatar lớn trong modal */
+.avatar-large { width: 56px; height: 56px; flex-shrink: 0; }
+.avatar-large img, .avatar-placeholder-large {
+  width: 100%; height: 100%; border-radius: 14px; object-fit: cover;
+}
+.avatar-placeholder-large {
+  background: #f1f5f9; color: #94a3b8; display: flex; align-items: center; justify-content: center;
+}
+
+.identity-text .modal-title {
+  margin: 0 0 4px 0; font-size: 20px; font-weight: 700; color: #0f172a;
+}
+.identity-text .modal-subtitle { font-size: 14px; color: #64748b; }
+.header-actions { display: flex; align-items: center; gap: 12px; }
+
+/* --- Body: Empty State Premium --- */
+.modal-body-viewer {
+  flex-grow: 1; background: #f8fafc; /* Nền xám rất nhạt */
+  position: relative;
+}
+
+.empty-cv-state {
+  height: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: #64748b; text-align: center; padding: 32px;
+}
+
+.empty-illustration {
+  margin-bottom: 24px;
+  padding: 24px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05); /* Icon nổi lên */
+  color: #cbd5e1; /* Màu icon nhạt */
+}
+
+.empty-cv-state h4 {
+  font-size: 18px; font-weight: 600; color: #0f172a; margin: 0 0 8px 0;
+}
+.empty-cv-state p { max-width: 400px; margin-bottom: 24px; }
+
+/* --- Footer Premium --- */
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid #f1f5f9;
+  background: #fff;
+  display: flex; justify-content: flex-end; /* Căn toàn bộ sang phải */
+}
+
+.footer-right-group {
+    display: flex; align-items: center; gap: 16px;
+}
+
+.status-badge-group {
+    display: flex; align-items: center; gap: 8px; font-size: 13px;
+}
+
+/* Badge xịn */
+.premium-badge {
+    padding: 4px 12px; border-radius: 20px; font-weight: 600; font-size: 12px; text-transform: uppercase;
+}
+.premium-badge.warning { background: #fffbeb; color: #b45309; border: 1px solid #fcd34d; }
+
+.action-divider {
+    width: 1px; height: 24px; background: #e2e8f0; /* Đường kẻ dọc ngăn cách */
+}
+
+.footer-actions { display: flex; gap: 12px; }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px;
+  border-radius: 10px; font-weight: 600; font-size: 14px; transition: all 0.2s; cursor: pointer;
+}
+.btn-primary { background: #0f172a; color: white; border: 1px solid transparent;}
+.btn-primary:hover { background: #1e293b; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2); }
+.btn-outline-danger { background: white; color: #ef4444; border: 1px solid #fee2e2; }
+.btn-outline-danger:hover { background: #fef2f2; border-color: #ef4444; }
+.btn-sm { padding: 8px 16px; font-size: 13px;}
+.btn-outline-secondary { background: white; border: 1px solid #e2e8f0; color: #475569; }
+.btn-outline-secondary:hover { background: #f1f5f9; border-color: #cbd5e1; }
+
+.text-muted { color: #94a3b8; }
+.close-btn { border: none; background: transparent; color: #94a3b8; cursor: pointer; padding: 4px; }
+.close-btn:hover { color: #0f172a; }
+
+/* --- SPLIT VIEW LAYOUT (Chế độ xem chi tiết chia đôi) --- */
+.split-view-wrapper {
+  height: calc(100vh - 100px); /* Trừ header/padding trên dưới */
+  display: flex;
+  flex-direction: column;
+  animation: slideInRight 0.3s ease-out;
+}
+
+.split-view-header {
+  margin-bottom: 10px;
+}
+
+.btn-back-split {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  color: #555;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.btn-back-split:hover {
+  background: #f0f0f0;
+  color: #000;
+}
+
+.split-container {
+  display: flex;
+  gap: 20px;
+  flex: 1; /* Chiếm hết chiều cao còn lại */
+  overflow: hidden; /* Quan trọng để scroll nằm trong panel */
+}
+
+/* --- Panel Trái: Thông tin --- */
+.info-panel {
+  width: 360px;
+  min-width: 360px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  border: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.info-header {
+  padding: 24px;
+  text-align: center;
+  border-bottom: 1px solid #f0f0f0;
+  background: linear-gradient(to bottom, #fff, #fafafa);
+}
+
+.info-body {
+  padding: 24px;
+  flex: 1;
+}
+
+.info-footer {
+  padding: 20px;
+  background: #f8f9fa;
+  border-top: 1px solid #eee;
+}
+
+.detail-section-title {
+  font-size: 13px;
+  text-transform: uppercase;
+  color: #999;
+  font-weight: 700;
+  margin-bottom: 15px;
+  letter-spacing: 0.5px;
+}
+
+.detail-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 15px;
+  color: #444;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* --- Panel Phải: PDF Viewer --- */
+.cv-panel {
+  flex: 1;
+  background: #525659; /* Màu chuẩn PDF viewer */
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.cv-toolbar {
+  height: 48px;
+  background: white;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+.btn-download {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.pdf-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* --- Animation --- */
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Điều chỉnh lại z-index cho overlay confirm để đè lên split view */
+.confirmation-overlay {
+  z-index: 9999 !important; 
+}
+
+/* --- CẬP NHẬT 1: Cân đối lại thanh Filter --- */
+.filter-row {
+  display: flex;
+  gap: 16px; /* Tăng khoảng cách cho thoáng */
+  align-items: center;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+/* Đảm bảo ô input và select cao bằng nhau và thẳng hàng */
+.filter-input, 
+.filter-select {
+  height: 42px; /* Chiều cao cố định */
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+}
+
+/* --- CẬP NHẬT 2: Empty State (Khung nét đứt & Hình tròn logo) --- */
+.empty-state-dashed {
+  grid-column: 1 / -1; /* Chiếm hết chiều ngang */
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  margin-top: 5px;
+  background: white;
+  border-radius: 16px;
+  border: 2px dashed #cbd5e1; /* Viền nét đứt màu xám chuẩn */
+  text-align: center;
+}
+
+/* Hình tròn bao quanh Icon */
+.empty-icon-wrapper-dashed {
+  width: 60px; 
+  height: 60px;
+  background-color: #f1f5f9; /* Nền xám rất nhạt */
+  border-radius: 50%; /* Tròn xoe */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  color: #9ca3af; /* Màu icon */
+  transition: transform 0.3s ease;
+}
+
+/* Hiệu ứng nhẹ khi hover vào vùng trống */
+.empty-state-dashed:hover .empty-icon-wrapper-dashed {
+  transform: scale(1.1); /* Phóng to icon nhẹ */
+  background-color: #e2e8f0;
+  color: #64748b;
+}
+
+.empty-state-dashed p {
+  color: #64748b;
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* --- 1. Wrapper để giữ icon và select --- */
+.select-wrapper {
+  position: relative; /* Quan trọng để icon "bám" theo khung này */
+  display: flex;
+  align-items: center;
+  flex: 1; 
+  min-width: 200px;
+}
+
+/* --- 2. Icon nằm đè lên (Căn giữa tuyệt đối) --- */
+.select-icon-overlay {
+  position: absolute;
+  left: 12px; /* Cách lề trái 12px */
+  top: 50%;   /* Đẩy xuống 50% chiều cao */
+  transform: translateY(-50%); /* Kéo ngược lại 50% kích thước icon để chính giữa */
+  color: #9ca3af; /* Màu xám (Gray 400) */
+  pointer-events: none; /* Cho phép click xuyên qua icon */
+  z-index: 10; /* Nằm trên lớp nền select */
+}
+
+/* --- 3. Ô Select (Chừa chỗ cho Icon) --- */
+.filter-select {
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none; /* Xóa style mặc định của trình duyệt */
+  
+  /* Padding: Trên 10px | Phải 36px (cho mũi tên) | Dưới 10px | Trái 40px (cho Icon) */
+  padding: 10px 36px 10px 40px !important; 
+  
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background-color: white;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 0.95rem;
+  color: #374151;
+  cursor: pointer;
+  outline: none;
+  
+  /* Mũi tên dropdown bên phải */
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  
+  transition: border-color 0.2s;
+}
+
+.filter-select:hover, .filter-select:focus {
+  border-color: #2563eb; /* Màu xanh khi hover/focus */
 }

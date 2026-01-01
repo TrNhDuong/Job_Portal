@@ -1,10 +1,10 @@
 import multer from "multer";
-import { createStorage, imageStorage } from "../../middleware/upload.js";
+import { createStorage } from "../../middleware/upload.js";
 import { EmployerRepository } from "../../repository/employerRepository.js";
 import { CandidateRepository } from "../../repository/candidateRepository.js";
 
 export const uploadEmployerLogo = async (req, res) => {
-    const storage = imageStorage("jobportal/employers");
+    const storage = createStorage("jobportal/employers");
     const email = req.query.email;
     const upload = multer({ storage }).single("image");
     console.log(email + ' dang cap nhat logo');
@@ -38,7 +38,7 @@ export const uploadEmployerLogo = async (req, res) => {
 }
 
 export const uploadCandidateLogo = async (req, res) => {
-    const storage = imageStorage("jobportal/candidates");
+    const storage = createStorage("jobportal/candidates");
     const email = req.query.email;
     const upload = multer({ storage }).single("image");
     upload(req, res, async (err) => {
@@ -71,7 +71,7 @@ export const uploadCandidateLogo = async (req, res) => {
 }
 
 export const uploadEmployerWallpaper = async (req, res) => {
-    const storage = imageStorage("jobportal/wallpaper");
+    const storage = createStorage("jobportal/wallpaper");
     const email = req.query.email;
     const upload = multer({ storage }).single("image");
     upload(req, res, async (err) => {

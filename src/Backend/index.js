@@ -20,6 +20,12 @@ import passwordRoute from "./routes/passwordRoute.js";
 import applicationRoute from "./routes/applicationRoute.js";
 import imageRoute from "./routes/imageRoute.js";
 import cvRoute from "./routes/cvRoute.js";
+import mailRoute from "./routes/mailRoute.js";
+import reportRoute from "./routes/reportRoute.js";
+import adminJobRoute from "./routes/adminJobRoute.js";
+// import adminUserRoute from "./routes/adminUserRoute.js";
+
+
 
 app.use("/api", candidateRoute);
 app.use("/api", employerRoute);
@@ -32,10 +38,20 @@ app.use("/api", passwordRoute);
 app.use("/api", applicationRoute);
 app.use("/api", imageRoute);
 app.use("/api", cvRoute);
+app.use("/api", mailRoute);
+app.use("/api", reportRoute);
+app.use("/api", adminJobRoute);
+// app.use("/api", adminUserRoute);
+
 connectDB();
 app.listen(PORT, () => {
-    console.log(`Server is running on port http://localhost:${PORT}`);
+    if (process.env.RENDER === "true") {
+        // Khi chạy trên Render, domain sẽ là https://<appname>.onrender.com
+        console.log(`✔️ Server running at Render on port ${PORT}`);
+    } else {
+        // Khi chạy local
+        console.log(`✔️ Server running at http://localhost:${PORT}`);
+    }
 });
-
 
 export default app;

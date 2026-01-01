@@ -7,12 +7,13 @@ import mongoose from "mongoose";
 export const createPostJob = async (req, res) => {
     const email = req.query.email;
     console.log("Email of employer creating job post:", email);
-    const {title, company, position, location, detailedAddress, minSalary, maxSalary, currency, logo,
+    const {title, company, companyEmail, position, location, detailedAddress, minSalary, maxSalary, currency, logo,
         jobType, major, degree, customMajor, experience, state, description, expiredDay } = req.body;
-    console.log(minSalary, maxSalary, currency);    
+    console.log(companyEmail,minSalary, maxSalary, currency);    
     try {
         const result = await JobRepository.createJobPost({
             title: title,
+            companyEmail: companyEmail,
             company: company,
             position: position,
             location: location,
@@ -33,6 +34,7 @@ export const createPostJob = async (req, res) => {
                 currency: currency
             }
         });
+        console.log("Result of creating job post:", result);
         if (result.success) {
             console.log("Tao bai dang thanh cong");
             const addJobResult = await EmployerRepository.addJobPostToEmployer(email, result.data._id);
@@ -65,8 +67,8 @@ export const createNewPostJob = async (req, res) => {
     const email = req.query.email;
     const { 
         point,
-        title, company, position, location, detailedAddress, minSalary, maxSalary, currency, 
-        logo, jobType, major, degree, customMajor, experience, description 
+        title, company, companyEmail, position, location, detailedAddress, minSalary, maxSalary, currency, 
+        logo, jobType, major, degree, customMajor, experience, description, requirement, welfare
     } = req.body;
     
     // Khởi tạo biến expire ở scope lớn hơn để dùng cho jobData
@@ -104,8 +106,8 @@ export const createNewPostJob = async (req, res) => {
 
     // 3. Chuẩn bị dữ liệu Job (Sử dụng 'expire' đã tính)
     const jobData = {
-        title, company, position, location, detailedAddress, jobType, major, degree, 
-        customMajor, logo, experience, description,
+        title, company, companyEmail, position, location, detailedAddress, jobType, major, degree, 
+        customMajor, logo, experience, description, requirement, welfare,
         state: "Open",
         // Gán giá trị 'expire' đã tính
         expireDay: expire, 

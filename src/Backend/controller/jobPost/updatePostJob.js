@@ -9,7 +9,7 @@ export const updatePostJob = async (req, res) => {
   const id = req.query.jobId;
   const jobId = new mongoose.Types.ObjectId(id);
   const {title, company, position, location, detailedAddress, maxSalary, minSalary, currency,
-        jobType, major, customMajor, degree, experience, state, description, expiredDay, postedAt } = req.body;
+        jobType, major, customMajor, degree, experience, state, description, requirement, welfare, expiredDay, postedAt } = req.body;
 
   try {
     const updateData = {
@@ -30,6 +30,8 @@ export const updatePostJob = async (req, res) => {
       "experience": experience,
       "state": state,
       "description": description,
+      "requirement": requirement,
+      "welfare": welfare,
       "postedAt": postedAt,
       "expiredDay": expiredDay
     }
@@ -59,7 +61,7 @@ export const updatePostJob = async (req, res) => {
 export const applyJob = async (req, res) => {
     const id = req.query.jobId;
     const jobId = new mongoose.Types.ObjectId(id);
-    const { email } = req.body;
+    const { email, cv_url } = req.body;
     try {
         const candidate = await CandidateRepository.getCandidate(email);
         if (!candidate.success) {
@@ -69,7 +71,8 @@ export const applyJob = async (req, res) => {
         if (!jobPost) {
           return res.status(404).json({ message: "Job post not found" });
         }
-        const result = await ApplicationRepository.createApplication(candidate.data._id, jobId);
+        
+        const result = await ApplicationRepository.createApplication(candidate.data._id, email, jobId, cv_url);
         if (!result.success) {
           return res.status(500).json({ 
             success: false,
@@ -112,7 +115,7 @@ export const removeApplyJob = async (req, res) => {
 
 export const extendJobExpiry = async (req, res) => {
     const id = req.query.jobId;
-    
+    const email = req.query.email;
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({
             success: false,
@@ -121,10 +124,10 @@ export const extendJobExpiry = async (req, res) => {
     }
     
     const jobId = new mongoose.Types.ObjectId(id);
-    const { email, expireDay, point } = req.body;
+    const { expireDay, point } = req.body;
     
     try {
-        const jobPost = await JobRepository.findById(jobId);
+        const jobPost = await JobRepository.getJobPost(jobId);
         if (!jobPost.success) {
             return res.status(404).json({
                 success: false,
@@ -152,6 +155,8 @@ export const extendJobExpiry = async (req, res) => {
         return res.status(500).json({ message: "Internal server error during validation." });
     }
 
+    console.log('_-----_')
+    console.log(point, expireDay, email, jobId)
     // 3. Thực hiện giao dịch (Transaction) để đảm bảo tính nguyên tử (Atomicity)
     const session = await mongoose.startSession();
     session.startTransaction();
@@ -159,8 +164,9 @@ export const extendJobExpiry = async (req, res) => {
     try {
         const employerData = (await EmployerRepository.getEmployer(email)).data;
         const newPoint = employerData.point - point;
+        console.log(newPoint)
         const updateEmployerResult = await EmployerRepository.updateEmployer(
-            { "email": email },
+            email,
             { "point": newPoint },
             { session } // Truyền session vào để thao tác nằm trong transaction
         );
