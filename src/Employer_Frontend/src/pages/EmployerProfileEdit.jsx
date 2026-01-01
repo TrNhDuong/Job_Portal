@@ -2,30 +2,45 @@
 import React, { useState, useRef, useEffect } from 'react';
 import '../styles/employerProfileEdit.css';
 import { FaSave, FaTimes, FaCamera, FaGlobe, FaMapMarkerAlt, FaImage } from 'react-icons/fa';
-import monoLogo from "../assets/mono-logo.png";
+import toast from 'react-hot-toast';
 
 // Import Editor
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 
+// Ảnh bìa mặc định (Khớp với trang Profile)
+const MOCK_BANNER = "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=1920&auto=format&fit=crop";
+
 const EmployerProfileEdit = ({ initialData, onSave, onCancel, onChangeLogo, onChangeWallpaper }) => {
+    
+    // Hàm lấy chữ cái đầu (VD: "Bát Quái" -> "BQ") - Copy logic từ Homepage/Profile qua
+    const getInitials = (name) => {
+        if (!name) return "CP";
+        const parts = name.trim().split(" ");
+        if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+        return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+    };
+
     // Khởi tạo state
     const [form, setForm] = useState({
         company: initialData.company || '',
         website: initialData.website || '',
         address: initialData.address || '',
-        scale: initialData.scale || '10-24 nhân viên', // Default value
+        scale: initialData.scale || '10-24 nhân viên',
         description: initialData.description || '',
-        logoUrl: initialData.logo?.url || monoLogo,
-        wallpaperUrl: initialData.wallpaper?.url || 'https://via.placeholder.com/1200x300'
+        
+        // Logic mới: Nếu không có URL logo thì để rỗng để render placeholder
+        logoUrl: initialData.logo?.url || "", 
+        
+        // Logic mới: Dùng ảnh MOCK đẹp nếu chưa có wallpaper
+        wallpaperUrl: initialData.wallpaper?.url || MOCK_BANNER
     });
 
     const [errors, setErrors] = useState({});
     const logoInputRef = useRef(null);
     const wallpaperInputRef = useRef(null);
 
-
-    // Cấu hình Editor (Giống bên PostJob nhưng đơn giản hơn xíu)
+    // Cấu hình Editor
     const quillModules = {
         toolbar: [
             [{ 'header': [3, 4, false] }],
@@ -39,7 +54,6 @@ const EmployerProfileEdit = ({ initialData, onSave, onCancel, onChangeLogo, onCh
     const handleChange = (e) => {
         const { name, value } = e.target;
         setForm(prev => ({ ...prev, [name]: value }));
-        // Xóa lỗi khi gõ
         if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
     };
 
@@ -54,7 +68,6 @@ const EmployerProfileEdit = ({ initialData, onSave, onCancel, onChangeLogo, onCh
     const handleLogoSelect = (e) => {
         const file = e.target.files[0];
         if (file) {
-            // Tạo URL tạm để preview ngay lập tức
             const previewUrl = URL.createObjectURL(file);
             setForm(prev => ({ ...prev, logoUrl: previewUrl }));
             onChangeLogo(file);
@@ -66,10 +79,8 @@ const EmployerProfileEdit = ({ initialData, onSave, onCancel, onChangeLogo, onCh
     const handleWallpaperSelect = (e) => {
         const file = e.target.files[0];
         if (file) {
-            // Tạo preview
             const previewUrl = URL.createObjectURL(file);
             setForm(prev => ({ ...prev, wallpaperUrl: previewUrl }));
-            // Gọi hàm callback truyền lên cha để upload (nếu cần upload ngay)
             if (onChangeWallpaper) {
                 onChangeWallpaper(file);
             }
@@ -87,33 +98,26 @@ const EmployerProfileEdit = ({ initialData, onSave, onCancel, onChangeLogo, onCh
     const handleSubmit = (e) => {
         e.preventDefault();
         if (validate()) {
-            // Chuẩn bị data gửi đi (Giữ nguyên logic API cũ)
             const dataToSubmit = {
                 company: form.company,
                 description: form.description, 
                 website: form.website,
                 address: form.address,
-                scale: form.scale // Thêm trường quy mô
+                scale: form.scale 
             };
             onSave(dataToSubmit);
         }
     };
 
-    // Đồng bộ lại logo nếu API trả về url mới (sau khi upload xong)
     useEffect(() => {
         if (initialData.logo?.url) {
              setForm(prev => ({ ...prev, logoUrl: initialData.logo.url }));
         }
     }, [initialData.logo]);
 
-    // Các tùy chọn quy mô
     const scaleOptions = [
-        "Dưới 10 nhân viên",
-        "10-24 nhân viên",
-        "25-99 nhân viên",
-        "100-499 nhân viên",
-        "500-1000 nhân viên",
-        "1000+ nhân viên"
+        "Dưới 10 nhân viên", "10-24 nhân viên", "25-99 nhân viên",
+        "100-499 nhân viên", "500-1000 nhân viên", "1000+ nhân viên"
     ];
 
     return (
@@ -130,16 +134,14 @@ const EmployerProfileEdit = ({ initialData, onSave, onCancel, onChangeLogo, onCh
 
             <div className="edit-content-wrapper">
                 
-                {/* --- KHU VỰC ẢNH BÌA & LOGO (THIẾT KẾ MỚI) --- */}
+                {/* --- KHU VỰC ẢNH BÌA & LOGO --- */}
                 <div className="edit-visual-section">
                     {/* Ảnh bìa */}
                     <div className="edit-banner" style={{ backgroundImage: `url(${form.wallpaperUrl})` }}>
                         <div className="banner-overlay">
-                            {/* Nút thay ảnh bìa */}
                             <button type="button" className="btn-change-banner" onClick={handleWallpaperClick}>
                                 <FaImage /> Thay ảnh bìa
                             </button>
-                            {/* Input ẩn cho wallpaper */}
                             <input type="file" ref={wallpaperInputRef} accept="image/*" hidden onChange={handleWallpaperSelect} />
                         </div>
                     </div>
@@ -147,20 +149,34 @@ const EmployerProfileEdit = ({ initialData, onSave, onCancel, onChangeLogo, onCh
                     {/* Logo (Đè lên banner) */}
                     <div className="edit-logo-wrapper">
                         <div className="edit-logo-circle" onClick={handleLogoClick}>
-                            <img src={form.logoUrl} alt="Logo" />
+                            {/* LOGIC MỚI: Nếu có ảnh thì hiện ảnh, không thì hiện chữ cái */}
+                            {form.logoUrl ? (
+                                <img src={form.logoUrl} alt="Logo" />
+                            ) : (
+                                <div 
+                                    className="avatar-placeholder-init" 
+                                    style={{ 
+                                        width: '100%', height: '100%', 
+                                        fontSize: '3.5rem', borderRadius: '50%' 
+                                    }}
+                                >
+                                    {getInitials(form.company)}
+                                </div>
+                            )}
+                            
+                            {/* Overlay icon Camera khi hover */}
                             <div className="logo-overlay">
                                 <FaCamera />
                             </div>
                         </div>
-                        {/* Input ẩn cho logo */}
                         <input type="file" ref={logoInputRef} accept="image/*" hidden onChange={handleLogoSelect} />
                     </div>
                 </div>
 
-                {/* --- KHU VỰC FORM NHẬP LIỆU --- */}
+                {/* --- KHU VỰC FORM --- */}
                 <form className="edit-form-grid">
                     
-                    {/* Cột trái: Thông tin cơ bản */}
+                    {/* Cột trái */}
                     <div className="edit-col-left">
                         <div className="edit-card">
                             <h3>Thông tin chung</h3>
@@ -196,7 +212,7 @@ const EmployerProfileEdit = ({ initialData, onSave, onCancel, onChangeLogo, onCh
                         </div>
                     </div>
 
-                    {/* Cột phải: Editor */}
+                    {/* Cột phải */}
                     <div className="edit-col-right">
                         <div className="edit-card full-h">
                             <h3>Giới thiệu công ty</h3>

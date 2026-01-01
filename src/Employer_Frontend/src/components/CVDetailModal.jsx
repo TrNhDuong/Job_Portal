@@ -2,6 +2,7 @@
 import React, { useState } from 'react'; // Thêm useState
 import './CVDetailModal.css';
 import { HiX } from 'react-icons/hi';
+import toast from 'react-hot-toast';
 
 // Component này nhận props từ employerManage.jsx
 export default function CVDetailModal({ cv, onClose, onAccept, onReject, onMarkEmailSent }) {
@@ -38,7 +39,7 @@ export default function CVDetailModal({ cv, onClose, onAccept, onReject, onMarkE
   const handleSendMail = () => {
       setIsSending(true);
       setTimeout(() => {
-          alert(`Đã gửi mail thông báo tới ${cv.email}!`);
+          toast.success(`Đã gửi mail thông báo tới ${cv.email}!`);
           onMarkEmailSent(cv.id); // <--- THÊM: Đánh dấu đã gửi
           setIsSending(false);
           onClose(); // Gửi xong thì đóng modal

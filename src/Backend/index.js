@@ -25,8 +25,6 @@ import reportRoute from "./routes/reportRoute.js";
 import adminJobRoute from "./routes/adminJobRoute.js";
 import adminUserRoute from "./routes/adminUserRoute.js";
 
-
-
 app.use("/api", candidateRoute);
 app.use("/api", employerRoute);
 app.use("/api", postJobRoute);

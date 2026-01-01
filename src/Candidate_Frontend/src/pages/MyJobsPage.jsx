@@ -13,6 +13,7 @@ import {
   BookmarkX,
   ArrowRight,
 } from "lucide-react";
+import "../styles/job-search.css"; // Đảm bảo import file CSS (hoặc file riêng cho MyJobs)
 
 export default function MyJobsPage() {
   const { user } = useAuth();
@@ -41,24 +42,47 @@ export default function MyJobsPage() {
     return { text: label, variant: "pending" };
   };
 
+  // --- HÀM FORMAT LƯƠNG (Cập nhật: Đơn vị Triệu) ---
   const formatSalary = (salary) => {
     if (!salary) return "Thỏa thuận";
     if (typeof salary === "string") return salary;
 
-    const min = salary.minSalary ? salary.minSalary / 1_000_000 + "M" : null;
-    const max = salary.maxSalary ? salary.maxSalary / 1_000_000 + "M" : null;
-    const cur = salary.currency || "VND";
+    // Xử lý object lương { minSalary, maxSalary, currency }
+    if (typeof salary === "object") {
+      const { minSalary, maxSalary, currency } = salary || {};
+      
+      // Nếu là VND hoặc không có currency -> Quy đổi ra Triệu
+      if (!currency || currency === "VND") {
+        const toMillion = (num) => {
+          if (!num) return 0;
+          return (num / 1000000).toLocaleString('vi-VN', { maximumFractionDigits: 1 });
+        };
 
-    if (min && max) return `${min} - ${max} ${cur}`;
-    if (min) return `Từ ${min} ${cur}`;
-    if (max) return `Đến ${max} ${cur}`;
+        if (minSalary && maxSalary) return `${toMillion(minSalary)} - ${toMillion(maxSalary)} triệu`;
+        if (minSalary) return `Từ ${toMillion(minSalary)} triệu`;
+        if (maxSalary) return `Tối đa ${toMillion(maxSalary)} triệu`;
+      } 
+      // Nếu là ngoại tệ -> Giữ nguyên
+      else {
+        const formatNum = (num) => num.toLocaleString('en-US');
+        if (minSalary && maxSalary) return `${formatNum(minSalary)} - ${formatNum(maxSalary)} ${currency}`;
+        if (minSalary) return `Từ ${formatNum(minSalary)} ${currency}`;
+        if (maxSalary) return `Tối đa ${formatNum(maxSalary)} ${currency}`;
+      }
+    }
+    
+    // Fallback số thường (mặc định VND)
+    if (typeof salary === "number") {
+       return (salary / 1000000).toLocaleString('vi-VN', { maximumFractionDigits: 1 }) + " triệu";
+    }
+
     return "Thỏa thuận";
   };
 
   const formatDate = (d) => {
     if (!d) return "Không rõ";
     const date = new Date(d);
-    if (isNaN(date)) return "Không rõ";
+    if (isNaN(date.getTime())) return "Không rõ";
     return date.toLocaleDateString("vi-VN");
   };
 
@@ -195,7 +219,8 @@ export default function MyJobsPage() {
 
             <div className="myjobs-meta-item">
               <Users className="myjobs-meta-icon" />
-              <span>{job.applicantsCount || 0} ứng viên</span>
+              {/* Kiểm tra applicants array để lấy length */}
+              <span>{Array.isArray(job.applicants) ? job.applicants.length : 0} ứng viên</span>
             </div>
 
             <div className="myjobs-meta-item">
@@ -217,7 +242,7 @@ export default function MyJobsPage() {
             type="button"
           >
             <Trash2 className="w-4 h-4" />
-            {actionLoading === job._id ? "Đang xóa..." : "Xóa đơn ứng tuyển"}
+            {actionLoading === job._id ? "Đang xóa..." : "Xóa đơn"}
           </button>
         </div>
       </article>
@@ -253,7 +278,7 @@ export default function MyJobsPage() {
 
         <div className="myjobs-card-actions">
           <button className="myjobs-btn-primary" onClick={() => handleApplyNow(job._id)} type="button">
-            Ứng tuyển ngay <ArrowRight className="w-4 h-4" />
+            Ứng tuyển <ArrowRight className="w-4 h-4" />
           </button>
 
           <button
