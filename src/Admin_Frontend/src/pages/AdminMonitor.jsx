@@ -153,7 +153,10 @@ export default function AdminMonitor() {
                 <span className="info-label">
                   <HiHashtag /> JobPost ID
                 </span>
-                <div className="info-box">{selectedReport.JobPost}</div>
+                <div className="info-box">
+                  {selectedReport.JobPost?.title} <br />
+                  <small>{selectedReport.JobPost?._id}</small>
+                </div>
               </div>
 
               <div className="info-group">
