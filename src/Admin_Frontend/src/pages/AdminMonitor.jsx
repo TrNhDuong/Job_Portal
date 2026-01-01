@@ -90,7 +90,6 @@ export default function AdminMonitor() {
             <tbody>
               {filteredReports.map((r) => (
                 <tr key={r._id}>
-<<<<<<< HEAD
                   <td>
                     <div>{r.JobPost?.title}</div>
                     <small style={{ color: "#888" }}>{r.JobPost?._id}</small>
@@ -116,29 +115,6 @@ export default function AdminMonitor() {
                 </tr>
               ))}
 
-=======
-                  <td>{r.JobPost}</td>
-                  <td>{r.reason}</td>
-                  <td>{r.reportedBy}</td>
-                  <td>{new Date(r.timeStamp).toLocaleString()}</td>
-                  <td>
-                    <button
-                      className="btn-icon-only btn-view"
-                      onClick={() => setSelectedReport(r)}
-                    >
-                      <HiEye />
-                    </button>
-                    <button
-                      className="btn-icon-only btn-lock"
-                      onClick={() => handleDelete(r._id)}
-                    >
-                      <HiTrash />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-
->>>>>>> e28bccdb48236592ba362a8b3c1da446cdb5cdc7
               {!loading && filteredReports.length === 0 && (
                 <tr>
                   <td colSpan="5" style={{ textAlign: "center", padding: 40 }}>
