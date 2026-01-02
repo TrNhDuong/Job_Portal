@@ -60,21 +60,27 @@ export default function JobList() {
   const formatSalary = (salaryObj) => {
     if (!salaryObj) return "Thỏa thuận";
     const { minSalary, maxSalary, currency } = salaryObj;
-    if (minSalary && maxSalary) return `${minSalary} - ${maxSalary} ${currency || 'VND'}`;
+    if (minSalary !== undefined && maxSalary !== undefined) {
+      const formattedMin = minSalary.toLocaleString('vi-VN');
+      const formattedMax = maxSalary.toLocaleString('vi-VN');     
+      return `${formattedMin} - ${formattedMax} ${currency || 'VND'}`;
+    }
     return "Thỏa thuận";
   };
 
   // 1. Xử lý hiển thị Kinh nghiệm
   const formatExperience = (exp) => {
-    if (exp === undefined || exp === null) return "Không yêu cầu";
-    if (exp === 0) return "Không yêu cầu";
+    if (exp === undefined || exp === null || exp === "") return "Không yêu cầu";
+    if (exp === 0) return "Không yêu cầu"; // Nếu số 0 cũng là không yêu cầu
     return `${exp} năm`;
   };
 
-  // 2. Xử lý hiển thị Bằng cấp (Dịch sang tiếng Việt)
-  const formatDegree = (degree) => {
-    if (!degree) return "Không yêu cầu";
-    const map = {
+  // Xử lý Bằng cấp & Cấp bậc (Nếu thiếu thì hiện "Chưa cập nhật")
+  const formatDegree = (degree, fallback = "Không yêu cầu") => {
+    if (!degree || degree.trim() === "") return fallback;
+    
+    // Map dịch tiếng Việt cho Bằng cấp
+    const degreeMap = {
       'Bachelor': 'Cử nhân',
       'Master': 'Thạc sĩ',
       'Doctorate': 'Tiến sĩ',
@@ -83,7 +89,7 @@ export default function JobList() {
       'High School': 'Tốt nghiệp THPT',
       'No Degree': 'Không yêu cầu'
     };
-    return map[degree] || degree; // Nếu không nằm trong list trên thì hiện nguyên văn
+    return degreeMap[degree] || degree; 
   };
 
   return (
@@ -214,10 +220,11 @@ export default function JobList() {
                   </span>
                 </div>
 
-                {/* Cột 2: Cấp bậc (Position) */}
+                {/* Cột 2: Cấp bậc */}
                 <div className="stat-item-col">
-                  <span className="stat-label-tiny">Cấp bậc</span>
+                  <span className="stat-label-tiny">Vị trí tuyển dụng</span>
                   <span className="stat-value-bold">
+                    {/* Fallback "Nhân viên" nếu không có dữ liệu */}
                     {selectedJob.position || "Nhân viên"}
                   </span>
                 </div>
@@ -226,6 +233,7 @@ export default function JobList() {
                 <div className="stat-item-col">
                   <span className="stat-label-tiny">Bằng cấp</span>
                   <span className="stat-value-bold">
+                    {/* Fallback "Không yêu cầu" nếu không có dữ liệu */}
                     {formatDegree(selectedJob.degree)}
                   </span>
                 </div>
