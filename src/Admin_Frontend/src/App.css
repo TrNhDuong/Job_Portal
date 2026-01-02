@@ -124,3 +124,43 @@ html, body {
   z-index: 10;
   transition: background-color 0.3s ease;
 }
+
+/* 1. Thiết lập kích thước */
+::-webkit-scrollbar {
+  width: 8px; /* Độ rộng nhỏ gọn */
+  height: 8px; /* Độ cao (cho scroll ngang) */
+}
+
+/* 2. Thiết lập nền thanh cuộn (Track) - Chế độ Sáng */
+::-webkit-scrollbar-track {
+  background: #f1f5f9; /* Màu xám siêu nhạt, tiệp với nền web */
+}
+
+/* 3. Thiết lập thanh trượt (Thumb) - Chế độ Sáng */
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1; /* Màu xám vừa phải */
+  border-radius: 10px; /* Bo tròn 2 đầu */
+  border: 2px solid #f1f5f9; /* Tạo khoảng hở viền cho đẹp */
+}
+
+/* Hiệu ứng khi di chuột vào thanh cuộn */
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8; /* Đậm hơn chút */
+}
+
+/* --- QUAN TRỌNG: CẤU HÌNH CHO DARK MODE --- */
+
+/* Khi data-theme='dark', đổi màu nền thanh cuộn thành tối */
+[data-theme='dark'] ::-webkit-scrollbar-track {
+  background: #0f172a; /* Màu nền tối (Dark Blue/Slate) */
+}
+
+/* Đổi màu thanh trượt thành xám tối */
+[data-theme='dark'] ::-webkit-scrollbar-thumb {
+  background: #334155; 
+  border-color: #0f172a; /* Viền trùng màu nền tối */
+}
+
+[data-theme='dark'] ::-webkit-scrollbar-thumb:hover {
+  background: #475569; /* Sáng hơn chút khi hover */
+}

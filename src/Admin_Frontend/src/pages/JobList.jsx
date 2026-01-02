@@ -64,6 +64,28 @@ export default function JobList() {
     return "Thỏa thuận";
   };
 
+  // 1. Xử lý hiển thị Kinh nghiệm
+  const formatExperience = (exp) => {
+    if (exp === undefined || exp === null) return "Không yêu cầu";
+    if (exp === 0) return "Không yêu cầu";
+    return `${exp} năm`;
+  };
+
+  // 2. Xử lý hiển thị Bằng cấp (Dịch sang tiếng Việt)
+  const formatDegree = (degree) => {
+    if (!degree) return "Không yêu cầu";
+    const map = {
+      'Bachelor': 'Cử nhân',
+      'Master': 'Thạc sĩ',
+      'Doctorate': 'Tiến sĩ',
+      'Associate': 'Cao đẳng',
+      'Diploma': 'Chứng chỉ',
+      'High School': 'Tốt nghiệp THPT',
+      'No Degree': 'Không yêu cầu'
+    };
+    return map[degree] || degree; // Nếu không nằm trong list trên thì hiện nguyên văn
+  };
+
   return (
     <>
       <div className="joblist-container fade-in">
@@ -99,7 +121,22 @@ export default function JobList() {
                   <tr key={j._id}>
                     <td>
                       <div className="job-info-cell">
-                        <div className="company-logo-placeholder">{j.company?.charAt(0).toUpperCase() || <HiOfficeBuilding />}</div>
+                        <div className="company-logo-placeholder">
+                          {j.logo && j.logo.url ? (
+                            <img 
+                              src={j.logo.url}  
+                              alt={j.company} 
+                              className="company-logo-img"
+                              onError={(e) => {
+                                e.target.style.display = 'none'; 
+                                e.target.parentNode.innerText = j.company?.charAt(0).toUpperCase();
+                              }}
+                            />
+                          ) : (
+                            // Nếu không có logo thì hiển thị chữ cái đầu hoặc icon
+                            j.company?.charAt(0).toUpperCase() || <HiOfficeBuilding />
+                          )}
+                        </div>
                         <div className="job-details">
                           <span className="job-title">{j.title}</span>
                           <span className="company-name"><HiOfficeBuilding size={14} /> {j.company}</span>
@@ -134,7 +171,21 @@ export default function JobList() {
           <div className="job-modal" onClick={e => e.stopPropagation()}>
             <div className="job-modal-header-modern">
               <div className="header-top-row">
-                <div className="company-logo-large">{selectedJob.company?.charAt(0).toUpperCase() || "C"}</div>
+                <div className="company-logo-large">
+                  {selectedJob.logo && selectedJob.logo.url ? (
+                    <img 
+                      src={selectedJob.logo.url} 
+                      alt={selectedJob.company} 
+                      className="company-logo-large-img" 
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.parentNode.innerText = selectedJob.company?.charAt(0).toUpperCase();
+                      }}
+                    />
+                  ) : (
+                    selectedJob.company?.charAt(0).toUpperCase() || "C"
+                  )}
+                </div>
                 <button className="btn-close-modern" onClick={() => setSelectedJob(null)}><HiX /></button>
               </div>
               <div className="job-main-info">
@@ -155,17 +206,28 @@ export default function JobList() {
 
             <div className="job-modal-body-modern">
               <div className="quick-stats-grid">
+                {/* Cột 1: Kinh nghiệm */}
                 <div className="stat-item-col">
                   <span className="stat-label-tiny">Kinh nghiệm</span>
-                  <span className="stat-value-bold">{selectedJob.experience || 0} năm</span>
+                  <span className="stat-value-bold">
+                    {formatExperience(selectedJob.experience)}
+                  </span>
                 </div>
+
+                {/* Cột 2: Cấp bậc (Position) */}
                 <div className="stat-item-col">
                   <span className="stat-label-tiny">Cấp bậc</span>
-                  <span className="stat-value-bold">{selectedJob.position || "Nhân viên"}</span>
+                  <span className="stat-value-bold">
+                    {selectedJob.position || "Nhân viên"}
+                  </span>
                 </div>
+
+                {/* Cột 3: Bằng cấp */}
                 <div className="stat-item-col">
                   <span className="stat-label-tiny">Bằng cấp</span>
-                  <span className="stat-value-bold">{selectedJob.degree || "Chưa yêu cầu"}</span>
+                  <span className="stat-value-bold">
+                    {formatDegree(selectedJob.degree)}
+                  </span>
                 </div>
               </div>
 

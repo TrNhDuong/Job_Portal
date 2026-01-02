@@ -226,7 +226,7 @@ export default function UserList() {
           )}
         </div>
       </div>
-
+        
       {/* USER DETAIL MODAL */}
       {selectedUser && (
         <div
@@ -238,106 +238,98 @@ export default function UserList() {
             onClick={e => e.stopPropagation()}
           >
             <div className="user-modal-header">
-              <button
-                className="btn-close-abs"
-                onClick={() => setSelectedUser(null)}
-              >
+              <button className="btn-close-abs" onClick={() => setSelectedUser(null)}>
                 <HiX />
               </button>
+            </div>
 
-              <div className="user-modal-avatar-large">
-                {selectedUser.avatar ? (
-                  <img
-                    src={selectedUser.avatar}
-                    alt="avatar"
-                    className="user-avatar-img-large"
-                  />
-                ) : (
-                  (selectedUser.name || selectedUser.company || "U")
-                    .charAt(0)
-                    .toUpperCase()
-                )}
-              </div>
+          {/* Avatar được kéo lên nhờ CSS margin-top âm */}
+            <div className="user-modal-avatar-large">
+              {selectedUser.avatar ? (
+                <img
+                  src={selectedUser.avatar}
+                  alt="avatar"
+                  className="user-avatar-img-large"
+                  // Xử lý lỗi ảnh
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    // Fallback về chữ cái nếu ảnh lỗi
+                    e.target.parentNode.innerText = (selectedUser.name || selectedUser.company || "U").charAt(0).toUpperCase();
+                    e.target.parentNode.style.fontSize = "2.5rem";
+                    e.target.parentNode.style.fontWeight = "800";
+                    e.target.parentNode.style.color = "#6366f1";
+                  }}
+                />
+              ) : (
+                // Fallback khi không có avatar
+                <span style={{ fontSize: "2.5rem", fontWeight: 800, color: "#6366f1" }}>
+                  {(selectedUser.name || selectedUser.company || "U").charAt(0).toUpperCase()}
+                </span>
+              )}
+            </div>
 
-
+            {/* 2. BODY (Chứa Avatar + Title + Grid Info) */}
+            <div className="user-modal-body">
+              {/* Tên và Badges */}
               <div className="user-modal-title">
-                <h3>
-                  {selectedUser.name ||
-                    selectedUser.company ||
-                    "Chưa cập nhật"}
-                </h3>
-
+                <h3>{selectedUser.name || selectedUser.company || "Chưa cập nhật"}</h3>
                 <div className="modal-badges">
                   <span className={`role-badge ${selectedUser.role}`}>
-                    {selectedUser.role}
+                    {selectedUser.role === "candidate" ? "Ứng viên" : "Tuyển dụng"}
                   </span>
-                  <span
-                    className={`status-badge ${
-                      selectedUser.state === "active"
-                        ? "online"
-                        : "offline"
-                    }`}
-                  >
+                  <span className={`status-badge ${selectedUser.state === "active" ? "online" : "offline"}`}>
                     {selectedUser.state || "offline"}
                   </span>
                 </div>
               </div>
-            </div>
 
-            <div className="user-modal-body">
+              {/* Lưới thông tin chi tiết */}
               <div className="info-grid">
+                {/* 1. Email: Cho Full dòng để không bị rớt chữ */}
+                <div className="info-item full-width">
+                    <span className="info-label">Email</span>
+                    <div className="info-value">
+                        <HiMail /> 
+                        {selectedUser.email}
+                    </div>
+                </div>
+                
+                {/* 2. Số điện thoại: 1/2 dòng */}
                 <div className="info-item">
-                  <span className="info-label">Email</span>
-                  <div className="info-value">
-                    <HiMail /> {selectedUser.email}
-                  </div>
+                    <span className="info-label">Số điện thoại</span>
+                    <div className="info-value">
+                        <HiPhone /> 
+                        {selectedUser.phone || "Chưa cập nhật"}
+                    </div>
                 </div>
 
+                {/* 3. Ngày tham gia: 1/2 dòng (Ghép với SĐT cho cân) */}
                 <div className="info-item">
-                  <span className="info-label">Số điện thoại</span>
-                  <div className="info-value">
-                    <HiPhone /> {selectedUser.phone || "Chưa cập nhật"}
-                  </div>
+                    <span className="info-label">Ngày tham gia</span>
+                    <div className="info-value">
+                      <HiCalendar /> 
+                      {selectedUser.createdAt ? new Date(selectedUser.createdAt).toLocaleDateString("vi-VN") : "N/A"}
+                    </div>
                 </div>
 
-                <div className="info-item">
-                  <span className="info-label">Địa chỉ</span>
-                  <div className="info-value">
-                    <HiLocationMarker />{" "}
-                    {selectedUser.address || "Chưa cập nhật"}
-                  </div>
-                </div>
-
-                <div className="info-item">
-                  <span className="info-label">Ngày tham gia</span>
-                  <div className="info-value">
-                    <HiCalendar />{" "}
-                    {selectedUser.createdAt
-                      ? new Date(
-                          selectedUser.createdAt
-                        ).toLocaleDateString("vi-VN")
-                      : ""}
-                  </div>
+                {/* 4. Địa chỉ: Full dòng */}
+                <div className="info-item full-width"> 
+                    <span className="info-label">Địa chỉ</span>
+                    <div className="info-value">
+                        <HiLocationMarker /> 
+                        {selectedUser.address || "Chưa cập nhật"}
+                    </div>
                 </div>
               </div>
+
             </div>
 
+            {/* 3. FOOTER */}
             <div className="user-modal-footer">
-              <button
-                className="btn-modal-action btn-secondary"
-                onClick={() => setSelectedUser(null)}
-              >
-                Đóng
-              </button>
-              <button
-                className="btn-modal-action btn-danger"
-                onClick={() =>
-                  handleDelete(selectedUser._id, selectedUser.role)
-                }
-              >
-                Xóa tài khoản
-              </button>
+              <button className="btn-modal-action btn-secondary" onClick={() => setSelectedUser(null)}>Đóng</button>
+              <button className="btn-modal-action btn-danger" onClick={() => handleDelete(selectedUser._id, selectedUser.role)}>Xóa tài khoản</button>
             </div>
+
           </div>
         </div>
       )}
