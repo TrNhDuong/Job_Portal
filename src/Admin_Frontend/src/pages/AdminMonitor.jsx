@@ -90,7 +90,11 @@ export default function AdminMonitor() {
             <tbody>
               {filteredReports.map((r) => (
                 <tr key={r._id}>
-                  <td>{r.JobPost}</td>
+                  <td>
+                    <div>{r.JobPost?.title}</div>
+                    <small style={{ color: "#888" }}>{r.JobPost?._id}</small>
+                  </td>
+
                   <td>{r.reason}</td>
                   <td>{r.reportedBy}</td>
                   <td>{new Date(r.timeStamp).toLocaleString()}</td>
@@ -149,7 +153,10 @@ export default function AdminMonitor() {
                 <span className="info-label">
                   <HiHashtag /> JobPost ID
                 </span>
-                <div className="info-box">{selectedReport.JobPost}</div>
+                <div className="info-box">
+                  {selectedReport.JobPost?.title} <br />
+                  <small>{selectedReport.JobPost?._id}</small>
+                </div>
               </div>
 
               <div className="info-group">
