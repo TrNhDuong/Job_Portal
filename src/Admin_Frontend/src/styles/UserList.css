@@ -187,3 +187,140 @@
 [data-theme='dark'] .role-badge.candidate { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border-color: rgba(59, 130, 246, 0.3); }
 [data-theme='dark'] .role-badge.employer { background: rgba(139, 92, 246, 0.2); color: #c084fc; border-color: rgba(139, 92, 246, 0.3); }
 [data-theme='dark'] .user-avatar-placeholder { border-color: rgba(255,255,255,0.1); }
+
+/* FILTER ROLE DROPDOWN */
+.userlist-filter-select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background-color: white;
+  outline: none;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.userlist-filter-select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.filter-wrapper {
+  margin-right: 10px;
+}
+/* Container chính của Dropdown */
+.custom-dropdown {
+  position: relative;
+  min-width: 180px;
+  font-family: 'Inter', sans-serif; /* Hoặc font bạn đang dùng */
+}
+
+/* Nút bấm để mở menu */
+.dropdown-btn {
+  width: 100%;
+  padding: 10px 14px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.dropdown-btn:hover {
+  border-color: #3b82f6;
+  background-color: #f8fafc;
+}
+
+/* Hiệu ứng khi đang mở menu */
+.dropdown-btn.active {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.dropdown-label-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon-left {
+  color: #64748b;
+  font-size: 16px;
+}
+
+/* Mũi tên và hiệu ứng xoay */
+.arrow-icon {
+  color: #94a3b8;
+  transition: transform 0.3s ease;
+}
+
+.arrow-icon.rotate {
+  transform: rotate(180deg);
+}
+
+/* Menu xổ xuống */
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  padding: 6px;
+  list-style: none;
+  z-index: 1000;
+  margin: 0;
+  /* Hiệu ứng xuất hiện */
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Từng dòng trong menu */
+.dropdown-item {
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #eff6ff;
+  color: #2563eb;
+}
+
+/* Dòng đang được chọn */
+.dropdown-item.selected {
+  background-color: #f0f7ff;
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.check-icon {
+  font-size: 16px;
+  color: #3b82f6;
+}
