@@ -98,19 +98,21 @@ export default function AdminMonitor() {
                   <td>{r.reason}</td>
                   <td>{r.reportedBy}</td>
                   <td>{new Date(r.timeStamp).toLocaleString()}</td>
-                  <td>
+                  <td style={{ textAlign: "center" }}>
+                    <div className="action-buttons">
                     <button
-                      className="btn-icon-only btn-view"
+                      className="btn-icon btn-view"
                       onClick={() => setSelectedReport(r)}
                     >
                       <HiEye />
                     </button>
                     <button
-                      className="btn-icon-only btn-lock"
+                      className="btn-icon btn-delete"
                       onClick={() => handleDelete(r._id)}
                     >
                       <HiTrash />
                     </button>
+                    </div>
                   </td>
                 </tr>
               ))}

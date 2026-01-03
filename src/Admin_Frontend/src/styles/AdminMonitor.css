@@ -81,7 +81,7 @@
 }
 
 .monitor-table th {
-  text-align: left;
+  text-align: center;
   padding: 18px 24px;
   background: var(--bg-body);
   font-size: 0.8rem;
@@ -93,11 +93,17 @@
 }
 
 .monitor-table td {
+  text-align: center;
   padding: 20px 24px;
   font-size: 0.95rem;
   color: var(--text-primary);
   border-bottom: 1px solid var(--border-color);
   vertical-align: middle;
+}
+/* 🟢 Giữ riêng cột đầu tiên (JobPost ID) căn trái để dễ đọc */
+.monitor-table th:first-child,
+.monitor-table td:first-child {
+  text-align: left;
 }
 
 .monitor-table tr:hover td {
@@ -124,43 +130,33 @@
 /* ================================
    ACTION BUTTONS
 ================================ */
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
 .action-group {
   display: flex;
   justify-content: center;
   gap: 8px;
 }
-
-.btn-icon-only {
-  width: 36px;
-  height: 36px;
+.btn-icon {
+  width: 36px; height: 36px;
   border-radius: 8px;
   border: none;
-  background: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
   cursor: pointer;
-  font-size: 1.1rem;
   transition: all 0.2s;
+  font-size: 1.1rem;
 }
 
-.btn-view {
-  color: var(--primary-color);
-  border: 1px solid rgba(0,97,255,0.2);
-}
-.btn-view:hover {
-  background: var(--primary-color);
-  color: #fff;
-}
+.btn-view { background: transparent; color: var(--primary-color); border: 1px solid rgba(0, 97, 255, 0.2); }
+.btn-view:hover { background: var(--primary-color); color: white; }
 
-.btn-lock {
-  color: #ef4444;
-  border: 1px solid rgba(239,68,68,0.2);
-}
-.btn-lock:hover {
-  background: #ef4444;
-  color: #fff;
-}
+.btn-delete { background: transparent; color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
+.btn-delete:hover { background: #ef4444; color: white; }
+
 
 /* ================================
    EMPTY STATE
