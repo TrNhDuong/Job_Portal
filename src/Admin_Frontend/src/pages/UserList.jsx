@@ -194,9 +194,9 @@ export default function UserList() {
                       </td>
 
                       <td>
-                        {u.createdAt
-                          ? new Date(u.createdAt).toLocaleDateString("vi-VN")
-                          : ""}
+                        {(u.createdAt || u.timeStamp)
+                          ? new Date(u.createdAt || u.timeStamp).toLocaleDateString("vi-VN")
+                          : <span style={{color: '#94a3b8', fontStyle: 'italic'}}>Không xác định</span>}
                       </td>
 
                       <td style={{ textAlign: "center" }}>
@@ -313,7 +313,9 @@ export default function UserList() {
                     <span className="info-label">Ngày tham gia</span>
                     <div className="info-value">
                       <HiCalendar /> 
-                      {selectedUser.createdAt ? new Date(selectedUser.createdAt).toLocaleDateString("vi-VN") : "N/A"}
+                      {(selectedUser.createdAt || selectedUser.timeStamp) 
+                        ? new Date(selectedUser.createdAt || selectedUser.timeStamp).toLocaleDateString("vi-VN") 
+                        : "N/A"}
                     </div>
                 </div>
 
