@@ -85,19 +85,27 @@ export default function UserList() {
       return;
     }
 
-    const dataToExport = users.map(u => ({
-      ID: u._id,
-      "Tên / Công ty": u.name || u.company || "Chưa cập nhật",
-      Email: u.email,
-      "Vai trò": u.role,
-      "Trạng thái": u.state || "unknown",
-      "Ngày tham gia": u.createdAt
-        ? new Date(u.createdAt).toLocaleDateString("vi-VN")
-        : ""
-    }));
+    const dataToExport = users.map(u => {
+      // Logic lấy ngày tham gia (Hỗ trợ cả createdAt và timeStamp)
+      const dateRaw = u.createdAt || u.timeStamp;
+      const dateFormatted = dateRaw ? new Date(dateRaw).toLocaleDateString("vi-VN") : "Không xác định";
+
+      // Logic lấy trạng thái tiếng Việt
+      const statusRaw = u.state || 'active'; // Mặc định là active nếu thiếu
+      const statusFormatted = statusRaw === 'active' ? 'Hoạt động' : 'Vô hiệu';
+
+      return {
+        ID: u._id,
+        "Tên / Công ty": u.name || u.company || "Chưa cập nhật",
+        Email: u.email,
+        "Vai trò": u.role === 'candidate' ? 'Ứng viên' : 'Nhà tuyển dụng', // Dịch luôn role cho đẹp
+        "Trạng thái": statusFormatted, // Hiện tiếng Việt
+        "Ngày tham gia": dateFormatted // Đã fix lỗi trống ngày
+      };
+    });
 
     exportToExcel(dataToExport, "Danh_sach_nguoi_dung");
-    toast.success("Đang tải xuống file Excel...");
+    toast.success("Đang tải xuống file Excel");
   };
 
   // 🔍 Search
