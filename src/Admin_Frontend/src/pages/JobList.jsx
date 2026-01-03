@@ -6,6 +6,7 @@ import {
   HiCurrencyDollar, HiOfficeBuilding, HiDocumentText, HiX, HiClock
 } from "react-icons/hi";
 import { toast } from "react-toastify";
+import { showDeleteConfirm } from "../utils/alertUtils";
 
 export default function JobList() {
   const [search, setSearch] = useState("");
@@ -34,11 +35,15 @@ export default function JobList() {
     html?.replace(/<[^>]*>?/gm, "") || "";
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Bạn có chắc chắn muốn xóa bài đăng này không?")) return;
+    const isConfirmed = await showDeleteConfirm(
+        "Bạn muốn xóa bài đăng tuyển dụng này?", 
+    );
+
+    if (!isConfirmed) return;
 
     try {
       const res = await jobService.deleteJob(id);
-      if (res.success) {
+       if (res.success) {
         setJobs(prev => prev.filter(job => job._id !== id));
         toast.success("Đã xóa bài đăng thành công!");
         if(selectedJob && selectedJob._id === id) setSelectedJob(null);

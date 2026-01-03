@@ -148,6 +148,7 @@ html, body {
   background: #94a3b8; /* Đậm hơn chút */
 }
 
+
 /* --- QUAN TRỌNG: CẤU HÌNH CHO DARK MODE --- */
 
 /* Khi data-theme='dark', đổi màu nền thanh cuộn thành tối */
@@ -163,4 +164,131 @@ html, body {
 
 [data-theme='dark'] ::-webkit-scrollbar-thumb:hover {
   background: #475569; /* Sáng hơn chút khi hover */
+}
+
+/* =========================================
+   PROFESSIONAL SWEETALERT2 THEME V2 (COLORFUL)
+========================================= */
+
+/* 1. Khung Popup chính - Thêm Gradient nhẹ */
+.pro-alert-popup {
+  border-radius: 28px !important;
+  padding: 0 !important; /* Reset padding để xử lý layout bên trong */
+  
+  /* Nền trắng pha chút đỏ nhạt ở trên đầu tạo cảm giác cảnh báo */
+  background: linear-gradient(180deg, #fff1f2 0%, #ffffff 100%) !important;
+  
+  box-shadow: 0 30px 60px -12px rgba(220, 38, 38, 0.25) !important; /* Bóng đổ màu đỏ nhẹ */
+  font-family: 'Be Vietnam Pro', sans-serif;
+  overflow: hidden; /* Để bo góc gradient không bị lòi ra */
+}
+
+/* Dark Mode: Gradient tối huyền bí */
+[data-theme='dark'] .pro-alert-popup {
+  background: linear-gradient(180deg, #450a0a 0%, #1e293b 40%) !important; /* Đỏ thẫm sang xám */
+  border: 1px solid #450a0a;
+  box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* 2. Tiêu đề (Title) */
+.pro-alert-title {
+  font-size: 1.8rem !important;
+  font-weight: 800 !important;
+  color: #991b1b !important; /* Màu đỏ đậm */
+  margin: 20px 0 10px 0 !important;
+  line-height: 1.2 !important;
+}
+[data-theme='dark'] .pro-alert-title { color: #fca5a5 !important; }
+
+/* 3. Nội dung chữ (Text) */
+.pro-alert-text {
+  font-size: 1.05rem !important;
+  line-height: 1.6 !important;
+  font-weight: 500 !important;
+  color: #475569 !important;
+  padding: 0 32px !important; /* Padding riêng cho text */
+}
+[data-theme='dark'] .pro-alert-text { color: #cbd5e1 !important; }
+
+/* 4. Text Highlight (Những từ quan trọng sẽ được tô màu) */
+.highlight-text-danger {
+    color: #ef4444;
+    font-weight: 700;
+    background: rgba(239, 68, 68, 0.1);
+    padding: 2px 6px;
+    border-radius: 6px;
+}
+
+/* 5. Icon Warning - Hiệu ứng phát sáng */
+.pro-alert-icon {
+  margin-top: 40px !important;
+  border-color: #ef4444 !important; /* Đổi sang viền đỏ cho hợp theme xóa */
+  color: #ef4444 !important;
+  background: #fff !important; /* Nền trắng để nổi trên gradient */
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.4); /* Phát sáng */
+  animation: pulse-red 2s infinite;
+}
+
+@keyframes pulse-red {
+    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+    70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+/* 6. Khu vực nút bấm */
+.pro-alert-actions {
+    margin: 32px 0 40px 0 !important; /* Margin dưới dày hơn chút */
+    gap: 16px; 
+    width: 100%;
+    justify-content: center;
+    padding: 0 32px;
+}
+
+/* Nút bấm (Giữ nguyên style xịn sò trước đó) */
+.pro-alert-btn {
+  padding: 14px 24px !important;
+  border-radius: 12px !important;
+  font-weight: 700 !important;
+  font-size: 1rem !important;
+  border: none !important;
+  cursor: pointer;
+  transition: all 0.2s ease !important;
+  flex: 1; /* Chia đều 2 nút */
+}
+
+/* Nút Xóa: Gradient Đỏ Cam hiện đại */
+.btn-danger-pro {
+  background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%) !important;
+  color: white !important;
+  box-shadow: 0 8px 20px -6px rgba(239, 68, 68, 0.5) !important;
+}
+.btn-danger-pro:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px -8px rgba(239, 68, 68, 0.7) !important;
+}
+
+/* Nút Hủy */
+.btn-secondary-pro {
+  background: #ffffff !important;
+  color: #64748b !important;
+  border: 1px solid #e2e8f0 !important;
+}
+.btn-secondary-pro:hover {
+  background: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+}
+[data-theme='dark'] .btn-secondary-pro {
+    background: rgba(255,255,255,0.05) !important;
+    border-color: rgba(255,255,255,0.1) !important;
+    color: #cbd5e1 !important;
+}
+
+.swal2-container {
+  z-index: 200000 !important; 
+}
+
+/* Tùy chọn: Làm tối nền đằng sau mạnh hơn để người dùng tập trung vào Popup xóa */
+.swal2-backdrop-show {
+    background: rgba(0, 0, 0, 0.7) !important;
+    backdrop-filter: blur(4px); /* Làm mờ luôn cái Modal bên dưới cho đẹp */
 }

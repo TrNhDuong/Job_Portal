@@ -15,6 +15,7 @@ import {
   HiUser
 } from "react-icons/hi";
 import { toast } from "react-toastify";
+import { showDeleteConfirm } from "../utils/alertUtils";
 
 export default function UserList() {
   const [search, setSearch] = useState("");
@@ -50,22 +51,26 @@ export default function UserList() {
     }
   };
 
-  // 🗑️ Delete user (có role)
+  //  Delete user (có role)
   const handleDelete = async (id, role) => {
     if (!role) {
       toast.error("Không xác định được vai trò người dùng!");
       return;
     }
 
-    if (window.confirm("Bạn có chắc chắn muốn xóa tài khoản này?")) {
+    const isConfirmed = await showDeleteConfirm(
+    "Bạn muốn xóa người dùng này?", 
+    );
+    
+    if (isConfirmed) {
       try {
         const res = await userService.deleteUser(id, role);
         if (res.success) {
-          toast.success("Đã xóa người dùng thành công!");
-          setUsers(prev => prev.filter(u => u._id !== id));
-          if (selectedUser?._id === id) setSelectedUser(null);
+            toast.success("Đã xóa người dùng thành công!");
+            setUsers(prev => prev.filter(u => u._id !== id));
+            if (selectedUser?._id === id) setSelectedUser(null);
         } else {
-          toast.error(res.message || "Không thể xóa người dùng.");
+            toast.error(res.message || "Không thể xóa người dùng.");
         }
       } catch (error) {
         toast.error("Lỗi khi thực hiện xóa.");
