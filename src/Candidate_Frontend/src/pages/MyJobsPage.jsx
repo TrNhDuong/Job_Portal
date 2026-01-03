@@ -1,6 +1,6 @@
 // src/pages/MyJobsPage.jsx
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // Giữ lại navigate cho nút Back nếu cần
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import client from "../api/client";
 
@@ -14,13 +14,12 @@ import {
   ArrowRight,
 } from "lucide-react";
 
-// ✅ 1. Import Modal Mới
 import JobDetailModal from "../Home/components/JobDetailModal";
-
 import "../styles/job-search.css";
 
 export default function MyJobsPage() {
-  const { user } = useAuth();
+  // ✅ 1. Lấy thêm hàm login để cập nhật lại Context sau khi xóa
+  const { user, login } = useAuth();
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState("applied");
@@ -30,7 +29,6 @@ export default function MyJobsPage() {
   const [actionLoading, setActionLoading] = useState(null);
   const [error, setError] = useState(null);
 
-  // ✅ 2. State quản lý Modal
   const [selectedJob, setSelectedJob] = useState(null);
 
   /* ===================== HELPERS ===================== */
@@ -101,7 +99,7 @@ export default function MyJobsPage() {
             if (candidateId) {
               try {
                 const appRes = await client.get(
-                  `/api/application/byCandidateJob?candidateId=${encodeURIComponent(candidateId)}&jobId=${encodeURIComponent(jobId)}`
+                  `/api/application/applicantinfo?candidateId=${encodeURIComponent(candidateId)}&jobId=${encodeURIComponent(jobId)}`
                 );
                 application = appRes.data?.data || appRes.data || { label: "New" };
               } catch (e) {
@@ -131,20 +129,38 @@ export default function MyJobsPage() {
     fetchData();
   }, [user?.email]);
 
-  /* ===================== ACTIONS ===================== */
+  /* ===================== ACTIONS (ĐÃ SỬA LOGIC) ===================== */
+  
+  // ✅ Logic xóa đơn ứng tuyển đã được cập nhật
   const handleRemoveApplication = async (jobId) => {
     if (!user?.email) return;
+    if (!window.confirm("Bạn có chắc muốn xóa đơn ứng tuyển này không?")) return;
+
     setActionLoading(jobId);
     try {
+      // Gọi API Backend
       await client.patch(`/api/post-job/removeApplyJob?jobId=${encodeURIComponent(jobId)}`, {
         email: user.email,
+        applicationId: applicationId
       });
-      setAppliedJobs((prev) => prev.filter((item) => item.job?._id !== jobId));
-      // Nếu đang mở modal của job này thì đóng luôn
-      if (selectedJob?._id === jobId) setSelectedJob(null);
+
+      // 1. Cập nhật State danh sách hiện tại (đảm bảo so sánh String ID)
+      setAppliedJobs((prev) => prev.filter((item) => String(item.job?._id) !== String(jobId)));
+
+      // 2. Cập nhật Context User (để đồng bộ với Modal và các trang khác)
+      if (user.appliedJobs) {
+        const updatedAppliedList = user.appliedJobs.filter(id => String(id) !== String(jobId));
+        login({ ...user, appliedJobs: updatedAppliedList });
+      }
+
+      // 3. Nếu đang mở Modal của job này thì đóng lại
+      if (selectedJob && String(selectedJob._id) === String(jobId)) {
+        setSelectedJob(null);
+      }
+
     } catch (err) {
       console.error(err);
-      alert("Không thể xóa đơn ứng tuyển.");
+      alert("Không thể xóa đơn ứng tuyển. Vui lòng thử lại.");
     } finally {
       setActionLoading(null);
     }
@@ -157,9 +173,20 @@ export default function MyJobsPage() {
       await client.patch(`/api/post-job/removeSaveJob?jobId=${encodeURIComponent(jobId)}`, {
         email: user.email,
       });
-      setSavedJobs((prev) => prev.filter((job) => job?._id !== jobId));
-      // Nếu đang mở modal của job này thì đóng
-      if (selectedJob?._id === jobId) setSelectedJob(null);
+      
+      // Update UI List
+      setSavedJobs((prev) => prev.filter((job) => String(job._id) !== String(jobId)));
+      
+      // Update Context
+      if (user.listSaveJobs) {
+        const updatedSaveList = user.listSaveJobs.filter(id => String(id) !== String(jobId));
+        login({ ...user, listSaveJobs: updatedSaveList });
+      }
+
+      if (selectedJob && String(selectedJob._id) === String(jobId)) {
+        // Tùy chọn: Đóng modal hoặc giữ nguyên nhưng đổi icon
+        // setSelectedJob(null); 
+      }
     } catch (err) {
       console.error(err);
       alert("Không thể bỏ lưu việc làm.");
@@ -168,20 +195,12 @@ export default function MyJobsPage() {
     }
   };
 
-  // ✅ Callback xử lý khi User tương tác TRONG MODAL
-  // 1. Khi User bấm nút Lưu/Bỏ lưu trong Modal
+  // Callbacks từ Modal
   const handleToggleSaveFromModal = async (job) => {
-    const isSaved = savedJobs.some(j => j._id === job._id);
-    if (isSaved) {
-        await handleUnsaveJob(job._id); // Đã có logic xóa khỏi state
-    } else {
-        // Logic lưu lại (nếu cần thiết, nhưng ở trang MyJobs thường là xem cái đã có)
-        // Ở đây mình chỉ xử lý Unsave vì trang này là "Việc làm đã lưu"
-        await handleUnsaveJob(job._id);
-    }
+    // Logic trong Modal: Nếu đang ở trang Saved Jobs thì bấm nút sẽ là Bỏ lưu
+    await handleUnsaveJob(job._id);
   };
 
-  // 2. Khi User bấm Hủy đơn trong Modal
   const handleUnapplyFromModal = async (jobId) => {
       await handleRemoveApplication(jobId);
   };
@@ -194,7 +213,6 @@ export default function MyJobsPage() {
 
     return (
       <article key={job._id} className="myjobs-card">
-        {/* ✅ Sửa onClick: Mở Modal thay vì Navigate */}
         <div className="myjobs-card-main" onClick={() => setSelectedJob(job)}>
           <h3 className="myjobs-title">{job.title}</h3>
           <p className="myjobs-company">{job.company || "Không rõ công ty"}</p>
@@ -229,7 +247,7 @@ export default function MyJobsPage() {
             type="button"
           >
             <Trash2 className="w-4 h-4" />
-            {actionLoading === job._id ? "Đang xóa..." : "Xóa đơn"}
+            {actionLoading === job._id ? "Đang xử lý..." : "Xóa đơn"}
           </button>
         </div>
       </article>
@@ -240,7 +258,6 @@ export default function MyJobsPage() {
     if (!job) return null;
     return (
       <article key={job._id} className="myjobs-card">
-        {/* ✅ Sửa onClick: Mở Modal */}
         <div className="myjobs-card-main" onClick={() => setSelectedJob(job)}>
           <h3 className="myjobs-title">{job.title}</h3>
           <p className="myjobs-company">{job.company || "Không rõ công ty"}</p>
@@ -315,16 +332,11 @@ export default function MyJobsPage() {
         <div className="myjobs-list">{savedJobs.map(renderSavedCard)}</div>
       )}
 
-      {/* ✅ 3. RENDER MODAL */}
       {selectedJob && (
         <JobDetailModal
             job={selectedJob}
             onClose={() => setSelectedJob(null)}
-            
-            // Kiểm tra xem job này có trong danh sách savedJobs không
-            isSaved={savedJobs.some(j => j._id === selectedJob._id)}
-            
-            // Xử lý sự kiện từ Modal
+            isSaved={savedJobs.some(j => String(j._id) === String(selectedJob._id))}
             onSave={handleToggleSaveFromModal} 
             onUnapply={handleUnapplyFromModal}
         />
