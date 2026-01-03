@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from "react"; // Thêm useRef, useEffect
 import { useNavigate } from "react-router-dom";
-import { HiArrowLeft, HiCheck, HiEye, HiEyeOff } from "react-icons/hi";
+import { HiArrowLeft, HiCheck, HiEye, HiEyeOff, HiX } from "react-icons/hi";
 import logoImage from "../assets/logo.png";
 import "../styles/forgotPassword.css"; 
 import ParticlesAuth from "../components/ParticlesAuth";
 import client from "../api/client.js";
+import toast from 'react-hot-toast';
 
 export default function EmployerForgotPassword({ onBack }) {
   const navigate = useNavigate();
@@ -24,8 +25,6 @@ export default function EmployerForgotPassword({ onBack }) {
   const inputsRef = useRef([]); // Ref để điều khiển focus các ô
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -53,12 +52,11 @@ export default function EmployerForgotPassword({ onBack }) {
 
   // --- XỬ LÝ NHẬP OTP (MỚI) ---
   const handleOtpChange = (value, index) => {
-    if (!/^[0-9]?$/.test(value)) return;
-
+    const val = value.slice(-1);
+    if (!/^[0-9]?$/.test(val)) return;
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
-    setError("");
 
     if (value && index < 5) {
       inputsRef.current[index + 1].focus();
@@ -71,24 +69,25 @@ export default function EmployerForgotPassword({ onBack }) {
       inputsRef.current[index - 1].focus();
     }
   };
+  
 
   // --- BƯỚC 1: GỬI OTP ---
   const handleSendOTP = async () => {
-    if (!formData.email) return setError("Vui lòng nhập email");
-    
+    if (!formData.email) return toast.error("Vui lòng nhập email");   
     setLoading(true);
     try {
         const email = formData.email;
         const response = await client.post(`api/send-otp`, {email});
         if (response.data.success){
-            setTimeout(() => {
-                setStep(2);
-                setSuccess("");
-                setError("");
-            }, 1000);
+          toast.success("Mã OTP đã được gửi! Kiểm tra email.");
+          setCooldown(30);
+
+          setTimeout(() => {
+              setStep(2);
+          }, 1000);
         }
     } catch (err) {
-      setError(err.message);
+      toast.error("Không thể gửi OTP.");
     } finally {
       setLoading(false);
     }
@@ -97,7 +96,7 @@ export default function EmployerForgotPassword({ onBack }) {
   // --- BƯỚC 2: XÁC THỰC OTP ---
   const handleVerifyOTP = async () => {
     const otpCode = otp.join(""); // Gộp mảng thành chuỗi
-    if (otpCode.length !== 6) return setError("Vui lòng nhập đủ 6 số OTP");
+    if (otpCode.length !== 6) return toast.error("Vui lòng nhập đủ 6 số OTP");
 
     setLoading(true);
     try {
@@ -108,25 +107,24 @@ export default function EmployerForgotPassword({ onBack }) {
         );
         
         if (response.data.success){
-            setToken(response.data.data);
-            setSuccess("Xác thực thành công!");
+            setToken(response.data.data); 
+            toast.success("Xác thực thành công!");
             setTimeout(() => {
-                setStep(3);
-                setSuccess("");
-                setError("");
+              setStep(3);
             }, 1000);
         }
     } catch (err) {
-      setError(err.message);
+        toast.error("Mã OTP không chính xác.");
     } finally {
       setLoading(false);
     }
   };
 
+
   // --- BƯỚC 3: ĐỔI MẬT KHẨU ---
   const handleResetPassword = async () => {
-    if (!Object.values(passCriteria).every(Boolean)) return setError("Mật khẩu chưa đủ mạnh");
-    if (formData.newPassword !== formData.confirmPassword) return setError("Mật khẩu nhập lại không khớp");
+    if (formData.newPassword !== formData.confirmPassword) return toast.error("Mật khẩu nhập lại không khớp");
+    if (!Object.values(passCriteria).every(Boolean)) return toast.error("Mật khẩu chưa đủ mạnh");
 
     setLoading(true);
     try {
@@ -141,12 +139,12 @@ export default function EmployerForgotPassword({ onBack }) {
             }
         );
         if (response.data.success){
-            setSuccess("Đổi mật khẩu thành công! Đang chuyển hướng...");
+            toast.success("Đổi mật khẩu thành công! Đang chuyển hướng...");
             return setTimeout(() => onBack(), 1500);
         }
-        setError(response.data.message);
+        toast.error(response.data.message);
     } catch (err) {
-      setError(err.message);
+      toast.error("Đổi mật khẩu không thành công.");
     } finally {
       setLoading(false);
     }
@@ -158,10 +156,9 @@ export default function EmployerForgotPassword({ onBack }) {
 
   return (
     <div className="auth-page">
-      {/* Logo */}
       <div className="top-left-logo">
-          <img src={logoImage} alt="Logo" className="logo-img-small" />
-          <span className="brand-name-corner">InspireLeader</span>
+        <img src={logoImage} alt="Logo" className="logo-img-small" />
+        <span className="brand-name-corner">InspireLeader</span>
       </div>
 
       <div className="auth-left fade-in">
@@ -331,10 +328,6 @@ export default function EmployerForgotPassword({ onBack }) {
                 </>
             )}
 
-            {/* Thông báo lỗi/thành công */}
-            {error && <div className="error-msg">{error}</div>}
-            {success && <div className="success-msg">{success}</div>}
-
             {/* Nút bấm thay đổi theo từng bước */}
             <button 
                 className="auth-button" 
@@ -343,8 +336,23 @@ export default function EmployerForgotPassword({ onBack }) {
                     if (step === 2) handleVerifyOTP();
                     if (step === 3) handleResetPassword();
                 }} 
-                disabled={loading}
-                style={step === 2 ? {backgroundColor: atlasGreen} : {}}
+                disabled={loading || (step === 2 && otp.join("").length < 6)}
+                style={{
+                    // Logic màu sắc:
+                    // Bước 2: Nếu đủ 6 số -> Màu xanh. Chưa đủ -> Màu xám nhạt
+                    backgroundColor: step === 2 
+                        ? (otp.join("").length === 6 ? atlasGreen : "#e5e7eb") 
+                        : (step === 1 || step === 3 ? atlasGreen : ""),
+                    
+                    // Logic màu chữ: Bước 2 chưa xong -> Chữ xám đậm cho dễ nhìn trên nền xám nhạt
+                    color: (step === 2 && otp.join("").length < 6) ? "#9ca3af" : "white",
+                    
+                    // Con trỏ chuột
+                    cursor: (step === 2 && otp.join("").length < 6) ? "not-allowed" : "pointer",
+                    
+                    // Hiệu ứng chuyển màu mượt
+                    transition: "all 0.2s ease"
+                }}
             >
                 {loading ? "Đang xử lý..." : 
                     step === 1 ? "Gửi mã xác thực" : 
@@ -353,18 +361,18 @@ export default function EmployerForgotPassword({ onBack }) {
                 }
             </button>
         </div>
-      </div>
+      </div>      
 
       <div className="auth-right">
         <ParticlesAuth />
         <div className="hero-text-container">
-            <h1>KẾT NỐI</h1>
-            <div className="spacer"></div>
-            <h1>NHÂN TÀI</h1>
-            <div className="separator"></div>
-            <h1>KIẾN TẠO</h1>
-            <div className="spacer"></div>
-            <h1>TƯƠNG LAI</h1>
+          <h1>KẾT NỐI</h1>
+          <div className="spacer"></div>
+          <h1>NHÂN TÀI</h1>
+          <div className="separator"></div>
+          <h1>KIẾN TẠO</h1>
+          <div className="spacer"></div>
+          <h1>TƯƠNG LAI</h1>
         </div>
       </div>
     </div>

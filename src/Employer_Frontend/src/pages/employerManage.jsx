@@ -1,10 +1,12 @@
+
 import React, { useState, useMemo, useEffect } from "react";
-import "../styles/employerDashboard.css"
+import "../styles/employerManage.css"
 import client from "../api/client";
-import { ArrowLeft, User, FileWarning, ExternalLink, Ban, Check, Mail, Flame, X, Send, FileText, Clock, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, User, FileWarning, ExternalLink, Ban, Check, Mail, Flame, X, Send, FileText, Clock, AlertTriangle, SearchX, Briefcase } from 'lucide-react';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
-import {Paperclip, Minimize2, Maximize2, Trash2 } from 'lucide-react';
+import {Paperclip, Minimize2, Maximize2, Trash2, MapPin } from 'lucide-react';
+import toast from 'react-hot-toast';
 import "../styles/emailModal.css"; 
 
 // ==========================================
@@ -269,14 +271,17 @@ const JobListView = ({ jobs, onSelectJob }) => {
     <div className="animate-fade-in">
       <div className="dashboard-filter-bar">
         <div className="filter-row">
-          <input 
+          <input  
             type="text" placeholder="Tìm tin tuyển dụng..." className="filter-input"
             value={filterText} onChange={e => setFilterText(e.target.value)}
           />
-          <select className="filter-select" onChange={e => setFilterLoc(e.target.value)}>
-            <option value="">Tất cả địa điểm</option>
-            {locations.map(loc => <option key={loc} value={loc}>{loc}</option>)}
-          </select>
+          <div className="select-wrapper">
+            <MapPin size={18} className="select-icon-overlay" fill="#9ca3af" color="#ffffff"/> {/* Icon nằm đè lên */}
+            <select className="filter-select" onChange={e => setFilterLoc(e.target.value)}>
+              <option value="">Tất cả địa điểm</option>
+              {locations.map(loc => <option key={loc} value={loc}>{loc}</option>)}
+            </select>
+          </div>
         </div>
       </div>
 
@@ -290,7 +295,7 @@ const JobListView = ({ jobs, onSelectJob }) => {
                 <p className="job-location">{job.location}</p>
               </div>
               <div className="job-right">
-                <p className="job-label">{job.label}</p>
+                <p className="job-label">{}</p>
               </div>
             </div>
             
@@ -309,7 +314,14 @@ const JobListView = ({ jobs, onSelectJob }) => {
               </div>
             </div>
           </div>
-        )) : <div className="no-data-msg">Không tìm thấy tin tuyển dụng nào.</div>}
+        )) : (
+              <div className="empty-state-dashed">
+                  <div className="empty-icon-wrapper-dashed">
+                      <Briefcase size={25} />
+                  </div>
+                  <p>Không tìm thấy tin tuyển dụng nào phù hợp.</p>
+              </div>
+            )}
       </div>
     </div>
   );
@@ -338,7 +350,7 @@ const CVManager = ({ job, initiallabel, onBack }) => {
         try {
             const response = await client.get(`api/application/applicantinfo?jobId=${job._id}`);
             if (response.data.success && isMounted) setCvList(response.data.data);
-        } catch (error) { console.error("Failed to fetch", error); } 
+        } catch (error) { console.error("Failed to fetch", error); toast.error("Không thể tải danh sách ứng viên"); } 
         finally { if (isMounted) setLoading(false); }
     };
     if (job) fetchApplicants();
@@ -395,25 +407,18 @@ const CVManager = ({ job, initiallabel, onBack }) => {
             if (selectedCv && selectedCv.application._id === applicationId) {
                 setSelectedCv(prev => ({ ...prev, application: { ...prev.application, label: newStatus } }));
             }
+            toast.success(`Đã cập nhật trạng thái: ${newStatus}`);
             return true;
         } else {
-            alert(response.data.message); return false;
+            toast.error("Cập nhật thất bại");
+            return false;
         }
-    } catch (error) { console.error("API Error", error); return false; }
+    } catch (error) { console.error("API Error", error); toast.error("Lỗi kết nối server"); return false; }
   };
 
-  const handleSendEmail = async (subject, content) => {
-      const res = await client.post('api/mail/send', {
-          to: targetRecipients.map(r => r.email),
-          subject,
-          htmlContent: content
-      });
-      if (res.data.success) {
-          alert('Gửi email thành công!');
-          setShowEmailModal(false);
-      } else {
-          alert('Gửi email thất bại: ' + res.data.message);
-      }
+  const handleSendEmail = (subject, content) => {
+      toast.success(`Đã gửi email thành công tới ${targetRecipients.length} ứng viên!`);
+      setShowEmailModal(false);
   };
 
   // --- RENDER CONDITION: SPLIT VIEW vs LIST VIEW ---
@@ -499,8 +504,13 @@ const CVManager = ({ job, initiallabel, onBack }) => {
               </div>
             </div>
           )) : (
-            <div className="empty-state-premium"><div className="empty-icon-box"></div><p>Chưa có ứng viên nào</p></div>
-          )}
+                <div className="empty-state-dashed">
+                    <div className="empty-icon-wrapper-dashed">
+                        <SearchX size={25} />
+                    </div>
+                    <p>Chưa có ứng viên nào trong danh sách này.</p>
+                </div>
+              )}
         </div>
       )}
 

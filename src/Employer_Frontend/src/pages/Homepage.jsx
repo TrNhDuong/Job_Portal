@@ -16,6 +16,7 @@ import logoImage from "../assets/logo.png";
 import monoLogo from "../assets/mono-logo.png";
 import { HiOutlineCog } from 'react-icons/hi';
 import { HiOutlineInformationCircle, HiOutlineCreditCard, HiArrowPath } from 'react-icons/hi2';
+import toast from 'react-hot-toast';
 
 //THANH TOÁN
 import EmployerDeposit from "./EmployerDeposit.jsx";
@@ -111,7 +112,7 @@ export default function Homepage() {
   const handlePreCreatePost = (postData) => {
     const company = auth.auth.employerData?.data?.company;
     if (!company) {
-        alert("Vui lòng cập nhật tên công ty trong hồ sơ trước khi đăng tin.");
+        toast.error("Vui lòng cập nhật tên công ty trong hồ sơ trước khi đăng tin.");
         return;
     }
     postData.companyEmail = localStorage.getItem("email");
@@ -123,11 +124,11 @@ export default function Homepage() {
   // --- BƯỚC 2: XÁC NHẬN THANH TOÁN & GỌI API ---
   const handleConfirmPayment = async () => {
     if (!postDuration || parseInt(postDuration) < 1) {
-        alert("Vui lòng nhập thời hạn đăng bài (tối thiểu 1 ngày).");
+        toast.error("Vui lòng nhập thời hạn đăng bài (tối thiểu 1 ngày).");
         return;
     }
     if (!canAfford) {
-        alert("Số dư không đủ. Vui lòng nạp thêm tiền.");
+        toast.error("Số dư không đủ. Vui lòng nạp thêm tiền.");
         return;
     }
     if (!pendingPostData) return;
@@ -153,7 +154,7 @@ export default function Homepage() {
       const response = await client.post(`/api/post-job?email=${email}`, finalData);
 
       if (response.data.success) {
-        alert(`Đăng tin thành công! Bạn đã bị trừ ${totalCost} điểm.`);
+        toast.success(`Đăng tin thành công! Bạn đã bị trừ ${totalCost} điểm.`);
         // Cập nhật lại điểm ngay lập tức trên UI (nếu API trả về điểm mới)
         if (response.data.remainingPoint !== undefined) {
              const currentData = auth.getEmployerData();
@@ -163,7 +164,7 @@ export default function Homepage() {
              });
         }
       } else {
-        alert("Đăng tin thất bại: " + response.data.message);
+        toast.error("Đăng tin thất bại: " + response.data.message);
       }
 
       await loadDashboardData();
@@ -172,45 +173,49 @@ export default function Homepage() {
 
     } catch (error) {
       console.error("Lỗi khi đăng bài:", error);
-      alert("Đã xảy ra lỗi. Vui lòng thử lại."); 
+      toast.error("Đã xảy ra lỗi. Vui lòng thử lại."); 
     } finally {
         setIsLoading(false);
         setPendingPostData(null);
     }
   };
 
-  const updateJobLocal = (jobUpdated) => {
-      setJobPosts(prev =>
-          prev.map(job =>
-              job._id === jobUpdated._id ? { ...job, ...jobUpdated } : job
-          )
-      );
-  };
+  const updateJobLocal = (updatedJob) => {
+        setJobPosts((prevPosts) => {
+            // Kiểm tra an toàn: nếu prevPosts không phải mảng thì trả về mảng chứa job mới
+            if (!Array.isArray(prevPosts)) return [updatedJob];
+
+            // Duyệt mảng cũ, tìm job trùng ID để thay thế, còn lại giữ nguyên
+            return prevPosts.map((post) => 
+                post._id === updatedJob._id ? updatedJob : post
+            );
+        });
+    };
 
   // Hàm Update bài đăng (Logic cũ, không trừ tiền khi edit thông tin)
   const handleUpdatePost = async (updatedData) => {
     setIsLoading(true);
     try {
       if (!updatedData.id) {
-        alert("Thiếu ID bài đăng để cập nhật!");
+        toast.error("Thiếu ID bài đăng để cập nhật!");
         setIsLoading(false); return;
       }
       console.log(updatedData)
       const response = await client.patch(`/api/post-job?jobId=${updatedData.id}`, updatedData);
 
       if (response.data.success) {
-        alert("Cập nhật bài đăng thành công!");
+        toast.success("Cập nhật bài đăng thành công!");
         setJobPosts((prevPosts) =>
             prevPosts.map((post) => post._id === updatedData.id ? { ...post, ...updatedData } : post)
         );
         setEditingPost(null);
         setActiveSetting("ManagePosts");
       } else {
-        alert("Cập nhật thất bại: " + response.data.message);
+        toast.error("Cập nhật thất bại: " + response.data.message);
       }
     } catch (error) {
       console.error("Lỗi khi cập nhật:", error);
-      alert("Đã xảy ra lỗi khi cập nhật.");
+      toast.error("Đã xảy ra lỗi khi cập nhật.");
     }
     setIsLoading(false);
   };
@@ -222,7 +227,7 @@ export default function Homepage() {
         const id = updatePost._id;
         const response = await client.patch(`api/post-job/state?jobId=${id}&state=${newState}`);
         if (response.data.success){
-          alert("Cập nhật bài đăng thành công!");
+          toast.success("Cập nhật bài đăng thành công!");
           setJobPosts((prevPosts) =>
           prevPosts.map((post) => post._id === id? { ...post, ...updatePost } : post)
         );
@@ -248,14 +253,14 @@ export default function Homepage() {
     try {
         const result = await client.delete(`/api/post-job?jobId=${postIdToDelete}&email=${email}`);
         if (result.data.success) {
-            alert("Xóa bài đăng thành công!");
+            toast.success("Xóa bài đăng thành công!");
             setJobPosts((prevPosts) => prevPosts.filter((p) => p._id !== postIdToDelete));
         } else {
-            alert("Xóa bài đăng thất bại: " + result.data.message);
+            toast.error("Xóa bài đăng thất bại: " + result.data.message);
         }
     } catch (error) {
         console.error("Lỗi khi xóa bài đăng:", error);
-        alert("Xóa bài đăng thất bại!");
+        toast.error("Xóa bài đăng thất bại!");
         setJobPosts(previousJobPosts);
     }
   };
@@ -265,6 +270,19 @@ export default function Homepage() {
     setActiveSetting("PostJob");
   };
   
+  // Hàm lấy chữ cái đầu (VD: "Bát Quái" -> "BQ")
+  const getInitials = (name) => {
+    if (!name) return "U";
+    const parts = name.trim().split(" ");
+    if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+    // Lấy chữ cái đầu của từ đầu tiên và từ cuối cùng
+    return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+  };
+
+  // Lấy dữ liệu logo GỐC (không lấy ảnh mặc định monoLogo nữa để check)
+  const rawLogoUrl = auth.auth.employerData?.data?.logo?.url;
+  const companyName = auth.auth.employerData?.data?.company || "Employer";
+
   return (
     <div>
       <div className="dashboard-theme">
@@ -279,7 +297,13 @@ export default function Homepage() {
           <div className="side-bar">
           <div className="sidebar-top-section">
             <div className="user-info-area" onClick={() => setActiveSetting("Profile")} >
-                <img src={logoUrl} alt="User Avatar" className="user-avatar" />
+                {rawLogoUrl ? (
+                    <img src={rawLogoUrl} alt="User Avatar" className="user-avatar" />
+                ) : (
+                    <div className="avatar-placeholder-init user-avatar placeholder">
+                        {getInitials(companyName)}
+                    </div>
+                )}
                 <div className="user-details">
                     <div className="user-info">{auth.getEmployerData()?.data?.company || "Công ty chưa đặt tên"}</div>
                     {/* Hiển thị điểm ở Sidebar luôn cho tiện theo dõi */}

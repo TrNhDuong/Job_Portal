@@ -1,4 +1,6 @@
-/* --- LAYOUT CHÍNH --- */
+/* =========================================
+   1. GLOBAL LAYOUT & HEADER
+   ========================================= */
 .postjob-layout {
     max-width: 1200px;
     margin: 0 auto;
@@ -8,7 +10,7 @@
     color: #333;
 }
 
-/* --- HEADER --- */
+/* Header Section */
 .postjob-header {
     display: flex;
     justify-content: space-between;
@@ -61,27 +63,27 @@
 }
 .btn-secondary:hover { background: #e5e7eb; color: #1f2937; }
 
-/* --- GRID SYSTEM (70% - 30%) --- */
+
+/* =========================================
+   2. GRID SYSTEM (Left 70% - Right 30%)
+   ========================================= */
 .postjob-grid {
     display: grid;
-    grid-template-columns: 1fr 380px; /* Cột trái tự do, cột phải 320px */
+    grid-template-columns: 1fr 380px; /* Cột trái tự do, cột phải cố định */
     gap: 25px;
-    align-items: start; /* Để sticky hoạt động tốt */
+    align-items: start;
 }
 
-.left-section {
+.left-section, .right-section {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-.right-section {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
 
-/* --- CARD BOX STYLE --- */
+/* =========================================
+   3. CARD & ICONS STYLING
+   ========================================= */
 .card-box {
     background: white;
     border-radius: 12px;
@@ -90,6 +92,7 @@
     overflow: hidden;
 }
 
+/* Card Header */
 .card-header {
     padding: 15px 20px;
     border-bottom: 1px solid #f3f4f6;
@@ -98,7 +101,7 @@
     gap: 12px;
     background: #fafafa;
     border-top-left-radius: 12px;
-    border-top-right-radius: 12px
+    border-top-right-radius: 12px;
 }
 
 .card-header h3 {
@@ -108,22 +111,86 @@
     color: #374151;
 }
 
+.card-body {
+    padding: 20px;
+}
+
+/* Icon Wrappers (Gộp tất cả màu vào đây) */
 .icon-wrapper {
     width: 32px; height: 32px;
     border-radius: 8px;
     display: flex; align-items: center; justify-content: center;
     font-size: 1.1rem;
 }
-.icon-wrapper.blue { background: #eff6ff; color: #0061ff; }
-.icon-wrapper.green { background: #f0fdf4; color: #10b981; }
+.icon-wrapper.blue   { background: #eff6ff; color: #0061ff; }
+.icon-wrapper.green  { background: #f0fdf4; color: #10b981; }
 .icon-wrapper.purple { background: #f5f3ff; color: #8b5cf6; }
 .icon-wrapper.orange { background: #fff7ed; color: #f97316; }
+.icon-wrapper.red    { background: #fef2f2; color: #ef4444; }
+.icon-wrapper.yellow { background: #fffbeb; color: #f59e0b; }
 
-.card-body {
-    padding: 20px;
+
+/* =========================================
+   4. TABS SYSTEM (Cho phần Mô tả/Yêu cầu)
+   ========================================= */
+.card-header-tabs {
+    padding: 0;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    display: flex;
 }
 
-/* --- FORM ELEMENTS --- */
+.tabs-wrapper {
+    display: flex;
+    width: 100%;
+}
+
+.tab-btn {
+    flex: 1; /* Chia đều chiều rộng */
+    padding: 16px;
+    border: none;
+    background: transparent;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #6b7280;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+    border-bottom: 2px solid transparent;
+}
+
+.tab-btn:first-child { border-top-left-radius: 12px; }
+
+.tab-btn:hover {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.tab-btn.active {
+    color: #0061ff;
+    background: #fff;
+    border-bottom: 2px solid #0061ff;
+    font-weight: 700;
+}
+
+/* Báo lỗi trên Tab (Chấm đỏ) */
+.tab-btn.error-tab { color: #ef4444; }
+
+.error-dot {
+    position: absolute;
+    top: 12px; right: 15%;
+    width: 8px; height: 8px;
+    background-color: #ef4444;
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px #fff;
+}
+
+
+/* =========================================
+   5. FORM ELEMENTS
+   ========================================= */
 .form-group { margin-bottom: 15px; }
 .form-group:last-child { margin-bottom: 0; }
 
@@ -149,33 +216,36 @@ input, select, textarea {
     color: #1f2937;
     background: #fff;
 }
+
 input:focus, select:focus, textarea:focus {
     border-color: #0061ff;
     outline: none;
-    box-shadow: 0 0 0 3px rgba(0, 97, 255, 0.1);
+    box-shadow: 0 0 0 4px rgba(0, 97, 255, 0.15), 0 4px 12px rgba(0,0,0,0.05) !important;
+    transform: translateY(-1px);
 }
 
-.input-lg {
-    font-size: 1.1rem;
-    padding: 12px;
-    font-weight: 600;
+input:focus::placeholder, textarea:focus::placeholder { opacity: 0.5; }
+
+input::placeholder, textarea::placeholder { 
+    color: #cfd8dc !important; font-weight: 400; opacity: 1; 
 }
 
+.input-lg { font-size: 1.1rem; padding: 12px; font-weight: 600; }
+
+/* Input Suffix (Currency) */
 .input-group { position: relative; }
 .input-group input { padding-right: 60px !important; font-weight: 600; text-align: right; }
 .suffix {
     position: absolute;
-    right: 12px;
-    top: 50%;
+    right: 12px; top: 50%;
     transform: translateY(-50%);
     color: #6b7280;
     font-weight: 700;
     font-size: 0.9rem;
     pointer-events: none;
-    background-color: transparent;
 }
 
-/* Currency Chips */
+/* Currency Chips (Optional UI) */
 .currency-selector { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
 .currency-tag {
     padding: 4px 11px;
@@ -189,59 +259,36 @@ input:focus, select:focus, textarea:focus {
     white-space: nowrap;
 }
 .currency-tag.active {
-    background: #eff6ff;
-    color: #0061ff;
-    border-color: #0061ff;
+    background: #eff6ff; color: #0061ff; border-color: #0061ff;
 }
 
-/* Error Message */
+/* Error States */
 .input.error, select.error, textarea.error {
-    border-color: #ef4444;
-    background: #fef2f2;
+    border-color: #ef4444; background: #fef2f2;
 }
 .err-msg {
-    color: #ef4444;
-    font-size: 0.8rem;
-    margin-top: 4px;
-    display: block;
+    color: #ef4444; font-size: 0.8rem; margin-top: 4px; display: block;
 }
 
-.char-count {
-    text-align: right;
-    font-size: 0.8rem;
-    color: #9ca3af;
-    margin-top: 5px;
-}
 
-input::placeholder,
-textarea::placeholder { 
-  color: #cfd8dc !important;  
-  font-weight: 400;
-  opacity: 1; 
-}
-
-input:focus::placeholder,
-textarea:focus::placeholder {
-  opacity: 0.5;
-}
-
-/* PHẦN SOẠN THẢO VĂN BẢN */
-
-/* 1. EDITOR LAYOUT & WRAPPER */
+/* =========================================
+   6. QUILL EDITOR (RICH TEXT) - CORE
+   ========================================= */
 .editor-wrapper {
     background: #fff;
     border-radius: 8px;
     position: relative;
     overflow: visible !important;
+    margin-bottom: 5px;
 }
 
-/* Viền đỏ báo lỗi khi chưa nhập */
+/* Báo lỗi viền đỏ */
 .editor-wrapper.error-border .ql-toolbar,
 .editor-wrapper.error-border .ql-container {
     border-color: #ef4444 !important;
 }
 
-/* --- Thanh công cụ (Toolbar) --- */
+/* Toolbar Style */
 .ql-toolbar.ql-snow {
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
@@ -249,21 +296,18 @@ textarea:focus::placeholder {
     background-color: #fafafa;
     font-family: 'Be Vietnam Pro', sans-serif;
     padding: 8px !important;
-    z-index: 20; /* Cao hơn nội dung */
+    z-index: 20;
     position: relative;
 }
 
-/* --- Vùng nhập liệu (Content Area) --- */
+/* Content Area Style */
 .ql-container.ql-snow {
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
     border-color: #e5e7eb !important;
-    
-    /* Chiều cao & Thanh cuộn */
     min-height: 200px; 
     max-height: 500px; 
-    overflow-y: auto;  /* Hiện thanh cuộn nếu dài hơn 500px */
-    
+    overflow-y: auto;
     font-family: 'Be Vietnam Pro', sans-serif;
     font-size: 0.95rem;
     color: #333;
@@ -271,13 +315,11 @@ textarea:focus::placeholder {
     z-index: 10;
 }
 
-/* Hiệu ứng Focus (Viền xanh + Bóng) */
 .ql-container.ql-snow:focus-within {
     border-color: #0061ff !important;
     box-shadow: inset 0 0 0 1px #0061ff;
 }
 
-/* Placeholder (Chữ gợi ý mờ) */
 .ql-editor.ql-blank::before {
     color: #cfd8dc !important;
     font-style: normal !important;
@@ -285,25 +327,37 @@ textarea:focus::placeholder {
     opacity: 1;
 }
 
-/* 2. CUSTOM DROPDOWN (HEADING SELECTOR) */
+/* Helpers */
+.ql-editor .ql-indent-1 { padding-left: 3em; }
+.ql-editor .ql-indent-2 { padding-left: 6em; }
+.ql-editor .ql-indent-3 { padding-left: 9em; }
 
-/* Khung hiển thị nút chọn (Bên ngoài) */
-.ql-snow .ql-picker.ql-header {
-    width: 105px !important; /* Độ rộng vừa vặn, không quá to */
-    height: 28px !important;
-    margin-right: 10px; /* Cách các nút bên cạnh ra xíu */
+.char-count {
+    text-align: right;
+    font-size: 0.8rem;
+    color: #9ca3af;
+    margin-top: 5px;
+    font-weight: 500;
 }
 
-/* Nhãn hiển thị (Label) */
+
+/* =========================================
+   7. QUILL EDITOR - DROPDOWNS & HEADINGS
+   ========================================= */
+
+/* --- Custom Dropdown UI (General) --- */
+.ql-snow .ql-picker.ql-header {
+    width: 105px !important;
+    height: 28px !important;
+    margin-right: 10px;
+}
+
 .ql-snow .ql-picker.ql-header .ql-picker-label {
     padding-left: 8px !important;
     padding-right: 18px !important;
-    
-    /* Flex để căn giữa icon và chữ */
     display: flex !important;
     align-items: center !important;
     justify-content: flex-start;
-    
     font-size: 0.85rem !important;
     font-weight: 600;
     color: #4b5563;
@@ -313,74 +367,25 @@ textarea:focus::placeholder {
     outline: none !important;
 }
 
-/* --- COLOR PICKER (Mới thêm) --- */
-.ql-snow .ql-picker.ql-color {
-    width: 30px !important; /* Nút nhỏ gọn */
-    height: 28px !important;
-    margin-right: -3px;
-}
-
-.ql-snow .ql-picker.ql-color .ql-picker-label {
-    padding: 4px !important;
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    border-radius: 6px;
-    border: 1px solid transparent;
-}
-
-/* Cái bảng xổ xuống (Dropdown chứa 3 màu) */
-.ql-snow .ql-picker.ql-color .ql-picker-options {
-    width: auto !important; 
-    min-width: auto !important; 
-    padding: 8px !important;
-    gap: 8px; /* Khoảng cách giữa các ô màu */
-    left: -5px !important;
-    z-index: 9999 !important;
-    border-radius: 6px;
-}
-
-.ql-snow .ql-picker.ql-color.ql-expanded .ql-picker-options {
-    display: flex !important;
-}
-
-/* Các ô màu bên trong */
-.ql-snow .ql-picker.ql-color .ql-picker-item {
-    width: 15px !important; /* Kích thước ô màu */
-    height: 15px !important;
-    border-radius: 4px !important;
-    border: 1px solid #eee;
-    margin: 0 !important; /* Bỏ margin mặc định */
-}
-
-/* Hiệu ứng hover vào ô màu */
-.ql-snow .ql-picker.ql-color .ql-picker-item:hover {
-    border-color: #0061ff !important;
-    transform: scale(1.1); /* Phóng to nhẹ khi chọn */
-}
-
 .ql-snow .ql-picker-label:hover {
     background: #eef7ff !important;
     border-color: #0061ff !important;
     color: #0061ff !important;
 }
-.ql-snow .ql-picker-label:hover svg polygon {
-    stroke: #0061ff !important; /* Đổi màu mũi tên */
-}
+.ql-snow .ql-picker-label:hover svg polygon { stroke: #0061ff !important; }
 
-/* Menu xổ xuống (Dropdown List) */
+/* Menu xổ xuống */
 .ql-snow .ql-picker.ql-header .ql-picker-options {
-    min-width: 140px !important; /* Đủ rộng để chứa chữ Heading 1 */
+    min-width: 140px !important;
     padding: 6px !important;
     border-radius: 8px !important;
     box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
     border: 1px solid #e5e7eb !important;
     left: 0 !important;
     margin-top: 4px;
-    z-index: 9999 !important; /* Nổi lên trên tất cả */
+    z-index: 9999 !important;
 }
 
-/* Từng dòng trong menu */
 .ql-snow .ql-picker.ql-header .ql-picker-item {
     padding: 8px 10px !important;
     border-radius: 6px !important;
@@ -390,78 +395,77 @@ textarea:focus::placeholder {
 }
 
 .ql-snow .ql-picker.ql-header .ql-picker-item:hover {
-    background-color: #f0f7ff !important;
-    color: #0061ff !important;
+    background-color: #f0f7ff !important; color: #0061ff !important;
 }
-
 .ql-snow .ql-picker.ql-header .ql-picker-item.ql-selected {
-    background-color: #e0e7ff !important;
-    color: #0061ff !important;
-    font-weight: 700 !important;
+    background-color: #e0e7ff !important; color: #0061ff !important; font-weight: 700 !important;
 }
 
-/* --- HEADING 1 --- */
-
-/* Case 1: Khi hiển thị trên thanh Toolbar (Label) -> Cần NHỎ để vừa khung */
-.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="2"]::before {
-    content: "Heading 1" !important;
-    font-size: 0.85rem !important; 
-    font-weight: 800 !important;
-}
-
-/* Case 2: Khi hiển thị trong Menu xổ xuống (Item) -> Cần TO cho dễ nhìn */
-.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="2"]::before {
-    content: "Heading 1" !important;
-    font-size: 1rem !important; /* Giữ nguyên size to trong menu */
-    font-weight: 800 !important;
-}
-
-/* --- HEADING 2 --- */
-.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="3"]::before {
-    content: "Heading 2" !important;
-    font-size: 0.85rem !important;
-    font-weight: 700 !important;
-}
-
+/* --- LOGIC HEADING 1 & 2 (Quan trọng) --- */
+/* 1. Đổi Heading lớn (đang là mức 3) -> Hiển thị thành "Heading 1" */
+.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="3"]::before,
 .ql-snow .ql-picker.ql-header .ql-picker-item[data-value="3"]::before {
-    content: "Heading 2" !important;
-    font-size: 0.95rem !important; 
+    content: "Heading 1" !important; /* Đổi nội dung chữ ở đây */
+    font-size: 14px !important; /* Giữ nguyên cỡ chữ hiển thị trong menu */
     font-weight: 700 !important;
 }
 
-/* --- NORMAL --- */
-.ql-snow .ql-picker.ql-header .ql-picker-label:not([data-value])::before{
+/* 2. Đổi Heading nhỏ (đang là mức 4) -> Hiển thị thành "Heading 2" */
+.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="4"]::before,
+.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="4"]::before {
+    content: "Heading 2" !important; /* Đổi nội dung chữ ở đây */
+    font-size: 12px !important; 
+    font-weight: 600 !important;
+}
+
+/* 3. Normal giữ nguyên */
+.ql-snow .ql-picker.ql-header .ql-picker-label:not([data-value])::before,
+.ql-snow .ql-picker.ql-header .ql-picker-item:not([data-value])::before {
     content: "Normal" !important;
-    font-size: 0.9rem !important;
-    font-weight: 400 !important;
 }
 
-.ql-snow .ql-picker.ql-header .ql-picker-item:not[data-value]::before {
-    content: "Normal" !important;
-    font-size: 0.9rem !important; 
-    font-weight: 400 !important;
+
+/* --- Color Picker Styles --- */
+.ql-snow .ql-picker.ql-color { width: 30px !important; height: 28px !important; margin-right: -3px; }
+.ql-snow .ql-picker.ql-color .ql-picker-label {
+    padding: 4px !important; display: flex !important; justify-content: center;
+    border-radius: 6px; border: 1px solid transparent;
+}
+.ql-snow .ql-picker.ql-color .ql-picker-options {
+    width: auto !important; min-width: auto !important; padding: 8px !important; gap: 8px;
+    left: -5px !important; z-index: 9999 !important; border-radius: 6px;
+}
+.ql-snow .ql-picker.ql-color.ql-expanded .ql-picker-options { display: flex !important; }
+.ql-snow .ql-picker.ql-color .ql-picker-item {
+    width: 15px !important; height: 15px !important; border-radius: 4px !important;
+    border: 1px solid #eee; margin: 0 !important;
+}
+.ql-snow .ql-picker.ql-color .ql-picker-item:hover {
+    border-color: #0061ff !important; transform: scale(1.1);
 }
 
-/* 3. HỖ TRỢ KHÁC (Indentation & Counter) */
-   
-/* Thụt đầu dòng */
-.ql-editor .ql-indent-1 { padding-left: 3em; }
-.ql-editor .ql-indent-2 { padding-left: 6em; }
-.ql-editor .ql-indent-3 { padding-left: 9em; }
-/* ... (Thêm các cấp độ nếu cần) */
 
-/* Đếm ký tự (Đặt ở góc phải dưới) */
-.char-count {
-    text-align: right;
-    font-size: 0.8rem;
-    color: #9ca3af;
-    margin-top: 5px;
-    font-weight: 500;
-}
-
-/* Responsive */
+/* =========================================
+   8. RESPONSIVE
+   ========================================= */
 @media (max-width: 900px) {
     .postjob-grid { grid-template-columns: 1fr; }
     .right-section { position: static; }
     .form-row { flex-direction: column; gap: 15px; }
+    
+    .tabs-wrapper { flex-direction: column; }
+    .tab-btn {
+        text-align: left; border-bottom: 1px solid #eee; padding: 12px 16px;
+    }
+    .tab-btn.active {
+        border-bottom: 1px solid #eee; border-left: 4px solid #0061ff;
+    }
 }
+
+/* Toast Buttons UI */
+.toast-backdrop-hack { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -1; cursor: default; }
+.toast-btn-base { padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s ease; }
+.toast-btn-cancel { background: white; border: 1px solid #e5e7eb; color: #374151; }
+.toast-btn-cancel:hover { background: #f3f4f6; }
+.toast-btn-delete { background: #ef4444; border: none; color: white; box-shadow: 0 2px 5px rgba(239, 68, 68, 0.3); }
+.toast-btn-delete:hover { background: #dc2626; transform: translateY(-1px); }

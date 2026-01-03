@@ -415,3 +415,79 @@
 .eye-icon-setting:hover {
     color: #0061ff; /* Xanh brand khi hover */
 }
+
+/* Khung chứa danh sách điều kiện */
+.validation-box {
+    position: relative;
+    left: 0;
+    width: 100%;
+    background: #ffffff;
+    border: 1px solid #e5e7eb; /* Viền xám nhạt */
+    border-radius: 8px;
+    padding: 12px 16px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Bóng đổ mềm */
+    z-index: 50; /* Nổi lên trên các thành phần khác */
+    margin-top: 8px;
+    animation: fadeIn 0.2s ease-out; /* Hiệu ứng hiện ra nhẹ nhàng */
+}
+
+/* Tiêu đề nhỏ bên trong box */
+.validation-header {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #374151; /* Xám đậm */
+    margin-bottom: 8px;
+}
+
+/* Danh sách (ul) */
+.validation-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Từng dòng điều kiện (li) */
+.validation-item {
+    display: flex;
+    align-items: center;
+    font-size: 0.8rem;
+    color: #6b7280; /* Màu xám mặc định (chưa đạt) */
+    margin-bottom: 6px;
+    transition: all 0.2s ease;
+}
+
+.validation-item:last-child {
+    margin-bottom: 0;
+}
+
+/* Khi điều kiện ĐÚNG (class 'valid' được thêm vào từ React) */
+.validation-item.valid {
+    color: #10b981; /* Màu xanh lá (Emerald-500) */
+    font-weight: 500;
+}
+
+/* Icon dấu tích V */
+.check-icon {
+    margin-right: 8px;
+    font-size: 1rem;
+    color: #10b981;
+    flex-shrink: 0;
+}
+
+/* Dấu chấm tròn (khi chưa đạt) */
+.dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background-color: #d1d5db; /* Xám nhạt */
+    border-radius: 50%;
+    margin-right: 12px;
+    margin-left: 3px;
+    flex-shrink: 0;
+}
+
+/* Hiệu ứng Fade In cho box */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}

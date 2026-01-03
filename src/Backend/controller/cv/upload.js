@@ -1,10 +1,10 @@
 import multer from "multer";
-import { createStorage } from "../../middleware/upload.js";
+import { createCVStorage } from "../../middleware/upload.js";
 import { CandidateRepository } from "../../repository/candidateRepository.js";
 import { destroyCloudData } from "../../service/cloudinary.js";
 
 export const uploadCandidateCV = async (req, res) => {
-    const storage = createStorage("jobportal/cv");
+    const storage = createCVStorage("jobportal/cv");
     const email = req.query.email;
     const upload = multer({ storage }).single("cv");
     upload(req, res, async (err) => {

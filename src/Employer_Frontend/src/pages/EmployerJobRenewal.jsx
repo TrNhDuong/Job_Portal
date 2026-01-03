@@ -150,37 +150,41 @@ const EmployerJobRenewal = ({ onNavigateToDeposit, jobPosts, updateJobLocal }) =
       return;
     }
 
-    if (window.confirm(`Xác nhận gia hạn ${days} ngày cho bài viết này?`)) {
-      let newExpireDay = undefined;
-      if (selectedJob.state !== 'Pending'){
-        newExpireDay = calculateNewExpirationDate(selectedJob.expireDay, days);
-      }
-     try {
+    let newExpireDay = calculateNewExpirationDate(selectedJob.expireDay, days);
+    
+    // (Tùy chọn) Có thể hiện loading nhẹ nếu mạng chậm
+    const loadingToast = toast.loading("Đang xử lý gia hạn...");
+
+    try {
       const email = auth.employerData.data.email;
       const res = await client.patch(`api/post-job/extend?jobId=${selectedJob._id}&email=${email}`,
         {expireDay: newExpireDay, point: totalCost}
       );
+      
       if (res.data.success){
-        // Logic Mock UI
+        // Xử lý thành công
         handleTransaction(totalCost, "remove");
+        
+        toast.dismiss(loadingToast); // Tắt loading
         toast.success(`Đã gia hạn "${selectedJob.title}" thêm ${days} ngày!`);
+        
         const updatedJob = {
             ...selectedJob,
             expireDay: newExpireDay,
             state: "Open"
         };
-
-        // 1. cập nhật local ngay lập tức
-    
+        
+        // Cập nhật UI & Đóng Modal
         closeRenewalModal();
         updateJobLocal(updatedJob);
       }
-     } catch (error){
-
-     }
+    } catch (error){
+      console.error(error);
+      toast.dismiss(loadingToast); // Tắt loading
+      toast.error("Có lỗi xảy ra khi gia hạn. Vui lòng thử lại.");
+    }
       
       // Ở đây sau này cần gọi hàm reloadData() từ cha để cập nhật lại list
-    }
   };
 
   for (const job of processedJobs) {
