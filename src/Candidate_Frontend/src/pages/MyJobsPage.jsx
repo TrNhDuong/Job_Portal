@@ -3,6 +3,10 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import client from "../api/client";
+import {
+  saveJob as apiSaveJob,
+  removeSaveJob as apiRemoveSaveJob,
+} from "../api/candidate";
 
 import {
   MapPin,
@@ -202,16 +206,39 @@ export default function MyJobsPage() {
     }
   };
 
+  const handleSaveJob = async (job) => {
+    if (!user?.email) return;
+    const jobId = job._id;
+    setActionLoading(jobId);
+
+    try {
+      await apiSaveJob(user.email, jobId);
+
+      setSavedJobs((prev) => {
+        const exists = prev.some(j => String(j._id) === String(jobId));
+        return exists ? prev : [...prev, job];
+      });
+
+      if (Array.isArray(user.listSaveJobs)) {
+        const isExist = user.listSaveJobs.some(id => String(id) === String(jobId));
+        if (!isExist) {
+          login({ ...user, listSaveJobs: [...user.listSaveJobs, jobId] });
+        }
+      }
+
+    } catch (err) {
+      console.error(err);
+      alert("Không thể lưu việc làm. Vui lòng thử lại.");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   const handleUnsaveJob = async (jobId) => {
     if (!user?.email) return;
     setActionLoading(jobId);
     try {
-      await client.patch(
-        `/api/post-job/removeSaveJob?jobId=${encodeURIComponent(jobId)}`,
-        {
-          email: user.email,
-        }
-      );
+      await apiRemoveSaveJob(user.email, jobId);
 
       // Cập nhật UI list saved jobs
       setSavedJobs((prev) =>
@@ -219,17 +246,13 @@ export default function MyJobsPage() {
       );
 
       // Cập nhật Context
-      if (user.listSaveJobs) {
+      if (Array.isArray(user.listSaveJobs)) {
         const updatedSaveList = user.listSaveJobs.filter(
           (id) => String(id) !== String(jobId)
         );
         login({ ...user, listSaveJobs: updatedSaveList });
       }
 
-      // Nếu đang mở modal job này, có thể giữ nguyên hoặc đóng modal tùy UX
-      // if (selectedJob && String(selectedJob._id) === String(jobId)) {
-      //   setSelectedJob(null);
-      // }
     } catch (err) {
       console.error(err);
       alert("Không thể bỏ lưu việc làm.");
@@ -238,10 +261,17 @@ export default function MyJobsPage() {
     }
   };
 
-  // Callbacks từ Modal
+
   const handleToggleSaveFromModal = async (job) => {
-    // Ở trang My Jobs -> tab Saved, nút trong modal sẽ là "Bỏ lưu"
-    await handleUnsaveJob(job._id);
+    const isAlreadySaved = savedJobs.some(
+      (savedJob) => String(savedJob._id) === String(job._id)
+    );
+
+    if (isAlreadySaved) {
+      await handleUnsaveJob(job._id);
+    } else {
+      await handleSaveJob(job);
+    }
   };
 
   const handleUnapplyFromModal = async (jobId) => {
