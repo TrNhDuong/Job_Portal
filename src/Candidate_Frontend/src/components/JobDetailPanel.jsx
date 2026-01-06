@@ -9,7 +9,8 @@ import {
   Building2,
   ExternalLink,
   Clock,
-  AlertTriangle // Icon báo cáo
+  AlertTriangle, // Report Icon
+  CheckCircle, // Applied Icon
 } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import "../styles/job-search.css";
@@ -20,25 +21,20 @@ import {
   removeSaveJob as apiRemoveSaveJob,
 } from "../api/candidate";
 
-// Import Modal Báo Cáo
 import ReportJobModal from "./ReportJobModal";
 
 // --- HELPERS ---
 
-// 1. Format Lương
 const formatSalary = (salary) => {
   if (!salary) return "Thỏa thuận";
   if (typeof salary === "string") return salary;
 
-  // Xử lý object lương { minSalary, maxSalary, currency }
   if (typeof salary === "object") {
     const { minSalary, maxSalary, currency } = salary || {};
     
-    // Nếu là VND hoặc không có currency -> Quy đổi ra "Triệu"
     if (!currency || currency === "VND") {
       const toMillion = (num) => {
         if (!num) return 0;
-        // Chia 1 triệu, giữ tối đa 1 số thập phân
         return (num / 1000000).toLocaleString('vi-VN', { maximumFractionDigits: 1 });
       };
 
@@ -46,7 +42,6 @@ const formatSalary = (salary) => {
       if (minSalary) return `Từ ${toMillion(minSalary)} triệu`;
       if (maxSalary) return `Tối đa ${toMillion(maxSalary)} triệu`;
     } 
-    // Nếu là ngoại tệ -> Giữ nguyên số và đơn vị
     else {
       const formatNum = (num) => num.toLocaleString('en-US');
       if (minSalary && maxSalary) return `${formatNum(minSalary)} - ${formatNum(maxSalary)} ${currency}`;
@@ -55,7 +50,6 @@ const formatSalary = (salary) => {
     }
   }
   
-  // Fallback nếu database lưu số thường (VND)
   if (typeof salary === "number") {
      return (salary / 1000000).toLocaleString('vi-VN', { maximumFractionDigits: 1 }) + " triệu";
   }
@@ -63,13 +57,12 @@ const formatSalary = (salary) => {
   return "Thỏa thuận";
 };
 
-// 2. Format Ngày
 const formatDate = (dateString) => {
   if (!dateString) return "Không thời hạn";
   return new Date(dateString).toLocaleDateString("vi-VN");
 };
 
-// --- COMPONENT CHÍNH ---
+// --- MAIN COMPONENT ---
 
 export default function JobDetailPanel({ job, onClose }) {
   const navigate = useNavigate();
@@ -77,40 +70,52 @@ export default function JobDetailPanel({ job, onClose }) {
 
   const [isSaved, setIsSaved] = useState(false);
   const [saving, setSaving] = useState(false);
-  
-  // State điều khiển modal báo cáo
   const [showReportModal, setShowReportModal] = useState(false);
+  
+  // New state to track application status
+  const [isApplied, setIsApplied] = useState(false);
 
   const jobId = useMemo(() => String(job?._id || ""), [job?._id]);
 
-  // --- LOGIC DỮ LIỆU --- //
+  // --- LOGIC --- //
 
-  // Logo: Ưu tiên logo job -> logo url -> placeholder
   const companyInitial = (job?.company && job.company.charAt(0)) || "?";
   const placeholderLogo = `https://ui-avatars.com/api/?name=${encodeURIComponent(companyInitial)}&background=f1f5f9&color=1e293b`;
   const logoSrc = (job?.logo && job.logo.url) || job?.logoUrl || placeholderLogo;
 
-  // Link đến trang Employer
   const companyIdentifier = job?.companyEmail || job?.company || "";
   const companyLink = `/employer/${encodeURIComponent(companyIdentifier)}`;
 
-  // Địa chỉ đầy đủ
   const fullAddress = job?.detailedAddress 
     ? `${job.detailedAddress}, ${job.location}`
     : job?.location || "Chưa cập nhật";
 
-  // Ngành nghề hiển thị
   const displayMajor = job?.major === 'Other' && job?.customMajor 
     ? job.customMajor 
     : job?.major;
 
   // --- EFFECTS --- //
   useEffect(() => {
-    // Kiểm tra job này đã được user lưu chưa
-    if (user && Array.isArray(user.listSaveJobs) && jobId) {
-      setIsSaved(user.listSaveJobs.map(String).includes(jobId));
-    } else {
-      setIsSaved(false);
+    if (user && jobId) {
+      // Check if saved
+      if (Array.isArray(user.listSaveJobs)) {
+        setIsSaved(user.listSaveJobs.map(String).includes(jobId));
+      } else {
+        setIsSaved(false);
+      }
+
+      // Check if applied
+      // Assuming user.appliedJobs is an array of job IDs or objects with _id/job properties
+      if (Array.isArray(user.appliedJobs)) {
+        const hasApplied = user.appliedJobs.some(item => {
+           // Handle both string IDs and populated objects
+           const id = typeof item === 'string' ? item : (item._id || item.job);
+           return String(id) === jobId;
+        });
+        setIsApplied(hasApplied);
+      } else {
+        setIsApplied(false);
+      }
     }
   }, [user, jobId]);
 
@@ -121,6 +126,12 @@ export default function JobDetailPanel({ job, onClose }) {
       alert("Bạn cần đăng nhập để ứng tuyển.");
       navigate("/login");
       return;
+    }
+    // If already applied, maybe navigate to "My Jobs" or do nothing
+    if (isApplied) {
+        // Option: Navigate to My Jobs to see status
+        // navigate("/my-jobs"); 
+        return; 
     }
     navigate(`/jobs/${job._id}/apply`);
   };
@@ -162,10 +173,7 @@ export default function JobDetailPanel({ job, onClose }) {
     <div className="job-detail">
       {/* ================= HEADER ================= */}
       <div className="job-detail-header relative">
-        
-        {/* Cụm nút hành động góc phải */}
         <div className="absolute top-5 right-5 flex gap-2">
-            {/* Nút Báo cáo */}
             <button 
                 type="button"
                 onClick={handleReportClick}
@@ -175,7 +183,6 @@ export default function JobDetailPanel({ job, onClose }) {
                 <AlertTriangle size={18} />
             </button>
 
-            {/* Nút Đóng */}
             <button
                 type="button"
                 onClick={onClose}
@@ -197,7 +204,6 @@ export default function JobDetailPanel({ job, onClose }) {
           </div>
           <div>
             <h2 className="job-detail-title">{job.title}</h2>
-            
             <Link to={companyLink} className="job-detail-company-link">
               <Building2 size={14} />
               {job.company}
@@ -209,112 +215,74 @@ export default function JobDetailPanel({ job, onClose }) {
 
       {/* ================= BODY ================= */}
       <div className="job-detail-body">
-        
-        {/* 1. Grid thông tin tóm tắt */}
         <div className="job-detail-grid">
-          {/* Mức lương */}
           <div className="job-detail-info-card">
-            <span className="label">
-              <DollarSign size={14} /> Mức lương
-            </span>
-            <span className="value highlight">
-              {formatSalary(job.salary)}
-            </span>
+            <span className="label"><DollarSign size={14} /> Mức lương</span>
+            <span className="value highlight">{formatSalary(job.salary)}</span>
           </div>
-
-          {/* Địa điểm */}
           <div className="job-detail-info-card">
-            <span className="label">
-              <MapPin size={14} /> Địa điểm
-            </span>
-            <span className="value truncate-text" title={fullAddress}>
-              {job.location || "Toàn quốc"}
-            </span>
+            <span className="label"><MapPin size={14} /> Địa điểm</span>
+            <span className="value truncate-text" title={fullAddress}>{job.location || "Toàn quốc"}</span>
           </div>
-
-          {/* Kinh nghiệm */}
           <div className="job-detail-info-card">
-            <span className="label">
-              <Briefcase size={14} /> Kinh nghiệm
-            </span>
-            <span className="value">
-              {job.experience ? `${job.experience} năm` : "Không yêu cầu"}
-            </span>
+            <span className="label"><Briefcase size={14} /> Kinh nghiệm</span>
+            <span className="value">{job.experience ? `${job.experience} năm` : "Không yêu cầu"}</span>
           </div>
-
-          {/* Hạn nộp */}
           <div className="job-detail-info-card">
-            <span className="label">
-              <Clock size={14} /> Hạn nộp
-            </span>
-            <span className="value">
-              {formatDate(job.expireDay)}
-            </span>
+            <span className="label"><Clock size={14} /> Hạn nộp</span>
+            <span className="value">{formatDate(job.expireDay)}</span>
           </div>
         </div>
 
-        {/* 2. Nội dung chi tiết (HTML) */}
-        
-        {/* Mô tả */}
         <section className="job-detail-section">
           <h3 className="job-detail-section-title">Mô tả công việc</h3>
-          <div
-            className="job-detail-html-content"
-            dangerouslySetInnerHTML={{ 
-                __html: job.description || "<p>Chưa cập nhật thông tin.</p>" 
-            }}
-          />
+          <div className="job-detail-html-content" dangerouslySetInnerHTML={{ __html: job.description || "<p>Chưa cập nhật thông tin.</p>" }} />
         </section>
 
-        {/* Yêu cầu */}
         <section className="job-detail-section">
           <h3 className="job-detail-section-title">Yêu cầu ứng viên</h3>
-          <div
-            className="job-detail-html-content"
-            dangerouslySetInnerHTML={{ 
-              __html: job.requirement || "<p>Chưa cập nhật thông tin yêu cầu.</p>" 
-            }}
-          />
+          <div className="job-detail-html-content" dangerouslySetInnerHTML={{ __html: job.requirement || "<p>Chưa cập nhật thông tin yêu cầu.</p>" }} />
         </section>
 
-        {/* Quyền lợi */}
         <section className="job-detail-section">
           <h3 className="job-detail-section-title">Quyền lợi & Chế độ</h3>
-          <div
-            className="job-detail-html-content"
-            dangerouslySetInnerHTML={{ 
-              __html: job.welfare || "<p>Chưa cập nhật thông tin quyền lợi.</p>" 
-            }}
-          />
+          <div className="job-detail-html-content" dangerouslySetInnerHTML={{ __html: job.welfare || "<p>Chưa cập nhật thông tin quyền lợi.</p>" }} />
         </section>
 
         <hr className="job-detail-divider" />
 
-        {/* Tags */}
         <div className="job-detail-tags">
            {job.jobType && <span className="job-detail-tag">{job.jobType}</span>}
            {job.degree && <span className="job-detail-tag">{job.degree}</span>}
            {displayMajor && <span className="job-detail-tag">{displayMajor}</span>}
         </div>
 
-        {/* Địa chỉ chi tiết (nếu có) */}
         {job.detailedAddress && (
-           <p className="job-detail-detail-addr">
-             <strong>Địa chỉ cụ thể:</strong> {job.detailedAddress}
-           </p>
+           <p className="job-detail-detail-addr"><strong>Địa chỉ cụ thể:</strong> {job.detailedAddress}</p>
         )}
-
       </div>
 
       {/* ================= FOOTER ================= */}
       <div className="job-detail-footer">
-        <button
-          type="button"
-          onClick={handleApply}
-          className="job-detail-btn primary"
-        >
-          Ứng tuyển ngay
-        </button>
+        {/* Logic hiển thị nút Ứng tuyển */}
+        {isApplied ? (
+            <button
+              type="button"
+              disabled
+              className="job-detail-btn applied" // Add style for .applied in CSS if needed (e.g., bg-green-100 text-green-700)
+              style={{ backgroundColor: "#dcfce7", color: "#166534", cursor: "default", border: "1px solid #bbf7d0" }}
+            >
+              <CheckCircle size={18} /> Đã ứng tuyển
+            </button>
+        ) : (
+            <button
+              type="button"
+              onClick={handleApply}
+              className="job-detail-btn primary"
+            >
+              Ứng tuyển ngay
+            </button>
+        )}
 
         <button
           type="button"
@@ -328,7 +296,6 @@ export default function JobDetailPanel({ job, onClose }) {
       </div>
 
       {/* ================= REPORT MODAL ================= */}
-      {/* Hiển thị đè lên trên Panel hiện tại */}
       {showReportModal && (
         <ReportJobModal 
             job={job} 
