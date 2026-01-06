@@ -159,6 +159,15 @@ export default function AdminMonitor() {
                   {selectedReport.JobPost?.title} <br />
                   <small>{selectedReport.JobPost?._id}</small>
                 </div>
+                {selectedReport.JobPost?._id && (
+                  <button 
+                    className="btn-view-job-link"
+                    onClick={() => window.location.href = `/admin/jobs?jobId=${selectedReport.JobPost._id}`}
+                  >
+                    <HiEye style={{ marginRight: '6px' }} />
+                    Xem bài đăng trong danh sách
+                  </button>
+                )}
               </div>
 
               <div className="info-group">

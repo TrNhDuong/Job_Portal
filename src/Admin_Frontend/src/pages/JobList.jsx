@@ -6,6 +6,9 @@ import {
   HiCurrencyDollar, HiOfficeBuilding, HiDocumentText, HiX, HiClock
 } from "react-icons/hi";
 import { toast } from "react-toastify";
+import {useLocation} from "react-router-dom";
+
+
 
 export default function JobList() {
   const [search, setSearch] = useState("");
@@ -63,6 +66,24 @@ export default function JobList() {
     if (minSalary && maxSalary) return `${minSalary} - ${maxSalary} ${currency || 'VND'}`;
     return "Thỏa thuận";
   };
+  const location = useLocation();
+
+  useEffect(() => {
+    fetchJobs();
+  }, []);
+
+  // 🟢 Thêm logic này để tự động mở Modal khi có ID trên URL
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const jobId = params.get("jobId");
+    
+    if (jobId && jobs.length > 0) {
+      const jobToOpen = jobs.find(j => j._id === jobId);
+      if (jobToOpen) {
+        setSelectedJob(jobToOpen);
+      }
+    }
+  }, [location.search, jobs]); // Chạy lại khi danh sách jobs đã tải xong
 
   return (
     <>
