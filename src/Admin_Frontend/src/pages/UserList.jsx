@@ -197,7 +197,6 @@ export default function UserList() {
                 <tr>
                   <th style={{ width: "35%" }}>Thông tin người dùng</th>
                   <th style={{ width: "15%", textAlign: "center" }}>Vai trò</th>
-                  <th style={{ width: "15%", textAlign: "center" }}>Trạng thái</th>
                   <th style={{ width: "20%" }}>Ngày tham gia</th>
                   <th style={{ width: "15%", textAlign: "center" }}>Hành động</th>
                 </tr>
@@ -222,11 +221,7 @@ export default function UserList() {
                           {u.role === "candidate" ? "Ứng viên" : "Tuyển dụng"}
                         </span>
                       </td>
-                      <td style={{ textAlign: "center" }}>
-                        <span className={`status-badge ${u.state === "active" ? "online" : "offline"}`}>
-                          {u.state || "offline"}
-                        </span>
-                      </td>
+
                       <td>{u.createdAt ? new Date(u.createdAt).toLocaleDateString("vi-VN") : ""}</td>
                       <td style={{ textAlign: "center" }}>
                         <div className="action-buttons">
