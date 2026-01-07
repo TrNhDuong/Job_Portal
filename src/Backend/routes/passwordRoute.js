@@ -50,7 +50,8 @@ Router.post("/password/employer", async (req, res) => {
         })
     }
     const hashPass = account.data.password
-    const isMatch = bcrypt.compare(password, hashPass);
+    console.log(hashPass)
+    const isMatch = await bcrypt.compare(password, hashPass);
 
     if (isMatch){
         const result = await EmployerRepository.updateEmployer(email, {password: newpassword})

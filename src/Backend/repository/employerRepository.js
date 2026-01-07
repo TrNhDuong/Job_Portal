@@ -25,28 +25,6 @@ export class EmployerRepository {
         }
     }
 
-    static async getAllEmployer() {
-        try {
-            const employers = await Employer
-                .find({})
-                .select("-password")
-                .lean();
-
-            return {
-                success: true,
-                data: employers
-            };
-        } catch (error) {
-            console.error("Error fetching all employers:", error);
-            return {
-                success: false,
-                message: "Error fetching employers",
-                data: null
-            };
-        }
-    }
-
-
     static async getHashedPassword(email) {
         const employer = await this.getEmployer(email);
         if (!employer.success) {
@@ -76,7 +54,6 @@ export class EmployerRepository {
             return { success: false, message: "Error creating employer" };
         }
     }
-
 
     // --- HÀM CẬP NHẬT DỮ LIỆU (Đã sửa lỗi Read-Modify-Write và thêm Session) ---
     static async updateEmployer(email, updatesEmployer, options = {}) {

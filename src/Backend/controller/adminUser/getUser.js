@@ -3,7 +3,6 @@ import AdminUserRepository from "../../repository/adminUserRepository.js";
 export const getAllAdminUsers = async (req, res) => {
   try {
     const result = await AdminUserRepository.getAll();
-
     if (!result.success) {
       return res.status(500).json(result);
     }
