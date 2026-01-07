@@ -98,19 +98,21 @@ export default function AdminMonitor() {
                   <td>{r.reason}</td>
                   <td>{r.reportedBy}</td>
                   <td>{new Date(r.timeStamp).toLocaleString()}</td>
-                  <td>
+                  <td style={{ textAlign: "center" }}>
+                    <div className="action-buttons">
                     <button
-                      className="btn-icon-only btn-view"
+                      className="btn-icon btn-view"
                       onClick={() => setSelectedReport(r)}
                     >
                       <HiEye />
                     </button>
                     <button
-                      className="btn-icon-only btn-lock"
+                      className="btn-icon btn-delete"
                       onClick={() => handleDelete(r._id)}
                     >
                       <HiTrash />
                     </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -157,6 +159,15 @@ export default function AdminMonitor() {
                   {selectedReport.JobPost?.title} <br />
                   <small>{selectedReport.JobPost?._id}</small>
                 </div>
+                {selectedReport.JobPost?._id && (
+                  <button 
+                    className="btn-view-job-link"
+                    onClick={() => window.location.href = `/admin/jobs?jobId=${selectedReport.JobPost._id}`}
+                  >
+                    <HiEye style={{ marginRight: '6px' }} />
+                    Xem bài đăng trong danh sách
+                  </button>
+                )}
               </div>
 
               <div className="info-group">

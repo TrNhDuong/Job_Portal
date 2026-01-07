@@ -687,6 +687,24 @@
 .home-job-modal-body::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
 .home-job-modal-body::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
+/* Nút Hủy ứng tuyển (Màu đỏ) */
+.home-job-modal-btn.danger {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+}
+
+.home-job-modal-btn.danger:hover {
+  background: #fee2e2;
+  border-color: #f87171;
+  transform: translateY(-1px);
+}
+
+.home-job-modal-btn.danger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
 /* ============================
    JOB CARD (Clean & Minimalist)
    ============================ */
