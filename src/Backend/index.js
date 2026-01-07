@@ -22,8 +22,10 @@ import imageRoute from "./routes/imageRoute.js";
 import cvRoute from "./routes/cvRoute.js";
 import mailRoute from "./routes/mailRoute.js";
 import reportRoute from "./routes/reportRoute.js";
+import paymentRoute from "./routes/paymentRoute.js";
 import adminJobRoute from "./routes/adminJobRoute.js";
 import adminUserRoute from "./routes/adminUserRoute.js";
+import statisticRoute from "./routes/statisticRoute.js";
 
 app.use("/api", candidateRoute);
 app.use("/api", employerRoute);
@@ -38,8 +40,10 @@ app.use("/api", imageRoute);
 app.use("/api", cvRoute);
 app.use("/api", mailRoute);
 app.use("/api", reportRoute);
+app.use("/api", paymentRoute);
 app.use("/api", adminJobRoute);
 app.use("/api", adminUserRoute);
+app.use("/api", statisticRoute);
 
 connectDB();
 app.listen(PORT, () => {
