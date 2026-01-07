@@ -6,7 +6,9 @@ import {
   HiCurrencyDollar, HiOfficeBuilding, HiDocumentText, HiX, HiClock
 } from "react-icons/hi";
 import { toast } from "react-toastify";
-import { showDeleteConfirm } from "../utils/alertUtils";
+import {useLocation} from "react-router-dom";
+
+
 
 export default function JobList() {
   const [search, setSearch] = useState("");
@@ -72,30 +74,24 @@ export default function JobList() {
     }
     return "Thỏa thuận";
   };
+  const location = useLocation();
 
-  // 1. Xử lý hiển thị Kinh nghiệm
-  const formatExperience = (exp) => {
-    if (exp === undefined || exp === null || exp === "") return "Không yêu cầu";
-    if (exp === 0) return "Không yêu cầu"; // Nếu số 0 cũng là không yêu cầu
-    return `${exp} năm`;
-  };
+  useEffect(() => {
+    fetchJobs();
+  }, []);
 
-  // Xử lý Bằng cấp & Cấp bậc (Nếu thiếu thì hiện "Chưa cập nhật")
-  const formatDegree = (degree, fallback = "Không yêu cầu") => {
-    if (!degree || degree.trim() === "") return fallback;
+  // 🟢 Thêm logic này để tự động mở Modal khi có ID trên URL
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const jobId = params.get("jobId");
     
-    // Map dịch tiếng Việt cho Bằng cấp
-    const degreeMap = {
-      'Bachelor': 'Cử nhân',
-      'Master': 'Thạc sĩ',
-      'Doctorate': 'Tiến sĩ',
-      'Associate': 'Cao đẳng',
-      'Diploma': 'Chứng chỉ',
-      'High School': 'Tốt nghiệp THPT',
-      'No Degree': 'Không yêu cầu'
-    };
-    return degreeMap[degree] || degree; 
-  };
+    if (jobId && jobs.length > 0) {
+      const jobToOpen = jobs.find(j => j._id === jobId);
+      if (jobToOpen) {
+        setSelectedJob(jobToOpen);
+      }
+    }
+  }, [location.search, jobs]); // Chạy lại khi danh sách jobs đã tải xong
 
   return (
     <>

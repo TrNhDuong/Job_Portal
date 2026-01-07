@@ -200,7 +200,7 @@ export default function JobListings({ selectedJob, onSelectJob, filters, setFilt
       <div className="job-listings-header">
         <h2 className="job-listings-title">
           Việc làm
-          <span className="job-listings-count">({total || jobs.length})</span>
+          <span className="job-listings-count">{total || jobs.length}</span>
         </h2>
       </div>
 

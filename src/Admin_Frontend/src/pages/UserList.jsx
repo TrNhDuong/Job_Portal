@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "../styles/UserList.css";
 import { userService } from "../services/userService";
 import { exportToExcel } from "../utils/exportExcel";
@@ -12,7 +12,10 @@ import {
   HiPhone,
   HiLocationMarker,
   HiCalendar,
-  HiUser
+  HiUser,
+  HiChevronDown,
+  HiCheck,
+  HiFilter
 } from "react-icons/hi";
 import { toast } from "react-toastify";
 import { showDeleteConfirm } from "../utils/alertUtils";
@@ -22,15 +25,32 @@ export default function UserList() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [filterRole, setFilterRole] = useState("all");
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);  
+
+  const roles = [
+    { value: "all", label: "Tất cả vai trò" },
+    { value: "candidate", label: "Ứng viên" },
+    { value: "employer", label: "Tuyển dụng" },
+  ];
 
   useEffect(() => {
     loadData();
   }, []);
 
   useEffect(() => {
-    document.body.style.overflow = selectedUser ? "hidden" : "unset";
-    return () => (document.body.style.overflow = "unset");
-  }, [selectedUser]);
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Tìm label của option đang được chọn
+  const currentLabel = roles.find(r => r.value === filterRole)?.label;
 
   // 🟢 Load users
   const loadData = async () => {
@@ -110,25 +130,59 @@ export default function UserList() {
 
   // 🔍 Search
   const filteredUsers = Array.isArray(users)
-    ? users.filter(u =>
-        (
-          u.name ||
-          u.company ||
-          ""
-        ).toLowerCase().includes(search.toLowerCase()) ||
-        (u.email || "").toLowerCase().includes(search.toLowerCase())
-      )
+    ? users.filter(u => {
+        const matchesSearch = 
+          (u.name || u.company || "").toLowerCase().includes(search.toLowerCase()) ||
+          (u.email || "").toLowerCase().includes(search.toLowerCase());
+        
+        const matchesRole = filterRole === "all" || u.role === filterRole;
+        
+        return matchesSearch && matchesRole;
+      })
     : [];
 
 
   return (
     <>
       <div className="userlist-container fade-in">
-        {/* HEADER */}
         <div className="userlist-header-group">
           <h2 className="userlist-title">Danh sách người dùng</h2>
 
           <div className="header-actions">
+            {/* 🟢 Bộ lọc vai trò */}
+            <div className="custom-dropdown" ref={dropdownRef}>
+              <button 
+                className={`dropdown-btn ${isOpen ? "active" : ""}`}
+                onClick={() => setIsOpen(!isOpen)}
+                type="button"
+              >
+                <div className="dropdown-label-group">
+                  <HiFilter className="icon-left" />
+                  <span>{currentLabel}</span>
+                </div>
+                <HiChevronDown className={`arrow-icon ${isOpen ? "rotate" : ""}`} />
+              </button>
+
+              {isOpen && (
+                <ul className="dropdown-menu">
+                  {roles.map((role) => (
+                    <li 
+                      key={role.value}
+                      className={`dropdown-item ${filterRole === role.value ? "selected" : ""}`}
+                      onClick={() => {
+                        setFilterRole(role.value);
+                        setIsOpen(false);
+                      }}
+                    >
+                      <span>{role.label}</span>
+                      {filterRole === role.value && <HiCheck className="check-icon" />}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            {/* Ô Search */}
             <div className="user-search-wrapper">
               <HiSearch className="search-icon" />
               <input
@@ -140,25 +194,22 @@ export default function UserList() {
               />
             </div>
 
+            {/* Nút Xuất Excel */}
             <button onClick={handleExport} className="btn-excel">
               <HiDownload size={18} /> Xuất Excel
             </button>
           </div>
         </div>
 
-        {/* TABLE */}
         <div className="userlist-table-card">
           {loading ? (
-            <div className="loading-container">
-              <div className="spinner"></div>
-            </div>
+            <div className="loading-container"><div className="spinner"></div></div>
           ) : (
             <table className="userlist-table">
               <thead>
                 <tr>
                   <th style={{ width: "35%" }}>Thông tin người dùng</th>
                   <th style={{ width: "15%", textAlign: "center" }}>Vai trò</th>
-                  <th style={{ width: "15%", textAlign: "center" }}>Trạng thái</th>
                   <th style={{ width: "20%" }}>Ngày tham gia</th>
                   <th style={{ width: "15%", textAlign: "center" }}>Hành động</th>
                 </tr>
@@ -170,68 +221,32 @@ export default function UserList() {
                       <td>
                         <div className="user-info-cell">
                           <div className="user-avatar-placeholder">
-                            {u.avatar ? (
-                              <img src={u.avatar} alt="avatar" className="user-avatar-img" />
-                            ) : (
-                              (u.name || u.company || "U").charAt(0).toUpperCase()
-                            )}
+                            {u.avatar ? <img src={u.avatar} alt="avatar" className="user-avatar-img" /> : (u.name || u.company || "U").charAt(0).toUpperCase()}
                           </div>
                           <div className="user-text-info">
-                            <span className="user-name">
-                              {u.name || u.company || "Chưa cập nhật"}
-                            </span>
+                            <span className="user-name">{u.name || u.company || "Chưa cập nhật"}</span>
                             <span className="user-email">{u.email}</span>
                           </div>
                         </div>
                       </td>
-
                       <td style={{ textAlign: "center" }}>
                         <span className={`role-badge ${u.role}`}>
                           {u.role === "candidate" ? "Ứng viên" : "Tuyển dụng"}
                         </span>
                       </td>
 
-                      <td style={{ textAlign: "center" }}>
-                        <span
-                          className={`status-badge ${
-                            u.state === "active" ? "online" : "offline"
-                          }`}
-                        >
-                          {u.state || "offline"}
-                        </span>
-                      </td>
-
-                      <td>
-                        {(u.createdAt || u.timeStamp)
-                          ? new Date(u.createdAt || u.timeStamp).toLocaleDateString("vi-VN")
-                          : <span style={{color: '#94a3b8', fontStyle: 'italic'}}>Không xác định</span>}
-                      </td>
-
+                      <td>{u.createdAt ? new Date(u.createdAt).toLocaleDateString("vi-VN") : ""}</td>
                       <td style={{ textAlign: "center" }}>
                         <div className="action-buttons">
-                          <button
-                            className="btn-icon btn-view"
-                            onClick={() => setSelectedUser(u)}
-                            title="Xem chi tiết"
-                          >
-                            <HiEye />
-                          </button>
-                          <button
-                            className="btn-icon btn-delete"
-                            onClick={() => handleDelete(u._id, u.role)}
-                            title="Xóa"
-                          >
-                            <HiTrash />
-                          </button>
+                          <button className="btn-icon btn-view" onClick={() => setSelectedUser(u)} title="Xem chi tiết"><HiEye /></button>
+                          <button className="btn-icon btn-delete" onClick={() => handleDelete(u._id, u.role)} title="Xóa"><HiTrash /></button>
                         </div>
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="5" className="userlist-empty">
-                      Không tìm thấy người dùng nào phù hợp
-                    </td>
+                    <td colSpan="5" className="userlist-empty">Không tìm thấy người dùng nào phù hợp</td>
                   </tr>
                 )}
               </tbody>
