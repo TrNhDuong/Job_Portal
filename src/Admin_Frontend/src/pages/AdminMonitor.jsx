@@ -12,6 +12,7 @@ import {
   HiX,
 } from "react-icons/hi";
 import { toast } from "react-toastify";
+import { showDeleteConfirm } from "../utils/alertUtils";
 
 export default function AdminMonitor() {
   const [reports, setReports] = useState([]);
@@ -41,7 +42,10 @@ export default function AdminMonitor() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Xoá report này nha?")) return;
+    const isConfirmed = await showDeleteConfirm(
+            "Bạn muốn xóa báo cáo vi phạm này?", 
+    );
+    if (!isConfirmed) return;
     try {
       const res = await monitorService.deleteReport(id);
       if (res.success) {
@@ -159,6 +163,15 @@ export default function AdminMonitor() {
                   {selectedReport.JobPost?.title} <br />
                   <small>{selectedReport.JobPost?._id}</small>
                 </div>
+                {selectedReport.JobPost?._id && (
+                  <button 
+                    className="btn-view-job-link"
+                    onClick={() => window.location.href = `/admin/jobs?jobId=${selectedReport.JobPost._id}`}
+                  >
+                    <HiEye style={{ marginRight: '6px' }} />
+                    Xem bài đăng trong danh sách
+                  </button>
+                )}
               </div>
 
               <div className="info-group">

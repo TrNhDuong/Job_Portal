@@ -263,6 +263,29 @@
   font-weight: 600;
 }
 
+.btn-view-job-link {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 10px;
+  background-color: #f0f9ff; /* Màu xanh nhạt nhẹ */
+  color: #0369a1; /* Xanh đậm hơn cho text */
+  border: 1px dashed #0ea5e9;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-view-job-link:hover {
+  background-color: #0ea5e9;
+  color: white;
+  border-style: solid;
+}
+
 /* ================================
    ANIMATIONS
 ================================ */
