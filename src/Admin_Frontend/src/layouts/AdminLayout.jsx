@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { HiChartPie, HiUsers, HiBriefcase, HiLogout, HiShieldCheck, HiCog, HiDesktopComputer } from "react-icons/hi";
+import { HiChartPie, HiUsers, HiBriefcase, HiLogout, HiShieldCheck, HiCog, HiDesktopComputer, HiCreditCard } from "react-icons/hi";
 import '../styles/AdminLayout.css'; // Style riêng cho layout này
 import logoImage from '../assets/logo.png'; 
 
@@ -12,6 +12,7 @@ export default function AdminLayout() {
     { path: '/admin/dashboard', label: 'Tổng quan', icon: <HiChartPie /> },
     { path: '/admin/users', label: 'Người dùng', icon: <HiUsers /> },
     { path: '/admin/jobs', label: 'Tin tuyển dụng', icon: <HiBriefcase /> },
+    { path: '/admin/wallet', label: 'Quản lý Ví', icon: <HiCreditCard /> },
     { path: '/admin/monitor', label: 'Quản lý nền tảng', icon: <HiDesktopComputer /> },
     { path: '/admin/settings', label: 'Cài đặt', icon: <HiCog /> },
   ];

@@ -10,6 +10,7 @@ import UserList from './pages/UserList';
 import JobList from './pages/JobList';
 import AdminMonitor from './pages/AdminMonitor';
 import Setting from './pages/Setting'; 
+import AdminWallet from './pages/AdminWallet';
 
 // --- HÀM BẢO VỆ ĐƠN GIẢN (Kiểu Employer nâng cấp nhẹ) ---
 const SimpleAuthGuard = () => {
@@ -36,6 +37,7 @@ function App() {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="users" element={<UserList />} />
             <Route path="jobs" element={<JobList />} />
+            <Route path="wallet" element={<AdminWallet />} />
             <Route path="monitor" element={<AdminMonitor />} />
             <Route path="settings" element={<Setting isVisible={true} onClose={() => {}} />} />
         </Route>

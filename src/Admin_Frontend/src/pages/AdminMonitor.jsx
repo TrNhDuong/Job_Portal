@@ -12,6 +12,7 @@ import {
   HiX,
 } from "react-icons/hi";
 import { toast } from "react-toastify";
+import { showDeleteConfirm } from "../utils/alertUtils";
 
 export default function AdminMonitor() {
   const [reports, setReports] = useState([]);
@@ -41,7 +42,10 @@ export default function AdminMonitor() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Xoá report này nha?")) return;
+    const isConfirmed = await showDeleteConfirm(
+            "Bạn muốn xóa báo cáo vi phạm này?", 
+    );
+    if (!isConfirmed) return;
     try {
       const res = await monitorService.deleteReport(id);
       if (res.success) {
