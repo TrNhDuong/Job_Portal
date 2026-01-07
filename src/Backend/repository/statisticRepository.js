@@ -103,6 +103,45 @@ export default class StatisticRepository {
         }
     }
 
+    // 📅 Lấy statistic theo tháng (kèm daily)
+    static async getStatisticByMonthWithDaily(year, month) {
+        const formattedMonth = String(month).padStart(2, "0");
+        const _id = `${year}-${formattedMonth}`;
+
+        try {
+            const stat = await Statistic.findById(_id).lean();
+            if (!stat) return { success: true, data: null };
+
+            const daysInMonth = new Date(year, month, 0).getDate();
+
+            const daily = Array.from({ length: daysInMonth }, (_, i) => {
+                const day = i + 1;
+                const date = `${year}-${formattedMonth}-${String(day).padStart(2, "0")}`;
+                const raw = stat.daily_stats?.[String(day)] || {};
+
+                return {
+                    day,
+                    date,
+                    candidateRegister: raw.candidateRegister || 0,
+                    employerRegister: raw.employerRegister || 0,
+                    jobPost: raw.jobPost || 0
+                };
+            });
+
+            return {
+                success: true,
+                data: {
+                    month: _id,
+                    monthly_total: stat.monthly_total,
+                    daily_stats: daily
+                }
+            };
+        } catch (error) {
+            return { success: false, message: error.message };
+        }
+    }
+
+
     // Lấy thống kê theo năm
     static async getStatisticByYear(year) {
         try {
