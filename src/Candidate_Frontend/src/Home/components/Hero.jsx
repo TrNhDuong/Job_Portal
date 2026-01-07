@@ -1,5 +1,5 @@
 import React from "react";
-
+import { NavLink, Link } from "react-router-dom";
 export default function Hero() {
   return (
     <section className="home-hero">
@@ -19,9 +19,9 @@ export default function Hero() {
             Kết nối tài năng với cơ hội.
           </p>
 
-          <button className="hero-btn-primary">
+          <NavLink className="hero-btn-primary" to="/jobs">
             TÌM VIỆC
-          </button>
+          </NavLink>
 
           <div className="hero-user-stats">
             <div className="avatar-stack">
