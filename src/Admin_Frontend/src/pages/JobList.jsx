@@ -69,30 +69,43 @@ export default function JobList() {
     
     const { minSalary, maxSalary, currency } = salaryObj;
     const curLabel = currency || 'VND';
+
     const shortCurrency = (num) => {
       if (curLabel !== 'VND') return num.toLocaleString('en-US');
-      // 1. Xử lý hàng TỶ (>= 1.000.000.000)
-      if (num >= 1000000000) {
-        // Làm tròn 2 số lẻ, parseFloat để xóa số 0 thừa (vd: 1.00 -> 1)
-        return `${parseFloat((num / 1000000000).toFixed(2))} tỷ`;
-      }    
-      // 2. Xử lý hàng TRIỆU (>= 1.000.000)
-      if (num >= 1000000) {
-        return `${parseFloat((num / 1000000).toFixed(2))} triệu`;
-      }
-      // 3. Xử lý hàng NGHÌN (>= 1.000) -> Giải quyết vụ .000 khó nhìn
-      if (num >= 1000) {
-         return `${parseFloat((num / 1000).toFixed(0))} nghìn`;
-      }
-      // 4. Số quá nhỏ thì giữ nguyên
+      if (num >= 1000000000) return `${parseFloat((num / 1000000000).toFixed(2))} tỷ`;
+      if (num >= 1000000) return `${parseFloat((num / 1000000).toFixed(2))} triệu`;
+      if (num >= 1000) return `${parseFloat((num / 1000).toFixed(0))} nghìn`;
       return num.toLocaleString('vi-VN');
     };
-    // Render kết quả
+
     if (minSalary !== undefined && maxSalary !== undefined) {
       return `${shortCurrency(minSalary)} - ${shortCurrency(maxSalary)} ${curLabel}`;
-    } 
+    }
     return "Thỏa thuận";
   };
+
+  // 2. Hàm format Kinh nghiệm (Bị thiếu cái này nè!)
+  const formatExperience = (exp) => {
+    if (exp === undefined || exp === null || exp === "") return "Không yêu cầu";
+    if (exp === 0) return "Không yêu cầu";
+    return `${exp} năm`;
+  };
+
+  // 3. Hàm format Bằng cấp (Dịch tiếng Việt)
+  const formatDegree = (degree, fallback = "Không yêu cầu") => {
+    if (!degree || degree.trim() === "") return fallback;
+    const degreeMap = {
+      'Bachelor': 'Cử nhân',
+      'Master': 'Thạc sĩ',
+      'Doctorate': 'Tiến sĩ',
+      'Associate': 'Cao đẳng',
+      'Diploma': 'Chứng chỉ',
+      'High School': 'Tốt nghiệp THPT',
+      'No Degree': 'Không yêu cầu'
+    };
+    return degreeMap[degree] || degree; 
+  };
+  
   const location = useLocation();
 
   useEffect(() => {

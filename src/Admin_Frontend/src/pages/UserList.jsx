@@ -235,7 +235,15 @@ export default function UserList() {
                         </span>
                       </td>
 
-                      <td>{u.createdAt ? new Date(u.createdAt).toLocaleDateString("vi-VN") : ""}</td>
+                      <td>
+                        {(u.createdAt || u.timeStamp) ? (
+                          new Date(u.createdAt || u.timeStamp).toLocaleDateString("vi-VN")
+                        ) : (
+                          <span style={{ color: '#94a3b8', fontStyle: 'italic', fontSize: '0.9rem' }}>
+                            Chưa xác định
+                          </span>
+                        )}
+                      </td>
                       <td style={{ textAlign: "center" }}>
                         <div className="action-buttons">
                           <button className="btn-icon btn-view" onClick={() => setSelectedUser(u)} title="Xem chi tiết"><HiEye /></button>
@@ -336,9 +344,10 @@ export default function UserList() {
                     <span className="info-label">Ngày tham gia</span>
                     <div className="info-value">
                       <HiCalendar /> 
+                      {/* Ưu tiên createdAt, nếu không có thì lấy timeStamp, không có nữa thì hiện fallback */}
                       {(selectedUser.createdAt || selectedUser.timeStamp) 
                         ? new Date(selectedUser.createdAt || selectedUser.timeStamp).toLocaleDateString("vi-VN") 
-                        : "N/A"}
+                        : "Chưa xác định"}
                     </div>
                 </div>
 
