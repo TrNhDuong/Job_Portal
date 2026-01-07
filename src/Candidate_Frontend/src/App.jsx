@@ -2,9 +2,9 @@
 import React from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import LoginForm from "./components/LoginForm";
-import Register from "./pages/Register";
-import Login from "./pages/Login";
-import HomePage from "./Home/Homepage.jsx"; 
+import Register from "./pages/Register.jsx";
+import Login from "./pages/Login.jsx";
+import HomePage from "./Home/HomePage.jsx"; 
 import Navbar from "./components/Navbar.jsx";
 import VerifyOtpPage from "./pages/VerifyOtpPage.jsx";
 import CandidateDashboard from "./pages/CandidateDashboard.jsx"; 

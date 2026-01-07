@@ -4,6 +4,7 @@ import { CandidateRepository } from "../../repository/candidateRepository.js";
 import { EmployerRepository } from "../../repository/employerRepository.js"
 import { ApplicationRepository } from "../../repository/applicationRepository.js";
 import mongoose from "mongoose";
+import app from "../../index.js";
 
 export const updatePostJob = async (req, res) => {
   const id = req.query.jobId;
@@ -90,15 +91,13 @@ export const applyJob = async (req, res) => {
 };
 
 export const removeApplyJob = async (req, res) => {
-    const id = req.query.jobId;
-    const jobId = new mongoose.Types.ObjectId(id);
-    const { email } = req.body;
+    const { email, applicationId } = req.body;
     try {
         const candidate = await CandidateRepository.getCandidate(email);
         if (!candidate.success) {
           return res.status(404).json({ message: "Candidate not found" });
         }
-        const application = await ApplicationRepository.deleteApplication(jobId, candidate.data._id);
+        const application = await ApplicationRepository.deleteApplication(applicationId);
         if (!application.success) {
           return res.status(404).json({ message: "Application not found" });
         }
@@ -127,6 +126,7 @@ export const extendJobExpiry = async (req, res) => {
     const { expireDay, point } = req.body;
     
     try {
+      console.log(jobId, expireDay, point);
         const jobPost = await JobRepository.getJobPost(jobId);
         if (!jobPost.success) {
             return res.status(404).json({
@@ -179,7 +179,9 @@ export const extendJobExpiry = async (req, res) => {
         // BƯỚC 2: Cập nhật ngày hết hạn của bài đăng
         const updateJobResult = await JobRepository.updateJobPost(
             jobId, 
-            { "expireDay": expireDay },
+            { "expireDay": expireDay,
+              "state": 'Open'
+             },
             { session } // Truyền session vào để thao tác nằm trong transaction
         );
         
