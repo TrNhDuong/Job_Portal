@@ -66,12 +66,31 @@ export default function JobList() {
 
   const formatSalary = (salaryObj) => {
     if (!salaryObj) return "Thỏa thuận";
+    
     const { minSalary, maxSalary, currency } = salaryObj;
+    const curLabel = currency || 'VND';
+    const shortCurrency = (num) => {
+      if (curLabel !== 'VND') return num.toLocaleString('en-US');
+      // 1. Xử lý hàng TỶ (>= 1.000.000.000)
+      if (num >= 1000000000) {
+        // Làm tròn 2 số lẻ, parseFloat để xóa số 0 thừa (vd: 1.00 -> 1)
+        return `${parseFloat((num / 1000000000).toFixed(2))} tỷ`;
+      }    
+      // 2. Xử lý hàng TRIỆU (>= 1.000.000)
+      if (num >= 1000000) {
+        return `${parseFloat((num / 1000000).toFixed(2))} triệu`;
+      }
+      // 3. Xử lý hàng NGHÌN (>= 1.000) -> Giải quyết vụ .000 khó nhìn
+      if (num >= 1000) {
+         return `${parseFloat((num / 1000).toFixed(0))} nghìn`;
+      }
+      // 4. Số quá nhỏ thì giữ nguyên
+      return num.toLocaleString('vi-VN');
+    };
+    // Render kết quả
     if (minSalary !== undefined && maxSalary !== undefined) {
-      const formattedMin = minSalary.toLocaleString('vi-VN');
-      const formattedMax = maxSalary.toLocaleString('vi-VN');     
-      return `${formattedMin} - ${formattedMax} ${currency || 'VND'}`;
-    }
+      return `${shortCurrency(minSalary)} - ${shortCurrency(maxSalary)} ${curLabel}`;
+    } 
     return "Thỏa thuận";
   };
   const location = useLocation();
