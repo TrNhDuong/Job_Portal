@@ -18,6 +18,7 @@ import {
   HiFilter
 } from "react-icons/hi";
 import { toast } from "react-toastify";
+import { showDeleteConfirm } from "../utils/alertUtils";
 
 export default function UserList() {
   const [search, setSearch] = useState("");
@@ -70,22 +71,26 @@ export default function UserList() {
     }
   };
 
-  // 🗑️ Delete user (có role)
+  //  Delete user (có role)
   const handleDelete = async (id, role) => {
     if (!role) {
       toast.error("Không xác định được vai trò người dùng!");
       return;
     }
 
-    if (window.confirm("Bạn có chắc chắn muốn xóa tài khoản này?")) {
+    const isConfirmed = await showDeleteConfirm(
+    "Bạn muốn xóa người dùng này?", 
+    );
+    
+    if (isConfirmed) {
       try {
         const res = await userService.deleteUser(id, role);
         if (res.success) {
-          toast.success("Đã xóa người dùng thành công!");
-          setUsers(prev => prev.filter(u => u._id !== id));
-          if (selectedUser?._id === id) setSelectedUser(null);
+            toast.success("Đã xóa người dùng thành công!");
+            setUsers(prev => prev.filter(u => u._id !== id));
+            if (selectedUser?._id === id) setSelectedUser(null);
         } else {
-          toast.error(res.message || "Không thể xóa người dùng.");
+            toast.error(res.message || "Không thể xóa người dùng.");
         }
       } catch (error) {
         toast.error("Lỗi khi thực hiện xóa.");
@@ -100,19 +105,27 @@ export default function UserList() {
       return;
     }
 
-    const dataToExport = users.map(u => ({
-      ID: u._id,
-      "Tên / Công ty": u.name || u.company || "Chưa cập nhật",
-      Email: u.email,
-      "Vai trò": u.role,
-      "Trạng thái": u.state || "unknown",
-      "Ngày tham gia": u.createdAt
-        ? new Date(u.createdAt).toLocaleDateString("vi-VN")
-        : ""
-    }));
+    const dataToExport = users.map(u => {
+      // Logic lấy ngày tham gia (Hỗ trợ cả createdAt và timeStamp)
+      const dateRaw = u.createdAt || u.timeStamp;
+      const dateFormatted = dateRaw ? new Date(dateRaw).toLocaleDateString("vi-VN") : "Không xác định";
+
+      // Logic lấy trạng thái tiếng Việt
+      const statusRaw = u.state || 'active'; // Mặc định là active nếu thiếu
+      const statusFormatted = statusRaw === 'active' ? 'Hoạt động' : 'Vô hiệu';
+
+      return {
+        ID: u._id,
+        "Tên / Công ty": u.name || u.company || "Chưa cập nhật",
+        Email: u.email,
+        "Vai trò": u.role === 'candidate' ? 'Ứng viên' : 'Nhà tuyển dụng', // Dịch luôn role cho đẹp
+        "Trạng thái": statusFormatted, // Hiện tiếng Việt
+        "Ngày tham gia": dateFormatted // Đã fix lỗi trống ngày
+      };
+    });
 
     exportToExcel(dataToExport, "Danh_sach_nguoi_dung");
-    toast.success("Đang tải xuống file Excel...");
+    toast.success("Đang tải xuống file Excel");
   };
 
   // 🔍 Search
@@ -222,7 +235,15 @@ export default function UserList() {
                         </span>
                       </td>
 
-                      <td>{u.createdAt ? new Date(u.createdAt).toLocaleDateString("vi-VN") : ""}</td>
+                      <td>
+                        {(u.createdAt || u.timeStamp) ? (
+                          new Date(u.createdAt || u.timeStamp).toLocaleDateString("vi-VN")
+                        ) : (
+                          <span style={{ color: '#94a3b8', fontStyle: 'italic', fontSize: '0.9rem' }}>
+                            Chưa xác định
+                          </span>
+                        )}
+                      </td>
                       <td style={{ textAlign: "center" }}>
                         <div className="action-buttons">
                           <button className="btn-icon btn-view" onClick={() => setSelectedUser(u)} title="Xem chi tiết"><HiEye /></button>
@@ -241,7 +262,7 @@ export default function UserList() {
           )}
         </div>
       </div>
-
+        
       {/* USER DETAIL MODAL */}
       {selectedUser && (
         <div
@@ -253,106 +274,101 @@ export default function UserList() {
             onClick={e => e.stopPropagation()}
           >
             <div className="user-modal-header">
-              <button
-                className="btn-close-abs"
-                onClick={() => setSelectedUser(null)}
-              >
+              <button className="btn-close-abs" onClick={() => setSelectedUser(null)}>
                 <HiX />
               </button>
+            </div>
 
-              <div className="user-modal-avatar-large">
-                {selectedUser.avatar ? (
-                  <img
-                    src={selectedUser.avatar}
-                    alt="avatar"
-                    className="user-avatar-img-large"
-                  />
-                ) : (
-                  (selectedUser.name || selectedUser.company || "U")
-                    .charAt(0)
-                    .toUpperCase()
-                )}
-              </div>
+          {/* Avatar được kéo lên nhờ CSS margin-top âm */}
+            <div className="user-modal-avatar-large">
+              {selectedUser.avatar ? (
+                <img
+                  src={selectedUser.avatar}
+                  alt="avatar"
+                  className="user-avatar-img-large"
+                  // Xử lý lỗi ảnh
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    // Fallback về chữ cái nếu ảnh lỗi
+                    e.target.parentNode.innerText = (selectedUser.name || selectedUser.company || "U").charAt(0).toUpperCase();
+                    e.target.parentNode.style.fontSize = "2.5rem";
+                    e.target.parentNode.style.fontWeight = "800";
+                    e.target.parentNode.style.color = "#6366f1";
+                  }}
+                />
+              ) : (
+                // Fallback khi không có avatar
+                <span style={{ fontSize: "2.5rem", fontWeight: 800, color: "#6366f1" }}>
+                  {(selectedUser.name || selectedUser.company || "U").charAt(0).toUpperCase()}
+                </span>
+              )}
+            </div>
 
-
+            {/* 2. BODY (Chứa Avatar + Title + Grid Info) */}
+            <div className="user-modal-body">
+              {/* Tên và Badges */}
               <div className="user-modal-title">
-                <h3>
-                  {selectedUser.name ||
-                    selectedUser.company ||
-                    "Chưa cập nhật"}
-                </h3>
-
+                <h3>{selectedUser.name || selectedUser.company || "Chưa cập nhật"}</h3>
                 <div className="modal-badges">
                   <span className={`role-badge ${selectedUser.role}`}>
-                    {selectedUser.role}
+                    {selectedUser.role === "candidate" ? "Ứng viên" : "Tuyển dụng"}
                   </span>
-                  <span
-                    className={`status-badge ${
-                      selectedUser.state === "active"
-                        ? "online"
-                        : "offline"
-                    }`}
-                  >
+                  <span className={`status-badge ${selectedUser.state === "active" ? "online" : "offline"}`}>
                     {selectedUser.state || "offline"}
                   </span>
                 </div>
               </div>
-            </div>
 
-            <div className="user-modal-body">
+              {/* Lưới thông tin chi tiết */}
               <div className="info-grid">
+                {/* 1. Email: Cho Full dòng để không bị rớt chữ */}
+                <div className="info-item full-width">
+                    <span className="info-label">Email</span>
+                    <div className="info-value">
+                        <HiMail /> 
+                        {selectedUser.email}
+                    </div>
+                </div>
+                
+                {/* 2. Số điện thoại: 1/2 dòng */}
                 <div className="info-item">
-                  <span className="info-label">Email</span>
-                  <div className="info-value">
-                    <HiMail /> {selectedUser.email}
-                  </div>
+                    <span className="info-label">Số điện thoại</span>
+                    <div className="info-value">
+                        <HiPhone /> 
+                        {selectedUser.phone || "Chưa cập nhật"}
+                    </div>
                 </div>
 
+                {/* 3. Ngày tham gia: 1/2 dòng (Ghép với SĐT cho cân) */}
                 <div className="info-item">
-                  <span className="info-label">Số điện thoại</span>
-                  <div className="info-value">
-                    <HiPhone /> {selectedUser.phone || "Chưa cập nhật"}
-                  </div>
+                    <span className="info-label">Ngày tham gia</span>
+                    <div className="info-value">
+                      <HiCalendar /> 
+                      {/* Ưu tiên createdAt, nếu không có thì lấy timeStamp, không có nữa thì hiện fallback */}
+                      {(selectedUser.createdAt || selectedUser.timeStamp) 
+                        ? new Date(selectedUser.createdAt || selectedUser.timeStamp).toLocaleDateString("vi-VN") 
+                        : "Chưa xác định"}
+                    </div>
                 </div>
 
-                <div className="info-item">
-                  <span className="info-label">Địa chỉ</span>
-                  <div className="info-value">
-                    <HiLocationMarker />{" "}
-                    {selectedUser.address || "Chưa cập nhật"}
-                  </div>
-                </div>
-
-                <div className="info-item">
-                  <span className="info-label">Ngày tham gia</span>
-                  <div className="info-value">
-                    <HiCalendar />{" "}
-                    {selectedUser.createdAt
-                      ? new Date(
-                          selectedUser.createdAt
-                        ).toLocaleDateString("vi-VN")
-                      : ""}
-                  </div>
+                {/* 4. Địa chỉ: Full dòng */}
+                <div className="info-item full-width"> 
+                    <span className="info-label">Địa chỉ</span>
+                    <div className="info-value">
+                        <HiLocationMarker /> 
+                        {selectedUser.address || "Chưa cập nhật"}
+                    </div>
                 </div>
               </div>
+
             </div>
 
+            {/* 3. FOOTER */}
             <div className="user-modal-footer">
-              <button
-                className="btn-modal-action btn-secondary"
-                onClick={() => setSelectedUser(null)}
-              >
-                Đóng
-              </button>
-              <button
-                className="btn-modal-action btn-danger"
-                onClick={() =>
-                  handleDelete(selectedUser._id, selectedUser.role)
-                }
-              >
-                Xóa tài khoản
-              </button>
+              <button className="btn-modal-action btn-secondary" onClick={() => setSelectedUser(null)}>Đóng</button>
+              <button className="btn-modal-action btn-danger" onClick={() => handleDelete(selectedUser._id, selectedUser.role)}>Xóa tài khoản</button>
             </div>
+
           </div>
         </div>
       )}
