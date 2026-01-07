@@ -1,7 +1,7 @@
 import StatisticRepository from "../../repository/statisticRepository.js";
 
 export const getStatisticMonthly = async (req, res) => {
-    const { year, month } = req.body;
+    const { year, month } = req.query;
 
     const result = await StatisticRepository.getStatisticByMonth(year, month);
 

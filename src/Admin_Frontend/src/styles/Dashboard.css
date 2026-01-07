@@ -1,190 +1,243 @@
-/* --- WELCOME BANNER (MỚI) --- */
-.welcome-banner {
-  margin-bottom: 30px;
-}
-.welcome-title {
-  font-size: 1.8rem; font-weight: 800; color: var(--text-primary); margin: 0 0 5px 0;
-  background: linear-gradient(90deg, var(--primary-color), #8b5cf6);
-  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
-  width: fit-content;
-}
-.welcome-subtitle {
-  color: var(--text-secondary); font-size: 0.95rem; display: flex; align-items: center; gap: 6px;
+/* =========================================
+   1. VARIABLES & THEME SETUP
+   ========================================= */
+:root {
+  /* Light Theme */
+  --bg-dashboard: #f3f4f6;
+  --bg-card: #ffffff;
+  --bg-hover: #f9fafb;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --border-color: #e5e7eb;
+  --primary-color: #3b82f6; /* Blue */
+  --success-color: #10b981; /* Green */
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-active: 0 0 0 2px var(--primary-color), 0 10px 15px -3px rgba(59, 130, 246, 0.2);
 }
 
-/* --- STATS GRID --- */
+/* Dark Theme (Tự động nhận nếu có data-theme="dark") */
+[data-theme='dark'] {
+  --bg-dashboard: #0f172a; /* Xanh đen đậm */
+  --bg-card: #1e293b;      /* Xanh đen nhạt hơn */
+  --bg-hover: #334155;
+  --text-primary: #f3f4f6;
+  --text-secondary: #94a3b8;
+  --border-color: #374151;
+  
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+  --shadow-active: 0 0 0 2px var(--primary-color), 0 10px 20px -3px rgba(0, 0, 0, 0.5);
+}
+
+/* Reset Layout */
+.dashboard-container {
+  background-color: var(--bg-dashboard);
+  min-height: 100vh;
+  padding: 30px;
+  font-family: 'Inter', sans-serif;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+/* =========================================
+   2. WELCOME BANNER
+   ========================================= */
+
+.welcome-banner {
+  margin-bottom: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.welcome-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.welcome-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin: 0 0 5px 0;
+  background: linear-gradient(90deg, var(--primary-color), #8b5cf6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  width: fit-content;
+}
+
+.welcome-subtitle {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0;
+  opacity: 0.9;
+  /* Thêm chút style cho ngày tháng nổi bật nhẹ */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* =========================================
+   3. STATS GRID (INTERACTIVE CARDS)
+   ========================================= */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr); /* 2 Cột đều nhau */
   gap: 24px;
   margin-bottom: 30px;
 }
 
-/* Card Style Premium */
 .stat-card {
-  background: var(--bg-element);
-  color: var(--text-primary);
-  padding: 24px;
-  border-radius: 20px; /* Bo tròn hơn */
-  display: flex; align-items: center; gap: 20px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+  background: var(--bg-card);
   border: 1px solid var(--border-color);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative; overflow: hidden;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  cursor: pointer; /* Quan trọng: Con trỏ chuột */
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
 }
 
+/* Hover Effect */
 .stat-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
   border-color: var(--primary-color);
 }
 
-/* Icon box */
-.stat-icon {
-  width: 64px; height: 64px; border-radius: 16px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 2rem; flex-shrink: 0;
+/* Active State (Khi được chọn) */
+.stat-card.active {
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-active);
+  background: linear-gradient(to right bottom, var(--bg-card), rgba(59, 130, 246, 0.05));
 }
 
-/* Gradient Background cho Icon */
-.stat-icon.income { background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); color: #059669; }
-.stat-icon.users { background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); color: #2563eb; }
-.stat-icon.jobs { background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); color: #ea580c; }
-
-.stat-info { display: flex; flex-direction: column; z-index: 2; }
-.stat-label { font-size: 0.85rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-.stat-value { font-size: 1.8rem; font-weight: 800; color: var(--text-primary); margin: 4px 0; letter-spacing: -0.5px; }
-
-.stat-trend {
-  font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;
-  padding: 4px 10px; border-radius: 20px; width: fit-content;
+/* Icons */
+.stat-icon-wrapper {
+  width: 60px;
+  height: 60px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
 }
-.stat-trend.positive { background: #f0fdf4; color: #16a34a; }
-.stat-trend.negative { background: #fef2f2; color: #dc2626; }
+.stat-icon-wrapper.blue { background: rgba(59, 130, 246, 0.1); color: var(--primary-color); }
+.stat-icon-wrapper.green { background: rgba(16, 185, 129, 0.1); color: var(--success-color); }
 
-/* --- CHARTS GRID --- */
-.recharts-wrapper:focus,
-.recharts-wrapper:focus-visible,
-.recharts-surface:focus,
-.recharts-surface:focus-visible {
-  outline: none !important;
+.stat-info {
+  display: flex;
+  flex-direction: column;
+}
+.stat-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.stat-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.1;
+}
+.stat-hint {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  opacity: 0; /* Ẩn hint bình thường */
+  transition: opacity 0.2s;
+}
+.stat-card:hover .stat-hint, 
+.stat-card.active .stat-hint {
+  opacity: 1; /* Hiện hint khi hover hoặc active */
 }
 
-.charts-grid {
+/* =========================================
+   4. CHART SECTION
+   ========================================= */
+.chart-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+
+/* Filter Dropdown */
+.chart-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-card);
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+.chart-filter select {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+}
+.filter-icon { color: var(--text-secondary); }
+
+/* Containers */
+.chart-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+}
+.chart-box h4 {
+  margin: 0 0 20px 0;
+  font-size: 1rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+/* Layouts */
+.charts-split-layout {
   display: grid;
-  grid-template-columns: 1.5fr 1fr; /* Cột biểu đồ to hơn cột tròn */
+  grid-template-columns: 2fr 1fr; /* Trái to gấp đôi phải */
   gap: 24px;
 }
 
-.chart-box {
-  background: var(--bg-element);
-  color: var(--text-primary);
-  padding: 24px;
-  border-radius: 20px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-  border: 1px solid var(--border-color);
-  display: flex; flex-direction: column;
+.charts-full-layout {
+  display: block;
 }
 
-.chart-header {
-    display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
+/* Animation */
+.fade-in {
+  animation: fadeIn 0.4s ease-in-out;
 }
-
-.chart-title {
-  margin: 16px 0 16px 0; font-size: 1.1rem; color: var(--text-primary); font-weight: 700;
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-
-/* Custom Legend cho Pie Chart */
-.custom-legend {
-    display: flex; justify-content: center; gap: 20px; margin-top: 10px;
-}
-.legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--text-secondary); font-weight: 500; }
-.legend-dot { width: 10px; height: 10px; border-radius: 50%; }
-
-/* --- DARK MODE OVERRIDES --- */
-[data-theme='dark'] .stat-icon.income { background: rgba(5, 150, 105, 0.2); color: #6ee7b7; }
-[data-theme='dark'] .stat-icon.users { background: rgba(37, 99, 235, 0.2); color: #93c5fd; }
-[data-theme='dark'] .stat-icon.jobs { background: rgba(234, 88, 12, 0.2); color: #fdba74; }
-[data-theme='dark'] .stat-trend.positive { background: rgba(22, 163, 74, 0.15); color: #4ade80; }
-[data-theme='dark'] .stat-trend.negative { background: rgba(220, 38, 38, 0.15); color: #f87171; }
-[data-theme='dark'] .stat-card:hover { box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
-[data-theme='dark'] .legend-item {color: #cbd5e1;}
-[data-theme='dark'] .legend-item b {color: #ffffff;}
-[data-theme='dark'] .chart-title {color: #f1f5f9;}
-
 
 /* Responsive */
-@media (max-width: 1200px) {
+@media (max-width: 1024px) {
+  .charts-split-layout { grid-template-columns: 1fr; }
   .stats-grid { grid-template-columns: 1fr; }
-  .charts-grid { grid-template-columns: 1fr; }
-}
-
-/* M just doing whatever here */
-.stat-card {
-  cursor: pointer;
-  transition: all .25s ease;
-}
-
-.stat-card.active {
-  border: 2px solid var(--primary-color);
-  box-shadow: 0 0 0 2px rgba(59,130,246,.15);
-}
-
-.chart-filter {
-  display: flex;
-  gap: 10px;
-  margin: 20px 0;
-}
-
-.chart-filter button {
-  padding: 6px 16px;
-  border-radius: 20px;
-  border: 1px solid #ddd;
-  background: transparent;
-  cursor: pointer;
-}
-
-.chart-filter button.active {
-  background: #3b82f6;
-  color: white;
-}
-
-
-.back-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border-radius: 9999px; /* fully rounded */
-  font-weight: 600;
-  font-size: 0.95rem;
-  cursor: pointer;
-  background: var(--primary-color);
-  color: #fff;
-  border: none;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  transition: all 0.25s ease;
-  width: fit-content;
-}
-
-.back-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
-  background: #2563eb; /* đậm hơn chút khi hover */
-}
-
-.back-btn svg {
-  font-size: 1.2rem; /* icon lớn hơn tí */
-}
-
-/* Dark mode override */
-[data-theme='dark'] .back-btn {
-  background: #1e40af;
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-}
-
-[data-theme='dark'] .back-btn:hover {
-  background: #3b82f6;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.4);
 }
