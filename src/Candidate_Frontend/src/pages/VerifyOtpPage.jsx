@@ -307,7 +307,6 @@ export default function VerifyOtpPage() {
             </button>
 
             <div className="otp-resend">
-              <p>Không nhận được mã?</p>
               <button
                 type="button"
                 onClick={handleResend}
