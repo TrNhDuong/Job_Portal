@@ -35,7 +35,7 @@ export default function Footer() {
             © Copyright 2025 CDH Job Portal All Rights Reserved
           </p>
           <div className="footer-legal">
-            <Link to="/privacy">Privacy Policy</Link>
+            <Link to="/policies">Privacy Policy</Link>
             <Link to="/terms">Terms & Conditions</Link>
           </div>
         </div>
