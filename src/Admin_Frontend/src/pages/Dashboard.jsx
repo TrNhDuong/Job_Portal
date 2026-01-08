@@ -257,7 +257,16 @@ export default function Dashboard() {
                                         <Cell key={`cell-${index}`} fill={COLORS_PIE[index % COLORS_PIE.length]} />
                                     ))}
                                 </Pie>
-                                <Tooltip contentStyle={{backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-color)', color: 'var(--text-primary)'}} />
+                                  <Tooltip
+                                    contentStyle={{
+                                      backgroundColor: 'var(--bg-card)',
+                                      borderColor: 'var(--border-color)',
+                                      color: 'var(--text-primary)',
+                                      borderRadius: 8,
+                                    }}
+                                    itemStyle={{ color: 'var(--text-primary)' }}
+                                    labelStyle={{ color: 'var(--text-secondary)' }}
+                                  />
                                 <Legend verticalAlign="bottom" height={36}/>
                             </PieChart>
                         </ResponsiveContainer>
