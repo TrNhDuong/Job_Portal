@@ -4,7 +4,7 @@ import { Briefcase } from "lucide-react";
 export default function BrandCard({ brand, onViewDetails }) {
   const safeBrand = brand || {};
   const companyName = safeBrand.name || safeBrand.company || "Doanh nghiệp";
-  const logoSrc = safeBrand.logo?.url || safeBrand.logo || "https://via.placeholder.com/150";
+  const logoSrc = (safeBrand.logo && safeBrand.logo.url) || safeBrand.logoUrl || "https://ui-avatars.com/api/?name=" + encodeURIComponent(companyName) + "&background=eff6ff&color=2563eb&bold=true";
   const jobsCount = safeBrand.jobCount || (Array.isArray(safeBrand.jobPosted) ? safeBrand.jobPosted.length : 0);
 
   return (
