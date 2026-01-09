@@ -278,7 +278,8 @@
 /* Cấu trúc Carousel cũ trong giao diện mới */
 .home-featured-pro-wrapper {
   position: relative;
-  padding: 30px 40px;
+  padding: 35px 40px 30px 40px; /* Top Right Bottom Left */
+  z-index: 2;
 }
 
 /* --- JOB CARD STYLE (DẠNG NGANG CHUYÊN NGHIỆP) --- */
@@ -297,8 +298,8 @@
 
 .job-card-pro-style:hover {
   border-color: #3b82f6;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.08);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.08);\
+  z-index: 10;
 }
 
 .job-card-left-content { display: flex; gap: 16px; flex: 1; min-width: 0; }
