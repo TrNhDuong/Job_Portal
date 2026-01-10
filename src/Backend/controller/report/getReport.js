@@ -44,3 +44,12 @@ export const getAllReports = async (req, res) => {
         });
     }
 };
+
+export const isCandidateReport = async (req, res) => {
+    const { email, jobId } = req.body;
+    try {
+
+    } catch (error){
+        
+    }
+}

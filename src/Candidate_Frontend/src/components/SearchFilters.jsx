@@ -80,21 +80,7 @@ export default function SearchFilters({ filters, setFilters }) {
             inputMode="numeric"
           />
 
-          <select
-            name="currency"
-            value={filters.currency || ""}
-            onChange={handleChange}
-            className="job-filters-select job-filters-select--pro"
-          >
-            <option value="">Tất cả tiền tệ</option>
-            <option value="VND">VND</option>
-            <option value="USD">USD</option>
-            <option value="EUR">EUR</option>
-            <option value="JPY">JPY</option>
-            <option value="GBP">GBP</option>
-            <option value="AUD">AUD</option>
-            <option value="CAD">CAD</option>
-          </select>
+
         </div>
       </div>
 

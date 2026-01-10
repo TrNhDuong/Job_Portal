@@ -1,8 +1,8 @@
 import { CandidateRepository } from "./candidateRepository.js";
 import { JobRepository } from "./jobRepository.js";
 import Application from "../model/application.js";
-import { application } from "express";
-
+import Candidate from "../model/candidate.js";
+import { JobPost } from "../model/jobPost.js";
 export class ApplicationRepository {
     static async createApplication(candidateID, contactEmail, jobId, CV_url) {
         const newApplication = new Application({ candidateId: candidateID, contactEmail, jobId, CV_url, appliedDate: Date.now() });
@@ -51,8 +51,6 @@ export class ApplicationRepository {
     }
 
     static async getApplication(applicationId) {
-        console.log('Application ID in repository:')
-        console.log(applicationId)
         const application = await Application.findOne({ _id: applicationId });
         if (!application) {
             return { success: false, message: "Application not found" };
@@ -109,9 +107,10 @@ export class ApplicationRepository {
         if (!application.success) {
             return { success: false, message: "Application not found or could not be deleted" };
         }
+        console.log(application)
         const jobPostId = application.data.jobId;
-        const candidateID = application.data.candidateID;
-
+        const candidateID = application.data.candidateId;
+        console.log(jobPostId, candidateID);
         const applicationCandidate = await Candidate.findById(candidateID);
         if (applicationCandidate) {
             applicationCandidate.appliedJobs = applicationCandidate.appliedJobs.filter(job => job.toString() !== jobPostId.toString());

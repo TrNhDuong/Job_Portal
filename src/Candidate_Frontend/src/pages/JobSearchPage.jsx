@@ -40,7 +40,7 @@ export default function JobSearchPage() {
   return (
     // Container chính dùng layout Flex + Gap
     <main className="job-search-layout">
-      
+
       {/* Cột trái: Bộ lọc */}
       <aside className="job-search-col job-search-sidebar">
         <SearchFilters filters={filters} setFilters={setFilters} />
@@ -62,6 +62,7 @@ export default function JobSearchPage() {
           <JobDetailPanel job={selectedJob} onClose={() => setSelectedJob(null)} />
         </div>
       )}
+
     </main>
   );
 }
