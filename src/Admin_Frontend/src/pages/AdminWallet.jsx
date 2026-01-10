@@ -185,24 +185,40 @@ export default function ManualPayment() {
                     <table className="data-table">
                         <thead>
                             <tr>
-                                <th width="10%">Mã GD</th>
-                                <th width="15%">Người thực hiện</th>
-                                <th width="20%">Người nhận</th>
+                                {/* 1. NGƯỜI NHẬN (Tăng lên 25%) */}
+                                <th width="25%">Người nhận</th>
+                                
+                                {/* 2. SỐ TIỀN (Giữ 15%) */}
                                 <th width="15%">Số tiền</th>
-                                <th width="20%">Ghi chú</th>
-                                <th width="10%">Thời gian</th>
+                                
+                                {/* 3. GHI CHÚ (Mở rộng tối đa lên 35% cho rộng rãi) */}
+                                <th width="35%">Ghi chú</th>
+                                
+                                {/* 4. THỜI GIAN (Tăng nhẹ lên 15% cho thoáng) */}
+                                <th width="15%">Thời gian</th>
+                                
+                                {/* 5. TRẠNG THÁI (Giữ 10%) */}
                                 <th width="10%" className="text-center">Trạng thái</th>
                             </tr>
                         </thead>
                         <tbody>
                             {filteredHistory.map(item => (
                                 <tr key={item.id}>
-                                    <td className="text-mono">{item.id}</td>
-                                    <td className="fw-600">{item.admin}</td>
-                                    <td>{item.userEmail}</td>
+                                    {/* BỎ <td> Mã GD và <td> Admin */}
+                                    
+                                    {/* Người nhận */}
+                                    <td className="fw-600">{item.userEmail}</td>
+                                    
+                                    {/* Số tiền */}
                                     <td className="text-money">+{formatCurrency(item.amount)}</td>
+                                    
+                                    {/* Ghi chú */}
                                     <td className="text-limit" title={item.note}>{item.note}</td>
+                                    
+                                    {/* Thời gian */}
                                     <td className="text-sm">{item.date}</td>
+                                    
+                                    {/* Trạng thái */}
                                     <td className="text-center">
                                         <span className={`status-badge ${item.status}`}>
                                             {item.status === 'success' ? 'Thành công' : 'Thất bại'}

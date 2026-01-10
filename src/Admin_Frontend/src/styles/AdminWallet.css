@@ -186,8 +186,13 @@
 .text-money { color: var(--success-color); font-weight: 700; font-family: 'Roboto Mono', monospace; }
 .text-sm { font-size: 0.85rem; color: var(--text-secondary); }
 .text-center { text-align: center; }
-.text-limit { max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-secondary); }
-
+.text-limit { 
+    max-width: 450px; /* Tăng từ 250px lên 450px để tận dụng không gian mới */
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    color: var(--text-secondary); 
+}
 /* Status Badge */
 .status-badge {
     display: inline-block; padding: 6px 12px; border-radius: 20px;
