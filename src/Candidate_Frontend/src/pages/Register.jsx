@@ -244,11 +244,11 @@ export default function Register() {
               />
               <label htmlFor="agree" className="register-checkbox-label">
                 Tôi đã đọc và đồng ý với{" "}
-                <Link to="/policies#terms" className="register-link">
+                <Link to="/policies" className="register-link">
                   Điều khoản dịch vụ
                 </Link>
                 {" "}và{" "}
-                <Link to="/policies#privacy" className="register-link">
+                <Link to="/terms" className="register-link">
                   Chính sách bảo mật
                 </Link>.
               </label>
