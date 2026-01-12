@@ -144,6 +144,33 @@ const CandidateDetailView = ({ cv, onBack, onStatusUpdate, onEmail }) => {
     return `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`;
   };
 
+  const downloadFile = async () => {
+    if (!fileUrl) return;
+
+    try {
+      const res = await fetch(fileUrl);
+      if (!res.ok) throw new Error("Download failed");
+
+      const blob = await res.blob();
+
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+
+      // Optional: lấy tên file từ url nếu có
+      a.download = fileUrl.split("/").pop() || "cv.pdf";
+
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error(err);
+      toast.error("Không thể tải CV");
+    }
+  };
+
+
   return (
     <div className="split-view-wrapper">
         {/* Header nút Back */}
@@ -206,9 +233,9 @@ const CandidateDetailView = ({ cv, onBack, onStatusUpdate, onEmail }) => {
                 <div className="cv-toolbar">
                     <span style={{fontWeight: '600', color: '#333'}}>Tài liệu đính kèm</span>
                     {fileUrl && (
-                        <a href={fileUrl} target="_blank" rel="noreferrer" className="btn-download">
-                            <ExternalLink size={14} /> Tải xuống bản gốc
-                        </a>
+                      <button onClick={downloadFile} className="btn-download">
+                        <ExternalLink size={14} /> Tải xuống bản gốc
+                      </button>
                     )}
                 </div>
                 <div style={{flex: 1, position: 'relative', background: '#333'}}>

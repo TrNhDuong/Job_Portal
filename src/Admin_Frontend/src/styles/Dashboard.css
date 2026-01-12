@@ -188,7 +188,7 @@
   background: var(--bg-card);
   padding: 8px 16px;
   border-radius: 8px;
-  /* border: 1px solid var(--border-color); */
+  border: 1px solid var(--border-color);
 }
 .chart-filter select {
   background: var(--bg-card); /*transparent;*/
@@ -241,4 +241,36 @@
 @media (max-width: 1024px) {
   .charts-split-layout { grid-template-columns: 1fr; }
   .stats-grid { grid-template-columns: 1fr; }
+}
+
+/* =========================================
+   CUSTOM RECHARTS TOOLTIP
+   ========================================= */
+.custom-tooltip {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 10px 14px;
+  box-shadow: var(--shadow-md);
+  font-size: 0.85rem;
+  color: var(--text-primary);
+}
+
+.tooltip-label {
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--text-secondary);
+}
+
+.tooltip-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.tooltip-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
 }

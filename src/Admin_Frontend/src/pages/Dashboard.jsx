@@ -34,12 +34,6 @@ export default function Dashboard() {
   fetchDashboardData();
 }, [timeFilter]);
 
-  const logChartData = (label = "chartData") => {
-    console.group(`📊 ${label}`);
-    console.table(chartData);
-    console.log("Raw data:", chartData);
-    console.groupEnd();
-  };
   const fetchDashboardData = async () => {
     setLoading(true);
     setChartData([]); // reset chartData ngay khi fetch
