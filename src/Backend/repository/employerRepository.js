@@ -97,8 +97,16 @@ export class EmployerRepository {
             updatePayload["wallpaper"] = updatesEmployer["wallpaper"];
         }
 
+        if (updatesEmployer["point"]){
+            if (updatePayload["point"]){
+                updatePayload["point"] += updatesEmployer["point"];
+            } else {
+                updatePayload["point"] = updatesEmployer["point"];
+            }
+        }
+
         // 2d. Xử lý các fields thông thường (bao gồm cả 'point' nếu được truyền)
-        const employerAttributes = ["company", "email", "phone", "address", "description", "website", "contact", "point", "scale"];
+        const employerAttributes = ["company", "email", "phone", "address", "description", "website", "contact", "scale"];
         for (const attribute of employerAttributes) {
              if (updatesEmployer[attribute] !== undefined) {
                  updatePayload[attribute] = updatesEmployer[attribute];

@@ -7,8 +7,8 @@ import {
 } from "react-icons/hi";
 import { toast } from "react-toastify";
 import {useLocation} from "react-router-dom";
-
-
+import client from "../api/client.js";
+import { showDeleteConfirm } from "../utils/alertUtils.js";
 
 export default function JobList() {
   const [search, setSearch] = useState("");
@@ -44,8 +44,8 @@ export default function JobList() {
     if (!isConfirmed) return;
 
     try {
-      const res = await jobService.deleteJob(id);
-       if (res.success) {
+      const response = await client.delete(`api/post-job?jobId=${id}`);
+       if (response.data.success) {
         setJobs(prev => prev.filter(job => job._id !== id));
         toast.success("Đã xóa bài đăng thành công!");
         if(selectedJob && selectedJob._id === id) setSelectedJob(null);

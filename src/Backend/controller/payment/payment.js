@@ -10,7 +10,7 @@ export const payment = async (req, res) => {
                 message: `Request must contain amount`
             })
         }
-        const url = generateVietQRUrl(amount);
+        const url = generateVietQRUrl(amount, email, point);
         res.status(201).json({
             success: true,
             message: `Created QR successfully`,
