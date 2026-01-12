@@ -25,12 +25,15 @@ export const createImageStorage = (folderPath) => {
 };
 
 export const createCVStorage = (folderPath) => {
-    return new CloudinaryStorage({
-        cloudinary,
-        params: {
-            folder: folderPath,
-            resource_type: "raw",   // 🔥 BẮT BUỘC
-            allowed_formats: ["pdf", "doc", "docx"],
-        }
-    });
+  return new CloudinaryStorage({
+    cloudinary,
+    params: async (req, file) => ({
+      folder: folderPath,
+      resource_type: "raw",
+      public_id: file.originalname.replace(/\s+/g, "_"), // 👈 có .pdf
+      content_type: file.mimetype,
+    }),
+  });
 };
+
+
