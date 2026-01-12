@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import client from "../api/client";
+import Swal from "sweetalert2"; // Import thư viện SweetAlert2
 import {
   saveJob as apiSaveJob,
   removeSaveJob as apiRemoveSaveJob,
@@ -170,41 +171,59 @@ export default function MyJobsPage() {
   /* ===================== ACTIONS ===================== */
 
   // Xóa đơn ứng tuyển: dùng email + jobId, backend tự tìm Application và xóa
-  const handleRemoveApplication = async (jobId) => {
+const handleRemoveApplication = async (jobId) => {
     if (!user?.email) return;
-    if (!window.confirm("Bạn có chắc muốn xóa đơn ứng tuyển này không?")) return;
+    const result = await Swal.fire({
+        title: "Xác nhận xóa?",
+        text: "Bạn có chắc muốn xóa đơn ứng tuyển này không? Hành động này không thể hoàn tác.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33", // Màu nút xóa
+        cancelButtonColor: "#3085d6", // Màu nút hủy
+        confirmButtonText: "Xóa ngay",
+        cancelButtonText: "Hủy bỏ",
+    });
+    
 
+    // 2. Nếu người dùng không nhấn nút "Xóa ngay" thì dừng lại
+    if (!result.isConfirmed) return;
+
+    // 3. Thực hiện logic xóa (giữ nguyên code cũ của bạn)
     setActionLoading(jobId);
     try {
-      await client.patch(`/api/post-job/removeApplyJob`, {
-        email: user.email,
-        jobId,
-      });
+        await client.patch(`/api/post-job/removeApplyJob`, {
+            email: user.email,
+            jobId,
+        });
 
-      // Cập nhật list ứng tuyển ở frontend
-      setAppliedJobs((prev) =>
-        prev.filter((item) => String(item.job?._id) !== String(jobId))
-      );
-
-      // Cập nhật Context user để đồng bộ với chỗ khác
-      if (user.appliedJobs) {
-        const updatedAppliedList = user.appliedJobs.filter(
-          (id) => String(id) !== String(jobId)
+        // Cập nhật list ứng tuyển ở frontend
+        setAppliedJobs((prev) =>
+            prev.filter((item) => String(item.job?._id) !== String(jobId))
         );
-        login({ ...user, appliedJobs: updatedAppliedList });
-      }
 
-      // Nếu đang mở modal của job này thì đóng lại
-      if (selectedJob && String(selectedJob._id) === String(jobId)) {
-        setSelectedJob(null);
-      }
+        // Cập nhật Context
+        if (user.appliedJobs) {
+            const updatedAppliedList = user.appliedJobs.filter(
+                (id) => String(id) !== String(jobId)
+            );
+            login({ ...user, appliedJobs: updatedAppliedList });
+        }
+
+        // Đóng modal chi tiết job nếu đang mở
+        if (selectedJob && String(selectedJob._id) === String(jobId)) {
+            setSelectedJob(null);
+        }
+
+        // Thông báo thành công (Optional)
+        Swal.fire("Đã xóa!", "Đơn ứng tuyển đã được xóa.", "success");
+
     } catch (err) {
-      console.error(err);
-      alert("Không thể xóa đơn ứng tuyển. Vui lòng thử lại.");
+        console.error(err);
+        Swal.fire("Lỗi!", "Không thể xóa đơn ứng tuyển. Vui lòng thử lại.", "error");
     } finally {
-      setActionLoading(null);
+        setActionLoading(null);
     }
-  };
+};
 
   const handleSaveJob = async (job) => {
     if (!user?.email) return;
