@@ -444,6 +444,11 @@ input::placeholder, textarea::placeholder {
     border-color: #0061ff !important; transform: scale(1.1);
 }
 
+.ql-editor {
+    word-break: break-word;        /* Ngắt chữ khi quá dài */
+    overflow-wrap: break-word;     /* Chuẩn hiện đại */
+    white-space: pre-wrap;         /* Giữ xuống dòng + wrap */
+}
 
 /* =========================================
    8. RESPONSIVE
