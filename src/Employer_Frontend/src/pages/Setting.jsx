@@ -61,10 +61,14 @@ const Setting = ({ isVisible, onClose }) => {
         if (!accountForm.currentPassword) {
             newErrors.currentPassword = 'Vui lòng nhập mật khẩu hiện tại.';
         }
-        if (accountForm.newPassword.length < 6) {
-            newErrors.newPassword = 'Mật khẩu chưa đủ mạnh.';
-            setIsPasswordFocused(true);
-        }
+        if (!passCriteria.length ||
+            !passCriteria.lower ||
+            !passCriteria.upper ||
+            !passCriteria.number) {
+        newErrors.newPassword = 'Mật khẩu phải đủ mạnh (8 ký tự, chữ hoa, chữ thường, số)';
+        setIsPasswordFocused(true);
+        }
+
         if (accountForm.newPassword !== accountForm.confirmNewPassword) {
             newErrors.confirmNewPassword = 'Mật khẩu nhập lại không khớp.';
         }
