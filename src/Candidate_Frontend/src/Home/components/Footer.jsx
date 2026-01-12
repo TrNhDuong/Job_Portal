@@ -18,8 +18,6 @@ export default function Footer() {
             <Link to="/">HOME</Link>
             <Link to="/jobs">FIND JOBS</Link>
             <Link to="/about">ABOUT</Link>
-            <Link to="/blog">BLOG</Link>
-            <Link to="/contact">CONTACT</Link>
           </nav>
 
           <div className="footer-socials">
@@ -37,7 +35,7 @@ export default function Footer() {
             © Copyright 2025 CDH Job Portal All Rights Reserved
           </p>
           <div className="footer-legal">
-            <Link to="/privacy">Privacy Policy</Link>
+            <Link to="/policies">Privacy Policy</Link>
             <Link to="/terms">Terms & Conditions</Link>
           </div>
         </div>

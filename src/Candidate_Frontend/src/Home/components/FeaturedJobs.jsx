@@ -56,7 +56,7 @@ export default function FeaturedJobs({ enableFetch = true }) {
     
     timeoutRef.current = setTimeout(() => {
       handleNext();
-    }, 5000); // Tăng lên 5s cho người dùng kịp đọc
+    }, 9000); // Tăng lên 5s cho người dùng kịp đọc
 
     return () => resetTimeout();
   }, [currentIndex, loading, jobs.length, itemsPerView]);
@@ -98,52 +98,51 @@ export default function FeaturedJobs({ enableFetch = true }) {
   const showArrows = !loading && !error && jobs.length > itemsPerView;
 
   return (
-    <>
-      {/* Header chỉ còn Title */}
-      <Section title={<FeaturedTitle />}>
-        
-        <div className="home-featured-wrapper">
-          {error && <div className="home-featured-error">{error}</div>}
-
-          {/* --- NÚT ĐIỀU HƯỚNG (NẰM ĐÈ LÊN CAROUSEL) --- */}
-          {showArrows && (
-            <>
-              <button onClick={handlePrev} className="home-arrow prev" aria-label="Previous">
-                <ChevronLeft size={24} />
-              </button>
-              <button onClick={handleNext} className="home-arrow next" aria-label="Next">
-                <ChevronRight size={24} />
-              </button>
-            </>
-          )}
-
-          {loading ? (
-            <div className="home-featured-grid-skeleton">
-              {[...Array(3)].map((_, i) => <div key={i} className="home-featured-skeleton" />)}
-            </div>
-          ) : (
-            <div className="home-featured-carousel">
-              <div 
-                className="home-featured-track"
-                style={{ transform: `translateX(-${(currentIndex / itemsPerView) * 100}%)` }}
-              >
-                {jobs.map((j) => (
-                  <div key={j._id} className="home-featured-item" style={{ width: `${100 / itemsPerView}%` }}>
-                    <div className="home-featured-card-wrapper">
-                      <JobCard
-                        job={j}
-                        onViewDetails={setSelectedJob}
-                        onSave={handleSaveJob}
-                        isSaved={savedList.includes(String(j._id))}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+    <div className="home-jobs-pro-container">
+      {/* 1. THÊM BANNER XANH NAVY NHƯ MẪU PRO */}
+      <div className="jobs-banner-pro">
+        <div className="jobs-banner-content">
+          <div className="banner-text">
+            <h2 className="banner-title">Việc làm nổi bật</h2>
+          </div>
+          <p className="banner-subtitle">Hàng nghìn cơ hội nghề nghiệp tốt nhất dành cho bạn</p>
         </div>
-      </Section>
+      </div>
+
+      {/* 2. CAROUSEL VỚI LOGIC CŨ CỦA BẠN */}
+      <div className="home-featured-pro-wrapper">
+        {error && <div className="home-featured-error">{error}</div>}
+
+        {/* Nút mũi tên sát lề khung */}
+        {!loading && jobs.length > itemsPerView && (
+          <>
+            <button onClick={handlePrev} className="brand-nav-btn prev"><ChevronLeft size={24} /></button>
+            <button onClick={handleNext} className="brand-nav-btn next"><ChevronRight size={24} /></button>
+          </>
+        )}
+
+        {loading ? (
+          <div className="jobs-loading-flex">Loading...</div>
+        ) : (
+          <div className="home-featured-carousel">
+            <div 
+              className="home-featured-track"
+              style={{ transform: `translateX(-${(currentIndex / itemsPerView) * 100}%)` }}
+            >
+              {jobs.map((j) => (
+                <div key={j._id} className="home-featured-item" style={{ width: `${100 / itemsPerView}%` }}>
+                  <JobCard
+                    job={j}
+                    onViewDetails={setSelectedJob}
+                    onSave={handleSaveJob}
+                    isSaved={savedList.includes(String(j._id))}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
 
       {selectedJob && (
         <JobDetailModal
@@ -153,6 +152,6 @@ export default function FeaturedJobs({ enableFetch = true }) {
           isSaved={savedList.includes(String(selectedJob._id))}
         />
       )}
-    </>
+    </div>
   );
 }

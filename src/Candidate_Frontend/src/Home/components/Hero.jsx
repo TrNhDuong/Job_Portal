@@ -1,5 +1,5 @@
 import React from "react";
-
+import { NavLink, Link } from "react-router-dom";
 export default function Hero() {
   return (
     <section className="home-hero">
@@ -19,20 +19,10 @@ export default function Hero() {
             Kết nối tài năng với cơ hội.
           </p>
 
-          <button className="hero-btn-primary">
+          <NavLink className="hero-btn-primary" to="/jobs">
             TÌM VIỆC
-          </button>
+          </NavLink>
 
-          <div className="hero-user-stats">
-            <div className="avatar-stack">
-              <img src="https://i.pravatar.cc/150?u=1" alt="user" />
-              <img src="https://i.pravatar.cc/150?u=2" alt="user" />
-            </div>
-            <div className="stats-content">
-              <div className="stats-number">15M+</div>
-              <div className="stats-text">Người dùng Toàn cầu</div>
-            </div>
-          </div>
         </div>
 
         {/* PHẦN BÊN PHẢI: VISUALS (ẢNH & DECOR) */}
