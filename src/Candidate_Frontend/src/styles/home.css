@@ -298,7 +298,7 @@
 
 .job-card-pro-style:hover {
   border-color: #3b82f6;
-  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.08);\
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.08);
   z-index: 10;
 }
 
