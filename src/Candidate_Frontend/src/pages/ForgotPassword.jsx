@@ -35,10 +35,10 @@ export default function ForgotPasswordCandidate() {
 
       setMsg({
         type: "success",
-        text: "Đã gửi OTP về email. Vui lòng kiểm tra hộp thư (kể cả Spam).",
+        text: "Đã gửi OTP về email. Vui lòng kiểm tra hộp thư.",
       });
 
-      setTimeout(() => navigate("/verify-otp?action=forgot-password"), 500);
+      setTimeout(() => navigate("/verify-otp?action=forgot-password"), 2000);
     } catch (err) {
       setMsg({
         type: "error",
