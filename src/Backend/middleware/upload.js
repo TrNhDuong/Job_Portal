@@ -30,7 +30,7 @@ export const createCVStorage = (folderPath) => {
     params: async (req, file) => ({
       folder: folderPath,
       resource_type: "raw",
-      public_id: file.originalname.replace(/\s+/g, "_"), // 👈 có .pdf
+      public_id: file.originalname.replace(/\s+/g, "_"), //có .pdf
       content_type: file.mimetype,
     }),
   });

@@ -233,9 +233,9 @@ const CandidateDetailView = ({ cv, onBack, onStatusUpdate, onEmail }) => {
                 <div className="cv-toolbar">
                     <span style={{fontWeight: '600', color: '#333'}}>Tài liệu đính kèm</span>
                     {fileUrl && (
-                      <button onClick={downloadFile} className="btn-download">
-                        <ExternalLink size={14} /> Tải xuống bản gốc
-                      </button>
+                        <a href={fileUrl} target="_blank" rel="noreferrer" className="btn-download">
+                            <ExternalLink size={14} /> Tải xuống bản gốc
+                        </a>
                     )}
                 </div>
                 <div style={{flex: 1, position: 'relative', background: '#333'}}>
@@ -443,10 +443,28 @@ const CVManager = ({ job, initiallabel, onBack }) => {
     } catch (error) { console.error("API Error", error); toast.error("Lỗi kết nối server"); return false; }
   };
 
-  const handleSendEmail = (subject, content) => {
-      toast.success(`Đã gửi email thành công tới ${targetRecipients.length} ứng viên!`);
-      setShowEmailModal(false);
+  const handleSendEmail = async (subject, content) => {
+    try {
+      const to = targetRecipients.map(r => r.email).join(",");
+
+      const res = await client.post("/api/mail/send", {
+        to,
+        subject,
+        htmlContent: content
+      });
+
+      if (res.data.success) {
+        toast.success("Đã gửi email thành công");
+        setShowEmailModal(false);
+      } else {
+        toast.error(res.data.message || "Gửi email thất bại");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Lỗi khi gửi email");
+    }
   };
+
 
   // --- RENDER CONDITION: SPLIT VIEW vs LIST VIEW ---
 
