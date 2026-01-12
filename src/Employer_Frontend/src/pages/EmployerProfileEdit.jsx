@@ -1,6 +1,6 @@
 // frontend/src/pages/EmployerProfileEdit.jsx
 import React, { useState, useRef, useEffect } from 'react';
-import '../styles/employerProfileEdit.css';
+import '../styles/EmployerProfileEdit.css';
 import { FaSave, FaTimes, FaCamera, FaGlobe, FaMapMarkerAlt, FaImage } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 

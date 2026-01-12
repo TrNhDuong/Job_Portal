@@ -17,8 +17,16 @@ export const createPayment = async (req, res) => {
             state: state
         }
         await PaymentRepository.create(paymentData);
+        if (state === 'Success'){
+            const resultIncPoint = await EmployerRepository.increasePoint(email, point);
+            if (!resultIncPoint.success){
+                return res.status(403).json({
+                    success: false,
+                    message: 'Failed to inc point'
+                })
+            }
+        }
         const message = state === 'Success' ? 'Create payment successfully' : 'User not found';
-        console.log(message);
         res.status(200).json({
             success: true,
             message: message
