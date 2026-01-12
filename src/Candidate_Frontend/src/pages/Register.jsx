@@ -1,12 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import client from "../api/client";
-import { Eye, EyeOff, ShieldCheck, ArrowLeft } from "lucide-react"; // Import thêm ArrowLeft
+import { Eye, EyeOff, ShieldCheck, ArrowLeft } from "lucide-react";
 
-import PolicyModal from "../components/PolicyModal";
-import { TERMS_CONTENT, PRIVACY_CONTENT } from "../components/Policies";
-
-// --- Giữ nguyên các UserIcon, MailIcon, LockIcon cũ của bạn ở đây ---
 const UserIcon = () => (
   <svg className="register-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
     <circle cx="12" cy="8" r="4" />
@@ -39,9 +35,20 @@ export default function Register() {
   const [show2, setShow2] = useState(false);
   const [msg, setMsg] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [policy, setPolicy] = useState(null);
+  // const [policy, setPolicy] = useState(null); // <-- XÓA DÒNG NÀY
   const [emailStatus, setEmailStatus] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const savedForm = sessionStorage.getItem("temp_register_form");
+    if (savedForm) {
+      setForm(JSON.parse(savedForm));
+    }
+  }, []);
+
+  useEffect(() => {
+    sessionStorage.setItem("temp_register_form", JSON.stringify(form));
+  }, [form]);
 
   const onChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -93,7 +100,10 @@ export default function Register() {
 
     try {
       setLoading(true);
+
       await client.post("/api/send-otp", { email: form.email });
+
+      sessionStorage.removeItem("temp_register_form"); 
       sessionStorage.setItem("registrationData", JSON.stringify({ name: form.name, email: form.email, password: form.password }));
       navigate("/verify-otp");
     } catch (err) {
@@ -119,7 +129,6 @@ export default function Register() {
               onClick={() => navigate("/")}
               disabled={loading}
             >
-              {/* Sửa: Thêm icon ArrowLeft để đẹp hơn */}
               <ArrowLeft size={16} /> 
               <span>Quay lại trang chủ</span>
             </button>
@@ -145,7 +154,7 @@ export default function Register() {
           )}
 
           <form className="register-form" onSubmit={onSubmit}>
-            {/* Họ tên */}
+            {/* ... (Các input Name, Email, Password giữ nguyên) ... */}
             <div className="register-field">
               <label htmlFor="name" className="register-label">Họ và tên</label>
               <div className="register-input-row">
@@ -161,7 +170,6 @@ export default function Register() {
               </div>
             </div>
 
-            {/* Email */}
             <div className="register-field">
               <label htmlFor="email" className="register-label">Email</label>
               <div className="register-input-row">
@@ -177,17 +185,16 @@ export default function Register() {
                   onBlur={() => checkEmailExists(form.email)}
                 />
               </div>
+              {/* Messages giữ nguyên */}
               {emailStatus === "checking" && <div className="register-message register-message-info">Đang kiểm tra email...</div>}
               {emailStatus === "invalid" && <div className="register-message register-message-error">Email không đúng định dạng.</div>}
               {emailStatus === "exists" && <div className="register-message register-message-error">Email này đã được đăng ký.</div>}
               {emailStatus === "available" && <div className="register-message register-message-success">Email hợp lệ và chưa đăng ký ✔</div>}
             </div>
 
-            {/* Mật khẩu */}
             <div className="register-field">
               <div className="register-label-row">
                 <label htmlFor="password" className="register-label">Mật khẩu</label>
-                {/* Giữ nguyên hint cũ */}
               </div>
               <div className="register-input-row">
                 <LockIcon />
@@ -206,7 +213,6 @@ export default function Register() {
               </div>
             </div>
 
-            {/* Xác nhận mật khẩu */}
             <div className="register-field">
               <label htmlFor="confirm" className="register-label">Xác nhận mật khẩu</label>
               <div className="register-input-row">
@@ -226,14 +232,25 @@ export default function Register() {
               </div>
             </div>
 
-            {/* Checkbox */}
+            {/* --- PHẦN CHECKBOX ĐÃ SỬA ĐỔI --- */}
             <div className="register-checkbox-row">
-              <input id="agree" type="checkbox" name="agree" checked={form.agree} onChange={onChange} className="register-checkbox" />
+              <input 
+                id="agree" 
+                type="checkbox" 
+                name="agree" 
+                checked={form.agree} 
+                onChange={onChange} 
+                className="register-checkbox" 
+              />
               <label htmlFor="agree" className="register-checkbox-label">
                 Tôi đã đọc và đồng ý với{" "}
-                <button type="button" className="register-link" onClick={() => setPolicy("terms")}>Điều khoản dịch vụ</button>
+                <Link to="/policies#terms" className="register-link">
+                  Điều khoản dịch vụ
+                </Link>
                 {" "}và{" "}
-                <button type="button" className="register-link" onClick={() => setPolicy("privacy")}>Chính sách bảo mật</button>.
+                <Link to="/policies#privacy" className="register-link">
+                  Chính sách bảo mật
+                </Link>.
               </label>
             </div>
 
@@ -249,9 +266,7 @@ export default function Register() {
         </div>
       </div>
 
-      <PolicyModal open={policy !== null} title={policy === "terms" ? "Điều khoản dịch vụ" : "Chính sách bảo mật"} onClose={() => setPolicy(null)}>
-        {policy === "terms" ? TERMS_CONTENT : PRIVACY_CONTENT}
-      </PolicyModal>
+      {/* XÓA PHẦN RENDER POLICY MODAL */}
     </div>
   );
 }
