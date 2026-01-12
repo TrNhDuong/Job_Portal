@@ -10,7 +10,7 @@ export default function TermsAndConditions() {
       {/* Header đồng bộ với trang Policies */}
       <section className="terms-header">
         <div className="home-shell">
-          <h1>Điều khoản và Điều kiện</h1>
+          <h1>Điều khoản và dịch vụ</h1>
           <p>Phiên bản cập nhật ngày 09 tháng 01 năm 2026</p>
         </div>
       </section>
