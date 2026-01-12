@@ -2,6 +2,7 @@ import Employer from "../model/employer.js";
 import bcrypt from "bcryptjs";
 import { destroyCloudData } from "../service/cloudinary.js";
 import mongoose from 'mongoose'; // Cần thiết để đảm bảo môi trường Mongoose
+import e from "express";
 
 export class EmployerRepository {
     static async getEmployer(email) {
@@ -240,6 +241,46 @@ export class EmployerRepository {
             };
         }
     }
+    static async increasePoint(email, point, options = {}) {
+        const { session } = options;
+
+        const numPoint = Number(point);
+        if (Number.isNaN(numPoint)) {
+            return {
+                success: false,
+                message: "Point must be a number"
+            };
+        }
+
+        try {
+            const updatedEmployer = await Employer.findOneAndUpdate(
+                { email },
+                { $inc: { point: numPoint } },
+                { new: true, session }
+            );
+
+            if (!updatedEmployer) {
+                return {
+                    success: false,
+                    message: "Employer not found",
+                    data: null
+                };
+            }
+
+            return {
+                success: true,
+                data: updatedEmployer
+            };
+        } catch (error) {
+            console.error(`Error increasing point for employer ${email}:`, error);
+            return {
+                success: false,
+                message: "Database update error",
+                data: null
+            };
+        }
+    }
+
 }
 
 export default EmployerRepository;

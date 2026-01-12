@@ -82,12 +82,12 @@ export default function DashboardSidebar() {
           <span>Sơ yếu lý lịch (CV)</span>
         </NavLink>
 
-        <div className="dashboard-nav-group-label">Thông báo</div>
+        {/* <div className="dashboard-nav-group-label">Thông báo</div> */}
 
-        <NavLink to="/dashboard/notifications" className={getNavLinkClass}>
+        {/* <NavLink to="/dashboard/notifications" className={getNavLinkClass}>
           <Bell className="dashboard-nav-link-icon" />
           <span>Thông báo &amp; Email</span>
-        </NavLink>
+        </NavLink> */}
 
         {/* FOOTER ACTION */}
         <div className="dashboard-sidebar-footer">

@@ -107,19 +107,19 @@ export class ApplicationRepository {
         if (!application.success) {
             return { success: false, message: "Application not found or could not be deleted" };
         }
-        console.log(application)
         const jobPostId = application.data.jobId;
         const candidateID = application.data.candidateId;
-        console.log(jobPostId, candidateID);
         const applicationCandidate = await Candidate.findById(candidateID);
         if (applicationCandidate) {
             applicationCandidate.appliedJobs = applicationCandidate.appliedJobs.filter(job => job.toString() !== jobPostId.toString());
             await applicationCandidate.save();
         }
 
-        const applicationJobPost = await JobPost.findById(jobPostId);
+       const applicationJobPost = await JobPost.findById(jobPostId);
         if (applicationJobPost) {
-            applicationJobPost.applicants = applicationJobPost.applicants.filter(applicant => applicant.toString() !== candidateID.toString());
+            applicationJobPost.applicants = applicationJobPost.applicants.filter(
+                applicant => applicant.toString() !== applicationId.toString()
+            );
             await applicationJobPost.save();
         }
 
