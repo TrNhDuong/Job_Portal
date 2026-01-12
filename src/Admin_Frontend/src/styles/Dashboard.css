@@ -188,17 +188,18 @@
   background: var(--bg-card);
   padding: 8px 16px;
   border-radius: 8px;
-  border: 1px solid var(--border-color);
+  /* border: 1px solid var(--border-color); */
 }
 .chart-filter select {
-  background: transparent;
+  background: var(--bg-card); /*transparent;*/
   border: none;
   color: var(--text-primary);
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   outline: none;
-}
+} /*  FIX LIGHTING FOR DARK MODE */
+
 .filter-icon { color: var(--text-secondary); }
 
 /* Containers */

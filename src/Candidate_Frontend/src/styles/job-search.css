@@ -8,7 +8,6 @@
   height: calc(100vh - 80px); 
   background-color: #f1f5f9; 
   overflow: hidden; 
-  padding:0 40px;
 }
 .job-search-col {
   background-color: #ffffff; 

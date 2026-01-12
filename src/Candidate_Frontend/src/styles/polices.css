@@ -1,0 +1,65 @@
+/* src/pages/policies.css */
+.policies-page {
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+
+.policies-header {
+  background: linear-gradient(135deg, #00d9ff 0%, #7e00c7 100%); /* Màu Navy giống Hero/About */
+  padding: 60px 0;
+  color: white;
+  text-align: center;
+}
+
+.policies-header h1 {
+  font-size: 36px;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.policies-header p {
+  opacity: 0.7;
+  font-size: 14px;
+}
+
+.policies-content {
+  background: white;
+  margin: -30px auto 60px; /* Đẩy nội dung đè nhẹ lên header */
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  max-width: 900px;
+  line-height: 1.7;
+}
+
+.policy-section h2 {
+  color: #1e293b;
+  font-size: 28px;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #f1f5f9;
+  padding-bottom: 10px;
+}
+
+.policy-item {
+  margin-top: 30px;
+}
+
+.policy-item h3 {
+  color: #4f46e5; /* Màu Indigo chủ đạo của Navbar */
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.policy-item p, .policy-item li {
+  color: #475569;
+  font-size: 16px;
+}
+
+.policy-item ul {
+  padding-left: 20px;
+}
+
+.policy-item li {
+  margin-bottom: 8px;
+}

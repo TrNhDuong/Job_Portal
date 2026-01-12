@@ -3,13 +3,15 @@ import React, { useState, useEffect } from "react";
 import SearchFilters from "../components/SearchFilters";
 import JobListings from "../components/JobListings";
 import JobDetailPanel from "../components/JobDetailPanel";
-
+import { useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import client from "../api/client";
 import "../styles/job-search.css"; // Đảm bảo đã import file CSS
 
 export default function JobSearchPage() {
   const [selectedJob, setSelectedJob] = useState(null);
+  const [searchParams]=useSearchParams();
+
   const [filters, setFilters] = useState({
     keyword: "",
     location: "",
@@ -25,6 +27,18 @@ export default function JobSearchPage() {
   const { user, login } = useAuth();
 
   useEffect(() => {
+    const categoryFromUrl = searchParams.get("category");
+    if (categoryFromUrl) {
+      setFilters((prev) => ({
+        ...prev,
+        major: categoryFromUrl,
+        page: 1,
+      }));
+    }
+  }, [searchParams]);
+
+  // 3. Sửa cấu trúc useEffect xử lý fetchCandidate
+  useEffect(() => {
     const fetchCandidate = async () => {
       if (!user?.email) return;
       try {
@@ -34,6 +48,7 @@ export default function JobSearchPage() {
         console.error("Lỗi user:", err);
       }
     };
+
     fetchCandidate();
   }, [user?.email, login]);
 

@@ -91,25 +91,59 @@ export const applyJob = async (req, res) => {
 };
 
 export const removeApplyJob = async (req, res) => {
-    const { email, applicationId } = req.body;
-    try {
-        const candidate = await CandidateRepository.getCandidate(email);
-        if (!candidate.success) {
-          return res.status(404).json({ message: "Candidate not found" });
-        }
-        const application = await ApplicationRepository.deleteApplication(applicationId);
-        if (!application.success) {
-          return res.status(404).json({ message: "Application not found" });
-        }
-        return res.status(200).json({ 
-          success: true,
-          message: "Applicant removed successfully"
-        });
-    } catch (error) {
-        console.error("Error removing applicant:", error);
-        res.status(500).json({ message: "Internal server error" });
+  const { email, jobId } = req.body;
+
+  if (!email || !jobId) {
+    return res.status(400).json({
+      success: false,
+      message: "Missing email or jobId",
+    });
+  }
+
+  try {
+    // 1. Lấy candidate theo email
+    const candidate = await CandidateRepository.getCandidate(email);
+    if (!candidate.success) {
+      return res.status(404).json({
+        success: false,
+        message: "Candidate not found",
+      });
     }
-}
+
+    const candidateId = candidate.data._id;
+
+    // 2. Lấy application theo candidateId + jobId
+    const appRes = await ApplicationRepository.getByCandidateJob(candidateId, jobId);
+    if (!appRes.success) {
+      return res.status(404).json({
+        success: false,
+        message: "Application not found",
+      });
+    }
+
+    const applicationId = appRes.data._id.toString();
+
+    // 3. Xóa application
+    const deleteRes = await ApplicationRepository.deleteApplication(applicationId);
+    if (!deleteRes.success) {
+      return res.status(500).json({
+        success: false,
+        message: deleteRes.message || "Failed to delete application",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Applicant removed successfully",
+    });
+  } catch (error) {
+    console.error("Error removing applicant:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
 
 
 export const extendJobExpiry = async (req, res) => {

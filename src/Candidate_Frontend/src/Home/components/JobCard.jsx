@@ -1,5 +1,5 @@
 import React from "react";
-import { Heart, Sparkles } from "lucide-react"; // Import thêm icon Sparkles cho badge
+import { Heart, Sparkles, MapPin, DollarSign } from "lucide-react"; // Import thêm icon Sparkles cho badge
 import { useNavigate } from "react-router-dom";
 
 export default function JobCard({ job, onViewDetails, onSave, isSaved }) {
@@ -38,68 +38,50 @@ export default function JobCard({ job, onViewDetails, onSave, isSaved }) {
     return "Thỏa thuận";
   };
 
-  return (
-    <article className="home-job-card" onClick={handleCardClick}>
-      {/* --- TOP: Logo & Info --- */}
-      <div className="home-job-card-top">
-        <div className="home-job-card-logo-wrap">
-          <img
-            src={logoSrc}
-            alt={job.company || "Logo công ty"}
-            className="home-job-card-logo"
-            onError={(e) => {
-              e.target.src = placeholderLogo;
-            }}
+return (
+    <article className="job-card-pro-style" onClick={handleCardClick}>
+      <div className="job-card-left-content">
+        <div className="job-card-logo-box">
+          <img 
+            src={logoSrc} 
+            alt={job.company} 
+            onError={(e) => { e.target.src = placeholderLogo; }}
           />
         </div>
-
-        <div className="home-job-card-info">
-          {/* Title Row + Badge */}
-          <div className="home-job-card-title-row">
-             {/* Giả sử có trường isHot hoặc nổi bật, nếu không có thì bỏ qua */}
+        <div className="job-card-info-box">
+          <div className="job-title-row">
             {job.isHot && (
-              <span className="home-job-card-badge">
-                <Sparkles size={10} fill="currentColor" /> NỔI BẬT
+              <span className="job-badge-hot">
+                <Sparkles size={10} fill="currentColor" /> HOT
               </span>
             )}
-            <h3 className="home-job-card-title">{job.title || "Không có tiêu đề"}</h3>
+            <h3 className="job-pro-title" title={job.title}>{job.title || "Không tiêu đề"}</h3>
           </div>
-
-          {/* Company Name */}
+          
           <button
-            className="home-job-card-company"
+            className="job-pro-company-link"
             onClick={(e) => {
               e.stopPropagation();
-              navigate(
-                `/employer/${encodeURIComponent(job.companyEmail || job.company)}`
-              );
+              navigate(`/employer/${encodeURIComponent(job.companyEmail || job.company)}`);
             }}
           >
             {job.company || "Không rõ công ty"}
           </button>
+
+          <div className="job-pro-meta">
+            <span className="meta-salary"><DollarSign size={14} /> {formatSalary(job.salary)}</span>
+            <span className="meta-location"><MapPin size={14} /> {job.location || "Toàn quốc"}</span>
+          </div>
         </div>
       </div>
 
-      {/* --- BOTTOM: Salary, Location & Save Icon --- */}
-      <div className="home-job-card-bottom">
-        <div className="home-job-card-pills">
-          <span className="home-job-pill">
-            {formatSalary(job.salary)}
-          </span>
-          <span className="home-job-pill">
-            {job.location || "Toàn quốc"}
-          </span>
-        </div>
-
-        <button
-          type="button"
-          className={`home-job-card-save ${isSaved ? "saved" : ""}`}
-          onClick={handleSaveClick}
-          title={isSaved ? "Bỏ lưu" : "Lưu tin"}
-        >
-          <Heart fill={isSaved ? "currentColor" : "none"} />
-        </button>
-      </div>
+      <button
+        type="button"
+        className={`job-pro-save-btn ${isSaved ? "active" : ""}`}
+        onClick={handleSaveClick}
+      >
+        <Heart size={20} fill={isSaved ? "currentColor" : "none"} />
+      </button>
     </article>
   );
 }

@@ -1,4 +1,0 @@
-Update Project perspective in vision document:
-	Adding "Cloudinary" in project perspective
-Update Phase plan in Management Process in Project plan:
-	Adding in phase plan with division for writing report, more-detailed documentation division per week in each PA

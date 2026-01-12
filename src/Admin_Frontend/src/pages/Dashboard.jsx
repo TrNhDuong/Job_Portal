@@ -15,6 +15,7 @@ import { jobService } from "../services/jobService";
 import { statsService } from "../services/statsService";
 import { toast } from "react-toastify";
 
+
 export default function Dashboard() {
   // State quản lý tab đang chọn: 'members' hoặc 'jobs'
   const [activeTab, setActiveTab] = useState('members'); 
@@ -33,6 +34,12 @@ export default function Dashboard() {
   fetchDashboardData();
 }, [timeFilter]);
 
+  const logChartData = (label = "chartData") => {
+    console.group(`📊 ${label}`);
+    console.table(chartData);
+    console.log("Raw data:", chartData);
+    console.groupEnd();
+  };
   const fetchDashboardData = async () => {
     setLoading(true);
     setChartData([]); // reset chartData ngay khi fetch
@@ -93,7 +100,7 @@ export default function Dashboard() {
           for (let i = 6; i >= 0; i--) {
             const day = new Date();
             day.setDate(now.getDate() - i);
-            const dayKey = day.getDate().toString();
+            const dayKey = (day.getDate()-1).toString();
             const monthKey = day.getMonth() + 1;
 
             const dayStats = (monthKey === targetMonth) 
@@ -112,7 +119,7 @@ export default function Dashboard() {
           // month hoặc prevMonth
           const daysInMonth = new Date(targetYear, targetMonth, 0).getDate();
           for (let i = 1; i <= daysInMonth; i++) {
-            const dayStats = dailyMap[i.toString()] || { candidateRegister: 0, employerRegister: 0, jobPost: 0 };
+            const dayStats = dailyMap[(i - 1).toString()] || { candidateRegister: 0, employerRegister: 0, jobPost: 0 };
             processedData.push({
               name: `${i}/${targetMonth}`,
               employerRegister: dayStats.employerRegister || 0,
@@ -127,6 +134,8 @@ export default function Dashboard() {
       } else {
         setChartData([]);
       }
+    // logChartData(processedData);
+    
 
     } catch (error) {
       console.error("Dashboard Error:", error);
@@ -135,7 +144,6 @@ export default function Dashboard() {
       setLoading(false);
     }
   };
-
 
 
   
@@ -257,7 +265,16 @@ export default function Dashboard() {
                                         <Cell key={`cell-${index}`} fill={COLORS_PIE[index % COLORS_PIE.length]} />
                                     ))}
                                 </Pie>
-                                <Tooltip contentStyle={{backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-color)', color: 'var(--text-primary)'}} />
+                                  <Tooltip
+                                    contentStyle={{
+                                      backgroundColor: 'var(--bg-card)',
+                                      borderColor: 'var(--border-color)',
+                                      color: 'var(--text-primary)',
+                                      borderRadius: 8,
+                                    }}
+                                    itemStyle={{ color: 'var(--text-primary)' }}
+                                    labelStyle={{ color: 'var(--text-secondary)' }}
+                                  />
                                 <Legend verticalAlign="bottom" height={36}/>
                             </PieChart>
                         </ResponsiveContainer>

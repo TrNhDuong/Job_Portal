@@ -1,241 +1,264 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "../styles/AdminWallet.css";
-import { HiSearch, HiCurrencyDollar, HiCheck, HiX, HiClock } from "react-icons/hi";
+import { 
+  HiCreditCard, 
+  HiUser, 
+  HiCurrencyDollar, 
+  HiAnnotation, 
+  HiSearch, 
+  HiClock,
+  HiFilter,
+  HiRefresh
+} from "react-icons/hi";
 import { toast } from "react-toastify";
+import client from "../api/client.js";
 
-// --- MOCK DATA: DANH SÁCH YÊU CẦU NẠP TIỀN (Giả lập DB) ---
-const INITIAL_REQUESTS = [
-  {
-    id: "req-001",
-    user: { name: "Nguyễn Văn A", email: "nguyenvana@gmail.com", avatar: "" },
-    amount: 500000,
-    time: "2025-12-30T10:30:00",
-    status: "pending", // pending, approved, rejected
-    bankCode: "FT12345678" // Mã giao dịch ngân hàng
-  },
-  {
-    id: "req-002",
-    user: { name: "Trần Thị B", email: "tranthib@gmail.com", avatar: "" },
-    amount: 2000000,
-    time: "2025-12-30T11:15:00",
-    status: "pending",
-    bankCode: "FT87654321"
-  },
-  {
-    id: "req-003",
-    user: { name: "Lê C", email: "lec@gmail.com", avatar: "" },
-    amount: 100000,
-    time: "2025-12-29T09:00:00",
-    status: "rejected", // Đã từ chối trước đó
-    bankCode: "ERR001"
-  }
-];
 
-export default function AdminWallet() {
-  const [activeTab, setActiveTab] = useState("requests"); // 'requests' hoặc 'manual'
-  const [requests, setRequests] = useState(INITIAL_REQUESTS);
-  
-  // State cho phần Manual Search (Cũ)
-  const [emailSearch, setEmailSearch] = useState("");
-  const [foundUser, setFoundUser] = useState(null);
-  const [manualAmount, setManualAmount] = useState("");
-  const [loading, setLoading] = useState(false);
+export default function ManualPayment() {
+  const [activeTab, setActiveTab] = useState('topup'); // 'topup' | 'history'
 
-  // --- LOGIC XỬ LÝ YÊU CẦU (TAB 1) ---
-  
-  // Duyệt tiền
-  const handleApproveRequest = (req) => {
-    // 1. Chuyển Tab sang Manual
-    setActiveTab('manual');
+  // --- LOGIC FORM NẠP TIỀN ---
+  const [formData, setFormData] = useState({
+    email: "",
+    amount: "",
+    note: ""
+  });
+  const [submitting, setSubmitting] = useState(false);
 
-    // 2. Điền sẵn Email vào ô tìm kiếm
-    setEmailSearch(req.user.email);
+  // --- LOGIC LỊCH SỬ ---
+  const [history, setHistory] = useState([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
-    // 3. Điền sẵn Số tiền vào ô nạp
-    setManualAmount(req.amount.toString());
-
-    // 4. "Giả vờ" như đã tìm thấy User xong rồi (Set luôn data user vào state)
-    // Để nó hiện cái Card và nút Xác nhận lên ngay lập tức
-    setFoundUser({
-        _id: req.user._id || "auto-fill-id",
-        name: req.user.name,
-        email: req.user.email,
-        avatar: req.user.avatar,
-        role: "employer", // Hoặc lấy từ req nếu có
-        balance: 0, // Mock số dư
-        company: "Công ty (Auto Fill)" 
-    });
-
-    // 5. Thông báo nhẹ
-    toast.info(`Đã điền thông tin của ${req.user.name}. Vui lòng bấm xác nhận!`);
+  // Helper: Format tiền tệ
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
   };
 
-  // Từ chối
-  const handleRejectRequest = (reqId) => {
-    if(!window.confirm("Bạn muốn từ chối yêu cầu này?")) return;
-    
-    setRequests(prev => prev.map(r => {
-        if (r.id === reqId) return { ...r, status: "rejected" };
-        return r;
-    }));
-    toast.info("Đã từ chối yêu cầu.");
+  // --- 1. CALL API: LẤY LỊCH SỬ GIAO DỊCH ---
+  const fetchHistory = useCallback(async () => {
+    setLoadingHistory(true);
+    try {
+        const response = await client.get(`api/payment`);
+        if (response.data.success) {
+            // Giả sử API trả về mảng data.transactions
+            console.log(response.data.data)
+            setHistory(response.data.data || []); 
+        } else {
+            toast.error(data.message || "Không thể tải lịch sử giao dịch");
+        }
+    } catch (error) {
+      console.error("Fetch Error:", error);
+      toast.error("Lỗi kết nối server!");
+    } finally {
+      setLoadingHistory(false);
+    }
+  }, []);
+
+  // Gọi API khi chuyển sang tab history
+  useEffect(() => {
+    if (activeTab === 'history') {
+      fetchHistory();
+    }
+  }, [activeTab, fetchHistory]);
+
+  // --- 2. CALL API: XỬ LÝ NẠP TIỀN ---
+  const handleTopUp = async (e) => {
+    e.preventDefault();
+    if (!formData.email || !formData.amount) return toast.warning("Vui lòng nhập đủ Email và Số tiền!");
+
+    setSubmitting(true);
+    try {
+        const email = formData.email;
+        const amount = formData.amount;
+
+        const response = await client.post(
+            `api/payment/admin?email=${email}`,
+            {
+                "point": amount
+            }
+        )
+        const data = await response.data;
+
+        if (data.message === 'Create payment successfully') {
+            toast.success("Nạp tiền thành công!");
+            setFormData({ email: "", amount: "", note: "" }); // Reset form
+            fetchHistory(); // Refresh lại list ngầm
+            setActiveTab('history'); // Chuyển tab để check
+        } else {
+            toast.error(data.message || "Giao dịch thất bại!");
+        }
+    } catch (error) {
+      console.error("Topup Error:", error);
+      toast.error("Lỗi kết nối server khi nạp tiền!");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-
-  // --- LOGIC MANUAL (TAB 2 - GIỮ NGUYÊN) ---
-  const handleSearchUser = async () => {
-    if (!emailSearch.trim()) return toast.warning("Nhập email đi bạn ơi!");
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setFoundUser({ 
-        _id: "manual-01", 
-        name: "User Thủ Công", 
-        email: emailSearch, 
-        balance: 0, 
-        role: "employer" 
-      });
-      toast.success("Tìm thấy user!");
-    }, 600);
-  };
-
-  const handleManualTopUp = () => {
-    if (!manualAmount) return;
-    setLoading(true);
-    setTimeout(() => {
-        setLoading(false);
-        toast.success(`Đã nạp tay ${parseInt(manualAmount).toLocaleString()}đ thành công!`);
-        setManualAmount("");
-        setFoundUser(null);
-    }, 800);
-  };
+  // Filter Client-side (Tối ưu nhất là Filter Server-side nếu dữ liệu lớn)
+  const filteredHistory = history;
 
   return (
-    <div className="wallet-container fade-in">
+    <div className="wallet-page fade-in">
+      
+      {/* HEADER & TABS */}
       <div className="wallet-header">
-        <h2 className="wallet-title">Quản lý Tài chính & Nạp tiền</h2>
-      </div>
-
-      <div className="wallet-card">
-        {/* TABS SWITCHER */}
-        <div className="wallet-tabs">
+        <div className="header-content">
+            <h2 className="page-title">Quản lý Ví & Giao dịch</h2>
+            <p className="page-subtitle">Hệ thống xử lý nạp tiền và tra soát lịch sử</p>
+        </div>
+        
+        <div className="tab-navigation">
             <button 
-                className={`tab-btn ${activeTab === 'requests' ? 'active' : ''}`}
-                onClick={() => setActiveTab('requests')}
+                className={`tab-btn ${activeTab === 'topup' ? 'active' : ''}`}
+                onClick={() => setActiveTab('topup')}
             >
-                <HiClock style={{marginBottom: -2, marginRight: 4}}/> Duyệt yêu cầu ({requests.filter(r => r.status === 'pending').length})
+                <HiCreditCard /> Nạp tiền thủ công
             </button>
             <button 
-                className={`tab-btn ${activeTab === 'manual' ? 'active' : ''}`}
-                onClick={() => setActiveTab('manual')}
+                className={`tab-btn ${activeTab === 'history' ? 'active' : ''}`}
+                onClick={() => setActiveTab('history')}
             >
-                <HiSearch style={{marginBottom: -2, marginRight: 4}}/> Nạp thủ công
+                <HiClock /> Lịch sử giao dịch
             </button>
         </div>
+      </div>
 
-        {/* --- NỘI DUNG TAB 1: DANH SÁCH YÊU CẦU --- */}
-        {activeTab === 'requests' && (
-            <div className="fade-in" style={{width: '100%'}}>
-                <table className="request-table">
-                    <thead>
-                        <tr>
-                            <th>Người yêu cầu</th>
-                            <th>Mã giao dịch</th>
-                            <th>Số tiền nạp</th>
-                            <th>Thời gian</th>
-                            <th>Trạng thái</th>
-                            <th>Hành động</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {requests.map(req => (
-                            <tr key={req.id}>
-                                <td>
-                                    <div className="req-user-info">
-                                        <div className="req-avatar">{(req.user.name || "U").charAt(0)}</div>
-                                        <div className="req-text">
-                                            <h4>{req.user.name}</h4>
-                                            <p>{req.user.email}</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td style={{fontFamily: 'monospace', color: '#666'}}>{req.bankCode}</td>
-                                <td className="req-amount">+{req.amount.toLocaleString()} đ</td>
-                                <td style={{fontSize: '0.9rem', color: '#666'}}>
-                                    {new Date(req.time).toLocaleString('vi-VN')}
-                                </td>
-                                <td>
-                                    <span className={`status-badge ${req.status}`}>
-                                        {req.status === 'pending' ? 'Chờ duyệt' : 
-                                         req.status === 'approved' ? 'Thành công' : 'Từ chối'}
-                                    </span>
-                                </td>
-                                <td>
-                                    {req.status === 'pending' && (
-                                        <div className="action-group">
-                                            <button className="btn-approve" onClick={() => handleApproveRequest(req)}>
-                                                <HiCheck /> Duyệt & Nạp
-                                            </button>
-                                            <button className="btn-reject" onClick={() => handleRejectRequest(req.id)}>
-                                                <HiX /> Hủy
-                                            </button>
-                                        </div>
-                                    )}
-                                    {req.status !== 'pending' && <span style={{color: '#999', fontSize: '0.85rem'}}>Đã xử lý</span>}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-                {requests.length === 0 && <div className="empty-state">Chưa có yêu cầu nào</div>}
+      <div className="wallet-body">
+        
+        {/* === TAB 1: FORM NẠP TIỀN === */}
+        {activeTab === 'topup' && (
+            <div className="topup-container fade-in">
+                <div className="topup-card">
+                    <div className="card-header-center">
+                        <div className="icon-circle">
+                            <HiCreditCard />
+                        </div>
+                        <h3>Thông tin nạp tiền</h3>
+                        <p>Nhập thông tin người nhận và số tiền cần nạp vào ví hệ thống.</p>
+                    </div>
+
+                    <form onSubmit={handleTopUp} className="topup-form">
+                        <div className="form-group">
+                            <label>Tài khoản (Email) <span className="req">*</span></label>
+                            <div className="input-group">
+                                <HiUser className="input-icon" />
+                                <input 
+                                    type="email" 
+                                    placeholder="Ví dụ: candidate@gmail.com" 
+                                    value={formData.email}
+                                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="form-group">
+                            <label>Số điểm <span className="req">*</span></label>
+                            <div className="input-group">
+                                <HiCurrencyDollar className="input-icon" />
+                                <input 
+                                    type="number" 
+                                    placeholder="500,000" 
+                                    value={formData.amount}
+                                    onChange={(e) => setFormData({...formData, amount: e.target.value})}
+                                />
+                            </div>
+                            {formData.amount && <div className="amount-helper">Sẽ nạp: <b>{formatCurrency(formData.amount)}</b></div>}
+                        </div>
+
+                        <div className="form-group">
+                            <label>Ghi chú</label>
+                            <div className="input-group">
+                                <HiAnnotation className="input-icon" />
+                                <textarea 
+                                    rows="3" 
+                                    placeholder="Nhập lý do, mã hợp đồng..."
+                                    value={formData.note}
+                                    onChange={(e) => setFormData({...formData, note: e.target.value})}
+                                ></textarea>
+                            </div>
+                        </div>
+
+                        <div className="form-actions">
+                            <button type="submit" className="btn-primary-lg" disabled={submitting}>
+                                {submitting ? "Đang xử lý..." : "Xác nhận Nạp tiền"}
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         )}
 
-        {/* --- NỘI DUNG TAB 2: NẠP THỦ CÔNG (CODE CŨ) --- */}
-        {activeTab === 'manual' && (
-            <div className="fade-in" style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                 <div className="search-section">
-                    <label className="step-label">Tìm user để nạp tiền trực tiếp:</label>
-                    <div className="search-input-group">
-                        <div className="wallet-search-wrapper">
-                            <HiSearch className="search-icon-wallet"/>
-                            <input
-                                className="wallet-search-input"
-                                placeholder="Nhập email user..."
-                                value={emailSearch}
-                                onChange={(e) => setEmailSearch(e.target.value)}
-                            />
-                        </div>
-                        <button className="btn-search-wallet" onClick={handleSearchUser} disabled={loading}>
-                            {loading ? "..." : "Tìm"}
-                        </button>
+        {/* === TAB 2: LỊCH SỬ (ĐÃ SỬA CỘT) === */}
+        {activeTab === 'history' && (
+            <div className="history-container fade-in">
+                <div className="history-toolbar">
+                    <div className="toolbar-left">
+                        <h3>Lịch sử nạp/rút</h3>
+                        <span className="count-badge">{filteredHistory.length} bản ghi</span>
                     </div>
+                    <div className="search-bar">
+                        <HiSearch />
+                        <input 
+                            type="text" 
+                            placeholder="Tìm theo Email hoặc Ghi chú..." 
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+                    <button className="btn-filter" onClick={fetchHistory} title="Làm mới">
+                        <HiRefresh />
+                    </button>
+                    <button className="btn-filter"><HiFilter /> Lọc</button>
                 </div>
 
-                {foundUser && (
-                    <div className="user-result-card">
-                        <div className="user-info-row">
-                            <div className="avatar-large">{(foundUser.name || "U").charAt(0)}</div>
-                            <div className="user-text">
-                                <h3>{foundUser.name}</h3>
-                                <p>{foundUser.email}</p>
-                            </div>
-                        </div>
-                        <div className="amount-wrapper">
-                            <HiCurrencyDollar className="currency-icon" />
-                            <input 
-                                type="number" 
-                                className="amount-input"
-                                placeholder="Nhập số tiền..."
-                                value={manualAmount}
-                                onChange={e => setManualAmount(e.target.value)}
-                            />
-                        </div>
-                        <button className="btn-topup" onClick={handleManualTopUp} disabled={loading}>
-                            <HiCheck /> XÁC NHẬN NẠP NGAY
-                        </button>
-                    </div>
-                )}
+                <div className="table-wrapper">
+                    <table className="data-table">
+                        <thead>
+                            <tr>
+                                <th width="25%">Tài khoản</th>
+                                <th width="15%">Số điểm</th>
+                                <th width="30%">Ghi chú</th>
+                                <th width="15%">Thời gian</th>
+                                <th width="15%" className="text-center">Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loadingHistory ? (
+                                <tr><td colSpan="5" className="text-center py-4">Đang tải dữ liệu...</td></tr>
+                            ) : filteredHistory.length > 0 ? (
+                                filteredHistory.map((item, index) => (
+                                    <tr key={item.id || index}>
+                                        {/* Cột 1: Tài khoản */}
+                                        <td className="fw-600">{item.email}</td>
+                                        
+                                        {/* Cột 2: Số điểm */}
+                                        <td className="text-money">+{formatCurrency(item.point)}</td>
+                                        
+                                        {/* Cột 3: Ghi chú */}
+                                        <td className="text-limit" title={item.note}>{item.note || "Không có ghi chú"}</td>
+                                        
+                                        {/* Cột 4: Thời gian (Giả sử BE trả về string ISO) */}
+                                        <td className="text-sm">
+                                            {item.createdAt ? new Date(item.createdAt).toLocaleString('vi-VN') : item.date}
+                                        </td>
+                                        
+                                        {/* Cột 5: Trạng thái */}
+                                        <td className="text-center">
+                                            <span className={`status-badge ${item.status}`}>
+                                                {item.state === 'Success' ? 'Thành công' : 
+                                                 item.state === 'Fail' ? 'Đang xử lý' : 'Thất bại'}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr><td colSpan="5" className="text-center py-4">Không có dữ liệu giao dịch</td></tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         )}
 
