@@ -40,17 +40,21 @@ export default function JobSearchPage() {
   // 3. Sửa cấu trúc useEffect xử lý fetchCandidate
   useEffect(() => {
     const fetchCandidate = async () => {
-      if (!user?.email) return;
+      if (!user?.email || user?._id) return; // 🔥 CHỐT Ở ĐÂY
+
       try {
         const res = await client.get(`/api/candidate?email=${user.email}`);
-        if (res.data) login(res.data);
+        if (res.data?.data) {
+          login(res.data.data);
+        }
       } catch (err) {
         console.error("Lỗi user:", err);
       }
     };
 
     fetchCandidate();
-  }, [user?.email, login]);
+  }, [user?.email]);
+
 
   return (
     // Container chính dùng layout Flex + Gap

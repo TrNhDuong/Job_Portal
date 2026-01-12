@@ -9,7 +9,7 @@ import ParticlesAuth from "../components/ParticlesAuth";
 import toast from 'react-hot-toast';
 
 
-const API_BASE_URL = "http://localhost:8080/api";
+const API_BASE_URL = "http://localhost:8500/api";
 
 export default function EmployerRegister() {
     const navigate = useNavigate();
