@@ -20,6 +20,9 @@ import MyJobsPage from "./pages/MyJobsPage.jsx";
 import ForgotPasswordCandidate from "./pages/ForgotPassword";
 import ResetPasswordPage from "./pages/ResetPasswordPage.jsx";
 import EmployerProfilePage from "./pages/EmployerProfile.jsx";
+import About from "./pages/About.jsx";
+import Policies from "./pages/Policies_page.jsx";
+import Terms from "./pages/TermsAndConditions.jsx"
 
 function App() {
   const location = useLocation();
@@ -37,6 +40,9 @@ function App() {
       <div className="flex-1 overflow-hidden relative">
         <div className="h-full w-full overflow-y-auto">
           <Routes>
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/policies" element={<Policies />} />
+            <Route path="/about" element={<About />} />
             <Route path="/jobs" element={<JobSearchPage />} />
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginForm />} />

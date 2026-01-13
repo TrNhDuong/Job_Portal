@@ -335,8 +335,8 @@
   padding: 11px 26px;
   border: none;
   cursor: pointer;
-  background: #020617;
-  color: #ffffff;
+  background: none ;
+  color: #070707;
   font-size: 16px;
   font-weight: 700;
   text-decoration: none;
@@ -353,16 +353,16 @@
 .navbar-register-btn-bg {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
+  /* background: linear-gradient(
     90deg,
     #4f46e5,
     #7c3aed,
     #6366f1,
     #22c55e
-  );
+  ); */
   background-size: 200% auto;
   opacity: 0.9;
-  animation: navbar-gradient-move 4s linear infinite;
+  animation: none;
 }
 
 .navbar-register-btn-content {
@@ -376,7 +376,7 @@
 .navbar-register-icon {
   width: 18px;
   height: 18px;
-  color: #facc15;
+  color: #f1c100;
 }
 
 /* Menu mobile icon */

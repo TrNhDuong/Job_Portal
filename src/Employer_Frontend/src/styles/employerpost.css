@@ -294,7 +294,7 @@ input::placeholder, textarea::placeholder {
     border-top-right-radius: 8px;
     border-color: #e5e7eb !important;
     background-color: #fafafa;
-    font-family: 'Be Vietnam Pro', sans-serif;
+    font-family: 'Roboto', 'Be Vietnam Pro', sans-serif;
     padding: 8px !important;
     z-index: 20;
     position: relative;
@@ -401,6 +401,35 @@ input::placeholder, textarea::placeholder {
     background-color: #e0e7ff !important; color: #0061ff !important; font-weight: 700 !important;
 }
 
+/* === Quill Toolbar Hover Effects === */
+.ql-toolbar.ql-snow button:hover,
+.ql-toolbar.ql-snow .ql-picker-label:hover {
+    background-color: #e5f0ff; /* light blue background on hover */
+    border-radius: 6px;         /* rounded edges */
+    color: #0061ff;             /* text/icon color on hover */
+    transition: all 0.2s ease;
+}
+
+/* Optional: highlight active buttons differently */
+.ql-toolbar.ql-snow button.ql-active {
+    background-color: #dbeafe; /* slightly darker blue for active */
+    color: #0061ff;
+    border-radius: 6px;
+}
+
+/* Picker items hover (dropdowns for header/color) */
+.ql-toolbar.ql-snow .ql-picker-options .ql-picker-item:hover {
+    background-color: #e5f0ff !important;
+    color: #0061ff !important;
+    border-radius: 6px;
+}
+
+/* Smooth transition for toolbar icons */
+.ql-toolbar.ql-snow button,
+.ql-toolbar.ql-snow .ql-picker-label {
+    transition: all 0.2s ease;
+}
+
 /* --- LOGIC HEADING 1 & 2 (Quan trọng) --- */
 /* 1. Đổi Heading lớn (đang là mức 3) -> Hiển thị thành "Heading 1" */
 .ql-snow .ql-picker.ql-header .ql-picker-label[data-value="3"]::before,
@@ -442,6 +471,32 @@ input::placeholder, textarea::placeholder {
 }
 .ql-snow .ql-picker.ql-color .ql-picker-item:hover {
     border-color: #0061ff !important; transform: scale(1.1);
+}
+
+.ql-editor {
+    word-break: break-word;        /* Ngắt chữ khi quá dài */
+    overflow-wrap: break-word;     /* Chuẩn hiện đại */
+    white-space: pre-wrap;         /* Giữ xuống dòng + wrap */
+}
+
+/* Make bold really bold even with underline and italic */
+.ql-editor b,
+.ql-editor strong {
+    font-weight: 700;  /* Ensure bold is actually bold */
+}
+
+/* Ensure combined styles are distinguishable */
+.ql-editor b.ql-italic,
+.ql-editor strong.ql-italic {
+    font-weight: 800;       /* Extra bold when italic + bold */
+    text-decoration: underline; /* Keep underline if present */
+}
+
+/* Optional: differentiate bold+underline+italic more */
+.ql-editor b.ql-italic.ql-underline,
+.ql-editor strong.ql-italic.ql-underline {
+    font-weight: 900;               /* Max bold */
+    color: #111;                    /* Darker color to pop */
 }
 
 

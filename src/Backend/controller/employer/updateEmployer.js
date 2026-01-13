@@ -5,10 +5,10 @@ export const updateEmployer = async (req, res) => {
     const updates = req.body;
 
     try {
-        console.log(email, updates)
 
         const result = await EmployerRepository.updateEmployer(email, updates);
         if (result.success){
+            console.log('success');
             res.status(200).json({
                 success: true,
                 message: 'Update successfully'

@@ -15,6 +15,7 @@ import { jobService } from "../services/jobService";
 import { statsService } from "../services/statsService";
 import { toast } from "react-toastify";
 
+
 export default function Dashboard() {
   // State quản lý tab đang chọn: 'members' hoặc 'jobs'
   const [activeTab, setActiveTab] = useState('members'); 
@@ -30,63 +31,106 @@ export default function Dashboard() {
   const COLORS_PIE = ['#3b82f6', '#10b981']; // Xanh dương (Employer), Xanh lá (Candidate)
 
   useEffect(() => {
-    fetchDashboardData();
-  }, [timeFilter]);
+  fetchDashboardData();
+}, [timeFilter]);
 
   const fetchDashboardData = async () => {
     setLoading(true);
+    setChartData([]); // reset chartData ngay khi fetch
     try {
       const now = new Date();
       const currentYear = now.getFullYear();
       const currentMonth = now.getMonth() + 1;
 
+      let targetYear = currentYear;
+      let targetMonth = currentMonth;
+
+      // Nếu filter là tuần, chúng ta sẽ lấy 7 ngày gần nhất từ hôm nay
+      let isWeek = timeFilter === 'week';
+      if (!isWeek) {
+        // month hoặc prevMonth
+        if (timeFilter === 'prevMonth') {
+            targetMonth = currentMonth - 1;
+            if (targetMonth === 0) {
+                targetMonth = 12;
+                targetYear = currentYear - 1;
+            }
+        }
+      }
+
       const [userRes, jobRes, statsRes] = await Promise.all([
         userService.getAllUsers(),
         jobService.getAllJobs(),
-        statsService.getMonthlyStats(currentYear, currentMonth)
+        // chỉ cần lấy stats tháng target
+        statsService.getMonthlyStats(targetYear, targetMonth)
       ]);
 
-      // Xử lý User & User Type
+      // --- Users ---
       if (userRes.success) {
         const users = userRes.data || [];
         setTotalUsers(users.length);
+
         const employerCount = users.filter(u => u.role === 'employer').length;
         const candidateCount = users.filter(u => u.role === 'candidate').length;
+
         setUserTypeData([
-            { name: 'Nhà tuyển dụng', value: employerCount },
-            { name: 'Ứng viên', value: candidateCount },
+          { name: 'Nhà tuyển dụng', value: employerCount },
+          { name: 'Ứng viên', value: candidateCount },
         ]);
       }
 
-      // Xử lý Job
+      // --- Jobs ---
       if (jobRes.success) {
         setTotalJobs(jobRes.jobs?.length || 0);
       }
 
-      // Xử lý Chart Data theo ngày
-      if (statsRes.success && statsRes.data && statsRes.data.daily_stats) {
+      // --- Chart Data ---
+      let processedData = [];
+      if (statsRes.success && statsRes.data?.daily_stats) {
         const dailyMap = statsRes.data.daily_stats;
-        const currentDay = now.getDate();
-        let processedData = [];
 
-        for (let i = 1; i <= currentDay; i++) {
-            const dayKey = i.toString();
-            const dayStats = dailyMap[dayKey] || { candidateRegister: 0, employerRegister: 0, jobPost: 0 };
+        if (isWeek) {
+          // Lấy 7 ngày gần nhất từ hôm nay
+          for (let i = 6; i >= 0; i--) {
+            const day = new Date();
+            day.setDate(now.getDate() - i);
+            const dayKey = (day.getDate()-1).toString();
+            const monthKey = day.getMonth() + 1;
+
+            const dayStats = (monthKey === targetMonth) 
+                ? dailyMap[dayKey] || { candidateRegister: 0, employerRegister: 0, jobPost: 0 }
+                : { candidateRegister: 0, employerRegister: 0, jobPost: 0 };
+
             processedData.push({
-                name: `${i}/${currentMonth}`,
-                newMembers: (dayStats.candidateRegister || 0) + (dayStats.employerRegister || 0),
-                newJobs: dayStats.jobPost || 0
+              name: `${day.getDate()}/${monthKey}`,
+              employerRegister: dayStats.employerRegister || 0,
+              candidateRegister: dayStats.candidateRegister || 0,
+              newMembers: (dayStats.candidateRegister || 0) + (dayStats.employerRegister || 0),
+              newJobs: dayStats.jobPost || 0
             });
+          }
+        } else {
+          // month hoặc prevMonth
+          const daysInMonth = new Date(targetYear, targetMonth, 0).getDate();
+          for (let i = 1; i <= daysInMonth; i++) {
+            const dayStats = dailyMap[(i - 1).toString()] || { candidateRegister: 0, employerRegister: 0, jobPost: 0 };
+            processedData.push({
+              name: `${i}/${targetMonth}`,
+              employerRegister: dayStats.employerRegister || 0,
+              candidateRegister: dayStats.candidateRegister || 0,
+              newMembers: (dayStats.candidateRegister || 0) + (dayStats.employerRegister || 0),
+              newJobs: dayStats.jobPost || 0
+            });
+          }
         }
 
-        if (timeFilter === 'week') {
-            setChartData(processedData.slice(-7)); 
-        } else {
-            setChartData(processedData);
-        }
+        setChartData(processedData);
       } else {
         setChartData([]);
       }
+    // logChartData(processedData);
+    
+
     } catch (error) {
       console.error("Dashboard Error:", error);
       toast.error("Lỗi tải dữ liệu Dashboard");
@@ -94,6 +138,8 @@ export default function Dashboard() {
       setLoading(false);
     }
   };
+
+
   
   const [currentDate, setCurrentDate] = useState('');
 
@@ -163,10 +209,11 @@ export default function Dashboard() {
             {/* Bộ lọc chung */}
             <div className="chart-filter">
                 <HiFilter className="filter-icon" />
-                <select value={timeFilter} onChange={(e) => setTimeFilter(e.target.value)}>
-                    <option value="week">7 ngày qua</option>
-                    <option value="month">Tháng này</option>
-                </select>
+                  <select value={timeFilter} onChange={(e) => setTimeFilter(e.target.value)}>
+                      <option value="week">7 ngày qua</option>
+                      <option value="month">Tháng này</option>
+                      <option value="prevMonth">Tháng trước</option>
+                  </select>
             </div>
         </div>
 
@@ -177,21 +224,19 @@ export default function Dashboard() {
                 <div className="chart-box main-chart">
                     <h4>Xu hướng đăng ký mới</h4>
                     <div style={{ width: '100%', height: 300 }}>
-                        <ResponsiveContainer>
-                            <AreaChart data={chartData}>
-                                <defs>
-                                    <linearGradient id="colorUser" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
-                                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
-                                    </linearGradient>
-                                </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" />
-                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: 'var(--text-secondary)'}} />
-                                <YAxis axisLine={false} tickLine={false} allowDecimals={false} tick={{fill: 'var(--text-secondary)'}} />
-                                <Tooltip contentStyle={{backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-color)', color: 'var(--text-primary)'}} />
-                                <Area type="monotone" dataKey="newMembers" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorUser)" name="Thành viên mới" />
-                            </AreaChart>
-                        </ResponsiveContainer>
+                      <ResponsiveContainer>
+                        <BarChart data={chartData}>
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" />
+                          <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: 'var(--text-secondary)'}} />
+                          <YAxis axisLine={false} tickLine={false} allowDecimals={false} tick={{fill: 'var(--text-secondary)'}} />
+                          <Tooltip 
+                            cursor={{fill: 'var(--bg-hover)'}} 
+                            contentStyle={{backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-color)', color: 'var(--text-primary)'}}
+                          />
+                          <Bar dataKey="employerRegister" stackId="a" fill="#3b82f6" name="Nhà tuyển dụng" />
+                          <Bar dataKey="candidateRegister" stackId="a" fill="#10b981" name="Ứng viên" />
+                        </BarChart>
+                      </ResponsiveContainer>
                     </div>
                 </div>
 
@@ -214,7 +259,16 @@ export default function Dashboard() {
                                         <Cell key={`cell-${index}`} fill={COLORS_PIE[index % COLORS_PIE.length]} />
                                     ))}
                                 </Pie>
-                                <Tooltip contentStyle={{backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-color)', color: 'var(--text-primary)'}} />
+                                  <Tooltip
+                                    contentStyle={{
+                                      backgroundColor: 'var(--bg-card)',
+                                      borderColor: 'var(--border-color)',
+                                      color: 'var(--text-primary)',
+                                      borderRadius: 8,
+                                    }}
+                                    itemStyle={{ color: 'var(--text-primary)' }}
+                                    labelStyle={{ color: 'var(--text-secondary)' }}
+                                  />
                                 <Legend verticalAlign="bottom" height={36}/>
                             </PieChart>
                         </ResponsiveContainer>
@@ -230,13 +284,13 @@ export default function Dashboard() {
                     <h4>Số lượng tin đăng theo thời gian</h4>
                     <div style={{ width: '100%', height: 400 }}>
                         <ResponsiveContainer>
-                            <BarChart data={chartData} barSize={40}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" />
-                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: 'var(--text-secondary)'}} />
-                                <YAxis axisLine={false} tickLine={false} allowDecimals={false} tick={{fill: 'var(--text-secondary)'}} />
-                                <Tooltip cursor={{fill: 'var(--bg-hover)'}} contentStyle={{backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-color)', color: 'var(--text-primary)'}}/>
-                                <Bar dataKey="newJobs" fill="#10b981" radius={[4, 4, 0, 0]} name="Tin tuyển dụng mới" />
-                            </BarChart>
+                          <BarChart data={chartData} barSize={40}>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" />
+                            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: 'var(--text-secondary)'}} />
+                            <YAxis axisLine={false} tickLine={false} allowDecimals={false} tick={{fill: 'var(--text-secondary)'}} />
+                            <Tooltip cursor={{fill: 'var(--bg-hover)'}} contentStyle={{backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-color)', color: 'var(--text-primary)'}}/>
+                            <Bar dataKey="newJobs" fill="#10b981" radius={[4, 4, 0, 0]} name="Tin tuyển dụng mới" />
+                          </BarChart>
                         </ResponsiveContainer>
                     </div>
                 </div>

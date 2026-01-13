@@ -1,4 +1,7 @@
-import { Statistic } from "../model/statistic.js"; // Giả sử path đúng
+import { Statistic } from "../model/statistic.js";
+import Candidate from "../model/candidate.js";
+import Employer from "../model/employer.js";
+import { JobPost } from "../model/jobPost.js";
 
 export default class StatisticRepository {
     
@@ -7,19 +10,55 @@ export default class StatisticRepository {
         const now = new Date();
         const vnDateString = now.toLocaleDateString("en-CA", {
             timeZone: "Asia/Ho_Chi_Minh"
-        }); // Result: "YYYY-MM-DD"
+        }); // YYYY-MM-DD
         
         const [year, month, day] = vnDateString.split("-");
 
         return {
-            monthKey: `${year}-${month}`, // Key cho Document: "2023-10"
-            dayKey: String(parseInt(day)) // Key cho Map: "4" (bỏ số 0 ở đầu)
+            year,
+            month,
+            monthKey: `${year}-${month}`,
+            dayKey: String(parseInt(day))
         };
     }
 
     /**
-     * Hàm cập nhật chung cho tất cả các loại register.
-     * Thay vì viết 3 hàm, ta chỉ cần 1 hàm nhận vào field name.
+     * 🟢 INIT STATISTIC (CHẠY 1 LẦN)
+     * Đếm dữ liệu có sẵn trong DB và set làm số liệu nền
+     */
+    static async initMonthlyStatistic() {
+        const { monthKey } = this.getVNTimeKeys();
+
+        try {
+            // Nếu tháng này đã có statistic → bỏ qua
+            const existed = await Statistic.findById(monthKey);
+            if (existed) return;
+
+            const candidateCount = await Candidate.countDocuments({ role: "candidate" });
+            const employerCount = await Employer.countDocuments({ role: "employer" });
+            const jobPostCount = await JobPost.countDocuments();
+
+
+            await Statistic.create({
+                _id: monthKey,
+                monthly_total: {
+                    candidateRegister: candidateCount,
+                    employerRegister: employerCount,
+                    jobPost: jobPostCount
+                },
+                daily_stats: {},
+                last_updated: new Date()
+            });
+
+            console.log(`[Statistic] Init success for ${monthKey}`);
+        } catch (error) {
+            console.error("[Statistic] Init failed:", error);
+            throw error;
+        }
+    }
+
+    /**
+     * 🔥 Update statistic theo event
      */
     static async update(type) {
         const allowedTypes = ['candidateRegister', 'employerRegister', 'jobPost'];
@@ -32,62 +71,91 @@ export default class StatisticRepository {
         const { monthKey, dayKey } = this.getVNTimeKeys();
 
         try {
-            // Sử dụng Dynamic Key trong MongoDB update
             const updateQuery = {
                 $inc: {
-                    [`monthly_total.${type}`]: 1,      // Tăng tổng tháng
-                    [`daily_stats.${dayKey}.${type}`]: 1 // Tăng ngày cụ thể
+                    [`monthly_total.${type}`]: 1,
+                    [`daily_stats.${dayKey}.${type}`]: 1
                 },
                 $set: { last_updated: new Date() }
             };
 
-            const result = await Statistic.updateOne(
+            return await Statistic.updateOne(
                 { _id: monthKey },
                 updateQuery,
-                { upsert: true } // Tự tạo document tháng mới nếu chưa có
+                { upsert: true }
             );
-            
-            return result;
         } catch (error) {
             console.error("[Statistic] Update failed:", error);
-            throw error; // Ném lỗi để tầng trên xử lý
+            throw error;
         }
     }
 
     // Lấy thống kê theo tháng
     static async getStatisticByMonth(year, month) {
-        // Đảm bảo month có 2 chữ số (ví dụ: 1 -> 01)
         const formattedMonth = String(month).padStart(2, '0');
         const _id = `${year}-${formattedMonth}`;
         
         try {
-            const result = await Statistic.findById(_id).lean(); // .lean() giúp query nhanh hơn nếu chỉ đọc
+            const result = await Statistic.findById(_id).lean();
+            return { success: true, data: result || null };
+        } catch (error) {
+            return { success: false, message: error.message };
+        }
+    }
+
+    // 📅 Lấy statistic theo tháng (kèm daily)
+    static async getStatisticByMonthWithDaily(year, month) {
+        const formattedMonth = String(month).padStart(2, "0");
+        const _id = `${year}-${formattedMonth}`;
+
+        try {
+            const stat = await Statistic.findById(_id).lean();
+            if (!stat) return { success: true, data: null };
+
+            const daysInMonth = new Date(year, month, 0).getDate();
+
+            const daily = Array.from({ length: daysInMonth }, (_, i) => {
+                const day = i + 1;
+                const date = `${year}-${formattedMonth}-${String(day).padStart(2, "0")}`;
+                const raw = stat.daily_stats?.[String(day)] || {};
+
+                return {
+                    day,
+                    date,
+                    candidateRegister: raw.candidateRegister || 0,
+                    employerRegister: raw.employerRegister || 0,
+                    jobPost: raw.jobPost || 0
+                };
+            });
+
             return {
                 success: true,
-                data: result || null // Trả về null nếu không tìm thấy thay vì undefined
+                data: {
+                    month: _id,
+                    monthly_total: stat.monthly_total,
+                    daily_stats: daily
+                }
             };
         } catch (error) {
             return { success: false, message: error.message };
         }
     }
 
-    // Lấy thống kê theo năm (Tổng hợp từ 12 tháng)
+
+    // Lấy thống kê theo năm
     static async getStatisticByYear(year) {
         try {
-            // Regex để tìm tất cả các tháng bắt đầu bằng "YYYY-"
             const regex = new RegExp(`^${year}-`);
             
             const stats = await Statistic.aggregate([
-                { 
-                    $match: { _id: regex } // Lọc các document thuộc năm đó
-                },
+                { $match: { _id: regex } },
                 {
                     $group: {
-                        _id: null, // Gom tất cả lại thành 1 cục
+                        _id: null,
                         totalCandidate: { $sum: "$monthly_total.candidateRegister" },
                         totalEmployer: { $sum: "$monthly_total.employerRegister" },
                         totalJobPost: { $sum: "$monthly_total.jobPost" },
-                        months_count: { $sum: 1 } // Đếm xem có dữ liệu của bao nhiêu tháng
+                        months_count: { $sum: 1 }
                     }
                 },
                 {
@@ -104,7 +172,9 @@ export default class StatisticRepository {
 
             return {
                 success: true,
-                data: stats.length > 0 ? stats[0] : { year, candidateRegister: 0, employerRegister: 0, jobPost: 0 }
+                data: stats.length
+                    ? stats[0]
+                    : { year, candidateRegister: 0, employerRegister: 0, jobPost: 0 }
             };
 
         } catch (error) {

@@ -191,14 +191,15 @@
   border: 1px solid var(--border-color);
 }
 .chart-filter select {
-  background: transparent;
+  background: var(--bg-card); /*transparent;*/
   border: none;
   color: var(--text-primary);
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   outline: none;
-}
+} /*  FIX LIGHTING FOR DARK MODE */
+
 .filter-icon { color: var(--text-secondary); }
 
 /* Containers */
@@ -240,4 +241,36 @@
 @media (max-width: 1024px) {
   .charts-split-layout { grid-template-columns: 1fr; }
   .stats-grid { grid-template-columns: 1fr; }
+}
+
+/* =========================================
+   CUSTOM RECHARTS TOOLTIP
+   ========================================= */
+.custom-tooltip {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 10px 14px;
+  box-shadow: var(--shadow-md);
+  font-size: 0.85rem;
+  color: var(--text-primary);
+}
+
+.tooltip-label {
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--text-secondary);
+}
+
+.tooltip-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.tooltip-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
 }
