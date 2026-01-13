@@ -219,7 +219,7 @@ export default function EmployerProfilePage() {
 
   const companyName = employer.company || "Công ty";
   const logoSrc = employer.logo?.url || "/logo-placeholder.png";
-  const coverSrc = employer.wallpaper?.url || "/cover-placeholder.jpg";
+  const coverSrc = employer.wallpaper?.url || "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=1920&auto=format&fit=crop";
   const contactEmail = employer.contact?.email || employer.email || "Chưa cập nhật";
   const contactPhone = employer.contact?.phone || employer.phone || "Chưa cập nhật";
   const website = employer.website || "";

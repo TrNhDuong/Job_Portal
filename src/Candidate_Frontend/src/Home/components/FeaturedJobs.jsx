@@ -129,7 +129,7 @@ export default function FeaturedJobs({ enableFetch = true }) {
               className="home-featured-track"
               style={{ transform: `translateX(-${(currentIndex / itemsPerView) * 100}%)` }}
             >
-              {jobs.map((j) => (
+              {jobs.slice(0, 9).map((j) => (
                 <div key={j._id} className="home-featured-item" style={{ width: `${100 / itemsPerView}%` }}>
                   <JobCard
                     job={j}

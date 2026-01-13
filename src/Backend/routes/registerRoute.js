@@ -29,7 +29,7 @@ router.post("/candidateRegister", async (req, res) => {
     });
     if (result.success) {
         const resultStatistic = await StatisticRepository.update('candidateRegister');
-        if (!resultStatistic.success){
+        if (!resultStatistic){
             return res.status(403).json(resultStatistic)
         }
         res.status(201).json({ 
@@ -70,7 +70,7 @@ router.post("/employerRegister", async (req, res) => {
     });
     if (result.success) {
         const resultStatistic = await StatisticRepository.update('employerRegister');
-        if (!resultStatistic.success){
+        if (!resultStatistic){
             return res.status(403).json(resultStatistic);
         }
         res.status(201).json({ 

@@ -177,7 +177,7 @@ export default function ApplicationPage() {
             <p className="apply-success-desc">Hồ sơ của bạn đã được gửi tới nhà tuyển dụng.</p>
 
             <div className="apply-success-actions">
-              <button onClick={() => navigate("/my-applications")} className="apply-btn apply-btn-primary">
+              <button onClick={() => navigate("/dashboard")} className="apply-btn apply-btn-primary">
                 Xem hồ sơ đã nộp <ChevronRight size={18} />
               </button>
 

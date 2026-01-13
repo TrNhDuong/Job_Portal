@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import client from "../api/client";
+import Swal from "sweetalert2"; // Import thư viện SweetAlert2
 import {
   saveJob as apiSaveJob,
   removeSaveJob as apiRemoveSaveJob,
@@ -16,6 +17,7 @@ import {
   Trash2,
   BookmarkX,
   ArrowRight,
+  Check,
 } from "lucide-react";
 
 import JobDetailModal from "../Home/components/JobDetailModal";
@@ -127,7 +129,7 @@ export default function MyJobsPage() {
               try {
                 // Lấy thông tin application (label, id, ...)
                 const appRes = await client.get(
-                  `/api/application/applicantinfo?candidateId=${encodeURIComponent(
+                  `/api/application/byCandidateJob?candidateId=${encodeURIComponent(
                     candidateId
                   )}&jobId=${encodeURIComponent(jobId)}`
                 );
@@ -170,41 +172,59 @@ export default function MyJobsPage() {
   /* ===================== ACTIONS ===================== */
 
   // Xóa đơn ứng tuyển: dùng email + jobId, backend tự tìm Application và xóa
-  const handleRemoveApplication = async (jobId) => {
+const handleRemoveApplication = async (jobId) => {
     if (!user?.email) return;
-    if (!window.confirm("Bạn có chắc muốn xóa đơn ứng tuyển này không?")) return;
+    const result = await Swal.fire({
+        title: "Xác nhận xóa?",
+        text: "Bạn có chắc muốn xóa đơn ứng tuyển này không? Hành động này không thể hoàn tác.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33", // Màu nút xóa
+        cancelButtonColor: "#3085d6", // Màu nút hủy
+        confirmButtonText: "Xóa ngay",
+        cancelButtonText: "Hủy bỏ",
+    });
+    
 
+    // 2. Nếu người dùng không nhấn nút "Xóa ngay" thì dừng lại
+    if (!result.isConfirmed) return;
+
+    // 3. Thực hiện logic xóa (giữ nguyên code cũ của bạn)
     setActionLoading(jobId);
     try {
-      await client.patch(`/api/post-job/removeApplyJob`, {
-        email: user.email,
-        jobId,
-      });
+        await client.patch(`/api/post-job/removeApplyJob`, {
+            email: user.email,
+            jobId,
+        });
 
-      // Cập nhật list ứng tuyển ở frontend
-      setAppliedJobs((prev) =>
-        prev.filter((item) => String(item.job?._id) !== String(jobId))
-      );
-
-      // Cập nhật Context user để đồng bộ với chỗ khác
-      if (user.appliedJobs) {
-        const updatedAppliedList = user.appliedJobs.filter(
-          (id) => String(id) !== String(jobId)
+        // Cập nhật list ứng tuyển ở frontend
+        setAppliedJobs((prev) =>
+            prev.filter((item) => String(item.job?._id) !== String(jobId))
         );
-        login({ ...user, appliedJobs: updatedAppliedList });
-      }
 
-      // Nếu đang mở modal của job này thì đóng lại
-      if (selectedJob && String(selectedJob._id) === String(jobId)) {
-        setSelectedJob(null);
-      }
+        // Cập nhật Context
+        if (user.appliedJobs) {
+            const updatedAppliedList = user.appliedJobs.filter(
+                (id) => String(id) !== String(jobId)
+            );
+            login({ ...user, appliedJobs: updatedAppliedList });
+        }
+
+        // Đóng modal chi tiết job nếu đang mở
+        if (selectedJob && String(selectedJob._id) === String(jobId)) {
+            setSelectedJob(null);
+        }
+
+        // Thông báo thành công (Optional)
+        Swal.fire("Đã xóa!", "Đơn ứng tuyển đã được xóa.", "success");
+
     } catch (err) {
-      console.error(err);
-      alert("Không thể xóa đơn ứng tuyển. Vui lòng thử lại.");
+        console.error(err);
+        Swal.fire("Lỗi!", "Không thể xóa đơn ứng tuyển. Vui lòng thử lại.", "error");
     } finally {
-      setActionLoading(null);
+        setActionLoading(null);
     }
-  };
+};
 
   const handleSaveJob = async (job) => {
     if (!user?.email) return;
@@ -348,6 +368,10 @@ export default function MyJobsPage() {
   const renderSavedCard = (job) => {
     if (!job) return null;
 
+    const isApplied = appliedJobs.some(
+      (appItem) => String(appItem.job?._id) === String(job._id)
+    ); 
+    
     return (
       <article key={job._id} className="myjobs-card">
         <div
@@ -378,16 +402,28 @@ export default function MyJobsPage() {
         </div>
 
         <div className="myjobs-card-actions">
-          <button
-            className="myjobs-btn-primary"
-            onClick={(e) => {
-              e.stopPropagation();
-              navigate(`/apply/${job._id}`);
-            }}
-            type="button"
-          >
-            Ứng tuyển <ArrowRight className="w-4 h-4" />
-          </button>
+          {isApplied ? (
+            <button
+              className="myjobs-btn-applied"
+              disabled
+              type="button"
+              style={{ cursor: "not-allowed", opacity: 0.7, display: "flex", alignItems: "center", gap: "4px" }}
+            >
+              <Check className="w-4 h-4" /> Đã ứng tuyển
+            </button>
+          ) : (
+            <button
+              className="myjobs-btn-primary"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/apply/${job._id}`);
+              }}
+              type="button"
+            >
+              Ứng tuyển <ArrowRight className="w-4 h-4" />
+            </button>
+          )}
+
           <button
             className="myjobs-btn-outline"
             disabled={actionLoading === job._id}

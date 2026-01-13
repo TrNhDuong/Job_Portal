@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import client from "../api/client";
+import Swal from "sweetalert2";
 import {
   CheckCircle2,
   FileText,
@@ -335,18 +336,52 @@ export default function MyCV() {
     }
   };
 
-  const handleDeleteCV = async (cv) => {
-    if (!window.confirm(`Xóa vĩnh viễn CV "${cv.name}"?`)) return;
+const handleDeleteCV = async (cv) => {
+    if (!cv) return;
+    const result = await Swal.fire({
+        title: "Xóa CV?",
+        text: `Xóa vĩnh viễn "${cv.name}"?`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Xóa",
+        cancelButtonText: "Hủy",
+    });
+
+    if (!result.isConfirmed) return;
+
     try {
-      await client.patch(
-        `/api/upload/candidate/cv?email=${user.email}&public_id=${cv.public_id}`
-      );  
-      fetchResumes();
+        await client.patch(
+            `/api/upload/candidate/cv?email=${user.email}&public_id=${cv.public_id}`
+        );
+
+        fetchResumes(); // Load lại danh sách sau khi xóa
+
+        // Thông báo thành công (Tự tắt sau 1.2s cho mượt)
+        Swal.fire({
+            icon: "success",
+            title: "Đã xóa!",
+            showConfirmButton: false,
+            timer: 1200,
+            width: 320,
+            padding: "1em",
+            customClass: { popup: "rounded-3xl" }
+        });
+
     } catch (err) {
-      console.error(err);
-      alert("Lỗi khi xóa");
+        console.error(err);
+        
+        // Thông báo lỗi
+        Swal.fire({
+            icon: "error",
+            title: "Lỗi!",
+            text: "Không thể xóa CV này.",
+            width: 320,
+            customClass: { popup: "rounded-3xl" }
+        });
     }
-  };
+};
 
   return (
     <div className="cv-page">

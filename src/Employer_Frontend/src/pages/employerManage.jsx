@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useEffect } from "react";
 import "../styles/employerManage.css"
 import client from "../api/client";
@@ -10,7 +9,21 @@ import toast from 'react-hot-toast';
 import "../styles/emailModal.css"; 
 
 // ==========================================
-// 1. EmailComposeModal (GIỮ NGUYÊN)
+// MAPPING TỪ ĐIỂN (LOGIC GIỮ NGUYÊN EN, HIỂN THỊ VI)
+// ==========================================
+const STATUS_MAP = {
+    'all': 'Tất cả',
+    'New': 'Mới',
+    'Viewed': 'Đã xem',
+    'Shortlisted': 'Sơ tuyển', // Hoặc "Tiềm năng"
+    'Interviewing': 'Phỏng vấn',
+    'Offered': 'Đề nghị',
+    'Hired': 'Trúng tuyển',
+    'Rejected': 'Từ chối'
+};
+
+// ==========================================
+// 1. EmailComposeModal
 // ==========================================
 const EmailComposeModal = ({ recipients, labelType, onClose, onSend }) => {
   const [subject, setSubject] = useState("");
@@ -48,7 +61,8 @@ const EmailComposeModal = ({ recipients, labelType, onClose, onSend }) => {
         onClick={e => e.stopPropagation()}
       >
         <div className="email-header">
-            <h3 className="email-title">{labelType ? `Soạn thư: ${labelType}` : 'Thư mới'}</h3>
+            {/* Hiển thị tiếng Việt ở tiêu đề modal */}
+            <h3 className="email-title">{labelType ? `Soạn thư: ${STATUS_MAP[labelType] || labelType}` : 'Thư mới'}</h3>
             <div className="window-controls">
                 <button className="control-btn" onClick={() => setIsExpanded(!isExpanded)}>
                     {isExpanded ? <Minimize2 size={16}/> : <Maximize2 size={16}/>}
@@ -90,7 +104,7 @@ const EmailComposeModal = ({ recipients, labelType, onClose, onSend }) => {
 };
 
 // ==========================================
-// 2. CandidateDetailView (THAY THẾ MODAL CŨ)
+// 2. CandidateDetailView
 // ==========================================
 const CandidateDetailView = ({ cv, onBack, onStatusUpdate, onEmail }) => {
   if (!cv) return null;
@@ -98,12 +112,12 @@ const CandidateDetailView = ({ cv, onBack, onStatusUpdate, onEmail }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState({ show: false, type: '', targetStatus: '', title: '', message: '' });
 
-  const statusLabel = cv.application?.label;
+  const statusLabel = cv.application?.label; // Vẫn giữ giá trị tiếng Anh để xử lý logic
   const fileUrl = cv.application?.CV_url;
   const candidateName = cv.candidate?.name;
   const avatarUrl = cv.candidate?.avata?.url;
 
-  // Logic xác định bước tiếp theo
+  // Logic xác định bước tiếp theo (Giữ nguyên Key tiếng Anh)
   const getNextStepInfo = (status) => {
     switch (status) {
       case 'New':
@@ -125,9 +139,11 @@ const CandidateDetailView = ({ cv, onBack, onStatusUpdate, onEmail }) => {
             title: 'Từ chối ứng viên?', message: `Bạn có chắc chắn muốn từ chối hồ sơ của ${candidateName}?`
         });
     } else {
+        // Dùng STATUS_MAP để hiển thị tên trạng thái đích bằng tiếng Việt trong popup
+        const targetLabelVN = STATUS_MAP[targetStatus] || targetStatus;
         setConfirmDialog({
             show: true, type: 'next', targetStatus: targetStatus,
-            title: `Xác nhận: ${nextStep.text}?`, message: `Chuyển trạng thái hồ sơ sang "${targetStatus}"?`
+            title: `Xác nhận: ${nextStep.text}?`, message: `Chuyển trạng thái hồ sơ sang "${targetLabelVN}"?`
         });
     }
   };
@@ -144,52 +160,25 @@ const CandidateDetailView = ({ cv, onBack, onStatusUpdate, onEmail }) => {
     return `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`;
   };
 
-  const downloadFile = async () => {
-    if (!fileUrl) return;
-
-    try {
-      const res = await fetch(fileUrl);
-      if (!res.ok) throw new Error("Download failed");
-
-      const blob = await res.blob();
-
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-
-      // Optional: lấy tên file từ url nếu có
-      a.download = fileUrl.split("/").pop() || "cv.pdf";
-
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error(err);
-      toast.error("Không thể tải CV");
-    }
-  };
-
-
   return (
     <div className="split-view-wrapper">
-        {/* Header nút Back */}
         <div className="split-view-header">
              <button onClick={onBack} className="btn-back-split">
                 <ArrowLeft size={18} /> Quay lại danh sách
             </button>
         </div>
 
-        {/* Nội dung chia đôi */}
         <div className="split-container">
-            {/* --- Cột TRÁI: Thông tin & Hành động --- */}
             <div className="info-panel">
                 <div className="info-header">
                     <div className="avatar-large" style={{width: '80px', height: '80px', margin: '0 auto 15px'}}>
                         {avatarUrl ? <img src={avatarUrl} alt={candidateName} /> : <div className="avatar-placeholder-large"><User size={32} /></div>}
                     </div>
                     <h3 style={{fontSize: '18px', fontWeight: 'bold', marginBottom: '8px'}}>{candidateName}</h3>
-                    <span className={`premium-badge ${statusLabel?.toLowerCase()}`}>{statusLabel}</span>
+                    {/* Hiển thị tiếng Việt ở Badge */}
+                    <span className={`premium-badge ${statusLabel?.toLowerCase()}`}>
+                        {STATUS_MAP[statusLabel] || statusLabel}
+                    </span>
                 </div>
 
                 <div className="info-body">
@@ -228,7 +217,6 @@ const CandidateDetailView = ({ cv, onBack, onStatusUpdate, onEmail }) => {
                 </div>
             </div>
 
-            {/* --- Cột PHẢI: Xem CV --- */}
             <div className="cv-panel">
                 <div className="cv-toolbar">
                     <span style={{fontWeight: '600', color: '#333'}}>Tài liệu đính kèm</span>
@@ -255,7 +243,6 @@ const CandidateDetailView = ({ cv, onBack, onStatusUpdate, onEmail }) => {
             </div>
         </div>
 
-        {/* --- Popup Xác nhận --- */}
         {confirmDialog.show && (
             <div className="confirmation-overlay" style={{position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999}}>
                  <div className="confirmation-box animate-pop-in" style={{background: 'white', padding: '25px', borderRadius: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.2)', width: '320px', textAlign: 'center'}}>
@@ -278,7 +265,7 @@ const CandidateDetailView = ({ cv, onBack, onStatusUpdate, onEmail }) => {
 };
 
 // ==========================================
-// 3. JobListView (GIỮ NGUYÊN)
+// 3. JobListView
 // ==========================================
 const JobListView = ({ jobs, onSelectJob }) => {
   const [filterText, setFilterText] = useState("");
@@ -303,7 +290,7 @@ const JobListView = ({ jobs, onSelectJob }) => {
             value={filterText} onChange={e => setFilterText(e.target.value)}
           />
           <div className="select-wrapper">
-            <MapPin size={18} className="select-icon-overlay" fill="#9ca3af" color="#ffffff"/> {/* Icon nằm đè lên */}
+            <MapPin size={18} className="select-icon-overlay" fill="#9ca3af" color="#ffffff"/>
             <select className="filter-select" onChange={e => setFilterLoc(e.target.value)}>
               <option value="">Tất cả địa điểm</option>
               {locations.map(loc => <option key={loc} value={loc}>{loc}</option>)}
@@ -320,9 +307,6 @@ const JobListView = ({ jobs, onSelectJob }) => {
                 <h3>{job.title}</h3>
                 <p className="job-position">{job.position}</p>
                 <p className="job-location">{job.location}</p>
-              </div>
-              <div className="job-right">
-                <p className="job-label">{}</p>
               </div>
             </div>
             
@@ -355,17 +339,14 @@ const JobListView = ({ jobs, onSelectJob }) => {
 };
 
 // ==========================================
-// 4. CVManager (LOGIC CHÍNH ĐÃ CẬP NHẬT)
+// 4. CVManager (Đã áp dụng tiếng Việt cho Tabs và Card)
 // ==========================================
 const CVManager = ({ job, initiallabel, onBack }) => {
   const [cvList, setCvList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState(initiallabel || 'all');
   
-  // State quản lý View: Nếu selectedCv có data -> Render Detail View
   const [selectedCv, setSelectedCv] = useState(null); 
-
-  // Modal Email
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [targetGroup, setTargetGroup] = useState(null);
   const [targetRecipients, setTargetRecipients] = useState([]);
@@ -402,14 +383,12 @@ const CVManager = ({ job, initiallabel, onBack }) => {
     return cvList.filter(cv => cv.application.label === activeTab);
   }, [cvList, activeTab]);
 
-  // Handle click vào CV -> Chuyển sang Detail View
   const handleViewCv = (cv) => {
     setSelectedCv(cv); 
-    // Auto mark viewed
     if(cv.application.label === 'New') {
         const updatedCv = {...cv, application: {...cv.application, label: 'Viewed'}};
-        setSelectedCv(updatedCv); // Update UI Detail ngay lập tức
-        setCvList(prev => prev.map(p => p.application._id === cv.application._id ? updatedCv : p)); // Update List
+        setSelectedCv(updatedCv); 
+        setCvList(prev => prev.map(p => p.application._id === cv.application._id ? updatedCv : p)); 
         
         client.patch(`api/application/label`, { 
             applicationId: cv.application._id, jobId: job._id, label: 'Viewed' 
@@ -428,13 +407,15 @@ const CVManager = ({ job, initiallabel, onBack }) => {
     try {
         const response = await client.patch(`api/application/label`, { applicationId, jobId: job._id, label: newStatus });
         if (response.data.success) {
-            // Update List
             setCvList(prevList => prevList.map(item => item.application._id === applicationId ? { ...item, application: { ...item.application, label: newStatus } } : item));
-            // Update Selected View
+            
+            // Cập nhật tên trạng thái mới vào toast cho thân thiện
+            const displayStatus = STATUS_MAP[newStatus] || newStatus;
+            
             if (selectedCv && selectedCv.application._id === applicationId) {
                 setSelectedCv(prev => ({ ...prev, application: { ...prev.application, label: newStatus } }));
             }
-            toast.success(`Đã cập nhật trạng thái: ${newStatus}`);
+            toast.success(`Đã cập nhật trạng thái: ${displayStatus}`);
             return true;
         } else {
             toast.error("Cập nhật thất bại");
@@ -446,12 +427,7 @@ const CVManager = ({ job, initiallabel, onBack }) => {
   const handleSendEmail = async (subject, content) => {
     try {
       const to = targetRecipients.map(r => r.email).join(",");
-
-      const res = await client.post("/api/mail/send", {
-        to,
-        subject,
-        htmlContent: content
-      });
+      const res = await client.post("/api/mail/send", { to, subject, htmlContent: content });
 
       if (res.data.success) {
         toast.success("Đã gửi email thành công");
@@ -465,20 +441,15 @@ const CVManager = ({ job, initiallabel, onBack }) => {
     }
   };
 
-
-  // --- RENDER CONDITION: SPLIT VIEW vs LIST VIEW ---
-
-  // 1. Nếu đang chọn CV => Render CandidateDetailView
   if (selectedCv) {
       return (
           <>
             <CandidateDetailView 
                 cv={selectedCv}
-                onBack={() => setSelectedCv(null)} // Quay lại list
+                onBack={() => setSelectedCv(null)} 
                 onStatusUpdate={handleStatusUpdateApi}
                 onEmail={handleSingleEmail}
             />
-            {/* Modal Email render đè lên Detail View nếu cần */}
             {showEmailModal && (
                 <EmailComposeModal 
                   recipients={targetRecipients} labelType={targetGroup}
@@ -489,7 +460,6 @@ const CVManager = ({ job, initiallabel, onBack }) => {
       );
   }
 
-  // 2. Nếu không chọn CV => Render List View
   return (
     <div className="animate-slide-in">
       <div className="back-btn-row" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
@@ -507,7 +477,9 @@ const CVManager = ({ job, initiallabel, onBack }) => {
              className={`pipeline-tab ${activeTab === tab ? 'active' : ''} ${tab === 'Hired' ? 'dau' : ''} ${tab === 'Rejected' ? 'rot' : ''}`} 
              onClick={() => setActiveTab(tab)}
            >
-             {tab === 'all' ? 'Tất cả' : tab} <span className="count-badge">{stats[tab.toLowerCase()] || 0}</span>
+             {/* Ánh xạ hiển thị tiếng Việt */}
+             {STATUS_MAP[tab] || tab} 
+             <span className="count-badge">{stats[tab.toLowerCase()] || 0}</span>
            </button>
         ))}
       </div>
@@ -531,7 +503,10 @@ const CVManager = ({ job, initiallabel, onBack }) => {
                       <div className="info-stack">
                           <div className="primary-row">
                               <span className="candidate-name">{cv.candidate?.name}</span>
-                              <span className={`status-tag ${cv.application?.label?.toLowerCase()}`}>{cv.application?.label}</span>
+                              {/* Badge hiển thị tiếng Việt */}
+                              <span className={`status-tag ${cv.application?.label?.toLowerCase()}`}>
+                                {STATUS_MAP[cv.application?.label] || cv.application?.label}
+                              </span>
                           </div>
                           <div className="secondary-row">
                              <span className="meta-item"><Mail size={12} className="meta-icon"/> {cv.candidate?.email}</span>
@@ -570,7 +545,7 @@ const CVManager = ({ job, initiallabel, onBack }) => {
 };
 
 // ==========================================
-// 5. Main Export (GIỮ NGUYÊN)
+// 5. Main Export
 // ==========================================
 export default function EmployerDashboard({ jobPosts = [] }) { 
   const [selectedJob, setSelectedJob] = useState(null);
