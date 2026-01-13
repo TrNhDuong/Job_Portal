@@ -25,7 +25,7 @@ export default function Policies() {
     <div className="policies-page">
       <section className="policies-header">
         <div className="home-shell">
-          <h1>Điều khoản & Chính sách</h1>
+          <h1>Chính sách bảo mật</h1>
           <p>Cập nhật lần cuối: Ngày 08 tháng 01 năm 2026</p>
         </div>
       </section>
