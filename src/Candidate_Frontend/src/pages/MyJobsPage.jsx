@@ -17,6 +17,7 @@ import {
   Trash2,
   BookmarkX,
   ArrowRight,
+  Check,
 } from "lucide-react";
 
 import JobDetailModal from "../Home/components/JobDetailModal";
@@ -367,6 +368,10 @@ const handleRemoveApplication = async (jobId) => {
   const renderSavedCard = (job) => {
     if (!job) return null;
 
+    const isApplied = appliedJobs.some(
+      (appItem) => String(appItem.job?._id) === String(job._id)
+    ); 
+    
     return (
       <article key={job._id} className="myjobs-card">
         <div
@@ -397,16 +402,28 @@ const handleRemoveApplication = async (jobId) => {
         </div>
 
         <div className="myjobs-card-actions">
-          <button
-            className="myjobs-btn-primary"
-            onClick={(e) => {
-              e.stopPropagation();
-              navigate(`/apply/${job._id}`);
-            }}
-            type="button"
-          >
-            Ứng tuyển <ArrowRight className="w-4 h-4" />
-          </button>
+          {isApplied ? (
+            <button
+              className="myjobs-btn-applied"
+              disabled
+              type="button"
+              style={{ cursor: "not-allowed", opacity: 0.7, display: "flex", alignItems: "center", gap: "4px" }}
+            >
+              <Check className="w-4 h-4" /> Đã ứng tuyển
+            </button>
+          ) : (
+            <button
+              className="myjobs-btn-primary"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/apply/${job._id}`);
+              }}
+              type="button"
+            >
+              Ứng tuyển <ArrowRight className="w-4 h-4" />
+            </button>
+          )}
+
           <button
             className="myjobs-btn-outline"
             disabled={actionLoading === job._id}
