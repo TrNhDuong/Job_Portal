@@ -94,7 +94,7 @@ export default function LoginForm() {
                 onClick={() => navigate("/")}
                 disabled={loading}
              >
-                <ArrowLeft size={16} /> Quay lại
+                <ArrowLeft size={16} /> Quay lại trang chủ
              </button>
           </div>
 
