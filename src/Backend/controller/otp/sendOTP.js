@@ -7,7 +7,7 @@ export const sendOTP = async (req, res) => {
     const otp = generateOTP();
 
     try {
-        const otpEntry = new OTP({ email, otp });
+        const otpEntry = new OTP({ email: email, otp: otp });
         await otpEntry.save();
 
         const htmlContent = `
