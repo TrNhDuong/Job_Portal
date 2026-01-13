@@ -126,7 +126,7 @@ export const getPostJobPerPage = async (req, res) => {
 
             if (companyData && companyData.data) {
               // Gán đè hoặc thêm thông tin chi tiết công ty và logo
-              jobPlain.companyInfo = companyData.data.company; // Lưu vào field mới hoặc đè lên field cũ tùy nhu cầu
+              jobPlain.company = companyData.data.company; // Lưu vào field mới hoặc đè lên field cũ tùy nhu cầu
               jobPlain.logoUrl = companyData.data.logo?.url || null;
             } else {
               jobPlain.logoUrl = null;
