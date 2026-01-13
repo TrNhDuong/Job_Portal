@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Swal from "sweetalert2";
 import { 
   AlertTriangle, 
   X, 
@@ -33,39 +34,85 @@ export default function ReportJobModal({ job, onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!user) return alert("Bạn cần đăng nhập.");
 
+    // 1. Validate: Chưa đăng nhập (Phòng hờ)
+    if (!user) {
+        Swal.fire({
+            icon: "warning",
+            title: "Chưa đăng nhập",
+            text: "Bạn cần đăng nhập để thực hiện thao tác này.",
+        });
+        return;
+    }
+
+    // 2. Xử lý logic lấy lý do
     let finalReason = "";
     if (selectedOption === "other") {
         finalReason = otherText.trim();
-        if (!finalReason) return alert("Vui lòng nhập lý do cụ thể.");
+        // Validate: Chọn "Khác" mà không nhập gì
+        if (!finalReason) {
+            Swal.fire({
+                icon: "warning",
+                title: "Thiếu thông tin",
+                text: "Vui lòng nhập lý do cụ thể.",
+            });
+            return;
+        }
     } else {
         finalReason = selectedOption;
     }
 
-    if (!finalReason) return alert("Vui lòng chọn lý do.");
+    // Validate: Chưa chọn lý do nào
+    if (!finalReason) {
+        Swal.fire({
+            icon: "warning",
+            title: "Chưa chọn lý do",
+            text: "Vui lòng chọn một lý do báo cáo.",
+        });
+        return;
+    }
 
     setLoading(true);
     try {
-      const payload = {
-          reportedBy: user.email, 
-          jobPostId: job._id, // Lấy ID từ props       
-          reason: finalReason, 
-      };
+        const payload = {
+            reportedBy: user.email,
+            jobPostId: job._id,
+            reason: finalReason,
+        };
 
-      const res = await client.post('/api/report', payload);
-      if (res.data && res.data.success) {
-          setIsSuccess(true);
-      } else {
-          alert(res.data?.message || "Gửi báo cáo thất bại.");
-      }
+        const res = await client.post('/api/report', payload);
+
+        if (res.data && res.data.success) {
+            setIsSuccess(true); // Cập nhật UI nội bộ (nếu có màn hình 'Cảm ơn')
+            
+            // Thông báo thành công tự tắt
+            Swal.fire({
+                icon: "success",
+                title: "Đã gửi báo cáo!",
+                text: "Cảm ơn đóng góp của bạn.",
+                showConfirmButton: false,
+                timer: 1500,
+            });
+        } else {
+            // Lỗi từ server trả về (VD: Đã báo cáo rồi)
+            Swal.fire({
+                icon: "error",
+                title: "Gửi thất bại",
+                text: res.data?.message || "Không thể gửi báo cáo.",
+            });
+        }
     } catch (error) {
-      console.error(error);
-      alert("Có lỗi xảy ra, vui lòng thử lại.");
+        console.error(error);
+        // Lỗi mạng hoặc lỗi code
+        Swal.fire({
+            icon: "error",
+            title: "Lỗi hệ thống",
+            text: "Có lỗi xảy ra, vui lòng thử lại sau.",
+        });
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+};
 
   // UI khi click vào vùng đen bên ngoài -> đóng modal
   const handleOverlayClick = (e) => {
