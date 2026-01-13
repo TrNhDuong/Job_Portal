@@ -63,16 +63,20 @@ body {
    ========================================================================== */
 .side-bar {
   background: var(--sidebar-surface);
-  backdrop-filter: blur(20px) saturate(180%); /* Hiệu ứng kính mờ cực mạnh */
+  backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
-  height: 100%;
+  height: 100vh;          /* 🔥 QUAN TRỌNG */
   display: flex;
   flex-direction: column;
   padding: 30px 20px;
   border-right: 1px solid rgba(255,255,255,0.6);
   z-index: 100;
-  position: relative;
-  box-shadow: 10px 0 30px rgba(0,0,0,0.02); /* Bóng cực nhẹ bên phải */
+  position: sticky;      /* 🔥 dính top */
+  top: 0;
+  box-shadow: 10px 0 30px rgba(0,0,0,0.02);
+
+  overflow-y: auto;      /* ✅ SCROLLBAR */
+  overflow-x: hidden;
 }
 
 /* --- User Profile "Credit Card" Style --- */

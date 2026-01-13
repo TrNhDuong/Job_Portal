@@ -1,7 +1,7 @@
 import client from "../api/client";
 
 export const userService = {
-<<<<<<< HEAD
+
   // 🟢 Lấy danh sách users (employer + employee)
   getAllUsers: async () => {
     try {
@@ -46,27 +46,6 @@ export const userService = {
       console.error("Lỗi API Delete User:", error);
       throw error;
     }
-=======
-  // Lấy danh sách users
-  getAllUsers: async () => {
-    try {
-      const response = await client.get("/api/admin/users");
-      return response.data;
-    } catch (error) {
-      console.error("Lỗi API Get Users:", error);
-      throw error;
-    }
-  },
 
-  // Xóa user (để sẵn cho nút 🗑️)
-  deleteUser: async (userId) => {
-    try {
-      const response = await client.delete(`/api/admin/users/${userId}`);
-      return response.data;
-    } catch (error) {
-      console.error("Lỗi API Delete User:", error);
-      throw error;
-    }
->>>>>>> e28bccdb48236592ba362a8b3c1da446cdb5cdc7
   }
 };

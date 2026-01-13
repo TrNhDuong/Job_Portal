@@ -80,21 +80,7 @@ export default function SearchFilters({ filters, setFilters }) {
             inputMode="numeric"
           />
 
-          <select
-            name="currency"
-            value={filters.currency || ""}
-            onChange={handleChange}
-            className="job-filters-select job-filters-select--pro"
-          >
-            <option value="">Tất cả tiền tệ</option>
-            <option value="VND">VND</option>
-            <option value="USD">USD</option>
-            <option value="EUR">EUR</option>
-            <option value="JPY">JPY</option>
-            <option value="GBP">GBP</option>
-            <option value="AUD">AUD</option>
-            <option value="CAD">CAD</option>
-          </select>
+
         </div>
       </div>
 
@@ -107,13 +93,15 @@ export default function SearchFilters({ filters, setFilters }) {
           onChange={handleChange}
           className="job-filters-select job-filters-select--pro"
         >
-          <option value="">Tất cả ngành nghề</option>
-          <option value="IT">Công nghệ thông tin</option>
-          <option value="Business">Kinh doanh</option>
-          <option value="Finance">Tài chính</option>
+        <option value="">Tất cả ngành nghề</option>
+          <option value="IT">IT</option> {/* Đổi từ "IT" thành "IT" (khớp TopSectors) */}
           <option value="Marketing">Marketing</option>
-          <option value="Sales">Bán hàng</option>
-          <option value="Other">Khác</option>
+          <option value="Tài chính">Tài chính</option> {/* Đổi từ "Finance" thành "Tài chính" */}
+          <option value="Bất động sản">Bất động sản</option>
+          <option value="Logistics">Logistics</option>
+          <option value="Thiết kế">Thiết kế</option>
+          <option value="CSKH">CSKH</option>
+          <option value="Truyền thông">Truyền thông</option>
         </select>
       </div>
 

@@ -61,10 +61,14 @@ const Setting = ({ isVisible, onClose }) => {
         if (!accountForm.currentPassword) {
             newErrors.currentPassword = 'Vui lòng nhập mật khẩu hiện tại.';
         }
-        if (accountForm.newPassword.length < 6) {
-            newErrors.newPassword = 'Mật khẩu chưa đủ mạnh.';
-            setIsPasswordFocused(true);
-        }
+        if (!passCriteria.length ||
+            !passCriteria.lower ||
+            !passCriteria.upper ||
+            !passCriteria.number) {
+        newErrors.newPassword = 'Mật khẩu phải đủ mạnh (8 ký tự, chữ hoa, chữ thường, số)';
+        setIsPasswordFocused(true);
+        }
+
         if (accountForm.newPassword !== accountForm.confirmNewPassword) {
             newErrors.confirmNewPassword = 'Mật khẩu nhập lại không khớp.';
         }
@@ -218,23 +222,6 @@ const Setting = ({ isVisible, onClose }) => {
         </div>
     );
 
-    const renderNotificationSettings = () => (
-        <div className="settings-content-main">
-            <h3>Cài đặt Thông báo</h3>
-            <div className="setting-toggle-item">
-                <label>Nhận thông báo về CV mới</label>
-                <input type="checkbox" defaultChecked />
-            </div>
-            <div className="setting-toggle-item">
-                <label>Email thông báo hàng tuần</label>
-                <input type="checkbox" />
-            </div>
-            <button className="btn-save-changes">
-                <FaSave /> Lưu thay đổi
-            </button>
-        </div>
-    );
-
     return (
         <div className="settings-modal-overlay">
             <div className="settings-modal-card">
@@ -252,18 +239,11 @@ const Setting = ({ isVisible, onClose }) => {
                         >
                             <img src={securityIcon} alt="Bảo mật" className="icon-img" /> Bảo mật
                         </div>
-                        <div 
-                            className={`sidebar-item ${activeSection === 'notification' ? 'active' : ''}`}
-                            onClick={() => setActiveSection('notification')}
-                        >
-                            <img src={bellIcon} alt="Thông báo" className="icon-img" /> Thông báo
-                        </div>
                     </div>
 
                     {/* Nội dung chính */}
                     <div className="settings-content">
                         {activeSection === 'account' && renderAccountSettings()}
-                        {activeSection === 'notification' && renderNotificationSettings()}
                     </div>
                 </div>
             </div>

@@ -2,7 +2,7 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import {CandidateRepository } from "../repository/candidateRepository.js";
 import {EmployerRepository } from "../repository/employerRepository.js";
-
+import StatisticRepository from "../repository/statisticRepository.js";
 
 const router = express.Router();
 
@@ -28,6 +28,10 @@ router.post("/candidateRegister", async (req, res) => {
         CV: []
     });
     if (result.success) {
+        const resultStatistic = await StatisticRepository.update('candidateRegister');
+        if (!resultStatistic.success){
+            return res.status(403).json(resultStatistic)
+        }
         res.status(201).json({ 
             success: true,
             message: "Candidate registered successfully" });
@@ -65,6 +69,10 @@ router.post("/employerRegister", async (req, res) => {
         phone: phone
     });
     if (result.success) {
+        const resultStatistic = await StatisticRepository.update('employerRegister');
+        if (!resultStatistic.success){
+            return res.status(403).json(resultStatistic);
+        }
         res.status(201).json({ 
             success: true,
             message: "Employer registered successfully"

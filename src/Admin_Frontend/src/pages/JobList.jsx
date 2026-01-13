@@ -6,6 +6,9 @@ import {
   HiCurrencyDollar, HiOfficeBuilding, HiDocumentText, HiX, HiClock
 } from "react-icons/hi";
 import { toast } from "react-toastify";
+import {useLocation} from "react-router-dom";
+import client from "../api/client.js";
+import { showDeleteConfirm } from "../utils/alertUtils.js";
 
 export default function JobList() {
   const [search, setSearch] = useState("");
@@ -34,11 +37,15 @@ export default function JobList() {
     html?.replace(/<[^>]*>?/gm, "") || "";
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Bạn có chắc chắn muốn xóa bài đăng này không?")) return;
+    const isConfirmed = await showDeleteConfirm(
+        "Bạn muốn xóa bài đăng tuyển dụng này?", 
+    );
+
+    if (!isConfirmed) return;
 
     try {
-      const res = await jobService.deleteJob(id);
-      if (res.success) {
+      const response = await client.delete(`api/post-job?jobId=${id}`);
+       if (response.data.success) {
         setJobs(prev => prev.filter(job => job._id !== id));
         toast.success("Đã xóa bài đăng thành công!");
         if(selectedJob && selectedJob._id === id) setSelectedJob(null);
@@ -59,10 +66,64 @@ export default function JobList() {
 
   const formatSalary = (salaryObj) => {
     if (!salaryObj) return "Thỏa thuận";
+    
     const { minSalary, maxSalary, currency } = salaryObj;
-    if (minSalary && maxSalary) return `${minSalary} - ${maxSalary} ${currency || 'VND'}`;
+    const curLabel = currency || 'VND';
+
+    const shortCurrency = (num) => {
+      if (curLabel !== 'VND') return num.toLocaleString('en-US');
+      if (num >= 1000000000) return `${parseFloat((num / 1000000000).toFixed(2))} tỷ`;
+      if (num >= 1000000) return `${parseFloat((num / 1000000).toFixed(2))} triệu`;
+      if (num >= 1000) return `${parseFloat((num / 1000).toFixed(0))} nghìn`;
+      return num.toLocaleString('vi-VN');
+    };
+
+    if (minSalary !== undefined && maxSalary !== undefined) {
+      return `${shortCurrency(minSalary)} - ${shortCurrency(maxSalary)} ${curLabel}`;
+    }
     return "Thỏa thuận";
   };
+
+  // 2. Hàm format Kinh nghiệm (Bị thiếu cái này nè!)
+  const formatExperience = (exp) => {
+    if (exp === undefined || exp === null || exp === "") return "Không yêu cầu";
+    if (exp === 0) return "Không yêu cầu";
+    return `${exp} năm`;
+  };
+
+  // 3. Hàm format Bằng cấp (Dịch tiếng Việt)
+  const formatDegree = (degree, fallback = "Không yêu cầu") => {
+    if (!degree || degree.trim() === "") return fallback;
+    const degreeMap = {
+      'Bachelor': 'Cử nhân',
+      'Master': 'Thạc sĩ',
+      'Doctorate': 'Tiến sĩ',
+      'Associate': 'Cao đẳng',
+      'Diploma': 'Chứng chỉ',
+      'High School': 'Tốt nghiệp THPT',
+      'No Degree': 'Không yêu cầu'
+    };
+    return degreeMap[degree] || degree; 
+  };
+  
+  const location = useLocation();
+
+  useEffect(() => {
+    fetchJobs();
+  }, []);
+
+  // 🟢 Thêm logic này để tự động mở Modal khi có ID trên URL
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const jobId = params.get("jobId");
+    
+    if (jobId && jobs.length > 0) {
+      const jobToOpen = jobs.find(j => j._id === jobId);
+      if (jobToOpen) {
+        setSelectedJob(jobToOpen);
+      }
+    }
+  }, [location.search, jobs]); // Chạy lại khi danh sách jobs đã tải xong
 
   return (
     <>
@@ -99,7 +160,22 @@ export default function JobList() {
                   <tr key={j._id}>
                     <td>
                       <div className="job-info-cell">
-                        <div className="company-logo-placeholder">{j.company?.charAt(0).toUpperCase() || <HiOfficeBuilding />}</div>
+                        <div className="company-logo-placeholder">
+                          {j.logo && j.logo.url ? (
+                            <img 
+                              src={j.logo.url}  
+                              alt={j.company} 
+                              className="company-logo-img"
+                              onError={(e) => {
+                                e.target.style.display = 'none'; 
+                                e.target.parentNode.innerText = j.company?.charAt(0).toUpperCase();
+                              }}
+                            />
+                          ) : (
+                            // Nếu không có logo thì hiển thị chữ cái đầu hoặc icon
+                            j.company?.charAt(0).toUpperCase() || <HiOfficeBuilding />
+                          )}
+                        </div>
                         <div className="job-details">
                           <span className="job-title">{j.title}</span>
                           <span className="company-name"><HiOfficeBuilding size={14} /> {j.company}</span>
@@ -134,7 +210,21 @@ export default function JobList() {
           <div className="job-modal" onClick={e => e.stopPropagation()}>
             <div className="job-modal-header-modern">
               <div className="header-top-row">
-                <div className="company-logo-large">{selectedJob.company?.charAt(0).toUpperCase() || "C"}</div>
+                <div className="company-logo-large">
+                  {selectedJob.logo && selectedJob.logo.url ? (
+                    <img 
+                      src={selectedJob.logo.url} 
+                      alt={selectedJob.company} 
+                      className="company-logo-large-img" 
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.parentNode.innerText = selectedJob.company?.charAt(0).toUpperCase();
+                      }}
+                    />
+                  ) : (
+                    selectedJob.company?.charAt(0).toUpperCase() || "C"
+                  )}
+                </div>
                 <button className="btn-close-modern" onClick={() => setSelectedJob(null)}><HiX /></button>
               </div>
               <div className="job-main-info">
@@ -155,17 +245,30 @@ export default function JobList() {
 
             <div className="job-modal-body-modern">
               <div className="quick-stats-grid">
+                {/* Cột 1: Kinh nghiệm */}
                 <div className="stat-item-col">
                   <span className="stat-label-tiny">Kinh nghiệm</span>
-                  <span className="stat-value-bold">{selectedJob.experience || 0} năm</span>
+                  <span className="stat-value-bold">
+                    {formatExperience(selectedJob.experience)}
+                  </span>
                 </div>
+
+                {/* Cột 2: Cấp bậc */}
                 <div className="stat-item-col">
-                  <span className="stat-label-tiny">Cấp bậc</span>
-                  <span className="stat-value-bold">{selectedJob.position || "Nhân viên"}</span>
+                  <span className="stat-label-tiny">Vị trí tuyển dụng</span>
+                  <span className="stat-value-bold">
+                    {/* Fallback "Nhân viên" nếu không có dữ liệu */}
+                    {selectedJob.position || "Nhân viên"}
+                  </span>
                 </div>
+
+                {/* Cột 3: Bằng cấp */}
                 <div className="stat-item-col">
                   <span className="stat-label-tiny">Bằng cấp</span>
-                  <span className="stat-value-bold">{selectedJob.degree || "Chưa yêu cầu"}</span>
+                  <span className="stat-value-bold">
+                    {/* Fallback "Không yêu cầu" nếu không có dữ liệu */}
+                    {formatDegree(selectedJob.degree)}
+                  </span>
                 </div>
               </div>
 

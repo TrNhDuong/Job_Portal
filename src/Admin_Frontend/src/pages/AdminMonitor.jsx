@@ -12,6 +12,7 @@ import {
   HiX,
 } from "react-icons/hi";
 import { toast } from "react-toastify";
+import { showDeleteConfirm } from "../utils/alertUtils";
 
 export default function AdminMonitor() {
   const [reports, setReports] = useState([]);
@@ -41,7 +42,10 @@ export default function AdminMonitor() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Xoá report này nha?")) return;
+    const isConfirmed = await showDeleteConfirm(
+            "Bạn muốn xóa báo cáo vi phạm này?", 
+    );
+    if (!isConfirmed) return;
     try {
       const res = await monitorService.deleteReport(id);
       if (res.success) {
@@ -98,19 +102,21 @@ export default function AdminMonitor() {
                   <td>{r.reason}</td>
                   <td>{r.reportedBy}</td>
                   <td>{new Date(r.timeStamp).toLocaleString()}</td>
-                  <td>
+                  <td style={{ textAlign: "center" }}>
+                    <div className="action-buttons">
                     <button
-                      className="btn-icon-only btn-view"
+                      className="btn-icon btn-view"
                       onClick={() => setSelectedReport(r)}
                     >
                       <HiEye />
                     </button>
                     <button
-                      className="btn-icon-only btn-lock"
+                      className="btn-icon btn-delete"
                       onClick={() => handleDelete(r._id)}
                     >
                       <HiTrash />
                     </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -153,7 +159,19 @@ export default function AdminMonitor() {
                 <span className="info-label">
                   <HiHashtag /> JobPost ID
                 </span>
-                <div className="info-box">{selectedReport.JobPost}</div>
+                <div className="info-box">
+                  {selectedReport.JobPost?.title} <br />
+                  <small>{selectedReport.JobPost?._id}</small>
+                </div>
+                {selectedReport.JobPost?._id && (
+                  <button 
+                    className="btn-view-job-link"
+                    onClick={() => window.location.href = `/admin/jobs?jobId=${selectedReport.JobPost._id}`}
+                  >
+                    <HiEye style={{ marginRight: '6px' }} />
+                    Xem bài đăng trong danh sách
+                  </button>
+                )}
               </div>
 
               <div className="info-group">

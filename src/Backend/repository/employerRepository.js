@@ -2,6 +2,7 @@ import Employer from "../model/employer.js";
 import bcrypt from "bcryptjs";
 import { destroyCloudData } from "../service/cloudinary.js";
 import mongoose from 'mongoose'; // Cần thiết để đảm bảo môi trường Mongoose
+import e from "express";
 
 export class EmployerRepository {
     static async getEmployer(email) {
@@ -24,28 +25,6 @@ export class EmployerRepository {
             return { success: false, message: "Error fetching employer" };
         }
     }
-
-    static async getAllEmployer() {
-        try {
-            const employers = await Employer
-                .find({})
-                .select("-password")
-                .lean();
-
-            return {
-                success: true,
-                data: employers
-            };
-        } catch (error) {
-            console.error("Error fetching all employers:", error);
-            return {
-                success: false,
-                message: "Error fetching employers",
-                data: null
-            };
-        }
-    }
-
 
     static async getHashedPassword(email) {
         const employer = await this.getEmployer(email);
@@ -76,7 +55,6 @@ export class EmployerRepository {
             return { success: false, message: "Error creating employer" };
         }
     }
-
 
     // --- HÀM CẬP NHẬT DỮ LIỆU (Đã sửa lỗi Read-Modify-Write và thêm Session) ---
     static async updateEmployer(email, updatesEmployer, options = {}) {
@@ -120,8 +98,16 @@ export class EmployerRepository {
             updatePayload["wallpaper"] = updatesEmployer["wallpaper"];
         }
 
+        if (updatesEmployer["point"]){
+            if (updatePayload["point"]){
+                updatePayload["point"] += updatesEmployer["point"];
+            } else {
+                updatePayload["point"] = updatesEmployer["point"];
+            }
+        }
+
         // 2d. Xử lý các fields thông thường (bao gồm cả 'point' nếu được truyền)
-        const employerAttributes = ["company", "email", "phone", "address", "description", "website", "contact", "point", "scale"];
+        const employerAttributes = ["company", "email", "phone", "address", "description", "website", "contact", "scale"];
         for (const attribute of employerAttributes) {
              if (updatesEmployer[attribute] !== undefined) {
                  updatePayload[attribute] = updatesEmployer[attribute];
@@ -255,6 +241,46 @@ export class EmployerRepository {
             };
         }
     }
+    static async increasePoint(email, point, options = {}) {
+        const { session } = options;
+
+        const numPoint = Number(point);
+        if (Number.isNaN(numPoint)) {
+            return {
+                success: false,
+                message: "Point must be a number"
+            };
+        }
+
+        try {
+            const updatedEmployer = await Employer.findOneAndUpdate(
+                { email },
+                { $inc: { point: numPoint } },
+                { new: true, session }
+            );
+
+            if (!updatedEmployer) {
+                return {
+                    success: false,
+                    message: "Employer not found",
+                    data: null
+                };
+            }
+
+            return {
+                success: true,
+                data: updatedEmployer
+            };
+        } catch (error) {
+            console.error(`Error increasing point for employer ${email}:`, error);
+            return {
+                success: false,
+                message: "Database update error",
+                data: null
+            };
+        }
+    }
+
 }
 
 export default EmployerRepository;

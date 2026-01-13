@@ -141,6 +141,56 @@ const EmployerPostJob = ({ onSubmit, initialData }) => {
     'indent' 
   ];
 
+  const quillRef = useRef(null); // Thêm ref cho ReactQuill
+
+// Hàm gắn tooltip
+const attachToolbarTooltips = () => {
+  if (!quillRef.current) return;
+  const toolbar = quillRef.current.editor.root.parentNode.querySelector('.ql-toolbar');
+  if (!toolbar) return;
+
+  const tooltips = {
+    bold: "Bold",
+    italic: "Italic",
+    underline: "Underline",
+    'list-ordered': "Ordered List",
+    'list-bullet': "Bullet List",
+    'indent-increase': "Indent Increase",
+    'indent-decrease': "Indent Decrease",
+    'clean': "Remove Formatting",
+    header: "Header",
+    color: "Text Color",
+  };
+
+  const buttons = toolbar.querySelectorAll('button, .ql-picker-label');
+  buttons.forEach(btn => {
+    const classMatch = btn.className.match(/ql-([a-z-]+)/);
+    if (!classMatch) return;
+    let format = classMatch[1];
+
+    if (format === 'list') {
+      if (btn.classList.contains('ql-ordered')) format = 'list-ordered';
+      if (btn.classList.contains('ql-bullet')) format = 'list-bullet';
+    }
+    if (format === 'indent') {
+      if (btn.classList.contains('ql-increase')) format = 'indent-increase';
+      if (btn.classList.contains('ql-decrease')) format = 'indent-decrease';
+    }
+
+    if (tooltips[format]) btn.setAttribute('title', tooltips[format]);
+  });
+};
+
+// Gọi sau khi editor mount
+useEffect(() => {
+  // Delay 0 để chắc chắn Quill đã render toolbar
+  const timeout = setTimeout(() => {
+    attachToolbarTooltips();
+  }, 0);
+  return () => clearTimeout(timeout);
+}, []);
+
+
   // (Các mảng dữ liệu ... không đổi)
   const jobTypes = ["Full-time", "Part-time", "Internship", "Freelance", "Contract"];
   const majors = [
@@ -192,18 +242,16 @@ const EmployerPostJob = ({ onSubmit, initialData }) => {
 
   // 👇 3. Hàm xử lý riêng cho Editor
   const handleEditorChange = (name, content, editor) => {
-    const plainText = editor.getText();
-    const currentLength = plainText.length > 1 ? plainText.trim().length : 0;
-    
-    if (currentLength > 5000) return;
+    // Count by code points (Unicode aware)
+    const plainText = Array.from(editor.getText().trim()).join('');
+    const currentLength = plainText.length;
 
+    if(currentLength > 5000) return; // max length check
     setForm(prev => ({ ...prev, [name]: content }));
     setCharCounts(prev => ({ ...prev, [name]: currentLength }));
 
-    if (errors[name] && currentLength > 0) {
-        setErrors(prev => ({ ...prev, [name]: "" }));
-    }
-};
+    if(errors[name] && currentLength > 0) setErrors(prev => ({ ...prev, [name]: "" }));
+  };
 
   // (Hàm validateForm ... không đổi)
   const validateForm = () => {
@@ -338,6 +386,43 @@ const EmployerPostJob = ({ onSubmit, initialData }) => {
     );
   };
 
+  useEffect(() => {
+    // Gắn tooltip cho các nút toolbar
+    const tooltips = {
+        bold: "In đậm",
+        italic: "In nghiêng",
+        underline: "Gạch chân",
+        'list-ordered': "Danh sách có thứ tự",
+        'list-bullet': "Danh sách không thứ tự",
+        'indent-increase': "Thụt vào",
+        'indent-decrease': "Thụt ra",
+        'clean': "Xóa định dạng",
+        header: "Tiêu đề",
+        color: "Màu chữ",
+    };
+
+    const toolbarButtons = document.querySelectorAll('.ql-toolbar button, .ql-toolbar .ql-picker-label');
+    toolbarButtons.forEach(btn => {
+        // Lấy tên định dạng từ class
+        const classMatch = btn.className.match(/ql-([a-z-]+)/);
+        if (!classMatch) return;
+        let format = classMatch[1];
+
+        // Một số class đặc biệt
+        if (format === 'list') {
+        if (btn.classList.contains('ql-ordered')) format = 'list-ordered';
+        if (btn.classList.contains('ql-bullet')) format = 'list-bullet';
+        }
+        if (format === 'indent') {
+        if (btn.classList.contains('ql-increase')) format = 'indent-increase';
+        if (btn.classList.contains('ql-decrease')) format = 'indent-decrease';
+        }
+
+        if (tooltips[format]) btn.setAttribute('title', tooltips[format]);
+    });
+    }, []);
+
+
   return (
     <form onSubmit={handleSubmit} className="postjob-layout">
       
@@ -420,7 +505,9 @@ const EmployerPostJob = ({ onSubmit, initialData }) => {
                             <label>Mô tả công việc <span className="req">*</span></label>
                             <div className={`editor-wrapper ${errors.description ? "error-border" : ""}`} ref={fieldRefs.description}>
                                 <ReactQuill 
+                                    ref = {quillRef}
                                     theme="snow"
+                                    key={form.id}
                                     value={form.description}
                                     onChange={(c, d, s, e) => handleEditorChange('description', c, e)}
                                     modules={quillModules} formats={quillFormats}
@@ -438,9 +525,11 @@ const EmployerPostJob = ({ onSubmit, initialData }) => {
                             <label>Yêu cầu ứng viên <span className="req">*</span></label>
                             <div className={`editor-wrapper ${errors.requirement ? "error-border" : ""}`} ref={fieldRefs.requirement}>
                                 <ReactQuill 
+                                    ref = {quillRef}
                                     theme="snow"
-                                    value={form.requirement}
-                                    onChange={(c, d, s, e) => handleEditorChange('requirement', c, e)}
+                                    key={form.id}
+                                    value={form.description}
+                                    onChange={(c, d, s, e) => handleEditorChange('description', c, e)}
                                     modules={quillModules} formats={quillFormats}
                                     placeholder="- Kỹ năng chuyên môn..."
                                 />
@@ -455,10 +544,12 @@ const EmployerPostJob = ({ onSubmit, initialData }) => {
                         <div className="form-group">
                             <label>Quyền lợi & Phúc lợi <span className="req">*</span></label>
                             <div className={`editor-wrapper ${errors.welfare ? "error-border" : ""}`} ref={fieldRefs.welfare}>
-                                <ReactQuill 
+                               <ReactQuill 
+                                    ref = {quillRef}
                                     theme="snow"
-                                    value={form.welfare}
-                                    onChange={(c, d, s, e) => handleEditorChange('welfare', c, e)}
+                                    key={form.id}
+                                    value={form.description}
+                                    onChange={(c, d, s, e) => handleEditorChange('description', c, e)}
                                     modules={quillModules} formats={quillFormats}
                                     placeholder="- Chế độ bảo hiểm, thưởng..."
                                 />

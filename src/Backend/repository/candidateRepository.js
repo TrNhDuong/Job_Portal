@@ -41,7 +41,7 @@ export class CandidateRepository {
         };
     }
     static async updateCandidate(email, updatesCandidate) {
-        const candidateAttributes = ["name", "email", "logo", "appliedJobs"];
+        const candidateAttributes = ["name", "email", "logo"];
         let candidate = await this.getCandidate(email);
         if (!candidate.success) {
             return {
@@ -54,6 +54,10 @@ export class CandidateRepository {
 
         if (updatesCandidate["password"]) {
             candidate.data["password"] = bcrypt.hashSync(updatesCandidate["password"], 10);
+        }
+
+        if (updatesCandidate["apply"]){
+            candidate.data["appliedJobs"].push(updatesCandidate["apply"]);
         }
 
         if (updatesCandidate["logo"]){

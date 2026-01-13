@@ -1,5 +1,7 @@
 import { JobRepository } from "../../repository/jobRepository.js";
 import { EmployerRepository } from "../../repository/employerRepository.js";
+import StatisticRepository from "../../repository/statisticRepository.js";
+
 import Employer from "../../model/employer.js";
 import mongoose from "mongoose";
 // employer post a job with the initial state is "closed", if employer want to open
@@ -156,6 +158,8 @@ export const createNewPostJob = async (req, res) => {
 
         // COMMIT TRANSACTION (Thành công)
         await session.commitTransaction();
+
+        await StatisticRepository.update('jobPost')
         
         return res.status(201).json({ // Dùng 201 Created cho thao tác tạo tài nguyên
             success: true,

@@ -262,5 +262,35 @@ cập nhật report, với request body chứa data cập nhật
 
 xóa job theo id
 
+# API endpoint statistic cho admin
+
+## **GET** by year `api/statistic/yearly` body {year: }
+
+Trả về thống kê theo năm
+
+## **GET** by year `api/statistic/monthly` body {year: , month: }
+
+Trả về thống kê theo tháng của năm
+
+Data return có dạng {
+    success:
+    data: {
+        daily_stats: {
+            type: Map,
+            of: DayStatsSchema,
+            default: {} 
+        },
+
+        monthly_total: {
+            candidateRegister: { type: Number, default: 0 },
+            employerRegister: { type: Number, default: 0 },
+            jobPost: { type: Number, default: 0 }
+        },
+    }
+}
+
+Để lấy tổng thống kê của tháng thì lấy monthly_total, còn từng ngày thì gọi daily_stats['1'], hay daily_stats['2'] gì đó
+
+
 
 

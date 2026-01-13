@@ -9,7 +9,6 @@
   background-color: #f1f5f9; 
   overflow: hidden; 
 }
-
 .job-search-col {
   background-color: #ffffff; 
   border: 1px solid #e2e8f0; 
@@ -917,16 +916,17 @@
 }
 
 .job-page-input {
-  width: 38px;
+  width: 25px;
   height: 30px;
   padding: 0;
-  border-radius: 10px;
+  border-radius: 6px;
   border: 1px solid rgba(148, 163, 184, 0.95);
   text-align: center;
   font-size: 0.8rem;
   outline: none;
-  line-height: 1;
+  line-height: 24px;
   background: #ffffff;
+  margin: 0 5px
 }
 
 .job-page-input:focus {

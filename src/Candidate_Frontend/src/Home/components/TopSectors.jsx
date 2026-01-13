@@ -1,5 +1,6 @@
 // src/Home/components/TopSectors.jsx
 import Section from "./Section";
+import { useNavigate } from "react-router-dom";
 import {
   Banknote,
   Laptop2,
@@ -24,19 +25,24 @@ import imgBDS from "../../assets/bds.jpg";
 import imgLogistic from "../../assets/Logistic.jpg";
 
 const SECTORS = [
-  { id: 1, name: "Tài Chính - Ngân Hàng", jobs: 1104, icon: <Banknote />, img: imgBank },
+  { id: 1, name: "Tài chính", jobs: 1104, icon: <Banknote />, img: imgBank },
   { id: 2, name: "Marketing", jobs: 1253, icon: <Megaphone />, img: imgMarketing },
   { id: 3, name: "CSKH", jobs: 947, icon: <Headphones />, img: imgService },
-  { id: 4, name: "Truyền Thông", jobs: 921, icon: <Play />, img: imgMedia },
-  { id: 5, name: "Công Nghệ (IT)", jobs: 657, icon: <Laptop2 />, img: imgIT },
-  { id: 6, name: "Thiết Kế", jobs: 869, icon: <PenTool />, img: imgDesigner },
-  { id: 7, name: "Bất Động Sản", jobs: 1034, icon: <HomeIcon />, img: imgBDS },
+  { id: 4, name: "Truyền thông", jobs: 921, icon: <Play />, img: imgMedia },
+  { id: 5, name: "IT", jobs: 657, icon: <Laptop2 />, img: imgIT },
+  { id: 6, name: "Thiết kế", jobs: 869, icon: <PenTool />, img: imgDesigner },
+  { id: 7, name: "Bất động sản", jobs: 1034, icon: <HomeIcon />, img: imgBDS },
   { id: 8, name: "Logistics", jobs: 764, icon: <Globe2 />, img: imgLogistic },
 ];
 
 function SectorCard({ item }) {
+  const navigate=useNavigate();
+  const handleSectorClick = () =>{
+    navigate(`/jobs?category=${encodeURIComponent(item.name)}`);
+  };
+
   return (
-    <article className="home-sector-card">
+    <article className="home-sector-card" onClick={handleSectorClick}>
       {/* Background Image with Zoom Effect */}
       <div className="home-sector-card-bg-wrap">
         <img src={item.img} alt={item.name} className="home-sector-card-bg" />

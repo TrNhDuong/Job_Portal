@@ -38,7 +38,7 @@
    NEW HERO SECTION (Job Portal Style)
 ============================ */
 .home-hero {
-  background: linear-gradient(135deg, #97b6f8 0%, #7c3aed 100%); /* Màu gradient từ ảnh */
+  background: linear-gradient(135deg, #00c8ff 0%, #9f00b8 100%); /* Màu gradient từ ảnh */
   padding: 80px 0;
   min-height: 400px;
   display: flex;
@@ -245,7 +245,101 @@
 /* =================================================================
    1. FEATURED JOBS CONTAINER & HEADER
    ================================================================= */
+/* --- CONTAINER TỔNG CHO JOBS --- */
+.home-jobs-pro-container {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  margin-top: 30px;
+}
 
+/* Banner Xanh Navy */
+.jobs-banner-pro {
+  background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 100%);
+  padding: 30px 40px;
+  color: #fff;
+  position: relative;
+}
+
+.pro-jobs-badge {
+  background: #fbbf24;
+  color: #1e3a8a;
+  padding: 6px 16px;
+  border-radius: 100px;
+  font-weight: 800;
+  font-size: 13px;
+  position: absolute;
+  right: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Cấu trúc Carousel cũ trong giao diện mới */
+.home-featured-pro-wrapper {
+  position: relative;
+  padding: 35px 40px 30px 40px; /* Top Right Bottom Left */
+  z-index: 2;
+}
+
+/* --- JOB CARD STYLE (DẠNG NGANG CHUYÊN NGHIỆP) --- */
+.job-card-pro-style {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border: 1px solid #f1f5f9;
+  border-radius: 12px;
+  background: #fff;
+  transition: all 0.3s;
+  cursor: pointer;
+  height: 110px;
+}
+
+.job-card-pro-style:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.08);
+  z-index: 10;
+}
+
+.job-card-left-content { display: flex; gap: 16px; flex: 1; min-width: 0; }
+
+.job-card-logo-box {
+  width: 70px; height: 70px;
+  border: 1px solid #f1f5f9;
+  border-radius: 8px;
+  padding: 4px;
+  flex-shrink: 0;
+}
+
+.job-card-logo-box img { width: 100%; height: 100%; object-fit: contain; }
+
+.job-pro-title {
+  font-size: 16px; font-weight: 700; color: #1e293b;
+  margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.job-pro-company-link {
+  font-size: 14px; color: #64748b; background: none; border: none; padding: 0;
+  text-align: left; cursor: pointer; margin-bottom: 8px;
+}
+.job-pro-company-link:hover { color: #2563eb; text-decoration: underline; }
+
+.job-pro-meta { display: flex; gap: 15px; }
+.meta-salary { color: #059669; font-weight: 700; font-size: 13px; display: flex; align-items: center; gap: 4px; }
+.meta-location { color: #64748b; font-size: 13px; display: flex; align-items: center; gap: 4px; }
+
+.job-badge-hot {
+  background: #fee2e2; color: #ef4444; font-size: 10px; font-weight: 800;
+  padding: 2px 8px; border-radius: 4px; margin-right: 8px;
+}
+
+.job-pro-save-btn { color: #cbd5e1; background: none; border: none; cursor: pointer; }
+.job-pro-save-btn.active { color: #ef4444; }
+
+.banner-title {
+  font-size: 26px; font-weight: 800; color: #fef3c7; margin-bottom: 5px;
+}
 .home-featured-wrapper {
   margin-top: 24px;
   position: relative; /* Quan trọng để làm mốc cho nút mũi tên absolute */
@@ -558,6 +652,8 @@
   width: 18px;
   height: 18px;
 }
+
+
 /* =================================================================
    JOB DETAIL MODAL STYLES (Updated)
    ================================================================= */
@@ -685,6 +781,24 @@
 .home-job-modal-body::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
 .home-job-modal-body::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
+/* Nút Hủy ứng tuyển (Màu đỏ) */
+.home-job-modal-btn.danger {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+}
+
+.home-job-modal-btn.danger:hover {
+  background: #fee2e2;
+  border-color: #f87171;
+  transform: translateY(-1px);
+}
+
+.home-job-modal-btn.danger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
 /* ============================
    JOB CARD (Clean & Minimalist)
    ============================ */
@@ -1877,6 +1991,62 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+/* --- TỔNG THỂ CONTAINER --- */
+.home-brands-pro-container {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-top: 30px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+}
+
+/* --- BANNER VÀNG --- */
+.brands-gold-banner {
+  background: linear-gradient(90deg, #4b3904 0%, #8c6a0b 45%, #c4a01d 100%);
+  padding: 30px 40px;
+  color: #fff;
+}
+.brands-gold-title { font-size: 26px; font-weight: 800; color: #fef3c7; margin-bottom: 5px; }
+.brands-gold-badge { background: #fbbf24; color: #4b3904; padding: 6px 16px; border-radius: 100px; font-weight: 800; }
+
+/* --- FILTER BAR --- */
+.brands-toolbar { padding: 15px 40px; border-bottom: 1px solid #f1f5f9; background: #fafafa; }
+.brands-filters { display: flex; align-items: center; gap: 12px; }
+.brand-filter-tab { padding: 8px 18px; border-radius: 100px; border: 1px solid #e2e8f0; background: #fff; cursor: pointer; font-weight: 600; color: #64748b; }
+.brand-filter-tab.active { background: #854d0e; color: #fff; border-color: #854d0e; }
+
+/* --- GRID & ARROWS --- */
+.brands-grid-container { position: relative; padding: 30px 40px; }
+.brands-display-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+.brand-nav-btn {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 44px; height: 44px; border-radius: 50%; background: #fff;
+  border: 1px solid #e2e8f0; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10;
+}
+.brand-nav-btn.prev { left: 10px; }
+.brand-nav-btn.next { right: 10px; }
+
+/* --- CARD STYLE (FIX Cứng kích thước logo) --- */
+.brand-card-pro {
+  display: flex; align-items: center; gap: 16px; padding: 12px;
+  border: 1px solid #fef3c7; border-radius: 12px; transition: all 0.3s; cursor: pointer;
+  height: 105px; /* Ép độ cao để không bị "to quá" */
+}
+.brand-card-pro:hover { border-color: #fbbf24; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(251,191,36,0.1); }
+
+.brand-card-pro-logo {
+  width: 70px; height: 70px; flex-shrink: 0; /* KHÔNG CHO CO GIÃN LOGO */
+  border: 1px solid #f1f5f9; border-radius: 8px; padding: 5px;
+  display: flex; align-items: center; justify-content: center;
+}
+.brand-card-pro-logo img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+.brand-card-pro-info { flex: 1; min-width: 0; }
+.brand-card-pro-name { font-size: 15px; font-weight: 700; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.brand-card-pro-industry { font-size: 13px; color: #64748b; margin: 2px 0 6px; }
+.brand-card-pro-jobs { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: #1e293b; }
 /* ===========================
    FOOTER STYLES
    =========================== */
@@ -1887,11 +2057,11 @@
   margin-top: 50px; /* Khoảng cách với nội dung phía trên */
   width: 100vw;
   margin-left: calc(-50vw + 50%);
-  height: 200px;
+  height: 100px;
 }
 
 .footer-container {
-  max-width: 1400px;
+  max-width: 1500px;
   margin: 0 auto;
   padding: 0 40px;
 }
@@ -1902,6 +2072,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
+  height: 10px;
 }
 
 .footer-logo {
