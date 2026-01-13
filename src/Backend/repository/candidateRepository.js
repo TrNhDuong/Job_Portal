@@ -41,7 +41,7 @@ export class CandidateRepository {
         };
     }
     static async updateCandidate(email, updatesCandidate) {
-        const candidateAttributes = ["name", "email", "logo"];
+        const candidateAttributes = ["name", "email", "logo", "description"];
         let candidate = await this.getCandidate(email);
         if (!candidate.success) {
             return {

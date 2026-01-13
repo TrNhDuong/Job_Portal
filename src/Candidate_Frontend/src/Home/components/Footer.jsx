@@ -21,9 +21,9 @@ export default function Footer() {
           </nav>
 
           <div className="footer-socials">
-            <a href="#"><Instagram size={20} /></a>
+            {/* <a href="#"><Instagram size={20} /></a>
             <a href="#"><Linkedin size={20} /></a>
-            <a href="#"><Globe size={20} /></a>
+            <a href="#"><Globe size={20} /></a> */}
           </div>
         </div>
 

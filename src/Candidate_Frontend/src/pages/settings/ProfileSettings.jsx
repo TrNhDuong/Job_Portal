@@ -141,14 +141,10 @@ export default function ProfileSettings() {
           description: formData.description 
       };
 
-      console.log("Sending update payload:", payload); // Debug: Kiểm tra dữ liệu gửi đi
-
       // 3. Gọi API cập nhật
       const res = await client.patch(`/api/candidate?email=${encodeURIComponent(user.email)}`, payload);
       
-      // 4. Cập nhật lại Context User (để UI refresh ngay lập tức)
-      // Quan trọng: res.data hoặc res.data.data chứa user mới nhất từ backend trả về
-      // Nếu backend không trả về full user, ta merge thủ công payload vào user hiện tại
+
       const updatedUser = { ...user, ...payload };
       login(updatedUser);
       

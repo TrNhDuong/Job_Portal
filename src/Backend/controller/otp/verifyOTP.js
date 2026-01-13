@@ -4,7 +4,8 @@ import jwt from "jsonwebtoken";
 export const verifyOTP = async (req, res) => {
     const { email, otp } = req.body;
     try {
-        const otpEntry = await OTP.findOne({ email, otp });
+        console.log(email, otp);
+        const otpEntry = await OTP.findOne({email: email, otp: otp });
         if (!otpEntry) {
             return res.status(400).json({
                 success: false,

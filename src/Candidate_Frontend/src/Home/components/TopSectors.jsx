@@ -25,14 +25,14 @@ import imgBDS from "../../assets/bds.jpg";
 import imgLogistic from "../../assets/Logistic.jpg";
 
 const SECTORS = [
-  { id: 1, name: "Tài chính", jobs: 1104, icon: <Banknote />, img: imgBank },
-  { id: 2, name: "Marketing", jobs: 1253, icon: <Megaphone />, img: imgMarketing },
-  { id: 3, name: "CSKH", jobs: 947, icon: <Headphones />, img: imgService },
-  { id: 4, name: "Truyền thông", jobs: 921, icon: <Play />, img: imgMedia },
-  { id: 5, name: "IT", jobs: 657, icon: <Laptop2 />, img: imgIT },
-  { id: 6, name: "Thiết kế", jobs: 869, icon: <PenTool />, img: imgDesigner },
-  { id: 7, name: "Bất động sản", jobs: 1034, icon: <HomeIcon />, img: imgBDS },
-  { id: 8, name: "Logistics", jobs: 764, icon: <Globe2 />, img: imgLogistic },
+  { id: 1, name: "IT",  icon: <Laptop2 />, img: imgIT },
+  { id: 2, name: "Tài chính", icon: <Banknote />, img: imgBank },
+  { id: 3, name: "Marketing", icon: <Megaphone />, img: imgMarketing },
+  { id: 4, name: "CSKH", icon: <Headphones />, img: imgService },
+  { id: 5, name: "Truyền thông", icon: <Play />, img: imgMedia },
+  { id: 6, name: "Thiết kế", icon: <PenTool />, img: imgDesigner },
+  { id: 7, name: "Bất động sản", icon: <HomeIcon />, img: imgBDS },
+  { id: 8, name: "Logistics", icon: <Globe2 />, img: imgLogistic },
 ];
 
 function SectorCard({ item }) {
@@ -65,9 +65,6 @@ function SectorCard({ item }) {
 
         <div className="home-sector-card-text">
           <h3 className="home-sector-card-title">{item.name}</h3>
-          <span className="home-sector-card-jobs">
-            {item.jobs.toLocaleString()} việc làm
-          </span>
         </div>
       </div>
     </article>
