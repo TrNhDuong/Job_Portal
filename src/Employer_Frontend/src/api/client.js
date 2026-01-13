@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const client = axios.create({
-  baseURL: "https://job-portal-la9s.onrender.com",
+  baseURL: "http://localhost:8080",
   headers: { "Content-Type": "application/json" },
   withCredentials: false,
 });
