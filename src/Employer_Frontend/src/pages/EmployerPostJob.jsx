@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect, useContext } from "react"; // Thêm useEffect
+import React, { useState, useRef, useEffect, useContext } from "react";
 import "../styles/employerpost.css";
 import { AuthContext } from "../context/AuthContext.jsx"; 
-import { HiPencilAlt, HiBriefcase, HiCurrencyDollar, HiOfficeBuilding, HiSave, HiTrash, HiClipboardList, HiGift, HiExclamationCircle } from "react-icons/hi";
+import { HiPencilAlt, HiOfficeBuilding, HiSave, HiTrash, HiCurrencyDollar, HiExclamationCircle } from "react-icons/hi";
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import toast from 'react-hot-toast';
@@ -26,66 +26,56 @@ const initialFormState = {
   logo: ""
 };
 
-const errorStyle = { 
-  color: '#d93025',
-  fontSize: '13px', 
-  marginTop: '4px',
-  fontWeight: '500'
-};
-
-// Component nhận props
 const EmployerPostJob = ({ onSubmit, initialData }) => {
   const auth = useContext(AuthContext);
   const [form, setForm] = useState(initialFormState);
   const [errors, setErrors] = useState({});
   const [activeTab, setActiveTab] = useState('description');
   const [charCounts, setCharCounts] = useState({ description: 0, requirement: 0, welfare: 0 });
+
   const calculateTextLength = (htmlContent) => {
     if (!htmlContent) return 0;
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlContent, 'text/html');
-    // textContent lấy chữ, trim() để xóa khoảng trắng thừa đầu đuôi
     return doc.body.textContent.trim().length;
-};
+  };
 
   useEffect(() => {
-  if (initialData) {
-    const flattenedData = {
-      id: initialData._id, 
-      title: initialData.title || "",
-      companyEmail: initialData.companyEmail || "",
-      position: initialData.position || "",
-      location: initialData.location || "",
-      detailedAddress: initialData.detailedAddress || "", 
+    if (initialData) {
+      const flattenedData = {
+        id: initialData._id, 
+        title: initialData.title || "",
+        companyEmail: initialData.companyEmail || "",
+        position: initialData.position || "",
+        location: initialData.location || "",
+        detailedAddress: initialData.detailedAddress || "", 
 
-      minSalary: String(initialData.salary.minSalary || ""), 
-      maxSalary: String(initialData.salary.maxSalary || ""),
-      currency: initialData.salary.currency || "VND",
+        minSalary: String(initialData.salary.minSalary || ""), 
+        maxSalary: String(initialData.salary.maxSalary || ""),
+        currency: initialData.salary.currency || "VND",
 
-      jobType: initialData.jobType || "Full-time",
-      major: initialData.major || "IT",
-      customMajor: initialData.customMajor || "",
-      degree: initialData.degree || "Bachelor",
-      experience: String(initialData.experience || "0"), 
-      description: initialData.description || "",
-      requirement: initialData.requirement || "", 
-      welfare: initialData.welfare || "",
-      logo: initialData.logo || "",
-    };
-    setForm(flattenedData);
-    setCharCounts({
+        jobType: initialData.jobType || "Full-time",
+        major: initialData.major || "IT",
+        customMajor: initialData.customMajor || "",
+        degree: initialData.degree || "Bachelor",
+        experience: String(initialData.experience || "0"), 
+        description: initialData.description || "",
+        requirement: initialData.requirement || "", 
+        welfare: initialData.welfare || "",
+        logo: initialData.logo || "",
+      };
+      setForm(flattenedData);
+      setCharCounts({
         description: calculateTextLength(initialData.description),
         requirement: calculateTextLength(initialData.requirement),
         welfare: calculateTextLength(initialData.welfare),
-    });
-  } else {
-    // Nếu không có initialData (bấm "Đăng tin"), reset form
-    setForm(initialFormState);
-    setCharCounts({ description: 0, requirement: 0, welfare: 0 });
-  }
-  // Luôn xóa lỗi khi chuyển form
-  setErrors({});
-  }, [initialData]); // Chạy lại khi initialData thay đổi
+      });
+    } else {
+      setForm(initialFormState);
+      setCharCounts({ description: 0, requirement: 0, welfare: 0 });
+    }
+    setErrors({});
+  }, [initialData]);
 
   const fieldRefs = {
     title: useRef(null),
@@ -110,23 +100,22 @@ const EmployerPostJob = ({ onSubmit, initialData }) => {
       [{ 'color': ['#000000', '#0061ff', '#e74c3c'] }],
       ['bold', 'italic', 'underline'], 
       [{'list': 'ordered'}, {'list': 'bullet'}], 
-      [{ 'indent': '-1'}, { 'indent': '+1' }], // (Tùy chọn) Thêm nút bấm trên thanh công cụ nếu thích
+      [{ 'indent': '-1'}, { 'indent': '+1' }], 
       ['clean'] 
     ],
-    // THÊM ĐOẠN NÀY: Cấu hình phím tắt (Keyboard Bindings)
     keyboard: {
       bindings: {
         tab: {
-          key: 9, // Mã phím Tab
+          key: 9,
           handler: function(range, context) {
-            this.quill.format('indent', '+1'); // Thụt vào
+            this.quill.format('indent', '+1');
           }
         },
         'shift+tab': {
             key: 9,
             shiftKey: true,
             handler: function(range, context) {
-                this.quill.format('indent', '-1'); // Thụt ra (khi nhấn Shift + Tab)
+                this.quill.format('indent', '-1');
             }
         }
       }
@@ -134,71 +123,60 @@ const EmployerPostJob = ({ onSubmit, initialData }) => {
   };
 
   const quillFormats = [
-    'header',
-    'color',
-    'bold', 'italic', 'underline',
-    'list',
-    'indent' 
+    'header', 'color', 'bold', 'italic', 'underline', 'list', 'indent' 
   ];
 
-  const quillRef = useRef(null); // Thêm ref cho ReactQuill
+  const quillRef = useRef(null);
 
-// Hàm gắn tooltip
-const attachToolbarTooltips = () => {
-  if (!quillRef.current) return;
-  const toolbar = quillRef.current.editor.root.parentNode.querySelector('.ql-toolbar');
-  if (!toolbar) return;
+  // Hàm gắn tooltip
+  const attachToolbarTooltips = () => {
+    if (!quillRef.current) return;
+    try {
+        const toolbar = quillRef.current.editor.root.parentNode.querySelector('.ql-toolbar');
+        if (!toolbar) return;
 
-  const tooltips = {
-    bold: "Bold",
-    italic: "Italic",
-    underline: "Underline",
-    'list-ordered': "Ordered List",
-    'list-bullet': "Bullet List",
-    'indent-increase': "Indent Increase",
-    'indent-decrease': "Indent Decrease",
-    'clean': "Remove Formatting",
-    header: "Header",
-    color: "Text Color",
+        const tooltips = {
+            bold: "Bold", italic: "Italic", underline: "Underline",
+            'list-ordered': "Ordered List", 'list-bullet': "Bullet List",
+            'indent-increase': "Indent Increase", 'indent-decrease': "Indent Decrease",
+            'clean': "Remove Formatting", header: "Header", color: "Text Color",
+        };
+
+        const buttons = toolbar.querySelectorAll('button, .ql-picker-label');
+        buttons.forEach(btn => {
+            const classMatch = btn.className.match(/ql-([a-z-]+)/);
+            if (!classMatch) return;
+            let format = classMatch[1];
+
+            if (format === 'list') {
+                if (btn.classList.contains('ql-ordered')) format = 'list-ordered';
+                if (btn.classList.contains('ql-bullet')) format = 'list-bullet';
+            }
+            if (format === 'indent') {
+                if (btn.classList.contains('ql-increase')) format = 'indent-increase';
+                if (btn.classList.contains('ql-decrease')) format = 'indent-decrease';
+            }
+
+            if (tooltips[format]) btn.setAttribute('title', tooltips[format]);
+        });
+    } catch (e) {
+        console.warn("Tooltips error:", e);
+    }
   };
 
-  const buttons = toolbar.querySelectorAll('button, .ql-picker-label');
-  buttons.forEach(btn => {
-    const classMatch = btn.className.match(/ql-([a-z-]+)/);
-    if (!classMatch) return;
-    let format = classMatch[1];
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      attachToolbarTooltips();
+    }, 0);
+    return () => clearTimeout(timeout);
+  }, []);
 
-    if (format === 'list') {
-      if (btn.classList.contains('ql-ordered')) format = 'list-ordered';
-      if (btn.classList.contains('ql-bullet')) format = 'list-bullet';
-    }
-    if (format === 'indent') {
-      if (btn.classList.contains('ql-increase')) format = 'indent-increase';
-      if (btn.classList.contains('ql-decrease')) format = 'indent-decrease';
-    }
-
-    if (tooltips[format]) btn.setAttribute('title', tooltips[format]);
-  });
-};
-
-// Gọi sau khi editor mount
-useEffect(() => {
-  // Delay 0 để chắc chắn Quill đã render toolbar
-  const timeout = setTimeout(() => {
-    attachToolbarTooltips();
-  }, 0);
-  return () => clearTimeout(timeout);
-}, []);
-
-
-  // (Các mảng dữ liệu ... không đổi)
   const jobTypes = ["Full-time", "Part-time", "Internship", "Freelance", "Contract"];
   const majors = [
     "IT", "Business", "Finance", "Marketing", "Sales", "Human Resources", 
     "Education", "Healthcare", "Engineering", "Other",
   ];
   const degrees = ["Bachelor", "Master", "Doctorate", "Associate", "Diploma", "High School", "No Degree"];
-  const currencies = ["VND", "USD", "EUR", "JPY", "GBP"];
   const provinces = [
     "An Giang", "Bắc Ninh", "Cà Mau", "Cao Bằng", "Đắk Lắk", "Điện Biên", "Đồng Nai", "Đồng Tháp",
     "Gia Lai", "Hà Tĩnh", "Hưng Yên", "Khánh Hoà", "Lai Châu", "Lâm Đồng", "Lạng Sơn", "Lào Cai",
@@ -207,19 +185,15 @@ useEffect(() => {
     "TP. Hồ Chí Minh", "TP. Huế", "Tuyên Quang", "Vĩnh Long"
   ];
 
-  // (Hàm handleChange ... không đổi)
   const handleChange = (e) => {
     let { name, value } = e.target;
 
-    // Ràng buộc độ dài tối đa
     if (name === 'title') value = value.slice(0, 30);
     if (name === 'detailedAddress') value = value.slice(0, 200);
     if (name === 'description') value = value.slice(0, 2000);
 
-    // Xử lý các ô số (Lương & Kinh nghiệm)
     const numberFields = ['minSalary', 'maxSalary', 'experience'];
     if (numberFields.includes(name)) {
-      
       let numValue = value.replace(/[^0-9]/g, '');
       if (numValue.length > 1) {
          numValue = numValue.replace(/^0+(?=\d)/, '');
@@ -230,30 +204,29 @@ useEffect(() => {
       value = numValue;
     }
     
-    setForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setForm((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: "" }));
     if (name === 'minSalary' && errors.maxSalary) {
       setErrors((prev) => ({ ...prev, maxSalary: "" }));
     }
   };
 
-  // 👇 3. Hàm xử lý riêng cho Editor
-  const handleEditorChange = (name, content, editor) => {
-    // Count by code points (Unicode aware)
+  // 👇 [QUAN TRỌNG] HÀM ĐÃ SỬA: Thêm tham số delta, source và kiểm tra 'user'
+  const handleEditorChange = (name, content, delta, source, editor) => {
+    // Chặn vòng lặp vô tận: Chỉ cập nhật nếu người dùng gõ
+    if (source !== 'user') return;
+
     const plainText = Array.from(editor.getText().trim()).join('');
     const currentLength = plainText.length;
 
-    if(currentLength > 5000) return; // max length check
+    if(currentLength > 5000) return; 
+
     setForm(prev => ({ ...prev, [name]: content }));
     setCharCounts(prev => ({ ...prev, [name]: currentLength }));
 
     if(errors[name] && currentLength > 0) setErrors(prev => ({ ...prev, [name]: "" }));
   };
 
-  // (Hàm validateForm ... không đổi)
   const validateForm = () => {
     const newErrors = {};
     const requiredFields = [
@@ -262,7 +235,7 @@ useEffect(() => {
     ];
 
     requiredFields.forEach((field) => {
-      if (!form[field].trim()) newErrors[field] = "Vui lòng nhập thông tin";
+      if (!form[field] || !form[field].trim()) newErrors[field] = "Vui lòng nhập thông tin";
     });
 
     if (form.major === "Other" && !form.customMajor.trim()) {
@@ -283,26 +256,24 @@ useEffect(() => {
       }
 
       const targetRef = fieldRefs[firstErrorKey];
-      if(['description', 'requirement', 'welfare'].includes(firstErrorKey)){
-      }
       targetRef?.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-      fieldRefs[firstErrorKey].current?.focus();
+      if(!['description', 'requirement', 'welfare'].includes(firstErrorKey)){
+         fieldRefs[firstErrorKey].current?.focus();
+      }
       return false;
     }
     return true;
   };
 
-  // Hàm handleSubmit
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validateForm()) {
       const formattedData = {
-        ...form, // Lấy tất cả các trường cũ (title, position, v.v.)  
-        // Sửa 'experience' từ String thành Number
+        ...form,
         experience: Number(form.experience),
         minSalary: Number(form.minSalary),
         maxSalary: Number(form.maxSalary),
-        logo: auth.auth.employerData.data.logo
+        logo: auth.auth.employerData?.data?.logo || ""
       };
 
       onSubmit(formattedData);
@@ -314,70 +285,36 @@ useEffect(() => {
   const handleReset = () => {
     toast((t) => (
       <div style={{ position: 'relative', minWidth: '100px', padding: '2px' }}>
-         <div 
-            className="toast-backdrop-hack" 
-            onClick={() => toast.dismiss(t.id)} 
-         ></div>
-
+         <div className="toast-backdrop-hack" onClick={() => toast.dismiss(t.id)}></div>
          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px', pointerEvents: 'none' }}>
-             <div style={{ 
-                width: '40px', height: '40px', borderRadius: '50%', 
-                background: '#fee2e2', display: 'flex', alignItems: 'center', justifyContent: 'center' 
-             }}>
+             <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#fee2e2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <HiExclamationCircle size={24} color="#ef4444" />
              </div>
              <div>
-                <p style={{ fontWeight: '600', margin: '0 0 4px 0', fontSize: '15px', color: '#1f2937' }}>
-                    Làm mới form?
-                </p>
-                <p style={{ margin: 0, fontSize: '13px', color: '#6b7280' }}>
-                    Toàn bộ dữ liệu đã nhập sẽ bị xóa.
-                </p>
+                <p style={{ fontWeight: '600', margin: '0 0 4px 0', fontSize: '15px', color: '#1f2937' }}>Làm mới form?</p>
+                <p style={{ margin: 0, fontSize: '13px', color: '#6b7280' }}>Toàn bộ dữ liệu đã nhập sẽ bị xóa.</p>
              </div>
          </div>
-
          <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-            <button 
-                onClick={() => toast.dismiss(t.id)} 
-                className="toast-btn-base toast-btn-cancel"
-            >
-                Hủy
-            </button>
-            <button
-                className="toast-btn-base toast-btn-delete" // Dùng class màu đỏ
+            <button onClick={() => toast.dismiss(t.id)} className="toast-btn-base toast-btn-cancel">Hủy</button>
+            <button className="toast-btn-base toast-btn-delete" 
                 onClick={() => {
                     setForm(initialFormState);
                     setErrors({});
                     toast.dismiss(t.id);
                     toast.success("Đã xóa toàn bộ dữ liệu nhập vào.");
                 }}
-            >
-                Xóa
-            </button>
+            >Xóa</button>
          </div>
       </div>
-    ), {
-        duration: 4000,
-        position: 'top-center',
-        style: {
-            background: '#fff',
-            boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
-            borderRadius: '12px',
-            border: '1px solid #f3f4f6',
-            padding: '16px',
-            pointerEvents: 'auto'
-        }
-    });
+    ), { duration: 4000, position: 'top-center' });
   };
 
   const renderTabButton = (tabName, label, errorKey) => {
     const hasError = errors[errorKey];
     const isActive = activeTab === tabName;
-    
     return (
-        <button 
-            type="button" 
-            onClick={() => setActiveTab(tabName)}
+        <button type="button" onClick={() => setActiveTab(tabName)}
             className={`tab-btn ${isActive ? 'active' : ''} ${hasError ? 'error-tab' : ''}`}
         >
             {label}
@@ -386,70 +323,27 @@ useEffect(() => {
     );
   };
 
-  useEffect(() => {
-    // Gắn tooltip cho các nút toolbar
-    const tooltips = {
-        bold: "In đậm",
-        italic: "In nghiêng",
-        underline: "Gạch chân",
-        'list-ordered': "Danh sách có thứ tự",
-        'list-bullet': "Danh sách không thứ tự",
-        'indent-increase': "Thụt vào",
-        'indent-decrease': "Thụt ra",
-        'clean': "Xóa định dạng",
-        header: "Tiêu đề",
-        color: "Màu chữ",
-    };
-
-    const toolbarButtons = document.querySelectorAll('.ql-toolbar button, .ql-toolbar .ql-picker-label');
-    toolbarButtons.forEach(btn => {
-        // Lấy tên định dạng từ class
-        const classMatch = btn.className.match(/ql-([a-z-]+)/);
-        if (!classMatch) return;
-        let format = classMatch[1];
-
-        // Một số class đặc biệt
-        if (format === 'list') {
-        if (btn.classList.contains('ql-ordered')) format = 'list-ordered';
-        if (btn.classList.contains('ql-bullet')) format = 'list-bullet';
-        }
-        if (format === 'indent') {
-        if (btn.classList.contains('ql-increase')) format = 'indent-increase';
-        if (btn.classList.contains('ql-decrease')) format = 'indent-decrease';
-        }
-
-        if (tooltips[format]) btn.setAttribute('title', tooltips[format]);
-    });
-    }, []);
-
-
   return (
     <form onSubmit={handleSubmit} className="postjob-layout">
-      
       {/* --- HEADER --- */}
       <div className="postjob-header">
         <div>
             <h1 className="page-title">{form.id ? "Chỉnh sửa tin tuyển dụng" : "Tạo tin tuyển dụng mới"}</h1>
             <p className="page-subtitle">Điền thông tin chi tiết để thu hút ứng viên tốt nhất</p>
         </div>
-        {/* Nút Action Bar trên cùng (cho tiện) */}
         <div className="header-actions">
             <button type="button" className="btn-secondary" onClick={handleReset}>
                 <HiTrash /> Làm mới
             </button>
-            <button 
-              type="submit" className="btn-primary">
+            <button type="submit" className="btn-primary">
                 <HiSave /> {form.id ? "Cập nhật tin" : "Đăng tin ngay"}
             </button>
         </div>
       </div>
 
       <div className="postjob-grid">
-        
-        {/* --- CỘT TRÁI (MAIN CONTENT - 70%) --- */}
+        {/* --- CỘT TRÁI --- */}
         <div className="left-section">
-            
-            {/* Card 1: Thông tin cơ bản */}
             <div className="card-box">
                 <div className="card-header">
                     <div className="icon-wrapper blue"><HiPencilAlt /></div>
@@ -488,7 +382,7 @@ useEffect(() => {
                 </div>
             </div>
 
-            {/* --- Card 2: Mô tả công việc (Description) --- */}
+            {/* --- Card 2: Editors --- */}
             <div className="card-box">
                 <div className="card-header-tabs">
                     <div className="tabs-wrapper">
@@ -505,11 +399,12 @@ useEffect(() => {
                             <label>Mô tả công việc <span className="req">*</span></label>
                             <div className={`editor-wrapper ${errors.description ? "error-border" : ""}`} ref={fieldRefs.description}>
                                 <ReactQuill 
-                                    ref = {quillRef}
+                                    ref={quillRef}
                                     theme="snow"
-                                    key={form.id}
+                                    key={`desc-${form.id}`} // Unique key
                                     value={form.description}
-                                    onChange={(c, d, s, e) => handleEditorChange('description', c, e)}
+                                    // SỬA: Truyền đủ tham số (content, delta, source, editor)
+                                    onChange={(content, delta, source, editor) => handleEditorChange('description', content, delta, source, editor)}
                                     modules={quillModules} formats={quillFormats}
                                     placeholder="- Mô tả trách nhiệm..."
                                 />
@@ -525,11 +420,12 @@ useEffect(() => {
                             <label>Yêu cầu ứng viên <span className="req">*</span></label>
                             <div className={`editor-wrapper ${errors.requirement ? "error-border" : ""}`} ref={fieldRefs.requirement}>
                                 <ReactQuill 
-                                    ref = {quillRef}
+                                    ref={quillRef}
                                     theme="snow"
-                                    key={form.id}
-                                    value={form.description}
-                                    onChange={(c, d, s, e) => handleEditorChange('description', c, e)}
+                                    key={`req-${form.id}`} // Unique key
+                                    value={form.requirement} // SỬA: Đã trỏ đúng vào requirement
+                                    // SỬA: Update requirement và truyền đủ tham số
+                                    onChange={(content, delta, source, editor) => handleEditorChange('requirement', content, delta, source, editor)}
                                     modules={quillModules} formats={quillFormats}
                                     placeholder="- Kỹ năng chuyên môn..."
                                 />
@@ -545,11 +441,12 @@ useEffect(() => {
                             <label>Quyền lợi & Phúc lợi <span className="req">*</span></label>
                             <div className={`editor-wrapper ${errors.welfare ? "error-border" : ""}`} ref={fieldRefs.welfare}>
                                <ReactQuill 
-                                    ref = {quillRef}
+                                    ref={quillRef}
                                     theme="snow"
-                                    key={form.id}
-                                    value={form.description}
-                                    onChange={(c, d, s, e) => handleEditorChange('description', c, e)}
+                                    key={`wel-${form.id}`} // Unique key
+                                    value={form.welfare} // SỬA: Đã trỏ đúng vào welfare
+                                    // SỬA: Update welfare và truyền đủ tham số
+                                    onChange={(content, delta, source, editor) => handleEditorChange('welfare', content, delta, source, editor)}
                                     modules={quillModules} formats={quillFormats}
                                     placeholder="- Chế độ bảo hiểm, thưởng..."
                                 />
@@ -562,18 +459,14 @@ useEffect(() => {
             </div>
         </div>
 
-        {/* --- CỘT PHẢI (SIDEBAR STICKY - 30%) --- */}
+        {/* --- CỘT PHẢI --- */}
         <div className="right-section">
-            
-            {/* Card 3: ĐỊA ĐIỂM  */}
             <div className="card-box"> 
                 <div className="card-header small-header">
                     <div className="icon-wrapper purple"><HiOfficeBuilding /></div>
                     <h3>Địa điểm</h3>
                 </div>
                 <div className="card-body">
-                    {/* ... Code input location/address cũ dán vào đây ... */}
-                    {/* Lưu ý: Đổi form-row thành form-group xếp chồng dọc cho đẹp vì cột phải hẹp */}
                     <div className="form-group">
                         <label>Tỉnh/Thành phố <span className="req">*</span></label>
                         <select ref={fieldRefs.location} name="location" value={form.location} onChange={handleChange} className={errors.location ? "error" : ""}>
@@ -584,7 +477,7 @@ useEffect(() => {
                     </div>
                     <div className="form-group">
                         <label>Địa chỉ chi tiết <span className="req">*</span></label>
-                        <textarea /* Đổi input thành textarea cho đỡ bị tràn */
+                        <textarea
                             rows="3"
                             ref={fieldRefs.detailedAddress} name="detailedAddress" 
                             value={form.detailedAddress} onChange={handleChange}
@@ -597,15 +490,12 @@ useEffect(() => {
                 </div>
             </div>
             
-            {/* Card 4: Mức lương & Tiền tệ */}
             <div className="card-box sticky-card">
                 <div className="card-header small-header">
                     <div className="icon-wrapper orange"><HiCurrencyDollar /></div>
                     <h3>Chế độ lương</h3>
                 </div>
                 <div className="card-body">
-                    
-                    
                     <div className="form-group">
                         <label>Tối thiểu <span className="req">*</span></label>
                         <div className="input-group">
@@ -627,7 +517,6 @@ useEffect(() => {
                 </div>
             </div>
 
-            {/* Card 5: Phân loại & Yêu cầu */}
             <div className="card-box">
                 <div className="card-header small-header">
                     <h3>Yêu cầu khác</h3>
@@ -656,8 +545,7 @@ useEffect(() => {
                 </div>
             </div>
 
-        </div> {/* End Right Section */}
-
+        </div> 
       </div>
     </form>
   );
