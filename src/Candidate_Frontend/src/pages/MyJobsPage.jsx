@@ -128,7 +128,7 @@ export default function MyJobsPage() {
               try {
                 // Lấy thông tin application (label, id, ...)
                 const appRes = await client.get(
-                  `/api/application/applicantinfo?candidateId=${encodeURIComponent(
+                  `/api/application/byCandidateJob?candidateId=${encodeURIComponent(
                     candidateId
                   )}&jobId=${encodeURIComponent(jobId)}`
                 );
