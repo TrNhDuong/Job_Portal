@@ -66,8 +66,22 @@ export default function LoginForm() {
 
       navigate("/");
     } catch (err) {
-      const text =
-        err?.response?.data?.message || err?.message || "Đăng nhập thất bại";
+      console.error("Login error:", err);
+      
+      let text = "Đăng nhập thất bại. Vui lòng thử lại.";
+
+      if (err.response) {
+        const status = err.response.status;
+        
+        if (status === 400 || status === 401 || status === 404) {
+          text = "Tài khoản hoặc mật khẩu không chính xác.";
+        } else {
+          text = err.response.data?.message || text;
+        }
+      } else if (err.request) {
+        text = "Không thể kết nối đến máy chủ. Vui lòng kiểm tra mạng.";
+      }
+
       setMsg({ type: "error", text });
     } finally {
       setLoading(false);

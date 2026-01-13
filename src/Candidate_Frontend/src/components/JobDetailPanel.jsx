@@ -1,5 +1,6 @@
 // src/components/JobDetailPanel.jsx
 import React, { useEffect, useMemo, useState } from "react";
+import Swal from "sweetalert2";
 import {
   X,
   MapPin,
@@ -121,51 +122,122 @@ export default function JobDetailPanel({ job, onClose }) {
 
   // --- HANDLERS --- //
 
-  const handleApply = () => {
-    if (!user) {
-      alert("Bạn cần đăng nhập để ứng tuyển.");
+const handleApply = async () => {
+  // 1. Kiểm tra đăng nhập
+  if (!user) {
+    const result = await Swal.fire({
+      title: "Cần đăng nhập",
+      text: "Bạn cần đăng nhập để ứng tuyển công việc này.",
+      icon: "info",
+      showCancelButton: true,
+      confirmButtonText: "Đăng nhập ngay",
+      cancelButtonText: "Để sau",
+      confirmButtonColor: "#3085d6",
+      // Style nhỏ gọn, bo góc như cũ
+      padding: "1em",
+    });
+
+    if (result.isConfirmed) {
       navigate("/login");
-      return;
     }
-    // If already applied, maybe navigate to "My Jobs" or do nothing
-    if (isApplied) {
-        // Option: Navigate to My Jobs to see status
-        // navigate("/my-jobs"); 
-        return; 
-    }
-    navigate(`/jobs/${job._id}/apply`);
-  };
+    return;
+  }
 
-  const handleSaveJob = async () => {
+  // 2. Kiểm tra đã ứng tuyển chưa
+  if (isApplied) {
+    // Thông báo nhẹ nhàng là đã nộp rồi
+    Swal.fire({
+      icon: "success",
+      title: "Đã ứng tuyển",
+      text: "Bạn đã nộp hồ sơ cho vị trí này rồi.",
+      width: 320,
+      padding: "1em",
+      timer: 2000, // Tự tắt sau 2s
+      showConfirmButton: false,s
+    });
+    return;
+  }
+
+  // 3. Chuyển hướng đến trang nộp đơn
+  navigate(`/jobs/${job._id}/apply`);
+};
+
+const handleSaveJob = async () => {
+  // 1. Kiểm tra đăng nhập (Logic giống bên trên)
+  if (!user) {
+    const result = await Swal.fire({
+      title: "Cần đăng nhập",
+      text: "Bạn cần đăng nhập để lưu tin tuyển dụng.",
+      icon: "info",
+      showCancelButton: true,
+      confirmButtonText: "Đăng nhập ngay",
+      cancelButtonText: "Hủy",
+      padding: "1em",
+    });
+
+    if (result.isConfirmed) navigate("/login");
+    return;
+  }
+
+  if (!jobId) return;
+
+  // Cấu hình Toast (Thông báo nhỏ góc trên phải)
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 1500,
+    timerProgressBar: false,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    }
+  });
+
+  try {
+    setSaving(true);
+    if (isSaved) {
+      await apiRemoveSaveJob(user.email, jobId);
+      setIsSaved(false);
+      // Toast thông báo bỏ lưu
+      Toast.fire({ icon: "success", title: "Đã bỏ lưu tin" });
+    } else {
+      await apiSaveJob(user.email, jobId);
+      setIsSaved(true);
+      // Toast thông báo đã lưu
+      Toast.fire({ icon: "success", title: "Đã lưu tin vào hồ sơ" });
+    }
+  } catch (err) {
+    console.error("Lỗi khi lưu job:", err);
+    Toast.fire({ icon: "error", title: "Lỗi! Không thể lưu tin." });
+  } finally {
+    setSaving(false);
+  }
+};
+
+const handleReportClick = async () => {
+    // 1. Kiểm tra đăng nhập
     if (!user) {
-        alert("Bạn cần đăng nhập để lưu tin.");
-        return navigate("/login");
-    }
-    if (!jobId) return;
+        const result = await Swal.fire({
+            title: "Cần đăng nhập",
+            text: "Vui lòng đăng nhập để gửi báo cáo.",
+            icon: "info",
+            showCancelButton: true,
+            confirmButtonText: "Đăng nhập ngay",
+            cancelButtonText: "Hủy",
+            confirmButtonColor: "#3085d6",
+        });
 
-    try {
-      setSaving(true);
-      if (isSaved) {
-        await apiRemoveSaveJob(user.email, jobId);
-        setIsSaved(false);
-      } else {
-        await apiSaveJob(user.email, jobId);
-        setIsSaved(true);
-      }
-    } catch (err) {
-      console.error("Lỗi khi lưu job:", err);
-    } finally {
-      setSaving(false);
+        // Nếu người dùng bấm "Đăng nhập ngay" thì mới chuyển trang
+        if (result.isConfirmed) {
+            navigate("/login");
+        }
+        return;
     }
-  };
 
-  const handleReportClick = () => {
-    if (!user) {
-        alert("Vui lòng đăng nhập để báo cáo.");
-        return navigate("/login");
-    }
+    // 2. Nếu đã đăng nhập thì hiện Modal báo cáo (Logic cũ)
     setShowReportModal(true);
-  };
+};
 
   if (!job) return null;
 
