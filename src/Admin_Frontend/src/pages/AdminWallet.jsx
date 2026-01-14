@@ -3,7 +3,7 @@ import "../styles/AdminWallet.css";
 import { 
   HiCreditCard, 
   HiUser, 
-  HiCurrencyDollar, 
+  HiPlusCircle, 
   HiAnnotation, 
   HiSearch, 
   HiClock,
@@ -156,10 +156,9 @@ export default function ManualPayment() {
                         <div className="form-group">
                             <label>Số điểm <span className="req">*</span></label>
                             <div className="input-group">
-                                <HiCurrencyDollar className="input-icon" />
+                                <HiPlusCircle className="input-icon" />
                                 <input 
                                     type="number" 
-                                    placeholder="500,000" 
                                     value={formData.amount}
                                     onChange={(e) => setFormData({...formData, amount: e.target.value})}
                                 />

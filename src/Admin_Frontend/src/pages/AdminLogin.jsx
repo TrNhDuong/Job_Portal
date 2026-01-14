@@ -90,7 +90,6 @@ export default function AdminLogin() {
                     <input
                         type="text" 
                         className="auth-input compact-input"
-                        placeholder="Nhập tài khoản (vd: tnd)"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         onKeyDown={handleKey}
