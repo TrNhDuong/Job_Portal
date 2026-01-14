@@ -108,6 +108,10 @@ const jobPost = new mongoose.Schema({
     },
     welfare: {
         type: String,
+    },
+    viewed: {
+        type: Number,
+        default: 0
     }
 });
 
