@@ -1,4 +1,4 @@
-# InspireLeader - Intelligent Recruitment Platform
+# InspireLeader - Recruitment Platform
 
 > **Version:** 1.2 
 
