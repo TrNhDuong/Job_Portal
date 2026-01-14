@@ -94,8 +94,8 @@ export default function SearchFilters({ filters, setFilters }) {
           className="job-filters-select job-filters-select--pro"
         >
         <option value="">Tất cả ngành nghề</option>
-          <option value="IT">IT</option> {/* Đổi từ "IT" thành "IT" (khớp TopSectors) */}
-          <option value="Marketing">Marketing</option>
+          <option value="IT">IT</option>
+          <option value="Healthcare">Healthcare</option>
           <option value="Tài chính">Tài chính</option> {/* Đổi từ "Finance" thành "Tài chính" */}
           <option value="Bất động sản">Bất động sản</option>
           <option value="Logistics">Logistics</option>

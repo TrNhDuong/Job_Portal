@@ -12,7 +12,7 @@ export default function Hero() {
           </div>
           
           <h1 className="home-hero-title">
-            Khám phá Sự nghiệp Lý tưởng của Bạn
+            Khám phá sự nghiệp lý tưởng của bạn
           </h1>
 
           <p className="home-hero-subtitle">
