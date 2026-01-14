@@ -26,8 +26,8 @@ export default function FeaturedBrands({ enableFetch = true }) {
 
       {/* 3. GRID HIỂN THỊ VÀ MŨI TÊN */}
       <div className="brands-grid-container">
-        <button className="brand-nav-btn prev"><ChevronLeft size={24} /></button>
-        <button className="brand-nav-btn next"><ChevronRight size={24} /></button>
+        {/* <button className="brand-nav-btn prev"><ChevronLeft size={24} /></button>
+        <button className="brand-nav-btn next"><ChevronRight size={24} /></button> */}
 
         <div className="brands-display-grid">
           {loading ? (
